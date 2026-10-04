@@ -8,12 +8,19 @@
 /* ---- CHAT SECTION SWITCH ----------------------------------------------------
    The chat intro (#tz-hero, the "messages" section) is switched off for now.
    Set TZ_CHAT to true to bring it back exactly as it was. Nothing was deleted. */
-window.TZ_CHAT = false;
+window.TZ_CHAT = true;
 if (!window.TZ_CHAT) document.documentElement.setAttribute('data-no-chat', '');
+// The chat intro waits (one frame or two) until its fonts are in, then plays once, cleanly.
+else document.documentElement.classList.add('tz-boot');
 </script>
+<link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADNUlEQVR4nLxXX0gUQRz+9u683ZCrh/TyQfMl0vBEiAShHsIsqgeVSvAtJIQCyz9wVFAPQQ+i0VNECf0PyR5KQYJAMFGEoAyKSFIiKr1LhTwidbc7t29v/XPa3TneefvBzs7Mzvy+33wz85tZB9YHF6AcA/QiQMrgO8OslqaYn+T7PTD3jBW/RQ1KYs2cFWx6kpmjEiQ5XksduspXN5/7gNqNJBywk7iaTc6TtBAJgM5QEb0Z0J6yGIpBEgtyiwTbNZJvQ4Iw+vI5DthmyT8AQQeoitzGjmexQaCtMlJxIKEXAg4ozexwDhsM2iwGHAoQ7InjgFLD4bciRaDtfZyOYSrxMaJuCTmUfmStVZ4szF2i7mT2m1G2LX9SWlNNbsDkUFqWyyb5AWZ6YCF0hEqAv68XFaiF5bA3GqmhgJNzP0lpNsNCcC0EuBbcVEAuTZTc7c5Eenr6ijqPpwAul2vNvuTcYnDTAakEAsjMzIAkrYzcFy56cfde27JRfn/w8A5ycrIhBqmEDuhZIk1zc3PR0dEOWZaXyKpOVKGyohINDfXhuqamRngKCv9TJTb0LAdTIQeGht4hb0cx2h93ouZUNQo9RQhpLvh+zKK+7hIm/NM4XesNlx12BYIIOyCE+fl5dHW9RFlpOW7f6EQg8Au+sTnoum7MJ+rOXMXURIjlINvaRc3CcMAv2rivrxeevEOQHdlwb80Ojza6t05Rk346IAk78Gaoj6MmKUf9fXwYqjqD6cAExv2fMeYbhabNcHsBPv+ooEXJz2XtrOS5/1ywBzz5BzHyZRCq9gfJgrHgiLGvjP3404pzYBW5xkDkMkIxIxJewXr08tEWzgL9FiyHyRkR2pR+88JgATUwyOv7XiMfcR/AZViGoHcxFxExgl8ZFjalWgWO/gqn/lEUB8JO8FJiz+KO2IMUQA/Pu+qNrIsSM42rs0PZaCVIzmuY2ri6PkbQNpSwGeHsMNVIQ3LEM0xrKPv1aN/jnBqhD0DaE3beTid2ITHyTm60co68P1YbwZ9TZT/MeyNvT/GPb9083Bhkgjf5DKxlWdCBSDjzmezmFFEVfUEZ6ROPQP5w4C2lHl6PtX8AAAD//xBDU1MAAAAGSURBVAMAd2Do+7SVahsAAAAASUVORK5CYII=" />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1080 1080'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='540' y1='193.81' x2='540' y2='932.28' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='.39' stop-color='%23fff'/%3E%3Cstop offset='.4' stop-color='%23faf9fd'/%3E%3Cstop offset='.5' stop-color='%23c3bcea'/%3E%3Cstop offset='.59' stop-color='%239387d9'/%3E%3Cstop offset='.68' stop-color='%236d5ccc'/%3E%3Cstop offset='.77' stop-color='%234f3ac1'/%3E%3Cstop offset='.86' stop-color='%233922ba'/%3E%3Cstop offset='.93' stop-color='%232c14b5'/%3E%3Cstop offset='1' stop-color='%23280fb4'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle fill='%23010008' cx='540' cy='540' r='530.68'/%3E%3Cpath fill='url(%23g)' d='M410.74,658.22s162.29-48.52,309.91-40.22c-.76-81.38-4.62-158.07-7.74-191.11-.51-5.37-7.54-7.02-10.4-2.44-16.77,26.88-55.91,89.05-69.49,110.61-2.33,3.69-7.59,3.99-10.33.59l-80.01-103.79c-3.62-4.7-11.01-3.5-12.96,2.11l-43.78,119.94c-2.25,6.15-9.99,8.11-14.89,3.76l-104.34-90.05c-3.32-2.87-8.34.31-7.18,4.54l51.21,186.05Z'/%3E%3C/svg%3E" />
+<link rel="apple-touch-icon" href="data:image/png;base64,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" />
+<meta name="theme-color" content="#141414" />
 <meta name="description" content="Turinoz, motion designer. Motion systems, interactive Rive pieces and small tools, including the Storm agent icon now live in Sitemate's apps." />
 <!-- Fonts are served from this folder (no third-party requests). Licenses: fonts/LICENSES.txt -->
 <link rel="preload" href="fonts/archivo.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="fonts/inter.woff2" as="font" type="font/woff2" crossorigin />
 <style>
 @font-face{font-family:"Archivo";src:url(fonts/archivo.woff2) format("woff2");font-weight:100 900;font-stretch:62% 125%;font-style:normal;font-display:swap}
 @font-face{font-family:"Inter";src:url(fonts/inter.woff2) format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
@@ -78,7 +85,7 @@ ul{padding:0;list-style:none}
 .tz-hero{
   --orange:var(--tz-orange); --orange-hi:var(--tz-orange-hi); --orange-rgb:var(--tz-orange-rgb);
   --canvas:#141414;
-  --panel:rgba(30,30,30,.82); --panel-ring:#1e1e1e;
+  --panel:#1C1C1C; --panel-ring:#1e1e1e;
   --line:rgba(255,255,255,.08); --line-2:rgba(255,255,255,.17);
   --text:#F2F2F0; --muted:rgba(242,242,240,.55); --faint:rgba(242,242,240,.32);
   --soft:rgba(255,255,255,.06); --bubble:#262626;
@@ -89,7 +96,7 @@ ul{padding:0;list-style:none}
   -webkit-user-select:none; user-select:none;
 }
 .tz-hero[data-theme="light"]{
-  --canvas:#F4F4F2; --panel:rgba(255,255,255,.9); --panel-ring:#fff;
+  --canvas:#F4F4F2; --panel:#FEFEFE; --panel-ring:#fff;
   --line:rgba(0,0,0,.08); --line-2:rgba(0,0,0,.16);
   --text:#141414; --muted:rgba(20,20,20,.55); --faint:rgba(20,20,20,.32);
   --soft:rgba(0,0,0,.05); --bubble:#EAEAE8;
@@ -101,9 +108,11 @@ ul{padding:0;list-style:none}
 
 .tz-panel{
   background:var(--panel);
-  -webkit-backdrop-filter:blur(16px) saturate(1.3); backdrop-filter:blur(16px) saturate(1.3);
   border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow);
 }
+/* hold every entrance at its first frame until the fonts are ready (html.tz-boot, see <head>) */
+html.tz-boot .tz-hero *{animation-play-state:paused!important}
+html.tz-boot .tz-col,html.tz-boot .tz-topbar{visibility:hidden}
 
 /* logo avatar */
 .tz-logo{display:block;width:100%;height:100%;border-radius:50%}
@@ -121,6 +130,7 @@ ul{padding:0;list-style:none}
 }
 .tz-topbar > *{pointer-events:auto}
 .tz-file,.tz-meta{height:44px;display:flex;align-items:center;gap:10px;padding:0 12px 0 8px}
+.tz-file{padding:0 12px 0 14px;gap:8px}
 .tz-meta{padding:0 9px}
 .tz-mark{width:28px;height:28px;border-radius:50%;background:#010008;box-shadow:0 0 0 1px rgba(255,255,255,.14)}
 .tz-crumb{font-size:13px;color:var(--muted);white-space:nowrap}
@@ -200,17 +210,25 @@ ul{padding:0;list-style:none}
   animation:tzPop .5s cubic-bezier(.34,1.56,.64,1) backwards;
 }
 .tz-react b{font-size:11.5px;font-weight:600}
-.tz-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
-.tz-qr{
-  height:30px; padding:0 12px; border-radius:8px;
-  border:1px solid var(--line-2)!important; background:var(--soft)!important; color:var(--text);
-  font-size:13px; font-weight:600; letter-spacing:-.01em; cursor:pointer;
-  transition:border-color .2s,color .2s,transform .2s;
+.tz-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.tz-hero .tz-qr{
+  display:inline-flex; align-items:center; gap:7px;
+  height:32px; padding:0 13px 0 11px; border-radius:8px;
+  border:1px solid var(--line-2)!important; background:transparent!important; color:var(--text);
+  font:500 13.5px/1 var(--ui); letter-spacing:-.008em; white-space:nowrap; cursor:pointer;
+  transition:background-color .18s,border-color .18s,color .18s,transform .2s cubic-bezier(.34,1.56,.64,1);
   animation:tzRise .45s cubic-bezier(.2,.8,.2,1) backwards;
 }
+.tz-qr svg{width:15px;height:15px;color:var(--muted);transition:color .18s,transform .3s cubic-bezier(.34,1.56,.64,1)}
 .tz-qr:nth-child(2){animation-delay:.06s}.tz-qr:nth-child(3){animation-delay:.12s}
-.tz-qr:hover{border-color:rgba(var(--orange-rgb),.75)!important;color:var(--orange-hi)}
+.tz-qr:hover{background:var(--soft)!important;border-color:rgba(255,255,255,.3)!important}
+.tz-qr:hover svg{color:var(--text)}
 .tz-qr:active{transform:scale(.97)}
+.tz-qr:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+.tz-hero .tz-qr--go{padding:0 11px 0 13px;background:#F2F2F0!important;border-color:#F2F2F0!important;color:#141414}
+.tz-qr--go svg{color:#141414}
+.tz-qr--go:hover{background:#fff!important;border-color:#fff!important}
+.tz-qr--go:hover svg{color:#141414;transform:translateX(2px)}
 
 /* composer (Slack) */
 .tz-composer{
@@ -522,29 +540,68 @@ html[data-no-chat] .tz-sbtn[data-ask="about"]{display:none}
 }
 .tz-framelabel svg{width:11px;height:11px}
 
-/* ---------- Turinoz's cursor (work view) ---------- */
-.tzc{position:fixed;left:0;top:0;z-index:200;pointer-events:none;will-change:transform;font-family:var(--ui)}
-.tzc-body{position:relative;opacity:0;transform:scale(0);transform-origin:0 0;
-  transition:transform .65s cubic-bezier(.34,1.56,.64,1),opacity .25s}
-.tzc.is-on .tzc-body{opacity:1;transform:scale(1)}
-.tzc-arrow{position:absolute;left:-3.6px;top:-3.6px;width:26px;height:26px;transform-origin:3.6px 3.6px;overflow:visible;
-  filter:drop-shadow(0 4px 8px rgba(0,0,0,.3)) drop-shadow(0 1px 1px rgba(0,0,0,.2))}
-.tzc-label{
-  position:absolute; left:13px; top:25px;
-  display:flex; align-items:center; height:24px; padding:0 10px;
-  border-radius:5px 12px 12px 12px;
-  background:linear-gradient(135deg,var(--tz-orange-hi),var(--tz-orange));
-  color:#fff; font-size:12px; font-weight:600; letter-spacing:-.005em;
-  white-space:nowrap; overflow:hidden;
-  box-shadow:0 6px 16px -6px rgba(var(--tz-orange-rgb),.75),inset 0 1px 0 rgba(255,255,255,.25);
-  transition:width .45s cubic-bezier(.2,.9,.25,1);
+/* ---------- Turinoz in the corner (work view) ----------
+   The same spot he joined from in the chat. He never follows the pointer: his lines
+   appear under the corner, one at a time. "Commentary" switches him off: he leaves the
+   file (same toast as when he joined) and comes back when it's switched on again. */
+.tz-pres{
+  --panel:#1C1C1C; --panel-ring:#1e1e1e;
+  --line:rgba(255,255,255,.08); --line-2:rgba(255,255,255,.17);
+  --text:#F2F2F0; --muted:rgba(242,242,240,.6); --faint:rgba(242,242,240,.32); --soft:rgba(255,255,255,.07);
+  --shadow:0 18px 40px -18px rgba(0,0,0,.6),0 2px 8px rgba(0,0,0,.2);
+  position:fixed; z-index:75; top:16px; right:16px;
+  font-family:var(--ui); font-variant-numeric:normal; color:var(--text);
 }
-.tzc-label span{display:block}
-.tzc-label span.tz-swap{animation:tzSwap .4s cubic-bezier(.2,.8,.2,1)}
-.tzc.is-flip .tzc-label{left:auto;right:-4px;border-radius:12px 5px 12px 12px}
-.tzc.is-up .tzc-label{top:-34px}
-.tzc.is-up.is-flip .tzc-label{border-radius:12px 12px 5px 12px}
-.tzc.is-up:not(.is-flip) .tzc-label{border-radius:12px 12px 12px 5px}
+.tz-pres-bar{
+  position:relative; display:flex; align-items:center; gap:6px; height:44px; padding:0 9px 0 6px;
+  background:var(--panel); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow); overflow:hidden;
+}
+.tz-pres .tz-avs{position:relative}
+.tz-pres .tz-avs .tz-av--logo{margin-left:-6px;transform:scale(1);
+  box-shadow:0 0 0 2px var(--panel-ring),0 0 0 3.5px rgba(var(--tz-orange-rgb),.85);   /* orange = commentary on */
+  transition:transform .6s cubic-bezier(.34,1.56,.64,1),margin .45s cubic-bezier(.2,.8,.2,1)}
+.tz-pres.is-off .tz-avs .tz-av--logo{margin-left:-26px;transform:scale(0)}           /* he left the file */
+.tz-pres .tz-vsep{width:1px;height:18px;margin:0 3px 0 1px;background:var(--line)}
+/* commentary switch */
+.tz-guide{display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 9px 0 8px;border:0;border-radius:8px;background:transparent;
+  color:var(--muted);font:500 12.5px/1 var(--ui);letter-spacing:-.005em;cursor:pointer;transition:background-color .2s,color .2s}
+.tz-guide:hover{background:var(--soft);color:var(--text)}
+.tz-guide:focus-visible{outline:2px solid var(--tz-orange);outline-offset:1px}
+.tz-sw{position:relative;width:22px;height:13px;border-radius:999px;background:rgba(255,255,255,.18);transition:background-color .25s;flex:none}
+.tz-sw::after{content:"";position:absolute;left:2px;top:2px;width:9px;height:9px;border-radius:50%;background:#fff;transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.tz-guide[aria-pressed="true"] .tz-sw{background:var(--tz-orange)}
+.tz-guide[aria-pressed="true"] .tz-sw::after{transform:translateX(9px)}
+/* his line, under the corner */
+.tz-pres-msg{
+  position:absolute; top:calc(100% + 8px); right:0; width:max-content; max-width:min(290px,calc(100vw - 32px));
+  padding:9px 13px 10px 12px; border-radius:12px 4px 12px 12px;
+  background:var(--panel); border:1px solid var(--line); box-shadow:var(--shadow);
+  opacity:0; transform:translateY(-6px) scale(.97); transform-origin:100% 0; pointer-events:none;
+  transition:opacity .22s,transform .4s cubic-bezier(.2,.9,.25,1);
+}
+.tz-pres-msg.is-on{opacity:1;transform:none}
+.tz-pres-msg b{display:block;margin-bottom:2px;font-size:12px;font-weight:600;letter-spacing:-.005em;color:var(--muted)}
+.tz-pres-text{display:block;font-size:13.5px;line-height:1.4;letter-spacing:-.008em;color:var(--text);text-wrap:pretty}
+.tz-pres-text.tz-swap{animation:tzSwap .35s cubic-bezier(.2,.8,.2,1)}
+/* "Turinoz left / joined the file" — the same toast as in the chat */
+.tz-pres-toast{
+  position:fixed; z-index:76; top:74px; left:50%;
+  display:flex; align-items:center; gap:9px; height:38px; padding:0 14px 0 6px; border-radius:999px;
+  background:var(--panel); border:1px solid var(--line); box-shadow:var(--shadow);
+  font-size:13px; white-space:nowrap; opacity:0; pointer-events:none;
+  transform:translate(-50%,-10px) scale(.96);
+  transition:transform .55s cubic-bezier(.2,.9,.25,1),opacity .35s;
+}
+.tz-pres-toast.is-on{opacity:1;transform:translate(-50%,0)}
+.tz-pres-toast .tz-av{width:24px;height:24px}
+.tz-pres-toast b{font-weight:600}
+.tz-pres-toast span:last-child{color:var(--muted)}
+@media (max-width:560px){
+  .tz-pres{top:12px;right:12px}
+  .tz-pres .tz-av--you,.tz-pres .tz-vsep{display:none}
+  .tz-pres .tz-avs .tz-av--logo{margin-left:0}
+  .study-bar .next{display:none}
+}
 
 /* ---------- keyframes ---------- */
 @keyframes tzRise{from{opacity:0;translate:0 14px}}
@@ -760,8 +817,7 @@ html[data-no-chat] .tz-sbtn[data-ask="about"]{display:none}
 
   <header class="tz-topbar" aria-hidden="true">
     <div class="tz-file tz-panel">
-      <svg class="tz-mark" viewBox="0 0 1080 1080"><use href="#tzLogo"/></svg>
-      <span class="tz-crumb"><span class="tz-team">Turinoz<i>/</i></span><b>Portfolio</b></span>
+      <span class="tz-crumb"><b>Portfolio</b></span>
       <svg class="tz-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
     </div>
     <div class="tz-meta tz-panel">
@@ -1118,6 +1174,25 @@ html[data-no-chat] .tz-sbtn[data-ask="about"]{display:none}
   </article>
 </div>
 
+<!-- Turinoz in the corner (work view): presence, his lines, and the Commentary switch -->
+<aside class="tz-pres" id="tzPres" hidden aria-label="Turinoz's commentary">
+  <div class="tz-pres-bar">
+    <button class="tz-guide" id="tzGuide" type="button" aria-pressed="true" title="Turn commentary off"><span class="tz-sw" aria-hidden="true"></span>Commentary</button>
+    <i class="tz-vsep" aria-hidden="true"></i>
+    <div class="tz-avs" aria-hidden="true">
+      <span class="tz-av tz-av--you" title="You"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="9" r="3.6"/><path d="M5.5 19.5c1.3-3 3.8-4.6 6.5-4.6s5.2 1.6 6.5 4.6"/></svg></span>
+      <span class="tz-av tz-av--logo" title="Turinoz"><svg class="tz-logo" viewBox="0 0 1080 1080"><use href="#tzLogo"/></svg></span>
+    </div>
+  </div>
+  <div class="tz-pres-msg" id="tzPresMsg" role="status" aria-live="polite">
+    <b>Turinoz</b><span class="tz-pres-text" id="tzPresText"></span>
+  </div>
+  <div class="tz-pres-toast" id="tzPresToast" aria-hidden="true">
+    <span class="tz-av tz-av--logo"><svg class="tz-logo" viewBox="0 0 1080 1080"><use href="#tzLogo"/></svg></span>
+    <b>Turinoz</b><span>left the file</span>
+  </div>
+</aside>
+
 <!-- About / Contact — always on the right -->
 <nav class="tz-side" id="tzSide" aria-label="Talk to Turinoz" hidden>
   <button class="tz-sbtn" type="button" data-ask="about" data-say="the short version of me|yep, that's me">About</button>
@@ -1128,22 +1203,6 @@ html[data-no-chat] .tz-sbtn[data-ask="about"]{display:none}
 <div class="tz-framelabel" id="tzFrameLabel" aria-hidden="true">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3.5v17M16 3.5v17M3.5 8h17M3.5 16h17"/></svg>
   turinoz.co
-</div>
-
-<!-- Turinoz's cursor -->
-<div class="tzc" id="tzc" aria-hidden="true">
-  <div class="tzc-body">
-    <svg class="tzc-arrow" viewBox="0 0 26 26">
-      <defs>
-        <linearGradient id="tzCursorFill" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#FF8A3D"/><stop offset="1" stop-color="#FF4D12"/>
-        </linearGradient>
-      </defs>
-      <path d="M4.2 3.4 L21.6 10.6 C22.4 10.9 22.3 12 21.5 12.2 L14.3 13.9 C14.1 13.95 13.95 14.1 13.9 14.3 L12.2 21.5 C12 22.3 10.9 22.4 10.6 21.6 L3.4 4.2 C3.2 3.7 3.7 3.2 4.2 3.4 Z"
-            fill="url(#tzCursorFill)" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/>
-    </svg>
-    <div class="tzc-label"><span>Turinoz</span></div>
-  </div>
 </div>
 
 <script>
@@ -2614,7 +2673,7 @@ requestAnimationFrame(frame);
 
 <script>
 /* ==========================================================================
-   Chat + transitions + Turinoz's cursor
+   Chat + transitions + Turinoz in the corner
    ========================================================================== */
 (() => {
 'use strict';
@@ -2628,21 +2687,27 @@ const TZ = {
   askAbout: "tell me a bit about you",
   askContact: "how can I reach you?",
 };
-const CHIP = { work: "show me the work", about: "tell me about you", contact: "how can I reach you?" };
+const CHIP = { work: "Show me the work", about: "Tell me about you", contact: "How can I reach you?" };
+const CHIP_ICON = {   // the quick-reply buttons: one filled "go" button, the rest quiet with an icon
+  [CHIP.work]: { go: true, svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>' },
+  [CHIP.contact]: { svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/><path d="m4.5 7.5 7.5 5.5 7.5-5.5"/></svg>' },
+  [CHIP.about]: { svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="9" r="3.6"/><path d="M5.5 19.5c1.3-3 3.8-4.6 6.5-4.6s5.2 1.6 6.5 4.6"/></svg>' },
+};
 // The chat intro can be switched off with TZ_CHAT in <head>. Off: the page opens on
 // the work, About is hidden and Contact opens an email instead of the chat.
 const CHAT_ENABLED = window.TZ_CHAT !== false;
 
 // Chat replies — each is a burst of short messages. {email} becomes a mail link.
 const REPLY = {
+  // the first reply: two short messages, then straight to the work
   workFirst: [
-    ["ha, hey 👋", "was hoping someone would ask", "come, I'll show you around"],
-    ["oh nice, straight to the point", "I'm better at showing than explaining tbh", "one sec, opening the file"],
-    ["say less", "words were never really my medium", "follow me →"],
+    ["hey 👋", "let's go take a look"],
+    ["hey hey 👋", "come, I'll show you around"],
+    ["oh hi 👋", "let's go see →"],
   ],
   workAgain: [["on it", "taking you back"], ["sure, back to the good stuff"]],
-  greetFirst: [["hey 👋", "nice of you to drop by", "let me just show you what I've been making"]],
-  unknownFirst: [["ha, that one's not in my script", "but I know what's worth seeing", "come, I'll show you around"]],
+  greetFirst: [["hey 👋", "come, I'll show you around"]],
+  unknownFirst: [["ha, not in my script 😄", "come, let's look at the work"]],
   greet: [["hey again 👋", "what can I show you?"]],
   about: [[
     "so, the short version:",
@@ -2661,7 +2726,7 @@ const REPLY = {
   ],
 };
 
-// What Turinoz's cursor says over each tile (by tile title). Two lines each, they alternate.
+// What Turinoz says about each tile you rest on (by tile title). Two lines each, they alternate.
 const LINES = {
   "Agent Motion System": ["that's the real Storm UI. press Build 👀", "live in Sitemate's app right now"],
   "Interactive Sphere": ["go on, spin it. it likes it", "press and hold. it gets shy"],
@@ -2679,10 +2744,9 @@ const LINES = {
 };
 const QUIP = {
   welcome: ["welcome in 👋", "this is where I keep the good stuff", "make yourself at home"],
-  fast: ["whoa, slow down 😅", "too fast. I'll wait here", "I'll catch up. eventually"],
-  idle: ["scroll, there's more down there", "take your time, I'm not going anywhere", "psst — the live ones react to you"],
-  leave: ["come back 👀", "where'd you go?"],
+  idle: ["scroll, there's more down there", "psst, the live ones react to you"],
   study: ["good pick 👌", "my favorite. don't tell the others", "deep end. enjoy"],
+  back: ["I'm back 👋", "ok, I'll keep you company"],
   generic: ["ooh, that one"],
 };
 // extra hover lines inside the study pages
@@ -2697,6 +2761,8 @@ const STUDY_SAY = [
 /* ---------- setup ---------- */
 const $ = (s, el = document) => el.querySelector(s);
 const hero = $('#tz-hero'), work = $('#work'), page = $('#page'), side = $('#tzSide'), frameLabel = $('#tzFrameLabel');
+const pres = $('#tzPres'), presMsg = $('#tzPresMsg'), presText = $('#tzPresText'), guideBtn = $('#tzGuide');
+const presToast = $('#tzPresToast'), presToastT = $('#tzPresToast span:last-child');
 const E = {
   col: $('#tzCol'), thread: $('#tzThread'), input: $('#tzInput'), send: $('#tzSend'),
   typing: $('#tzTyping'), toast: $('.tz-toast', hero), sr: $('#tzSr'),
@@ -2796,7 +2862,7 @@ function react(msg, emoji) {
 }
 async function typeLine(line) {
   E.typing.classList.add('is-on');
-  await sleep(clamp(420 + line.length * 26, 700, 1800));
+  await sleep(clamp(260 + line.length * 16, 420, 1100));
   E.typing.classList.remove('is-on');
   const m = addMsg('tz', line);
   E.sr.textContent = `${TZ.name}: ${line}`;
@@ -2807,7 +2873,10 @@ function addChips(list, msg) {
   box.className = 'tz-chips';
   for (const label of list) {
     const b = document.createElement('button');
-    b.type = 'button'; b.className = 'tz-qr'; b.textContent = label;
+    const ic = CHIP_ICON[label] || {};
+    b.type = 'button'; b.className = 'tz-qr' + (ic.go ? ' tz-qr--go' : '');
+    b.innerHTML = ic.go ? `<span></span>${ic.svg}` : `${ic.svg || ''}<span></span>`;
+    b.querySelector('span').textContent = label;
     b.addEventListener('click', () => send(label));
     box.appendChild(b);
   }
@@ -2827,19 +2896,35 @@ function updateSend() {
 async function autoType(text, delay) {
   autoTyping = true; userTook = false;
   E.input.value = ''; updateSend();
-  await sleep(delay);
+  if (delay) await sleep(delay);
   for (const ch of text) {
     if (userTook) break;
     E.input.value += ch; updateSend();
-    await sleep(ch === ',' ? 260 : ch === ' ' ? rand(60, 110) : rand(36, 90));
+    await sleep(ch === ',' ? 170 : ch === ' ' ? rand(45, 80) : rand(26, 60));
   }
   autoTyping = false;
   return !userTook;
 }
 E.input.addEventListener('input', e => { if (autoTyping && e.isTrusted) userTook = true; updateSend(); });
+// Enter mid-way through the auto-typed prompt sends the whole prompt
+function finishPrompt() { if (autoTyping) { userTook = true; E.input.value = TZ.prompt; updateSend(); } }
 E.input.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); finishPrompt(); send(); return; }
   if (autoTyping && (e.key.length === 1 || e.key === 'Backspace')) userTook = true;
-  if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); send(); }
+});
+// Enter works from anywhere on the chat page, and typing anywhere goes into the box
+addEventListener('keydown', e => {
+  if (mode !== 'chat' || e.isComposing || e.defaultPrevented || e.target === E.input) return;
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const t = e.target, tag = t && t.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || (t && t.isContentEditable)) return;
+  if (e.key === 'Enter') {
+    if (tag === 'BUTTON' || tag === 'A') return;          // a focused button keeps its own Enter
+    e.preventDefault(); finishPrompt(); send();
+  } else if (e.key.length === 1 && !busy) {
+    if (autoTyping) userTook = true;
+    E.input.focus({ preventScroll: true });               // the key lands in the box
+  }
 });
 E.send.addEventListener('click', () => send());
 
@@ -2856,9 +2941,10 @@ async function send(preset) {
 
   const plan = planFor(intent(text));
   const mine = addMsg('you', text);
-  await sleep(650);
+  E.typing.classList.add('is-on');                        // he starts writing right away
+  await sleep(220);
   react(mine, plan.react);
-  await sleep(450);
+  await sleep(120);
   let lastMsg = null;
   for (const line of plan.lines) {
     lastMsg = await typeLine(line.replace('{email}', TZ.email));
@@ -2868,13 +2954,13 @@ async function send(preset) {
   updateSend();
   if (plan.chips && lastMsg) addChips(plan.chips, lastMsg);
   if (plan.go) {
-    await sleep(450);
+    await sleep(260);
     if (!joined) {
       joined = true;
       hero.classList.add('is-joined');
       E.toast.classList.add('is-on');
-      setTimeout(() => E.toast.classList.remove('is-on'), 2300);
-      await sleep(1150);
+      setTimeout(() => E.toast.classList.remove('is-on'), 2000);
+      await sleep(850);
     }
     enterWork();
   }
@@ -2900,6 +2986,7 @@ async function enterWork() {
   mode = 'work'; visitedWork = true;
   try { history.replaceState(null, '', '#work'); } catch (_) {}
   work.hidden = false;
+  showCorner(true);                                        // same spot as in the chat, so he never leaves
   if (reduce) { colAnim = E.col.animate([{ opacity: 0 }], { duration: 1, fill: 'forwards' }); return arrived(); }
 
   const f = frameRect();
@@ -2926,15 +3013,18 @@ function arrived() {
   side.hidden = false;
   if (!reduce) side.animate([{ opacity: 0, translate: '24px 0' }, { opacity: 1, translate: '0 0' }],
     { duration: 600, easing: 'cubic-bezier(.2,0,0,1)' });
-  cursorIn();
+  showCorner(false);
+  clearCorner();
+  guideIn();
 }
 
 async function exitWork(text) {
   if (mode !== 'work') return;
   mode = 'chat';
-  cursorOut();
+  quiet();
   window.__tzSite && window.__tzSite.closeNow();
   side.hidden = true;
+  pres.hidden = true;
   try { history.replaceState(null, '', location.pathname + location.search); } catch (_) {}
   hero.style.visibility = ''; hero.inert = false;
 
@@ -2973,32 +3063,72 @@ side.addEventListener('click', e => {
 });
 
 /* ==========================================================================
-   TURINOZ'S CURSOR — stays near you, comments on what you're looking at,
-   and doesn't chase you if you whip the mouse around.
+   TURINOZ IN THE CORNER — the same top-right spot he joined from in the chat.
+   He never follows the pointer. When he has something to say about what you're
+   looking at, his avatar shows he's typing and the line appears under the corner,
+   one at a time, then fades. "Commentary" switches him off: he leaves the file, and
+   joins again when it's switched back on (remembered on this device).
    ========================================================================== */
-const T = $('#tzc'), Tarrow = $('.tzc-arrow', T), Tlabel = $('.tzc-label', T), Ttext = $('.tzc-label span', T);
-const K = { x: -100, y: -100, vx: 0, vy: 0, tx: -100, ty: -100, rot: 0, on: false, flip: false, up: false };
-const P = { x: innerWidth / 2, y: innerHeight / 2, has: false, speed: 0, travel: 0, t: 0, last: 0 };
-let holdUntil = 0, lastSay = 0, sayTimer = 0, lastFast = 0, lastLeave = 0;
+const G = { on: true, timer: 0, hide: 0, last: -1e9, idle: 0 };
+try { G.on = localStorage.getItem('tz-commentary') !== 'off'; } catch (_) {}
+const P = { x: 0, y: 0, has: false, last: performance.now() };
 let hoverKey = null, saidKey = null, hoverTimer = 0;
 const counters = new Map();
 
-function setLabel(text) {
-  const from = Tlabel.offsetWidth;
-  Tlabel.style.width = 'auto';
-  Ttext.textContent = text;
-  const to = Tlabel.offsetWidth;
-  Tlabel.style.width = from + 'px';
-  void Tlabel.offsetWidth;
-  Tlabel.style.width = to + 'px';
-  Ttext.classList.remove('tz-swap'); void Ttext.offsetWidth; Ttext.classList.add('tz-swap');
+function showCorner(fadeIn) {
+  if (!pres.hidden) return;
+  pres.hidden = false;
+  if (fadeIn && !reduce) {
+    // the avatars sit exactly where the chat's were; only the Guide switch fades in
+    $('.tz-guide', pres).animate([{ opacity: 0 }, { opacity: 1 }], { duration: 500, delay: 350, easing: 'ease-out', fill: 'backwards' });
+  }
 }
-function say(text, hold = 3600) {
-  if (!K.on) return;
-  setLabel(text);
-  lastSay = performance.now();
-  clearTimeout(sayTimer);
-  sayTimer = setTimeout(() => setLabel(TZ.name), hold);
+// keep the page's own top-right items (the email link, a study's "Next") clear of the corner
+function clearCorner() {
+  if (pres.hidden) return;
+  const left = $('.tz-pres-bar', pres).getBoundingClientRect().left - 14;
+  const fix = el => {
+    el.style.paddingRight = '';
+    const r = el.getBoundingClientRect();
+    if (r.width && r.right > left) el.style.paddingRight = Math.ceil(r.right - left) + 'px';
+  };
+  document.querySelectorAll('.tz-head, .study-bar').forEach(fix);
+}
+addEventListener('resize', () => requestAnimationFrame(clearCorner));
+
+let toastTimer = 0;
+function toast(text) {
+  presToastT.textContent = text;
+  presToast.classList.remove('is-on'); void presToast.offsetWidth; presToast.classList.add('is-on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => presToast.classList.remove('is-on'), 2000);
+}
+function setGuide(on, announce) {
+  G.on = on;
+  pres.classList.toggle('is-off', !on);
+  guideBtn.setAttribute('aria-pressed', String(on));
+  guideBtn.title = on ? 'Turn commentary off' : 'Turn commentary on';
+  try { localStorage.setItem('tz-commentary', on ? 'on' : 'off'); } catch (_) {}
+  if (!on) quiet();
+  if (announce) toast(on ? 'joined the file' : 'left the file');
+}
+guideBtn.addEventListener('click', () => setGuide(!G.on, true));
+setGuide(G.on, false);
+
+function quiet() {
+  clearTimeout(G.hide);
+  presMsg.classList.remove('is-on');
+}
+// his line appears straight away (no typing dots), then fades
+function say(text, hold = 4200) {
+  if (!G.on || mode !== 'work' || pres.hidden) return;
+  clearTimeout(G.hide);
+  G.last = performance.now();
+  const swap = presMsg.classList.contains('is-on');
+  presText.textContent = text;
+  presMsg.classList.add('is-on');
+  if (swap) { presText.classList.remove('tz-swap'); void presText.offsetWidth; presText.classList.add('tz-swap'); }
+  G.hide = setTimeout(() => presMsg.classList.remove('is-on'), hold);
 }
 function lineFor(el) {
   let list;
@@ -3015,104 +3145,41 @@ function keyFor(el) {
   if (!el || !el.closest) return null;
   return el.closest('[data-say]') || el.closest('#grid .tile');
 }
+// a line for what you rest on (not for everything you pass over)
 function onTarget(el) {
   const key = keyFor(el);
   if (key === hoverKey) return;
   hoverKey = key;
   clearTimeout(hoverTimer);
-  if (!key) { saidKey = null; return; }
+  if (!key) return;
+  const wait = Math.max(520, 1800 - (performance.now() - G.last));
   hoverTimer = setTimeout(() => {
-    if (mode === 'work' && K.on && hoverKey === key && key !== saidKey) { saidKey = key; say(lineFor(key), 3800); }
-  }, 380);
+    if (mode === 'work' && hoverKey === key && key !== saidKey) { saidKey = key; say(lineFor(key)); }
+  }, wait);
 }
-
 addEventListener('pointermove', e => {
   if (e.pointerType && e.pointerType !== 'mouse') return;
-  const now = performance.now();
-  if (P.has) {
-    const dt = Math.max(8, now - P.t);
-    const d = Math.hypot(e.clientX - P.x, e.clientY - P.y);
-    P.speed = P.speed * .7 + (d / dt) * 1000 * .3;
-    P.travel += d;
-  }
-  P.x = e.clientX; P.y = e.clientY; P.t = now; P.last = now; P.has = true;
+  P.x = e.clientX; P.y = e.clientY; P.has = true; P.last = performance.now();
 }, { passive: true });
-document.addEventListener('pointerover', e => { if (!e.pointerType || e.pointerType === 'mouse') onTarget(e.target); });
-document.documentElement.addEventListener('mouseleave', () => {
-  const now = performance.now();
-  if (mode === 'work' && K.on && now - lastLeave > 20000 && now - lastSay > 3000) { lastLeave = now; say(pick(QUIP.leave), 2600); }
-});
+document.addEventListener('pointerover', e => { if (mode === 'work' && (!e.pointerType || e.pointerType === 'mouse')) onTarget(e.target); });
 
-// where to sit relative to the visitor's pointer
-function spot() {
-  const W = innerWidth, H = innerHeight;
-  let ox = 26, oy = 30, flip = false, up = false;
-  if (P.x > W - 250) { ox = -30; flip = true; }
-  if (P.y > H - 110) { oy = -26; up = true; }
-  return { x: P.x + ox, y: P.y + oy, flip, up };
-}
-function setSide(flip, up) {
-  if (flip !== K.flip) { K.flip = flip; T.classList.toggle('is-flip', flip); }
-  if (up !== K.up) { K.up = up; T.classList.toggle('is-up', up); }
-}
-
-let lastT = performance.now();
-function tick(now) {
-  const dt = clamp((now - lastT) / 1000, .001, .034);
-  lastT = now;
-  P.travel *= Math.exp(-dt * 2.2);
-  if (now - P.last > 60) P.speed *= Math.exp(-dt * 10);
-
-  if (mode === 'work' && K.on && fine && P.has) {
-    const restless = P.travel > 1400 || P.speed > 2400;
-    if (restless) {
-      holdUntil = now + 650;
-      if (now - lastFast > 14000 && now - lastSay > 2500) { lastFast = now; say(pick(QUIP.fast), 2200); }
-    } else if (now > holdUntil && P.speed < 1200) {
-      const s = spot();
-      K.tx = s.x; K.ty = s.y; setSide(s.flip, s.up);
-    }
-  }
-
-  const k = 120, d = 22, n = 3, h = dt / n;
-  for (let i = 0; i < n; i++) {
-    K.vx += (k * (K.tx - K.x) - d * K.vx) * h;
-    K.vy += (k * (K.ty - K.y) - d * K.vy) * h;
-    K.x += K.vx * h; K.y += K.vy * h;
-  }
-  K.rot += (clamp(K.vx * .012 - K.vy * .004, -14, 14) - K.rot) * Math.min(1, dt * 12);
-  T.style.transform = `translate3d(${K.x.toFixed(1)}px, ${K.y.toFixed(1)}px, 0)`;
-  Tarrow.style.transform = `rotate(${K.rot.toFixed(2)}deg)`;
-  requestAnimationFrame(tick);
-}
-requestAnimationFrame(tick);
-
-function cursorIn() {
-  let x, y;
-  if (fine && P.has) { const s = spot(); x = s.x; y = s.y; setSide(s.flip, s.up); }
-  else { x = innerWidth * .55; y = innerHeight * .38; }
-  K.x = innerWidth + 30; K.y = 40; K.vx = K.vy = 0; K.tx = x; K.ty = y;
-  K.on = true;
-  Ttext.textContent = TZ.name; Tlabel.style.width = '';
-  T.classList.add('is-on');
+function guideIn() {
   hoverKey = null; saidKey = null;
-  setTimeout(() => { if (K.on) say(pick(QUIP.welcome), 3000); }, 650);
-  if (!fine) setTimeout(tour, 3800);
-  else setTimeout(() => { if (K.on && P.has) onTarget(document.elementFromPoint(P.x, P.y)); }, 3800);
-}
-function cursorOut() {
-  K.on = false;
-  clearTimeout(sayTimer); clearTimeout(hoverTimer);
-  T.classList.remove('is-on');
+  say(pick(QUIP.welcome), 3000);                          // no waiting: he greets you as you land
+  setTimeout(() => {
+    if (mode !== 'work') return;
+    if (fine) { if (P.has) onTarget(document.elementFromPoint(P.x, P.y)); }
+    else tour();
+  }, 3400);
 }
 
-// scrolling changes what's under the pointer without a pointer move
+// scrolling changes what's under a still mouse; on touch, he talks about the tile in the middle
 let scrollRaf = 0;
 function onScroll() {
   if (scrollRaf) return;
   scrollRaf = requestAnimationFrame(() => {
     scrollRaf = 0;
-    if (mode !== 'work' || !K.on) return;
+    if (mode !== 'work') return;
     if (fine) { if (P.has) onTarget(document.elementFromPoint(P.x, P.y)); }
     else tour();
   });
@@ -3121,50 +3188,49 @@ work.addEventListener('scroll', onScroll, { passive: true });
 const studyLayer = $('#studyLayer');
 if (studyLayer) studyLayer.addEventListener('scroll', onScroll, { passive: true });
 
-// touch screens: no hover, so Turinoz walks to the tile in the middle of the screen
 let tourTimer = 0;
 function tour() {
-  if (mode !== 'work' || !K.on || fine) return;
+  if (mode !== 'work' || fine) return;
   clearTimeout(tourTimer);
   tourTimer = setTimeout(() => {
     if (document.documentElement.classList.contains('study-open')) return;
+    if (performance.now() - G.last < 3200) return;
     let best = null, bd = 1e9;
-    const mid = innerHeight * .45;
+    const mid = innerHeight * .5;
     document.querySelectorAll('#grid .tile').forEach(t => {
       const r = t.querySelector('.media').getBoundingClientRect();
       if (r.bottom < 0 || r.top > innerHeight) return;
       const dd = Math.abs((r.top + r.bottom) / 2 - mid);
       if (dd < bd) { bd = dd; best = t; }
     });
-    if (!best) return;
-    const r = best.querySelector('.media').getBoundingClientRect();
-    K.tx = clamp(r.left + r.width * .16, 12, innerWidth - 170);
-    K.ty = clamp(r.top + r.height * .18, 24, innerHeight - 90);
-    setSide(false, false);
-    if (best !== saidKey) { saidKey = best; say(lineFor(best), 3800); }
-  }, 260);
+    if (best && best !== saidKey) { saidKey = best; say(lineFor(best), 3600); }
+  }, 700);
 }
 document.addEventListener('pointerdown', e => {
-  if (mode !== 'work' || !K.on || fine || e.pointerType === 'mouse') return;
+  if (mode !== 'work' || fine || e.pointerType === 'mouse') return;
   const key = keyFor(e.target);
   if (key && key !== saidKey) { saidKey = key; say(lineFor(key), 3200); }
 });
 
 document.addEventListener('tz:study', () => {
-  if (mode === 'work' && K.on) setTimeout(() => say(pick(QUIP.study), 2800), 700);
+  requestAnimationFrame(clearCorner);
+  if (mode === 'work') say(pick(QUIP.study), 2800);
 });
+// a quiet nudge if you've been still for a while (at most twice)
 setInterval(() => {
-  if (mode !== 'work' || !K.on || !fine) return;
+  if (mode !== 'work' || !fine || G.idle >= 2) return;
   const now = performance.now();
-  if (now - P.last > 9000 && now - lastSay > 13000 && !hoverKey) say(pick(QUIP.idle), 3200);
+  if (now - P.last > 12000 && now - G.last > 20000 && !hoverKey) { G.idle++; say(pick(QUIP.idle), 3400); }
 }, 1000);
 
 /* ==========================================================================
    START
    ========================================================================== */
 const startHash = location.hash.slice(1);
+const unboot = () => document.documentElement.classList.remove('tz-boot');
 if (!CHAT_ENABLED || startHash === 'work' || (window.__tzSite && window.__tzSite.isStudy(startHash))) {
   // chat switched off, or a deep link: skip the chat
+  unboot();
   joined = true; visitedWork = true; mode = 'work';
   hero.classList.add('is-joined', 'is-chatting');
   work.hidden = false;
@@ -3173,11 +3239,16 @@ if (!CHAT_ENABLED || startHash === 'work' || (window.__tzSite && window.__tzSite
 } else {
   const go = () => {
     if (fine) E.input.focus({ preventScroll: true });
-    autoType(TZ.prompt, 1000).then(done => {
-      if (done) hintTimer = setTimeout(() => { if (!busy && E.input.value.trim()) hero.classList.add('show-hint'); }, 2600);
+    autoType(TZ.prompt, 0).then(done => {
+      if (done) hintTimer = setTimeout(() => { if (!busy && E.input.value.trim()) hero.classList.add('show-hint'); }, 1600);
     });
   };
-  (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(() => setTimeout(go, 150));
+  // fonts in (or 700 ms at most) → the intro plays in one go → typing starts as the composer lands
+  const fontsIn = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+  Promise.race([fontsIn, new Promise(r => setTimeout(r, 700))]).then(() => requestAnimationFrame(() => {
+    unboot();
+    setTimeout(go, reduce ? 0 : 560);
+  }));
 }
 })();
 </script>
