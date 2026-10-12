@@ -1,0 +1,3 @@
+# Scoreline's demo (scoreline/app/) is a single-page app: a reload on one of its screens
+# (scoreline/app/match/1/facts) gets its index.html. Files that exist are served as they are.
+/scoreline/app/*  /scoreline/app/index.html  200
