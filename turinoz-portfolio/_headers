@@ -16,6 +16,13 @@
 /media/*
   Cache-Control: public, max-age=31536000, immutable
 
+# The smtp.dev film streams (HLS) and the player script never change name either.
+/smtp/assets/hls/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/vendor/hls.min.js
+  Cache-Control: public, max-age=31536000, immutable
+
 # The .riv files and pages revalidate on every visit, so a redeploy shows up right away.
 /rive/*.riv
   Cache-Control: no-cache

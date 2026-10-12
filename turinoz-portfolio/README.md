@@ -5,10 +5,12 @@ anything from the lab site; every file it uses is in this folder.
 
 ```
 index.html              the portfolio (tiles + the study pages behind the study tiles)
-netlify.toml            headers and caching
+_headers                headers and caching (Cloudflare Pages and Netlify both read it)
+_redirects              the Scoreline demo's single-page-app rule
 robots.txt
 fonts/                  Archivo, Inter, Roboto, JetBrains Mono (licenses inside)
 vendor/lottie.min.js    Lottie player for the Sitemate tile
+vendor/hls.min.js       hls.js 1.5.20 (Apache-2.0): plays the smtp.dev films' HLS streams
 rive/                   Rive files for the live tiles
   sphere.riv            Interactive Sphere tile
   eye_icon.riv          Eye tile and Planet tile (same files as lab.turinoz.co/eye-planet/)
@@ -53,10 +55,12 @@ scoreline/              Scoreline case study (the live football app), and the ap
                         the phone on the page and the grid tile both run this copy
 ```
 
-## Deploying to Netlify
+## Deploying
 
-Drag this whole folder onto https://app.netlify.com/drop, or connect it as a repo
-with no build command and the root as the publish directory (set in `netlify.toml`).
+Cloudflare Pages: Workers & Pages › Create › Pages › Upload assets (drag the folder, or a zip
+of it). No build command. Direct Upload takes at most 1,000 files and 25 MiB per file. Netlify
+works the same way (drag the folder onto https://app.netlify.com/drop): it reads `_headers`
+and `_redirects` too.
 
 ## Previewing locally
 
@@ -182,8 +186,16 @@ python -m http.server 8000
   facts in mono. The hero light sits high above the frame, with the
   dust rising through it. "clarity." is smtp.dev's blue gradient at night and one solid blue
   by day (`--grad`).
-- **The film**: a muted preview loops until someone presses play; then the full 1080p film
-  (`assets/main-film-v1.mp4`, original sound untouched) takes over. Sound starts off; the
+- **The film**: a muted preview loops until someone presses play; then the full film streams
+  as HLS (`assets/hls/main/master.m3u8`, 540p to 4K at 60 fps, 6 s segments, H.264 8-bit; the
+  audio is the master's own AAC, copied untouched) and the player picks the size for the
+  screen and the connection (`capLevelToPlayerSize`, so fullscreen on a 4K screen gets 4K).
+  Safari plays HLS itself; the other browsers load `vendor/hls.min.js` on the first press of
+  play, so nothing streams before that. If the stream can't start, the plain 1080p file
+  (`assets/main-film-v1.mp4`, the `data-mp4` attribute) plays instead. The short cut works
+  the same way (`assets/hls/short/`). To re-make a stream: `ffmpeg` per size from the 4K
+  master (a 5-step ladder, 12 / 6 / 3.5 / 1.8 / 1.0 Mbit/s, `-hls_segment_type fmp4`); if
+  you replace the files, give the folder a new name because `_headers` caches it for a year. Sound starts off; the
   sound button turns it on (in the preview it starts the film from the top). To start with
   sound, set `START_WITH_SOUND` at the top of `case-study.js`. The seek bar is the film's own
   colors, split into its seven beats; hovering shows the frame (`assets/film-thumbs.webp`).
@@ -194,8 +206,10 @@ python -m http.server 8000
   The seek bar's beat names come from the same list.
 - **Styleframes**: six frames, numbered SF 01 to 06 in film order, each with one line. Drag, swipe or use the arrows.
 - **One language**: the three films to scale, each bar drawn from its own colors with a
-  playhead in real time; the short cut player; the logo loop frame by frame
-  (`assets/logo-frames.webp`, move across it to scrub).
+  playhead in real time; the short cut player; the logo loop frame by frame: a 1440 px video
+  of the LogoLoop master's centre (`assets/logo-loop-v1.av1.mp4`, with an H.264 copy; 86
+  frames, a key frame every 6) that the pointer scrubs, and a sprite sheet
+  (`assets/logo-frames.webp`) that only draws the five key-pose thumbnails.
 - Everything that moves sleeps off screen, in a hidden tab, while a film plays, when the nav's
   pause button is on, and for visitors who prefer reduced motion (stills instead of loops).
 - Removed in the redesign (no longer used by the page): the old hook/workflow/outro loops and

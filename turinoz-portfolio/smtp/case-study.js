@@ -13,7 +13,7 @@
   /* ---------- settings ---------- */
   const START_WITH_SOUND = false;   // films start muted; the sound button turns it on
   const THUMBS = { src: 'assets/film-thumbs.webp', perSec: 4, cols: 15, count: 210 };
-  const LOGO = { frames: 88, fps: 30, cols: 11, rows: 8 };
+  const LOGO = { frames: 86, fps: 30, cols: 11, rows: 8 };   // the loop is a 1440 px video; the 11 × 8 sheet only draws the five key poses
 
   /* ---------- helpers ---------- */
   const $ = (s, el = document) => el.querySelector(s);
@@ -152,6 +152,15 @@
   /* ==========================================================================
      PLAYERS — the main film (with its muted preview) and the short cut
      ========================================================================== */
+  /* The two films stream as HLS: five sizes from 540p to 4K, and the player picks one for the screen and the
+     connection. Safari plays HLS itself; elsewhere the player script (../vendor/hls.min.js) loads on first play.
+     If neither works, the plain 1080p file in data-mp4 plays instead. */
+  let hlsLib = null;
+  const loadHls = () => hlsLib || (hlsLib = new Promise((ok, no) => {
+    const s = document.createElement('script'); s.src = '../vendor/hls.min.js';
+    s.onload = () => (window.Hls ? ok(window.Hls) : no()); s.onerror = no; document.head.appendChild(s);
+  }));
+
   class Player {
     constructor(root) {
       this.root = root; this.kind = root.dataset.player; this.dur = +root.dataset.dur || 1;
@@ -174,6 +183,20 @@
       sleepers.add(this);
     }
     get vid() { return this.mode === 'preview' ? this.prev : this.film; }
+    plain() { const f = this.film; if (f.dataset.mp4) { f.src = f.dataset.mp4; f.load(); } }
+    whenReady(go) {                           // runs go() now when the stream is attached, or as soon as it is
+      if (this.ready) { go(); return; }
+      const f = this.film, src = f.dataset.hls;
+      this.ready = true;
+      if (!src) { go(); return; }
+      if (f.canPlayType('application/vnd.apple.mpegurl')) { f.src = src; go(); return; }
+      loadHls().then(Hls => {
+        if (!Hls.isSupported()) { this.plain(); return; }
+        const h = this.hls = new Hls({ capLevelToPlayerSize: true, maxBufferLength: 30, startLevel: 1 });
+        h.on(Hls.Events.ERROR, (_, d) => { if (d.fatal) { h.destroy(); this.hls = null; this.plain(); } });
+        h.attachMedia(f); h.loadSource(src);
+      }).catch(() => this.plain()).then(go);
+    }
     build() {
       if (!this.actsEl) return;
       this.actsEl.innerHTML = '';
@@ -253,9 +276,12 @@
       if (this.mode === 'preview') { this.mode = 'film'; this.root.classList.add('is-film'); if (this.prev) this.prev.pause(); }
       this.root.classList.add('is-film');
       f.preload = 'auto'; f.muted = !this.sound;
-      const p = f.play();                       // play first: play() on an ended film would reset a fresh seek to zero
-      if (f.readyState >= 1) f.currentTime = clamp(t, 0, (f.duration || this.dur) - .05); else this.pending = t;
-      if (p && p.catch) p.catch(() => { say('Press play to start the film.'); this.ui(); });
+      this.whenReady(() => {
+        const p = f.play();                     // play first: play() on an ended film would reset a fresh seek to zero
+        if (f.readyState >= 1) f.currentTime = clamp(t, 0, (f.duration || this.dur) - .05); else this.pending = t;
+        if (p && p.catch) p.catch(() => { say('Press play to start the film.'); this.ui(); });
+        this.ui(); this.loop(); syncAll();
+      });
       this.ui(); this.loop(); syncAll();
     }
     toggle() {
@@ -501,54 +527,64 @@
 
   const lg = $('.lg-stage');
   if (lg) {
-    const frameEl = $('.lg-frame', lg), fEl = $('.lg-f b', lg), modeEl = $('.lg-mode span', lg), rail2 = $('.lg-rail', lg), keys = $$('.lg-keys button');
-    const L = { f: 0, scrub: false, visible: false, raf: 0, t0: 0, hold: 0 };
+    const vid = $('.lg-video', lg), fEl = $('.lg-f b', lg), modeEl = $('.lg-mode span', lg), rail2 = $('.lg-rail', lg), keys = $$('.lg-keys button');
+    const L = { f: 0, scrub: false, visible: false, raf: 0, hold: 0, want: null };
     const KEYF = keys.map(k => +k.dataset.f);
     const sizeKeys = () => keys.forEach(k => {
       const s = $('span', k), w = s.offsetWidth, f = +k.dataset.f;
       s.style.backgroundSize = `${LOGO.cols * w}px ${LOGO.rows * w}px`;
       s.style.backgroundPosition = `${-(f % LOGO.cols) * w}px ${-Math.floor(f / LOGO.cols) * w}px`;
     });
-    const render = f => {
+    const show = f => {                         // the counter, the rail and the key poses follow the frame
       f = ((Math.round(f) % LOGO.frames) + LOGO.frames) % LOGO.frames; L.f = f;
-      const W = lg.clientWidth, H = lg.clientHeight, S2 = Math.max(W, H);
-      frameEl.style.backgroundSize = `${LOGO.cols * S2}px ${LOGO.rows * S2}px`;
-      frameEl.style.backgroundPosition = `${(-(f % LOGO.cols) * S2 - (S2 - W) / 2).toFixed(1)}px ${(-Math.floor(f / LOGO.cols) * S2 - (S2 - H) / 2).toFixed(1)}px`;
       fEl.textContent = String(f).padStart(2, '0');
       rail2.style.setProperty('--lp', (f / (LOGO.frames - 1)).toFixed(4));
       lg.setAttribute('aria-valuenow', String(f));
       let near = 0; KEYF.forEach((k, i) => { if (f >= k) near = i; });
       keys.forEach((k, i) => k.classList.toggle('on', i === near));
     };
+    const seek = f => {                         // scrubbing: park the film on that frame
+      show(f);
+      const t = (L.f + .5) / LOGO.fps;
+      if (vid.readyState >= 1) vid.currentTime = t; else L.want = t;
+    };
+    vid.addEventListener('loadedmetadata', () => { if (L.want != null) { vid.currentTime = L.want; L.want = null; } });
     const mayPlay = () => L.visible && !L.scrub && !reduce() && !paused() && !document.hidden;
-    const tick = now => {
+    const tick = () => {
       L.raf = 0;
       if (!mayPlay()) return;
-      render((now - L.t0) / 1000 * LOGO.fps);
+      show(Math.min(LOGO.frames - 1, Math.floor(vid.currentTime * LOGO.fps)));
       L.raf = requestAnimationFrame(tick);
     };
-    const resume = () => { L.t0 = performance.now() - L.f / LOGO.fps * 1000; if (!L.raf && mayPlay()) L.raf = requestAnimationFrame(tick); };
-    const setMode = s => { L.scrub = s; lg.classList.toggle('scrub', s); modeEl.textContent = s ? 'Scrubbing' : (reduce() || paused() ? 'Paused' : 'Playing'); if (!s) resume(); };
+    const resume = () => {
+      if (!mayPlay()) { vid.pause(); return; }
+      const p = vid.play(); if (p && p.catch) p.catch(() => {});
+      if (!L.raf) L.raf = requestAnimationFrame(tick);
+    };
+    const setMode = s => { L.scrub = s; lg.classList.toggle('scrub', s); modeEl.textContent = s ? 'Scrubbing' : (reduce() || paused() ? 'Paused' : 'Playing'); if (s) vid.pause(); else resume(); };
     L.sync = () => { setMode(L.scrub); if (!mayPlay() && L.raf) { cancelAnimationFrame(L.raf); L.raf = 0; } };
     sleepers.add(L);
     const fromX = e => { const r = lg.getBoundingClientRect(); return clamp((e.clientX - r.left) / r.width, 0, 1) * (LOGO.frames - 1); };
     lg.addEventListener('pointermove', e => {
-      if (e.pointerType === 'mouse' || e.buttons) { clearTimeout(L.hold); if (!L.scrub) setMode(true); render(fromX(e)); }
+      if (e.pointerType === 'mouse' || e.buttons) { clearTimeout(L.hold); if (!L.scrub) setMode(true); seek(fromX(e)); }
     });
-    lg.addEventListener('pointerdown', e => { clearTimeout(L.hold); setMode(true); render(fromX(e)); });
+    lg.addEventListener('pointerdown', e => { clearTimeout(L.hold); setMode(true); seek(fromX(e)); });
     lg.addEventListener('pointerleave', () => { clearTimeout(L.hold); L.hold = setTimeout(() => setMode(false), 500); });
     lg.addEventListener('pointerup', e => { if (e.pointerType !== 'mouse') { clearTimeout(L.hold); L.hold = setTimeout(() => setMode(false), 1600); } });
     lg.addEventListener('keydown', e => {
       const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
       if (!d && e.key !== 'Home' && e.key !== 'End') return;
       e.preventDefault(); clearTimeout(L.hold); setMode(true);
-      render(e.key === 'Home' ? 0 : e.key === 'End' ? LOGO.frames - 1 : L.f + d * (e.shiftKey ? 5 : 1));
+      seek(e.key === 'Home' ? 0 : e.key === 'End' ? LOGO.frames - 1 : L.f + d * (e.shiftKey ? 5 : 1));
     });
     lg.addEventListener('blur', () => { clearTimeout(L.hold); L.hold = setTimeout(() => setMode(false), 400); });
-    keys.forEach(k => k.addEventListener('click', () => { clearTimeout(L.hold); setMode(true); render(+k.dataset.f); L.hold = setTimeout(() => setMode(false), 1800); }));
-    new ResizeObserver(() => { sizeKeys(); render(L.f); }).observe(lg);
-    new IntersectionObserver(es => { L.visible = es[0].isIntersecting; L.sync(); if (L.visible) resume(); }, { threshold: .1 }).observe(lg);
-    sizeKeys(); render(0);
+    keys.forEach(k => k.addEventListener('click', () => { clearTimeout(L.hold); setMode(true); seek(+k.dataset.f); L.hold = setTimeout(() => setMode(false), 1800); }));
+    new ResizeObserver(sizeKeys).observe(lg);
+    new IntersectionObserver(es => { L.visible = es[0].isIntersecting; L.sync(); }, { threshold: .1 }).observe(lg);
+    new IntersectionObserver(es => {            // the loop downloads when it is about to be seen, not before
+      if (es[0].isIntersecting && vid.preload === 'none') { vid.preload = 'auto'; vid.load(); }
+    }, { rootMargin: '400px 0px' }).observe(lg);
+    sizeKeys(); show(0);
   }
 
   /* ==========================================================================

@@ -99,9 +99,7 @@ try { const t = localStorage.getItem('tz-theme'); if (t === 'light' || t === 'da
             <source src="../media/smtp-film-preview.av1.mp4" type='video/mp4; codecs="av01.0.05M.10"'>
             <source src="../media/smtp-film-preview.mp4" type='video/mp4; codecs="avc1.64001F"'>
           </video>
-          <video class="fp-film" playsinline preload="none" poster="assets/film-poster.webp" aria-label="smtp.dev product film, 53 seconds">
-            <source src="assets/main-film-v1.mp4" type="video/mp4">
-          </video>
+          <video class="fp-film" playsinline preload="none" poster="assets/film-poster.webp" data-hls="assets/hls/main/master.m3u8" data-mp4="assets/main-film-v1.mp4" aria-label="smtp.dev product film, 53 seconds"></video>
           <span class="fp-chip" aria-hidden="true"><i></i><span>Muted preview</span></span>
           <span class="fp-now" aria-hidden="true"><b>01</b><span>Terminal</span></span>
           <button class="fp-big" type="button" aria-label="Play the film">
@@ -246,9 +244,7 @@ try { const t = localStorage.getItem('tz-theme'); if (t === 'light' || t === 'da
       <figure class="card short rv" id="shortCard">
         <div class="fp" data-player="short" data-dur="35.17">
           <div class="fp-screen" data-cursor="Play the short cut">
-            <video class="fp-film" playsinline preload="none" poster="assets/short-poster.webp" aria-label="smtp.dev short cut, 35 seconds">
-              <source src="assets/short-film-v1.mp4" type="video/mp4">
-            </video>
+            <video class="fp-film" playsinline preload="none" poster="assets/short-poster.webp" data-hls="assets/hls/short/master.m3u8" data-mp4="assets/short-film-v1.mp4" aria-label="smtp.dev short cut, 35 seconds"></video>
             <button class="fp-big" type="button" aria-label="Play the short cut">
               <span class="disc"><svg aria-hidden="true"><use href="#icPlay"/></svg></span>
               <span class="lbl"><b>Short cut</b><span>0:35 · sound optional</span></span>
@@ -273,9 +269,9 @@ try { const t = localStorage.getItem('tz-theme'); if (t === 'light' || t === 'da
         </figcaption>
       </figure>
       <figure class="card logo rv" id="logoCard" style="--rd:.08s">
-        <div class="lg-stage" tabindex="0" role="slider" aria-label="The logo loop, frame by frame. Move across it or use the arrow keys to scrub." aria-valuemin="0" aria-valuemax="87" aria-valuenow="0" data-cursor="Scrub">
-          <span class="lg-frame" aria-hidden="true"></span>
-          <span class="lg-f mono" aria-hidden="true">f <b>00</b> / 87</span>
+        <div class="lg-stage" tabindex="0" role="slider" aria-label="The logo loop, frame by frame. Move across it or use the arrow keys to scrub." aria-valuemin="0" aria-valuemax="85" aria-valuenow="0" data-cursor="Scrub">
+          <video class="lg-video" muted loop playsinline disablepictureinpicture disableremoteplayback preload="none" poster="assets/logo-poster.webp" aria-hidden="true" tabindex="-1"><source src="assets/logo-loop-v1.av1.mp4" type='video/mp4; codecs="av01.0.08M.10"'><source src="assets/logo-loop-v1.mp4" type='video/mp4; codecs="avc1.640028"'></video>
+          <span class="lg-f mono" aria-hidden="true">f <b>00</b> / 85</span>
           <span class="lg-mode mono" aria-hidden="true"><i></i><span>Playing</span></span>
           <span class="lg-rail" aria-hidden="true"><u></u></span>
         </div>
@@ -287,7 +283,7 @@ try { const t = localStorage.getItem('tz-theme'); if (t === 'light' || t === 'da
           <button type="button" data-f="76"><span style="--f:76"></span>Check</button>
         </div>
         <figcaption class="card-txt">
-          <div><div class="kicker">Logo loop · 88 frames</div><h3>The mark, frame by frame.</h3>
+          <div><div class="kicker">Logo loop · 86 frames</div><h3>The mark, frame by frame.</h3>
           <p>The check folds into a bar, opens into an inbox, and folds back. The mark the film ends on, built to repeat.</p></div>
         </figcaption>
       </figure>
