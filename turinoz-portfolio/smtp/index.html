@@ -95,16 +95,16 @@ try { const t = localStorage.getItem('tz-theme'); if (t === 'light' || t === 'da
     <figure class="film-card rv" id="film" style="--rd:.2s" aria-label="The smtp.dev product film">
       <div class="fp" id="mainPlayer" data-player="main" data-dur="52.57">
         <div class="fp-screen" data-cursor="Play the film">
-          <video class="fp-prev" muted loop playsinline disablepictureinpicture disableremoteplayback preload="none" poster="assets/film-poster.webp" aria-hidden="true" tabindex="-1">
+          <video class="fp-prev" muted loop playsinline disablepictureinpicture disableremoteplayback preload="none" poster="assets/film-end.webp" aria-hidden="true" tabindex="-1">
             <source src="../media/smtp-film-preview.av1.mp4" type='video/mp4; codecs="av01.0.05M.10"'>
             <source src="../media/smtp-film-preview.mp4" type='video/mp4; codecs="avc1.64001F"'>
           </video>
-          <video class="fp-film" playsinline preload="none" poster="assets/film-poster.webp" data-hls="assets/hls/main/master.m3u8" data-mp4="assets/main-film-v1.mp4" aria-label="smtp.dev product film, 53 seconds"></video>
+          <video class="fp-film" playsinline preload="none" poster="assets/film-end.webp" data-hls="assets/hls/main/master.m3u8" data-mp4="assets/main-film-v1.mp4" aria-label="smtp.dev product film, 53 seconds"></video>
           <span class="fp-chip" aria-hidden="true"><i></i><span>Muted preview</span></span>
           <span class="fp-now" aria-hidden="true"><b>01</b><span>Terminal</span></span>
           <button class="fp-big" type="button" aria-label="Play the film">
             <span class="disc"><svg aria-hidden="true"><use href="#icPlay"/></svg></span>
-            <span class="lbl"><b>Play the film</b><span>0:53 · sound optional</span></span>
+            <span class="lbl"><b>Play the film</b><span>0:53</span></span>
           </button>
         </div>
         <div class="fp-bar">
@@ -161,7 +161,7 @@ try { const t = localStorage.getItem('tz-theme'); if (t === 'light' || t === 'da
         </div>
       </div>
       <ol class="bt-list">
-        <li class="beat" data-t0="0" data-t1="1.7" data-x="55" data-y="56" data-tone="blue" data-name="Terminal" data-say="a prompt, not a pitch" data-still="assets/beat-01.webp">
+        <li class="beat" data-t0="0" data-t1="1.7" data-loop="1.45" data-x="55" data-y="56" data-tone="blue" data-name="Terminal" data-say="a prompt, not a pitch" data-still="assets/beat-01.webp">
           <span class="beat-n mono"><b>01</b>0:00</span>
           <h3>Start where they work.</h3>
           <p>The film opens on a prompt, <code>&gt;&gt; Email testing</code>, set in mono. Developers spend their day in lines like that, so there’s nothing to sell yet and nothing to explain.</p>
@@ -247,7 +247,7 @@ try { const t = localStorage.getItem('tz-theme'); if (t === 'light' || t === 'da
             <video class="fp-film" playsinline preload="none" poster="assets/short-poster.webp" data-hls="assets/hls/short/master.m3u8" data-mp4="assets/short-film-v1.mp4" aria-label="smtp.dev short cut, 35 seconds"></video>
             <button class="fp-big" type="button" aria-label="Play the short cut">
               <span class="disc"><svg aria-hidden="true"><use href="#icPlay"/></svg></span>
-              <span class="lbl"><b>Short cut</b><span>0:35 · sound optional</span></span>
+              <span class="lbl"><b>Short cut</b><span>0:35</span></span>
             </button>
           </div>
           <div class="fp-bar">
@@ -302,20 +302,20 @@ try { const t = localStorage.getItem('tz-theme'); if (t === 'light' || t === 'da
       <div class="term rv" id="term">
         <div class="term-top"><i></i><i></i><i></i><span class="mono">smtp.dev / delivery</span></div>
         <pre class="term-body mono" aria-label="Delivery contents"><span class="ln"><span class="pr">&gt;&gt;</span> delivered/</span>
-<span class="ln"><span class="tr">├─</span> <b>main-film</b>     <span class="dim">0:53 · 3840 × 2160 · 60 fps</span></span>
-<span class="ln"><span class="tr">├─</span> <b>short-cut</b>     <span class="dim">0:35 · 3840 × 2160 · 60 fps</span></span>
-<span class="ln"><span class="tr">├─</span> <b>logo</b>          <span class="dim">16:9 · 1:1 · with and without text</span></span>
-<span class="ln"><span class="tr">│  └─</span> <b>loop</b>       <span class="dim">16:9 · 1:1</span></span>
-<span class="ln"><span class="tr">├─</span> <b>platforms</b>     <span class="dim">Master · LinkedIn · X · YouTube</span></span>
-<span class="ln"><span class="tr">├─</span> <b>posters</b>       <span class="dim">6 stills · 4K</span></span>
-<span class="ln"><span class="tr">└─</span> <b>source</b>        <span class="dim">After Effects project</span></span>
+<span class="ln"><span class="tr">├─</span> <b>main-film</b>        <span class="dim">0:53 · 3840 × 2160 · 60 fps</span></span>
+<span class="ln"><span class="tr">├─</span> <b>short-cut</b>        <span class="dim">0:35 · 3840 × 2160 · 60 fps</span></span>
+<span class="ln"><span class="tr">├─</span> <b>logo-animation</b>   <span class="dim">16:9 · 1:1 · with and without text</span></span>
+<span class="ln"><span class="tr">│  └─</span> <b>loop</b>          <span class="dim">16:9 · 1:1</span></span>
+<span class="ln"><span class="tr">├─</span> <b>platforms</b>        <span class="dim">Master · LinkedIn · X · YouTube</span></span>
+<span class="ln"><span class="tr">├─</span> <b>posters</b>          <span class="dim">6 stills · 4K</span></span>
+<span class="ln"><span class="tr">└─</span> <b>source</b>           <span class="dim">After Effects project</span></span>
 <span class="ln"><span class="ok">// handed over, end of 2025</span><i class="caret"></i></span></pre>
       </div>
       <div class="cr rv" style="--rd:.08s">
         <dl class="cr-list">
           <div><dt>Concept, design &amp; animation</dt><dd>Turinoz</dd></div>
           <div><dt>Product UI</dt><dd>smtp.dev, rebuilt by Turinoz for the film</dd></div>
-          <div><dt>Brand assets</dt><dd>smtp.dev</dd></div>
+          <div><dt>Logo &amp; brand assets</dt><dd><a href="https://larkef.com/" target="_blank" rel="noopener">Jord Riekwel, Larkef<svg aria-hidden="true"><use href="#icArrowOut"/></svg></a></dd></div>
           <div><dt>Music &amp; sound</dt><dd>External collaborator</dd></div>
           <div><dt>Tools</dt><dd>Illustrator, After Effects</dd></div>
           <div><dt>Also on Dribbble</dt><dd><a href="https://dribbble.com/shots/27724811-SaaS-Product-Animation" target="_blank" rel="noopener">Selected moments<svg aria-hidden="true"><use href="#icArrowOut"/></svg></a> <a href="https://dribbble.com/shots/26523321-smtp-dev-Logo-Animation" target="_blank" rel="noopener">Logo animation<svg aria-hidden="true"><use href="#icArrowOut"/></svg></a></dd></div>
@@ -334,8 +334,8 @@ try { const t = localStorage.getItem('tz-theme'); if (t === 'light' || t === 'da
 
 <footer class="foot">
   <div class="wrap">
-    <span>smtp.dev product film · <b>Concept, design and animation by Turinoz</b> for smtp.dev</span>
-    <a class="tz" href="../"><svg viewBox="0 0 1080 1080" aria-hidden="true"><use href="#tzLogo"/></svg>Turinoz</a>
+    <span>smtp.dev product film · <b>Concept, design and animation by Turinoz</b></span>
+    <a class="tz" href="../">Turinoz</a>
     <a class="totop" href="#top">Back to top <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M6 10V2M2.5 5.5 6 2l3.5 3.5"/></svg></a>
   </div>
 </footer>

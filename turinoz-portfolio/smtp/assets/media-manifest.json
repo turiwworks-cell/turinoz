@@ -54,11 +54,11 @@
    "description": "Main-film frame 49.0s: mark, wordmark and tagline. Still for beat 07 (Mark)."
   },
   {
-   "name": "film-poster.webp",
-   "bytes": 47334,
-   "width": 1600,
-   "height": 900,
-   "description": "Main-film frame 3.1s, poster for the film player."
+   "name": "film-end.webp",
+   "bytes": 36762,
+   "width": 1920,
+   "height": 1080,
+   "description": "Main-film frame 52.3s (the end card: mark, wordmark, tagline), poster for the film player."
   },
   {
    "name": "film-thumbs.webp",

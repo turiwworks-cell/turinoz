@@ -89,7 +89,7 @@
   /* ---------- the film's beats (one source of truth: the beat list in the page) ---------- */
   const DUR = 52.57;
   const BEATS = $$('.beat').map((el, i) => ({
-    el, i, t0: +el.dataset.t0, t1: +el.dataset.t1, name: el.dataset.name, x: +el.dataset.x, y: +el.dataset.y,
+    el, i, t0: +el.dataset.t0, t1: +el.dataset.t1, loop: +(el.dataset.loop || el.dataset.t1), name: el.dataset.name, x: +el.dataset.x, y: +el.dataset.y,
     tone: el.dataset.tone, say: el.dataset.say, still: el.dataset.still,
   }));
   const beatAt = t => { let k = 0; BEATS.forEach((b, i) => { if (t >= b.t0 - 0.001) k = i; }); return k; };
@@ -173,13 +173,19 @@
       this.strip = new Strip($('.fp-colors', root), COLORS[this.kind] || []);
       this.isMain = this.kind === 'main';
       this.mode = this.prev ? 'preview' : 'film';
+      this.idle = !!this.prev; this.full = false;   // the main film waits on its end card until the visitor scrolls down to it
+      if (this.idle) root.classList.add('is-idle');
       this.visible = false; this.pending = null; this.dragging = false; this.lastAct = -1; this.raf = 0; this.aria = 0;
       this.sound = START_WITH_SOUND;
       if (!this.actsEl) this.track.classList.add('plain');
       this.film.muted = !this.sound;
       films.push(this);
       this.build(); this.bind(); this.ui(); this.paint();
-      new IntersectionObserver(es => { this.visible = es[0].isIntersecting; this.sync(); if (this.visible) this.loop(); }, { threshold: .05 }).observe(root);
+      new IntersectionObserver(es => {
+        const e = es[0]; this.visible = e.isIntersecting;
+        this.full = e.intersectionRatio >= .8 || e.intersectionRect.height >= innerHeight * .8;
+        this.sync(); if (this.visible) this.loop();
+      }, { threshold: [0, .05, .2, .4, .6, .7, .8, .9, 1] }).observe(root);
       sleepers.add(this);
     }
     get vid() { return this.mode === 'preview' ? this.prev : this.film; }
@@ -274,6 +280,7 @@
     start(t = 0) {
       const f = this.film;
       if (this.mode === 'preview') { this.mode = 'film'; this.root.classList.add('is-film'); if (this.prev) this.prev.pause(); }
+      this.idle = false; this.root.classList.remove('is-idle');
       this.root.classList.add('is-film');
       f.preload = 'auto'; f.muted = !this.sound;
       this.whenReady(() => {
@@ -352,15 +359,23 @@
     }
     sync() {   // the muted preview loops only when nothing else asks for attention
       if (!this.prev) return;
-      const on = this.mode === 'preview' && this.visible && !reduce() && !paused() && !document.hidden && !filmPlaying();
+      const on = this.mode === 'preview' && this.visible && (!this.idle || (this.full && armed)) && !reduce() && !paused() && !document.hidden && !filmPlaying();
       if (on) {
+        if (this.idle) { this.idle = false; this.root.classList.remove('is-idle'); if (this.prev.readyState >= 1) this.prev.currentTime = 0; }
         if (this.prev.preload === 'none') this.prev.preload = 'auto';
         if (this.prev.paused) { const p = this.prev.play(); if (p && p.catch) p.catch(() => {}); }
         this.loop();
       } else if (!this.prev.paused) this.prev.pause();
     }
   }
+  // nothing autoplays until the page has loaded and the visitor has scrolled
+  let armed = false;
+  const arm = () => {
+    if (armed || document.readyState !== 'complete' || scrollY < 40) return;
+    armed = true; removeEventListener('scroll', arm); players.forEach(p => p.sync());
+  };
   const players = $$('[data-player]').map(el => new Player(el));
+  addEventListener('scroll', arm, { passive: true }); addEventListener('load', arm);
   players.forEach(p => {
     if (p.prev) {
       p.prev.addEventListener('play', () => p.loop());
@@ -409,7 +424,7 @@
     if (!stageMayMove()) { v.pause(); S.frame.classList.remove('live'); return; }
     if (v.preload === 'none') v.preload = 'auto';
     const go = () => {
-      if (Math.abs(v.currentTime - b.t0) > .05 && (v.currentTime < b.t0 - .05 || v.currentTime > b.t1)) { S.seeking = true; v.currentTime = b.t0; }
+      if (Math.abs(v.currentTime - b.t0) > .05 && (v.currentTime < b.t0 - .05 || v.currentTime > b.loop)) { S.seeking = true; v.currentTime = b.t0; }
       const p = v.play(); if (p && p.catch) p.catch(() => {});
     };
     if (v.readyState >= 1) go(); else v.addEventListener('loadedmetadata', go, { once: true });
@@ -422,7 +437,7 @@
       const v = S.video, b = BEATS[S.active];
       if (!b) return;
       if (!v.paused) {
-        if (v.currentTime >= b.t1 - .03 || v.currentTime < b.t0 - .4) { S.seeking = true; v.currentTime = b.t0; }
+        if (v.currentTime >= b.loop - .03 || v.currentTime < b.t0 - .4) { S.seeking = true; v.currentTime = b.t0; }
         if (!S.seeking && v.currentTime >= b.t0 - .05) S.frame.classList.add('live');
         S.tc.textContent = fmt1(v.currentTime);
         S.mini.style.setProperty('--p', (v.currentTime / DUR).toFixed(4));
@@ -479,42 +494,105 @@
   }
 
   /* ==========================================================================
-     STYLEFRAMES — a rail you can drag (mouse), swipe (touch) or step through
+     STYLEFRAMES — a slow loop that drifts by itself; drag, swipe or step through it
      ========================================================================== */
   const rail = $('#sfRail');
   if (rail) {
     const btns = $$('#frames .rbtn');
-    const step = () => { const c = $('.sf', rail); return c ? c.offsetWidth + 16 : 400; };
-    const upd = () => {
-      const max = rail.scrollWidth - rail.clientWidth - 2;
-      btns[0] && (btns[0].disabled = rail.scrollLeft <= 2);
-      btns[1] && (btns[1].disabled = rail.scrollLeft >= max);
+    const cards = $$('.sf', rail), GAP = 16;
+    // three copies in a track, so the rail can loop both ways; the copies are hidden from assistive tech
+    const track = document.createElement('div'); track.className = 'sf-track';
+    cards.forEach(c => track.appendChild(c));
+    [0, 1].forEach(n => cards.forEach(c => {
+      const k = c.cloneNode(true); k.setAttribute('aria-hidden', 'true'); k.inert = true;
+      $$('img', k).forEach(i => { i.alt = ''; i.loading = 'eager'; });
+      n === 0 ? track.insertBefore(k, cards[0]) : track.appendChild(k);
+    }));
+    $$('.sf-end', rail).forEach(e => e.remove());
+    rail.appendChild(track); rail.classList.add('is-loop');
+    rail.setAttribute('aria-label', 'Six styleframes. Use the arrow keys to move through them.');
+
+    const R = { x: 0, v: 0, step: 0, W: 0, target: null, glide: 0, drag: null, hover: false, focus: false,
+      visible: false, raf: 0, last: 0, resumeAt: 0, moved: false };
+    const AUTO = 22;                               // px per second: a slow drift, not a ticker
+    const mod = (n, m) => ((n % m) + m) % m;
+    const measure = () => {
+      const old = R.step; R.step = cards[0].offsetWidth + GAP; R.W = R.step * cards.length;
+      if (old && R.step !== old) { R.x *= R.step / old; if (R.target != null) R.target *= R.step / old; }
+      render();
     };
-    btns.forEach(b => b.addEventListener('click', () => rail.scrollBy({ left: +b.dataset.dir * step(), behavior: reduce() ? 'auto' : 'smooth' })));
-    rail.addEventListener('scroll', upd, { passive: true }); addEventListener('resize', upd); upd();
-    let d = null, moved = false;
-    rail.addEventListener('pointerdown', e => {
-      if (e.pointerType !== 'mouse' || e.button !== 0) return;
-      d = { x: e.clientX, s: rail.scrollLeft, id: e.pointerId }; moved = false;
-    });
-    addEventListener('pointermove', e => {
-      if (!d || e.pointerId !== d.id) return;
-      const dx = e.clientX - d.x;
-      if (!moved && Math.abs(dx) > 4) { moved = true; rail.classList.add('drag'); }
-      if (moved) rail.scrollLeft = d.s - dx;
-    });
-    addEventListener('pointerup', () => {
-      if (!d) return; d = null;
-      if (!moved) return;
-      rail.classList.remove('drag');
-      const s = step(), target = Math.round(rail.scrollLeft / s) * s;
-      rail.scrollTo({ left: target, behavior: reduce() ? 'auto' : 'smooth' });
-    });
-    rail.addEventListener('click', e => { if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; } }, true);
+    const render = () => { track.style.transform = `translate3d(${(-(R.W + mod(R.x, R.W))).toFixed(2)}px,0,0)`; };
+    const mayDrift = () => R.visible && !reduce() && !paused() && !document.hidden && !R.hover && !R.focus && !R.drag
+      && R.target == null && performance.now() > R.resumeAt;
+    const go = () => { if (!R.raf && R.visible) { R.last = performance.now(); R.raf = requestAnimationFrame(tick); } };
+    function tick(now) {
+      R.raf = 0;
+      const dt = Math.min(.05, (now - R.last) / 1000); R.last = now;
+      if (R.drag) { /* the pointer moves it */ }
+      else if (R.target != null) {                 // a soft spring onto a card edge
+        const k = 120, c = 2 * Math.sqrt(k);
+        R.v += (-k * (R.x - R.target) - c * R.v) * dt; R.x += R.v * dt;
+        if (Math.abs(R.x - R.target) < .3 && Math.abs(R.v) < 4) { R.x = R.target; R.v = 0; R.target = null; R.resumeAt = now + 2600; }
+      } else if (R.glide) {                        // let go: it coasts, slows, then settles on the nearest card
+        R.x += R.glide * dt; R.glide *= Math.exp(-dt * 4.2);
+        if (Math.abs(R.glide) < 60) { R.v = R.glide; R.glide = 0; snapTo(Math.round(R.x / R.step) * R.step); }
+      } else {                                     // the drift eases in and out instead of starting or stopping dead
+        const want = mayDrift() ? AUTO : 0;
+        R.v += (want - R.v) * (1 - Math.exp(-dt * 2.2)); R.x += R.v * dt;
+        if (!want && Math.abs(R.v) < .5) R.v = 0;
+      }
+      render();
+      const busy = R.drag || R.target != null || R.glide || R.v || mayDrift() || performance.now() < R.resumeAt;
+      if (R.visible && busy) R.raf = requestAnimationFrame(tick);
+    }
+    const snapTo = t => { R.glide = 0; R.target = t; if (reduce()) { R.x = t; R.v = 0; R.target = null; render(); } go(); };
+    const stepBy = dir => {
+      const base = R.target != null ? R.target : Math.round(R.x / R.step) * R.step;
+      R.v = R.target != null ? R.v : 0; snapTo(base + dir * R.step);
+    };
+    btns.forEach(b => { b.disabled = false; b.addEventListener('click', () => stepBy(+b.dataset.dir)); });
     rail.addEventListener('keydown', e => {
-      if (e.key === 'ArrowRight') { e.preventDefault(); rail.scrollBy({ left: step(), behavior: 'smooth' }); }
-      if (e.key === 'ArrowLeft') { e.preventDefault(); rail.scrollBy({ left: -step(), behavior: 'smooth' }); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); stepBy(1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); stepBy(-1); }
     });
+    // drag with a mouse, swipe with a finger (vertical swipes still scroll the page)
+    rail.addEventListener('pointerdown', e => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      R.drag = { id: e.pointerId, x0: e.clientX, y0: e.clientY, s: R.x, live: false, hist: [[performance.now(), e.clientX]] };
+      R.target = null; R.glide = 0; R.v = 0; R.moved = false; go();
+    });
+    rail.addEventListener('pointermove', e => {
+      const d = R.drag; if (!d || e.pointerId !== d.id) return;
+      const dx = e.clientX - d.x0, dy = e.clientY - d.y0;
+      if (!d.live) {
+        if (Math.abs(dx) < 5) return;
+        if (Math.abs(dy) > Math.abs(dx)) { R.drag = null; R.resumeAt = performance.now() + 1500; go(); return; }
+        d.live = true; R.moved = true; rail.classList.add('drag');
+        try { rail.setPointerCapture(e.pointerId); } catch (_) {}
+      }
+      R.x = d.s - dx;
+      const t = performance.now(); d.hist.push([t, e.clientX]); while (d.hist.length > 2 && t - d.hist[0][0] > 90) d.hist.shift();
+    });
+    const release = e => {
+      const d = R.drag; if (!d || (e && e.pointerId !== d.id)) return;
+      R.drag = null; rail.classList.remove('drag');
+      if (!d.live) { go(); return; }
+      const h = d.hist, a = h[0], z = h[h.length - 1], span = (z[0] - a[0]) / 1000;
+      const vel = span > .008 && performance.now() - z[0] < 80 ? -(z[1] - a[1]) / span : 0;
+      R.glide = reduce() ? 0 : clamp(vel, -4200, 4200);
+      if (!R.glide) snapTo(Math.round(R.x / R.step) * R.step); else go();
+    };
+    rail.addEventListener('pointerup', release); rail.addEventListener('pointercancel', release);
+    rail.addEventListener('click', e => { if (R.moved) { e.preventDefault(); e.stopPropagation(); R.moved = false; } }, true);
+    rail.addEventListener('dragstart', e => e.preventDefault());
+    rail.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') { R.hover = true; go(); } });
+    rail.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') { R.hover = false; R.resumeAt = performance.now() + 600; go(); } });
+    rail.addEventListener('focusin', () => { let kb = true; try { kb = rail.matches(':focus-visible'); } catch (_) {} R.focus = kb; go(); });
+    rail.addEventListener('focusout', () => { R.focus = false; go(); });
+    new IntersectionObserver(es => { R.visible = es[0].isIntersecting; if (R.visible) go(); }, { rootMargin: '100px 0px' }).observe(rail);
+    new ResizeObserver(measure).observe(cards[0]);
+    R.sync = go; sleepers.add(R);
+    measure();
   }
 
   /* ==========================================================================
