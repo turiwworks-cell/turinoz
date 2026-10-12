@@ -192,7 +192,7 @@ python -m http.server 8000
   one line. A beat's times, cursor position and line are the `data-` attributes on its `<li>`
   in `index.html` (`data-t0`, `data-t1`, `data-x`, `data-y` in % of the frame, `data-say`).
   The seek bar's beat names come from the same list.
-- **Styleframes**: six of the 25, with what each one became. Drag, swipe or use the arrows.
+- **Styleframes**: six frames, numbered SF 01 to 06 in film order, each with one line. Drag, swipe or use the arrows.
 - **One language**: the three films to scale, each bar drawn from its own colors with a
   playhead in real time; the short cut player; the logo loop frame by frame
   (`assets/logo-frames.webp`, move across it to scrub).
