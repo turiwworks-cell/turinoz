@@ -5,10 +5,12 @@ anything from the lab site; every file it uses is in this folder.
 
 ```
 index.html              the portfolio (tiles + the study pages behind the study tiles)
-netlify.toml            headers and caching
+_headers                headers and caching (Cloudflare Pages and Netlify both read it)
+_redirects              the Scoreline demo's single-page-app rule
 robots.txt
 fonts/                  Archivo, Inter, Roboto, JetBrains Mono (licenses inside)
 vendor/lottie.min.js    Lottie player for the Sitemate tile
+vendor/hls.min.js       hls.js 1.5.20 (Apache-2.0): plays the smtp.dev films' HLS streams
 rive/                   Rive files for the live tiles
   sphere.riv            Interactive Sphere tile
   eye_icon.riv          Eye tile and Planet tile (same files as lab.turinoz.co/eye-planet/)
@@ -53,10 +55,12 @@ scoreline/              Scoreline case study (the live football app), and the ap
                         the phone on the page and the grid tile both run this copy
 ```
 
-## Deploying to Netlify
+## Deploying
 
-Drag this whole folder onto https://app.netlify.com/drop, or connect it as a repo
-with no build command and the root as the publish directory (set in `netlify.toml`).
+Cloudflare Pages: Workers & Pages › Create › Pages › Upload assets (drag the folder, or a zip
+of it). No build command. Direct Upload takes at most 1,000 files and 25 MiB per file. Netlify
+works the same way (drag the folder onto https://app.netlify.com/drop): it reads `_headers`
+and `_redirects` too.
 
 ## Previewing locally
 
@@ -66,9 +70,25 @@ Run a local server from this folder and open http://localhost:8000:
 python -m http.server 8000
 ```
 
+## The home page
+
+- It opens straight on the work (the chat intro and the Commentary corner are gone).
+- Two tiers, so a client gets the serious work at a glance and a designer can keep scrolling:
+  - **Selected work**: the four main projects, big, two to a row, in this order: Sitemate (Storm),
+    Curve Lab, smtp.dev product film, Scoreline (`.grid--main`).
+  - **Experiments**: everything else, four to a row, square, with smaller captions
+    (`.grid--more`): Interactive Sphere, Density curve, Digitigrade (two columns wide), smtp.dev
+    logo loop, Planet, Eye, Spectra. The parked tiles are commented out at the end of this grid.
+  - Below 1100 px the main tier is one to a row (16:9) and the experiments two to a row; on
+    phones everything is one to a row.
+- **Day / night**: the button next to the email in the header. With nothing chosen, the page
+  follows the system; a choice is remembered on this device (`tz-theme` in localStorage). The
+  canvas tiles, the Curve Lab and Spectra tiles and the Storm motion system all follow it.
+- **Contact** on the right edge opens an email.
+
 ## The tiles that changed
 
-- **smtp.dev product film** (row 3, two columns wide, where Numerals and the Eye were) is the
+- **smtp.dev product film** (main tier) is the
   explainer. A muted preview of the whole film loops in it, with the same rules as the other
   client videos (nothing downloads until it is near the screen; it plays only while visible;
   it pauses behind a study or in a hidden tab; reduced motion shows the poster and plays on
@@ -140,21 +160,42 @@ python -m http.server 8000
 - "Open" goes into the Spectra study (`#spectra`), like the old tile did; the study's hero is
   still the old drawing (`R.spectra`).
 
-## Sitemate tile
+## Sitemate tile (Storm Motion System)
 
-- The first tile is the real Storm composer from Sitemate's product. Pressing Build
-  steps it back with the product's own ease (.45s cubic-bezier(.2,.8,.2,1)), the agent
-  spins once, then the tile opens into the motion system (six states feeding the icon).
+- The first tile opens on Storm's motion system, already playing: six states feeding the icon,
+  with the diagram in the middle of the tile and the icon on a plain square.
+- Replay (top right, next to "Live in Sitemate") brings back the real Storm composer from
+  Sitemate's product, centred in the tile, and it types its prompt. Pressing Build steps it back
+  with the product's own ease (.45s cubic-bezier(.2,.8,.2,1)), the agent spins once, then the
+  motion system comes back.
 - The prompt it types is `PROMPT` in the "SITEMATE TILE" script at the end of
   `index.html`. The Lottie clips are the JSON block `#smClips` just above it.
-- "View project", the tile title and "See the full system" all open `sitemate/`.
+- The motion system has a night version (the `--sy-*` colours on `.st`); the composer stays as
+  it is in the product.
+- "View project" and the tile title open `sitemate/`.
 
 ## smtp.dev case study (`smtp/`)
 
-- Dark on purpose: the page takes on the film's light, the way the Sitemate page takes on
-  Storm blue. Same fonts as the portfolio (Archivo, Inter, JetBrains Mono, from `../fonts/`).
-- **The film**: a muted preview loops until someone presses play; then the full 1080p film
-  (`assets/main-film-v1.mp4`, original sound untouched) takes over. Sound starts off; the
+- Night and day: dark takes on the film's light; the light mode uses smtp.dev's own light
+  palette. The sun/moon button in the header is the same choice as the home page (`tz-theme`);
+  with nothing saved the page follows the system. Players, stills and the delivery terminal
+  stay dark in both. Same fonts as the portfolio (Archivo, Inter, JetBrains Mono, from `../fonts/`).
+- **Header and hero**: the header shows smtp.dev's static logo (from their brand sheet, the
+  `smtpLogo` symbol at the top of `index.html`). The hero is centered: a capsule that links to
+  smtp.dev (underlined name and an arrow, no glow), the title, one line about the film and the
+  facts in mono. The hero light sits high above the frame, with the
+  dust rising through it. "clarity." is smtp.dev's blue gradient at night and one solid blue
+  by day (`--grad`).
+- **The film**: a muted preview loops until someone presses play; then the full film streams
+  as HLS (`assets/hls/main/master.m3u8`, 540p to 4K at 60 fps, 6 s segments, H.264 8-bit; the
+  audio is the master's own AAC, copied untouched) and the player picks the size for the
+  screen and the connection (`capLevelToPlayerSize`, so fullscreen on a 4K screen gets 4K).
+  Safari plays HLS itself; the other browsers load `vendor/hls.min.js` on the first press of
+  play, so nothing streams before that. If the stream can't start, the plain 1080p file
+  (`assets/main-film-v1.mp4`, the `data-mp4` attribute) plays instead. The short cut works
+  the same way (`assets/hls/short/`). To re-make a stream: `ffmpeg` per size from the 4K
+  master (a 5-step ladder, 12 / 6 / 3.5 / 1.8 / 1.0 Mbit/s, `-hls_segment_type fmp4`); if
+  you replace the files, give the folder a new name because `_headers` caches it for a year. Sound starts off; the
   sound button turns it on (in the preview it starts the film from the top). To start with
   sound, set `START_WITH_SOUND` at the top of `case-study.js`. The seek bar is the film's own
   colors, split into its seven beats; hovering shows the frame (`assets/film-thumbs.webp`).
@@ -163,15 +204,18 @@ python -m http.server 8000
   one line. A beat's times, cursor position and line are the `data-` attributes on its `<li>`
   in `index.html` (`data-t0`, `data-t1`, `data-x`, `data-y` in % of the frame, `data-say`).
   The seek bar's beat names come from the same list.
-- **Refinement**: drag to compare an early styleframe with the final film (two pairs).
-- **Styleframes**: six of the 25, with what each one became. Drag, swipe or use the arrows.
+- **Styleframes**: six frames, numbered SF 01 to 06 in film order, each with one line. Drag, swipe or use the arrows.
 - **One language**: the three films to scale, each bar drawn from its own colors with a
-  playhead in real time; the short cut player; the logo loop frame by frame
-  (`assets/logo-frames.webp`, move across it to scrub).
+  playhead in real time; the short cut player; the logo loop frame by frame: a 1440 px video
+  of the LogoLoop master's centre (`assets/logo-loop-v1.av1.mp4`, with an H.264 copy; 86
+  frames, a key frame every 6) that the pointer scrubs, and a sprite sheet
+  (`assets/logo-frames.webp`) that only draws the five key-pose thumbnails.
 - Everything that moves sleeps off screen, in a hidden tab, while a film plays, when the nav's
   pause button is on, and for visitors who prefer reduced motion (stills instead of loops).
 - Removed in the redesign (no longer used by the page): the old hook/workflow/outro loops and
-  their posters, the six story stills, the 16:9 logo loop copy and the old main poster.
+  their posters, the six story stills, the 16:9 logo loop copy and the old main poster. Later
+  also the Refinement comparison (with its two final-film stills, `workflow-final.webp` and
+  `start-testing-final.webp`) and the closing quote under the credits.
 - Previewing locally needs a server that answers byte ranges, or the films can't seek
   (Python's `http.server` doesn't; `npx serve` or Netlify do).
 - After deploying, set `og:image` in `smtp/index.html` to the absolute URL of

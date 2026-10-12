@@ -1,0 +1,36 @@
+# Response headers for Cloudflare Pages (Netlify reads this file too).
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+# Fonts, the Rive runtime and the videos never change name, so cache them for a year.
+# (If you replace one of them, give the new file a new name.)
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/rive/vendor/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/media/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# The smtp.dev film streams (HLS) and the player script never change name either.
+/smtp/assets/hls/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/vendor/hls.min.js
+  Cache-Control: public, max-age=31536000, immutable
+
+# The .riv files and pages revalidate on every visit, so a redeploy shows up right away.
+/rive/*.riv
+  Cache-Control: no-cache
+
+# Scoreline's built scripts and styles carry a hash in their names, so they can be cached for a year.
+/scoreline/app/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# The demo's player photos: cached for an hour.
+/scoreline/app/img/players/*
+  Cache-Control: public, max-age=3600

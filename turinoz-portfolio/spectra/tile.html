@@ -1192,6 +1192,7 @@ if ("IntersectionObserver" in window) new IntersectionObserver((es) => { seen = 
 document.addEventListener("visibilitychange", wake);
 setInterval(wake, 700);                 // picks up again after a study closes
 setInterval(() => follow(false), 1000);
+addEventListener("message", (e) => { if (e.source === parent && e.data && e.data.tzTheme) follow(false); });   // the page's day / night toggle: at once
 mqDark.addEventListener && mqDark.addEventListener("change", () => follow(false));
 addEventListener("resize", () => { resize(); if (cur) cur.place(); if (!raf) draw(); });
 

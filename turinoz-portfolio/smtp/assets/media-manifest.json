@@ -23,7 +23,7 @@
    "bytes": 5858,
    "width": 1280,
    "height": 720,
-   "description": "Main-film frame 4.1s: // Yeah, it’s a pain. Still for beat 03 (Voice)."
+   "description": "Main-film frame 4.1s: // Yeah, it’s a pain. Still for beat 03 (Stakes)."
   },
   {
    "name": "beat-04.webp",
@@ -137,13 +137,6 @@
    "description": "Secondary-film frame 18s: zoomed navigation and domains."
   },
   {
-   "name": "start-testing-final.webp",
-   "bytes": 19420,
-   "width": 1600,
-   "height": 900,
-   "description": "Main-film frame 28.5s: final standalone Start testing message."
-  },
-  {
    "name": "styleframe-01.webp",
    "bytes": 171560,
    "width": 1600,
@@ -165,11 +158,11 @@
    "description": "Early styleframe 09: blue relief transition."
   },
   {
-   "name": "styleframe-10.webp",
-   "bytes": 49458,
+   "name": "styleframe-stakes.webp",
+   "bytes": 23412,
    "width": 1600,
    "height": 900,
-   "description": "Early styleframe 10: stylized product UI with explanatory caption."
+   "description": "Styleframe for the Stakes beat: You need to test one signup email (from Turinoz, 2026-10-12)."
   },
   {
    "name": "styleframe-15.webp",
@@ -184,13 +177,6 @@
    "width": 1600,
    "height": 900,
    "description": "Early styleframe 25: logo and tagline ending."
-  },
-  {
-   "name": "workflow-final.webp",
-   "bytes": 44218,
-   "width": 1600,
-   "height": 900,
-   "description": "Main-film frame 15s: completed product domain UI."
   }
  ]
 }
