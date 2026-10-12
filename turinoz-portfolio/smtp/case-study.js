@@ -4,7 +4,7 @@
    One file, no libraries. In order:
      helpers · color strips · reveal & nav · label cursor · players (film + short)
      · beat by beat (with Turinoz's cursor) · refinement wipe · styleframes rail
-     · lengths + logo scrubber · delivery terminal · hero (count, dust) · pause all
+     · lengths + logo scrubber · delivery terminal · hero (count, dust) · day / night · pause all
    Everything that moves sleeps off screen, in a hidden tab, while a film plays
    (for the muted loops), when "Pause all motion" is on, and for visitors who
    prefer reduced motion.
@@ -35,6 +35,11 @@
   const films = [];                           // user-started films (only one plays at a time)
   const filmPlaying = () => films.some(p => p.film && !p.film.paused && !p.film.ended);
 
+  // colors the canvases take from the page (they change with day / night)
+  const tok = name => getComputedStyle(html).getPropertyValue(name).trim();
+  const INK = { dim: tok('--strip-dim') || 'rgba(8,9,12,.6)', dust: tok('--dust') || '#C9D8FF' };
+  const strips = new Set();
+
   /* ---------- the films' own colors ---------- */
   const COLORS = {};
   const raw = window.SMTP_COLORS || {};
@@ -45,6 +50,7 @@
     constructor(canvas, cols) {
       this.c = canvas; this.cols = cols || []; this.base = document.createElement('canvas'); this.p = null;
       if (!canvas) return;
+      strips.add(this);
       new ResizeObserver(() => this.resize()).observe(canvas);
       this.resize();
     }
@@ -68,7 +74,7 @@
       const c = this.c; if (!c) return;
       const x = c.getContext('2d'), w = c.width, h = c.height, xa = Math.round(a * w), xb = Math.round(b * w);
       x.clearRect(0, 0, w, h); x.drawImage(this.base, 0, 0);
-      x.fillStyle = 'rgba(8,9,12,.62)'; x.fillRect(0, 0, xa, h); x.fillRect(xb, 0, w - xb, h);
+      x.fillStyle = INK.dim; x.fillRect(0, 0, xa, h); x.fillRect(xb, 0, w - xb, h);
     }
     draw(p) {
       if (p == null && this.r) { this.range(this.r[0], this.r[1]); return; }
@@ -76,7 +82,7 @@
       const c = this.c; if (!c) return;
       const x = c.getContext('2d'), w = c.width, h = c.height;
       x.clearRect(0, 0, w, h); x.drawImage(this.base, 0, 0);
-      if (p != null) { const px = Math.round(clamp(p, 0, 1) * w); x.fillStyle = 'rgba(8,9,12,.58)'; x.fillRect(px, 0, w - px, h); }
+      if (p != null) { const px = Math.round(clamp(p, 0, 1) * w); x.fillStyle = INK.dim; x.fillRect(px, 0, w - px, h); }
     }
   }
 
@@ -633,9 +639,9 @@
   /* ==========================================================================
      HERO — the title counts to 53; a little dust drifts in the light, like the film
      ========================================================================== */
-  const h1 = $('.h1'), count = $('.h1 .count');
+  const count = $('.h1 .count');
   const heroIn = () => {
-    h1 && h1.classList.add('in');
+    $$('.h1').forEach(h => h.classList.add('in'));
     if (!count || reduce()) return;
     const to = +count.dataset.to, t0 = performance.now() + 120, dur = 1300;
     count.textContent = '00';
@@ -666,7 +672,7 @@
         const tw = .55 + .45 * Math.sin(now / 1400 + p.ph);
         const fall = Math.min(1, (H - p.y) / (H * .5));          // fade out lower down
         ctx.globalAlpha = p.a * tw * fall;
-        ctx.fillStyle = '#C9D8FF';
+        ctx.fillStyle = INK.dust;
         ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283); ctx.fill();
       }
       ctx.globalAlpha = 1;
@@ -677,22 +683,41 @@
       draw(now);
       if (D.may()) raf = requestAnimationFrame(tick);
     };
-    const D = { may: () => visible && !reduce() && !paused() && !document.hidden, sync: () => { if (D.may() && !raf) raf = requestAnimationFrame(tick); } };
+    const D = { may: () => visible && !reduce() && !paused() && !document.hidden, sync: () => { if (D.may() && !raf) raf = requestAnimationFrame(tick); else if (!raf) draw(performance.now()); } };
     sleepers.add(D);
     new ResizeObserver(seed).observe(dust);
     new IntersectionObserver(es => { visible = es[0].isIntersecting; D.sync(); }).observe(dust);
   }
 
-  /* the nav badge: the smtp.dev logo loop itself */
-  const badge = $('video[data-badge]');
-  if (badge) {
-    const B = { sync: () => {
-      const on = !reduce() && !paused() && !document.hidden;
-      if (on) { if (badge.preload === 'none') badge.preload = 'auto'; if (badge.paused) { const p = badge.play(); p && p.catch && p.catch(() => {}); } }
-      else badge.pause();
-    } };
-    sleepers.add(B); setTimeout(() => B.sync(), 600);
-  }
+  /* "Watch the film" goes to the film and starts it */
+  const mainP = players.find(p => p.isMain);
+  $$('[data-play-film]').forEach(a => a.addEventListener('click', e => {
+    if (!mainP || !mainP.big) return;
+    e.preventDefault();
+    $('#film').scrollIntoView({ behavior: reduce() ? 'auto' : 'smooth', block: 'center' });
+    mainP.big.click();
+  }));
+
+  /* ==========================================================================
+     DAY / NIGHT — the same choice as the portfolio's home page (tz-theme)
+     ========================================================================== */
+  const tm = $('#tm'), mqDark = matchMedia('(prefers-color-scheme: dark)');
+  const mode = () => html.dataset.theme || (mqDark.matches ? 'dark' : 'light');
+  const themed = () => {
+    const label = mode() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+    if (tm) { tm.setAttribute('aria-label', label); tm.title = label; }
+    INK.dim = tok('--strip-dim') || INK.dim; INK.dust = tok('--dust') || INK.dust;
+    strips.forEach(st => st.draw(st.p));
+    syncAll();
+  };
+  tm && tm.addEventListener('click', () => {
+    const next = mode() === 'dark' ? 'light' : 'dark';
+    html.dataset.theme = next;
+    try { localStorage.setItem('tz-theme', next); } catch (_) {}
+  });
+  mqDark.addEventListener && mqDark.addEventListener('change', themed);
+  new MutationObserver(themed).observe(html, { attributes: true, attributeFilter: ['data-theme'] });
+  themed();
 
   /* ==========================================================================
      PAUSE ALL MOTION · visibility · reduced motion
