@@ -1,0 +1,9 @@
+// Cloudflare Workers config: this folder is a static site, so there is no script, only assets.
+// "name" must be the same as the Worker's name in the Cloudflare dashboard.
+{
+  "name": "turinoz",
+  "compatibility_date": "2026-10-11",
+  "assets": {
+    "directory": "./"
+  }
+}
