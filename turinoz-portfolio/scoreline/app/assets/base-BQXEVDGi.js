@@ -1,0 +1,1 @@
+var e=`/scoreline/app/`,t=`/scoreline/app/`.replace(/\/+$/,``)||void 0;function n(e,n=t){return n?e===n?`/`:e.startsWith(`${n}/`)?e.slice(n.length):e:e}export{e as n,n as r,t};
