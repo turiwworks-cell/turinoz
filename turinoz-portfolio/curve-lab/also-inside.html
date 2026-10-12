@@ -437,6 +437,7 @@ document.addEventListener('visibilitychange',wake);
 setInterval(wake,700);            /* picks up again after a study closes */
 function follow(){try{const t=parent!==window&&parent.document.documentElement.dataset.theme;const r=document.documentElement;if(t==='light'||t==='dark'){if(r.dataset.theme!==t)r.dataset.theme=t}else if(r.dataset.theme)delete r.dataset.theme}catch(_){}}
 follow();setInterval(follow,1000);
+addEventListener('message',e=>{if(e.source===parent&&e.data&&e.data.tzTheme)follow()});   /* the page's day / night toggle: at once */
 addEventListener('resize',fit);
 fit();draw(0);
 (document.fonts&&document.fonts.ready||Promise.resolve()).then(()=>{fit();draw(clock/SEG);cv.classList.add('on');wake()});

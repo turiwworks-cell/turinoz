@@ -66,9 +66,25 @@ Run a local server from this folder and open http://localhost:8000:
 python -m http.server 8000
 ```
 
+## The home page
+
+- It opens straight on the work (the chat intro and the Commentary corner are gone).
+- Two tiers, so a client gets the serious work at a glance and a designer can keep scrolling:
+  - **Selected work**: the four main projects, big, two to a row, in this order: Sitemate (Storm),
+    Curve Lab, smtp.dev product film, Scoreline (`.grid--main`).
+  - **Experiments**: everything else, four to a row, square, with smaller captions
+    (`.grid--more`): Interactive Sphere, Density curve, Digitigrade (two columns wide), smtp.dev
+    logo loop, Planet, Eye, Spectra. The parked tiles are commented out at the end of this grid.
+  - Below 1100 px the main tier is one to a row (16:9) and the experiments two to a row; on
+    phones everything is one to a row.
+- **Day / night**: the button next to the email in the header. With nothing chosen, the page
+  follows the system; a choice is remembered on this device (`tz-theme` in localStorage). The
+  canvas tiles, the Curve Lab and Spectra tiles and the Storm motion system all follow it.
+- **Contact** on the right edge opens an email.
+
 ## The tiles that changed
 
-- **smtp.dev product film** (row 3, two columns wide, where Numerals and the Eye were) is the
+- **smtp.dev product film** (main tier) is the
   explainer. A muted preview of the whole film loops in it, with the same rules as the other
   client videos (nothing downloads until it is near the screen; it plays only while visible;
   it pauses behind a study or in a hidden tab; reduced motion shows the poster and plays on
@@ -140,14 +156,19 @@ python -m http.server 8000
 - "Open" goes into the Spectra study (`#spectra`), like the old tile did; the study's hero is
   still the old drawing (`R.spectra`).
 
-## Sitemate tile
+## Sitemate tile (Storm Motion System)
 
-- The first tile is the real Storm composer from Sitemate's product. Pressing Build
-  steps it back with the product's own ease (.45s cubic-bezier(.2,.8,.2,1)), the agent
-  spins once, then the tile opens into the motion system (six states feeding the icon).
+- The first tile opens on Storm's motion system, already playing: six states feeding the icon,
+  with the diagram in the middle of the tile and the icon on a plain square.
+- Replay (top right, next to "Live in Sitemate") brings back the real Storm composer from
+  Sitemate's product, centred in the tile, and it types its prompt. Pressing Build steps it back
+  with the product's own ease (.45s cubic-bezier(.2,.8,.2,1)), the agent spins once, then the
+  motion system comes back.
 - The prompt it types is `PROMPT` in the "SITEMATE TILE" script at the end of
   `index.html`. The Lottie clips are the JSON block `#smClips` just above it.
-- "View project", the tile title and "See the full system" all open `sitemate/`.
+- The motion system has a night version (the `--sy-*` colours on `.st`); the composer stays as
+  it is in the product.
+- "View project" and the tile title open `sitemate/`.
 
 ## smtp.dev case study (`smtp/`)
 
