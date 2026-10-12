@@ -26,6 +26,7 @@
   const paused = () => html.classList.contains('paused');
   const fmt = t => { t = Math.max(0, t || 0); return Math.floor(t / 60) + ':' + String(Math.floor(t % 60)).padStart(2, '0'); };
   const fmt1 = t => { t = Math.max(0, t || 0); const s = t % 60; return Math.floor(t / 60) + ':' + (s < 10 ? '0' : '') + s.toFixed(1); };
+  const fmtR = t => fmt(Math.round(t || 0));   // beat spans round, like the times in the beat list
   const status = $('#status');
   const say = msg => { if (status) status.textContent = msg; };
   const dpr = () => Math.min(2, window.devicePixelRatio || 1);
@@ -361,7 +362,7 @@
     S.mini.style.setProperty('--a', (b.t0 / DUR).toFixed(4)); S.mini.style.setProperty('--b', (b.t1 / DUR).toFixed(4));
     S.strip && S.strip.range(b.t0 / DUR, b.t1 / DUR);
     S.mini.style.setProperty('--p', (b.t0 / DUR).toFixed(4));
-    S.name.textContent = b.name; S.span.textContent = `${fmt(b.t0)} – ${fmt(b.t1)}`;
+    S.name.textContent = b.name; S.span.textContent = `${fmtR(b.t0)} – ${fmtR(b.t1)}`;
     if (!first) [S.name, S.span].forEach(el => { el.classList.remove('swap'); void el.offsetWidth; el.classList.add('swap'); });
     // the still stands in while the film seeks, then fades
     S.frame.classList.remove('live');
@@ -453,7 +454,7 @@
     const PAIRS = [
       { early: 'assets/styleframe-10.webp', final: 'assets/workflow-final.webp', l: 'Exploration · SF 10', r: 'Final film · 0:15',
         ea: 'Early styleframe: the domains screen as a floating glass panel with soft corners.', fa: 'Final film: the smtp.dev domains screen, flat and close to the real product.',
-        ce: 'Floating glass, soft corners and a lot of blur.', cf: 'The real layout: flat, direct, the way it looks after signup.' },
+        ce: 'Floating glass, soft corners, a lot of blur and a caption on top.', cf: 'The real layout: flat, direct, the way it looks after signup.' },
       { early: 'assets/styleframe-15.webp', final: 'assets/start-testing-final.webp', l: 'Exploration · SF 15', r: 'Final film · 0:28',
         ea: 'Early styleframe: That’s it, start testing, as a toast over a blurred screen.', fa: 'Final film: Start testing, alone in its own frame.',
         ce: 'The last step tucked into a toast: That’s it, start testing.', cf: 'Given a frame of its own: That’s it. Then Start testing.' },
