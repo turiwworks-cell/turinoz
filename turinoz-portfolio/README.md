@@ -187,8 +187,8 @@ python -m http.server 8000
   dust rising through it. "clarity." is smtp.dev's blue gradient at night and one solid blue
   by day (`--grad`).
 - **The film**: it opens on its end card (`assets/film-end.webp`: mark, wordmark, tagline) and
-  nothing plays until the page has loaded, the visitor has scrolled and the player is almost fully
-  on screen; then a muted preview loops until someone presses play, and the full film streams
+  nothing plays until the page has loaded, the visitor has scrolled and the player has been fully
+  on screen for about a second; then a muted preview loops until someone presses play, and the full film streams
   as HLS (`assets/hls/main/master.m3u8`, 540p to 4K at 60 fps, 6 s segments, H.264 8-bit; the
   audio is the master's own AAC, copied untouched) and the player picks the size for the
   screen and the connection (`capLevelToPlayerSize`, so fullscreen on a 4K screen gets 4K).

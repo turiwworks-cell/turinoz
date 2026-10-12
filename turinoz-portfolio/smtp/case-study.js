@@ -173,7 +173,7 @@
       this.strip = new Strip($('.fp-colors', root), COLORS[this.kind] || []);
       this.isMain = this.kind === 'main';
       this.mode = this.prev ? 'preview' : 'film';
-      this.idle = !!this.prev; this.full = false;   // the main film waits on its end card until the visitor scrolls down to it
+      this.idle = !!this.prev; this.inView = false; this.inSince = 0; this.wait = 0;   // the main film waits on its end card until the visitor scrolls down to it
       if (this.idle) root.classList.add('is-idle');
       this.visible = false; this.pending = null; this.dragging = false; this.lastAct = -1; this.raf = 0; this.aria = 0;
       this.sound = START_WITH_SOUND;
@@ -183,7 +183,9 @@
       this.build(); this.bind(); this.ui(); this.paint();
       new IntersectionObserver(es => {
         const e = es[0]; this.visible = e.isIntersecting;
-        this.full = e.intersectionRatio >= .8 || e.intersectionRect.height >= innerHeight * .8;
+        const was = this.inView;
+        this.inView = e.intersectionRatio >= .9 || e.intersectionRect.height >= innerHeight * .9;
+        if (this.inView && !was) this.inSince = performance.now();
         this.sync(); if (this.visible) this.loop();
       }, { threshold: [0, .05, .2, .4, .6, .7, .8, .9, 1] }).observe(root);
       sleepers.add(this);
@@ -359,7 +361,14 @@
     }
     sync() {   // the muted preview loops only when nothing else asks for attention
       if (!this.prev) return;
-      const on = this.mode === 'preview' && this.visible && (!this.idle || (this.full && armed)) && !reduce() && !paused() && !document.hidden && !filmPlaying();
+      // the first start waits a beat after the player is fully in view
+      let ready = !this.idle;
+      if (this.idle && this.inView && armed) {
+        const left = 900 - (performance.now() - Math.max(this.inSince, armedAt));
+        if (left <= 0) ready = true;
+        else { clearTimeout(this.wait); this.wait = setTimeout(() => this.sync(), left + 20); }
+      }
+      const on = this.mode === 'preview' && this.visible && ready && !reduce() && !paused() && !document.hidden && !filmPlaying();
       if (on) {
         if (this.idle) { this.idle = false; this.root.classList.remove('is-idle'); if (this.prev.readyState >= 1) this.prev.currentTime = 0; }
         if (this.prev.preload === 'none') this.prev.preload = 'auto';
@@ -369,10 +378,10 @@
     }
   }
   // nothing autoplays until the page has loaded and the visitor has scrolled
-  let armed = false;
+  let armed = false, armedAt = 0;
   const arm = () => {
     if (armed || document.readyState !== 'complete' || scrollY < 40) return;
-    armed = true; removeEventListener('scroll', arm); players.forEach(p => p.sync());
+    armed = true; armedAt = performance.now(); removeEventListener('scroll', arm); players.forEach(p => p.sync());
   };
   const players = $$('[data-player]').map(el => new Player(el));
   addEventListener('scroll', arm, { passive: true }); addEventListener('load', arm);
