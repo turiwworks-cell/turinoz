@@ -575,7 +575,7 @@
   }
 
   /* ==========================================================================
-     ONE LANGUAGE — three lengths to scale, and the logo loop frame by frame
+     ONE LANGUAGE — three lengths to scale, and the logo loop
      ========================================================================== */
   $$('.len').forEach(a => {
     new Strip($('canvas', a), COLORS[a.dataset.colors] || []);
