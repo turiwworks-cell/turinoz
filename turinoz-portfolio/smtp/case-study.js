@@ -511,9 +511,9 @@
         const k = 120, c = 2 * Math.sqrt(k);
         R.v += (-k * (R.x - R.target) - c * R.v) * dt; R.x += R.v * dt;
         if (Math.abs(R.x - R.target) < .3 && Math.abs(R.v) < 4) { R.x = R.target; R.v = 0; R.target = null; R.resumeAt = now + 2600; }
-      } else if (R.glide) {                        // let go: it coasts, slows, then settles on the nearest card
-        R.x += R.glide * dt; R.glide *= Math.exp(-dt * 4.2);
-        if (Math.abs(R.glide) < 60) { R.v = R.glide; R.glide = 0; snapTo(Math.round(R.x / R.step) * R.step); }
+      } else if (R.glide) {                        // let go: a short, light coast that fades out where it is (no snap)
+        R.x += R.glide * dt; R.glide *= Math.exp(-dt * 6.5);
+        if (Math.abs(R.glide) < 6) { R.glide = 0; R.v = 0; R.resumeAt = now + 1800; }
       } else {                                     // the drift eases in and out instead of starting or stopping dead
         const want = mayDrift() ? AUTO : 0;
         R.v += (want - R.v) * (1 - Math.exp(-dt * 2.2)); R.x += R.v * dt;
@@ -536,7 +536,8 @@
     // drag with a mouse, swipe with a finger (vertical swipes still scroll the page)
     rail.addEventListener('pointerdown', e => {
       if (e.pointerType === 'mouse' && e.button !== 0) return;
-      R.drag = { id: e.pointerId, x0: e.clientX, y0: e.clientY, s: R.x, live: false, hist: [[performance.now(), e.clientX]] };
+      R.drag = { id: e.pointerId, x0: e.clientX, y0: e.clientY, s: R.x, live: false, hist: [[performance.now(), e.clientX]],
+        card: e.target.closest && e.target.closest('.sf') };
       R.target = null; R.glide = 0; R.v = 0; R.moved = false; go();
     });
     rail.addEventListener('pointermove', e => {
@@ -545,17 +546,20 @@
       if (!d.live) {
         if (Math.abs(dx) < 5) return;
         if (Math.abs(dy) > Math.abs(dx)) { R.drag = null; R.resumeAt = performance.now() + 1500; go(); return; }
-        d.live = true; R.moved = true; rail.classList.add('drag');
+        d.live = true; R.moved = true; rail.classList.add('drag'); d.card && d.card.classList.add('held');   // only the card under the hand gives
         try { rail.setPointerCapture(e.pointerId); } catch (_) {}
       }
-      R.x = d.s - dx;
+      R.x = d.s - dx; render();                   // draw now, not on the next frame, so it stays glued to the pointer
       const t = performance.now(); d.hist.push([t, e.clientX]); while (d.hist.length > 2 && t - d.hist[0][0] > 90) d.hist.shift();
     });
     const release = e => {
       const d = R.drag; if (!d || (e && e.pointerId !== d.id)) return;
-      R.drag = null; rail.classList.remove('drag');
+      R.drag = null; rail.classList.remove('drag'); d.card && d.card.classList.remove('held');
       if (!d.live) { go(); return; }
-      R.v = 0; R.resumeAt = performance.now() + 1800; go();   // it stays where it was let go, no snap
+      const h = d.hist, a = h[0], z = h[h.length - 1], span = (z[0] - a[0]) / 1000;
+      const vel = span > .008 && performance.now() - z[0] < 60 ? -(z[1] - a[1]) / span : 0;
+      R.v = 0; R.glide = reduce() ? 0 : clamp(vel * .6, -2400, 2400);
+      R.resumeAt = performance.now() + 1800; go();
     };
     rail.addEventListener('pointerup', release); rail.addEventListener('pointercancel', release);
     rail.addEventListener('click', e => { if (R.moved) { e.preventDefault(); e.stopPropagation(); R.moved = false; } }, true);

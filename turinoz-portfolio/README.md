@@ -211,7 +211,8 @@ python -m http.server 8000
 - **Styleframes**: six frames, numbered SF 01 to 06 in film order, each with one line. The rail
   is a loop (the script puts three copies in a track; the copies are hidden from screen readers)
   that drifts slowly by itself and stops while the pointer is on it. Drag or swipe it and it
-  stays where it is let go (no momentum, no snap); the arrows and arrow keys step one card.
+  keeps a short, light glide and stops where it ends (no snap); only the card under the
+  pointer shrinks a little while it is held; the arrows and arrow keys step one card.
 - **One language**: the three films to scale, each bar drawn from its own colors with a
   playhead in real time; the short cut player; the logo loop frame by frame: a 1440 px video
   of the LogoLoop master's centre (`assets/logo-loop-v1.av1.mp4`, with an H.264 copy; 86
