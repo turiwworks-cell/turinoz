@@ -186,7 +186,9 @@ python -m http.server 8000
   facts in mono. The hero light sits high above the frame, with the
   dust rising through it. "clarity." is smtp.dev's blue gradient at night and one solid blue
   by day (`--grad`).
-- **The film**: a muted preview loops until someone presses play; then the full film streams
+- **The film**: it opens on its end card (`assets/film-end.webp`: mark, wordmark, tagline) and
+  nothing plays until the page has loaded, the visitor has scrolled and the player is almost fully
+  on screen; then a muted preview loops until someone presses play, and the full film streams
   as HLS (`assets/hls/main/master.m3u8`, 540p to 4K at 60 fps, 6 s segments, H.264 8-bit; the
   audio is the master's own AAC, copied untouched) and the player picks the size for the
   screen and the connection (`capLevelToPlayerSize`, so fullscreen on a 4K screen gets 4K).
@@ -203,8 +205,13 @@ python -m http.server 8000
   it, and Turinoz's cursor (the Curve Lab / Spectra tour cursor) points at the detail and says
   one line. A beat's times, cursor position and line are the `data-` attributes on its `<li>`
   in `index.html` (`data-t0`, `data-t1`, `data-x`, `data-y` in % of the frame, `data-say`).
+  `data-loop` ends the loop earlier than the beat when the next scene bleeds in (beat 01
+  loops to 1.45 s, before the light turns red).
   The seek bar's beat names come from the same list.
-- **Styleframes**: six frames, numbered SF 01 to 06 in film order, each with one line. Drag, swipe or use the arrows.
+- **Styleframes**: six frames, numbered SF 01 to 06 in film order, each with one line. The rail
+  is a loop (the script puts three copies in a track; the copies are hidden from screen readers)
+  that drifts slowly by itself and stops while the pointer is on it. Drag or swipe it and it
+  coasts, then settles on a card; the arrows and arrow keys step one card.
 - **One language**: the three films to scale, each bar drawn from its own colors with a
   playhead in real time; the short cut player; the logo loop frame by frame: a 1440 px video
   of the LogoLoop master's centre (`assets/logo-loop-v1.av1.mp4`, with an H.264 copy; 86
@@ -213,7 +220,8 @@ python -m http.server 8000
 - Everything that moves sleeps off screen, in a hidden tab, while a film plays, when the nav's
   pause button is on, and for visitors who prefer reduced motion (stills instead of loops).
 - Removed in the redesign (no longer used by the page): the old hook/workflow/outro loops and
-  their posters, the six story stills, the 16:9 logo loop copy and the old main poster. Later
+  their posters, the six story stills, the 16:9 logo loop copy and the old main posters
+  (`film-poster.webp` too, replaced by the end card). Later
   also the Refinement comparison (with its two final-film stills, `workflow-final.webp` and
   `start-testing-final.webp`) and the closing quote under the credits.
 - Previewing locally needs a server that answers byte ranges, or the films can't seek
