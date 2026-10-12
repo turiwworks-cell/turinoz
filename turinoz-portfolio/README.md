@@ -172,8 +172,16 @@ python -m http.server 8000
 
 ## smtp.dev case study (`smtp/`)
 
-- Dark on purpose: the page takes on the film's light, the way the Sitemate page takes on
-  Storm blue. Same fonts as the portfolio (Archivo, Inter, JetBrains Mono, from `../fonts/`).
+- Night and day: dark takes on the film's light; the light mode uses smtp.dev's own light
+  palette. The sun/moon button in the header is the same choice as the home page (`tz-theme`);
+  with nothing saved the page follows the system. Players, stills and the delivery terminal
+  stay dark in both. Same fonts as the portfolio (Archivo, Inter, JetBrains Mono, from `../fonts/`).
+- **Header and hero**: the header shows smtp.dev's static logo (from their brand sheet, the
+  `smtpLogo` symbol at the top of `index.html`). The hero is centered: a capsule that links to
+  smtp.dev (a soft light runs around its edge; it glows blue on hover), the title, one line
+  about the film and the facts in mono. The hero light sits high above the frame, with the
+  dust rising through it. "clarity." is smtp.dev's blue gradient at night and one solid blue
+  by day (`--grad`).
 - **The film**: a muted preview loops until someone presses play; then the full 1080p film
   (`assets/main-film-v1.mp4`, original sound untouched) takes over. Sound starts off; the
   sound button turns it on (in the preview it starts the film from the top). To start with

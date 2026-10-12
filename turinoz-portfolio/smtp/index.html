@@ -64,7 +64,6 @@ try { const t = localStorage.getItem('tz-theme'); if (t === 'light' || t === 'da
       <a href="#film">Film</a><a href="#beats">Beats</a><a href="#refine">Refinement</a><a href="#frames">Frames</a><a href="#system">System</a><a href="#credits">Delivery</a>
     </nav>
     <div class="navr">
-      <a class="livelink" href="https://smtp.dev/" target="_blank" rel="noopener"><i aria-hidden="true"></i>smtp.dev<svg aria-hidden="true"><use href="#icArrowOut"/></svg></a>
       <button class="tm" id="tm" type="button" aria-label="Switch to light mode" title="Switch to light mode">
         <svg class="moon" aria-hidden="true"><use href="#icMoon"/></svg><svg class="sun" aria-hidden="true"><use href="#icSun"/></svg>
       </button>
@@ -79,55 +78,17 @@ try { const t = localStorage.getItem('tz-theme'); if (t === 'light' || t === 'da
 <main id="main">
 
 <!-- ================= HERO + FILM ================= -->
-<section class="hero" id="top" data-hv="a">
+<section class="hero" id="top">
   <div class="hero-light" aria-hidden="true"></div>
   <canvas class="dust" aria-hidden="true"></canvas>
   <div class="wrap">
-    <!-- PREVIEW: three hero options (data-hv on .hero picks one); the chosen one stays -->
-    <!-- A · centered, like smtp.dev's own site -->
-    <div class="hv hv-a">
-      <div class="pill rv"><i></i>Product film for smtp.dev</div>
-      <h1 class="h1 h1-a" aria-label="From pressure to clarity.">
+    <div class="hero-head">
+      <a class="cap rv" href="https://smtp.dev/" target="_blank" rel="noopener" data-cursor="Open smtp.dev"><i></i><span>Product film for <u>smtp.dev</u></span><svg aria-hidden="true"><use href="#icArrowOut"/></svg></a>
+      <h1 class="h1" aria-label="From pressure to clarity.">
         <span class="ln" aria-hidden="true"><span>From pressure to <span class="grad">clarity.</span></span></span>
       </h1>
       <p class="lede rv" style="--rd:.14s">A 53-second film that explains smtp.dev, an email testing tool for developers. Concept, design and animation by me.</p>
-      <div class="cta rv" style="--rd:.2s">
-        <a class="btn btn--pri" href="#film" data-play-film data-cursor="Play the film"><svg aria-hidden="true"><use href="#icPlay"/></svg>Watch the film</a>
-        <a class="btn btn--ghost" href="https://smtp.dev/" target="_blank" rel="noopener" data-cursor="Open smtp.dev">smtp.dev<svg aria-hidden="true"><use href="#icArrowOut"/></svg></a>
-      </div>
-      <p class="meta mono rv" style="--rd:.26s"><span>0:53 main film</span><span>0:35 short cut</span><span>7 beats</span><span>25 styleframes</span></p>
-    </div>
-
-    <!-- B · editorial, left aligned -->
-    <div class="hv hv-b">
-      <div class="kicker rv"><i></i>smtp.dev · Product film</div>
-      <h1 class="h1" aria-label="53 seconds, from pressure to clarity.">
-        <span class="ln" aria-hidden="true"><span><b class="count" data-to="53">53</b> seconds,</span></span>
-        <span class="ln" aria-hidden="true"><em>from pressure to clarity.</em></span>
-      </h1>
-      <div class="hb-side rv" style="--rd:.18s">
-        <p class="lede">The product film for smtp.dev, an email testing tool for developers. Concept, design and animation by me.</p>
-        <a class="tlink" href="https://smtp.dev/" target="_blank" rel="noopener" data-cursor="Open smtp.dev">smtp.dev<svg aria-hidden="true"><use href="#icArrowOut"/></svg></a>
-      </div>
-      <dl class="facts facts--row rv" style="--rd:.24s">
-        <div class="fact"><dt>0:53</dt><dd>Main film · 4K, 60 fps</dd></div>
-        <div class="fact"><dt>0:35</dt><dd>Short cut · same language</dd></div>
-        <div class="fact"><dt>7 beats</dt><dd>From pain to product</dd></div>
-        <div class="fact"><dt>25</dt><dd>Styleframes before motion</dd></div>
-      </dl>
-    </div>
-
-    <!-- C · film first: a short title row, the film right under it, the facts after -->
-    <div class="hv hv-c">
-      <div class="hc-row">
-        <div>
-          <div class="kicker rv"><i></i>smtp.dev · Product film</div>
-          <h1 class="h1 h1-c" aria-label="From pressure to clarity.">
-            <span class="ln" aria-hidden="true"><span>From pressure to clarity.</span></span>
-          </h1>
-        </div>
-        <p class="lede rv" style="--rd:.14s">53 seconds that explain an email testing tool for developers. Concept, design and animation by me. <a class="tlink" href="https://smtp.dev/" target="_blank" rel="noopener" data-cursor="Open smtp.dev">smtp.dev<svg aria-hidden="true"><use href="#icArrowOut"/></svg></a></p>
-      </div>
+      <p class="meta mono rv" style="--rd:.22s"><span>0:53 main film</span><span>0:35 short cut</span><span>7 beats</span><span>25 styleframes</span></p>
     </div>
 
     <!-- the film: a muted preview loops until you press play, then the full 1080p film takes over -->
@@ -171,12 +132,6 @@ try { const t = localStorage.getItem('tz-theme'); if (t === 'light' || t === 'da
         <span class="mono note">Bar colors read from the film</span>
       </figcaption>
     </figure>
-    <dl class="facts facts--row hv-c-after rv">
-      <div class="fact"><dt>0:53</dt><dd>Main film · 4K, 60 fps</dd></div>
-      <div class="fact"><dt>0:35</dt><dd>Short cut · same language</dd></div>
-      <div class="fact"><dt>7 beats</dt><dd>From pain to product</dd></div>
-      <div class="fact"><dt>25</dt><dd>Styleframes before motion</dd></div>
-    </dl>
   </div>
 </section>
 

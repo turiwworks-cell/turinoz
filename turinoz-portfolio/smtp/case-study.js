@@ -4,7 +4,7 @@
    One file, no libraries. In order:
      helpers · color strips · reveal & nav · label cursor · players (film + short)
      · beat by beat (with Turinoz's cursor) · refinement wipe · styleframes rail
-     · lengths + logo scrubber · delivery terminal · hero (count, dust) · day / night · pause all
+     · lengths + logo scrubber · delivery terminal · hero (title, dust) · day / night · pause all
    Everything that moves sleeps off screen, in a hidden tab, while a film plays
    (for the muted loops), when "Pause all motion" is on, and for visitors who
    prefer reduced motion.
@@ -637,21 +637,9 @@
   }
 
   /* ==========================================================================
-     HERO — the title counts to 53; a little dust drifts in the light, like the film
+     HERO — the title rises in once the fonts are in; a little dust drifts in the light, like the film
      ========================================================================== */
-  const count = $('.h1 .count');
-  const heroIn = () => {
-    $$('.h1').forEach(h => h.classList.add('in'));
-    if (!count || reduce()) return;
-    const to = +count.dataset.to, t0 = performance.now() + 120, dur = 1300;
-    count.textContent = '00';
-    const step = now => {
-      const p = clamp((now - t0) / dur, 0, 1), e = 1 - Math.pow(1 - p, 3);
-      count.textContent = String(Math.round(to * e)).padStart(2, '0');
-      if (p < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  };
+  const heroIn = () => $$('.h1').forEach(h => h.classList.add('in'));
   (document.fonts && document.fonts.ready ? Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 900))]) : Promise.resolve()).then(() => requestAnimationFrame(heroIn));
 
   const dust = $('.dust');
@@ -688,15 +676,6 @@
     new ResizeObserver(seed).observe(dust);
     new IntersectionObserver(es => { visible = es[0].isIntersecting; D.sync(); }).observe(dust);
   }
-
-  /* "Watch the film" goes to the film and starts it */
-  const mainP = players.find(p => p.isMain);
-  $$('[data-play-film]').forEach(a => a.addEventListener('click', e => {
-    if (!mainP || !mainP.big) return;
-    e.preventDefault();
-    $('#film').scrollIntoView({ behavior: reduce() ? 'auto' : 'smooth', block: 'center' });
-    mainP.big.click();
-  }));
 
   /* ==========================================================================
      DAY / NIGHT — the same choice as the portfolio's home page (tz-theme)
