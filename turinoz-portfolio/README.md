@@ -39,7 +39,7 @@ media/                  client videos
 smtp/                   smtp.dev product film case study
   index.html            the page
   case-study.css        its styles (dark, in the film's own light)
-  case-study.js         its behaviour: player, beats, compare, frames, logo scrubber
+  case-study.js         its behaviour: player, beats, frames, logo loop
   film-data.js          the colors of the three films, measured from their frames
   assets/               the full films, stills, styleframes, thumbnails; media-manifest.json lists them
 sitemate/               Storm motion system page (the Sitemate case study)
@@ -187,8 +187,8 @@ python -m http.server 8000
   dust rising through it. "clarity." is smtp.dev's blue gradient at night and one solid blue
   by day (`--grad`).
 - **The film**: it opens on its end card (`assets/film-end.webp`: mark, wordmark, tagline) and
-  nothing plays until the page has loaded, the visitor has scrolled and the player is almost fully
-  on screen; then a muted preview loops until someone presses play, and the full film streams
+  nothing plays until the page has loaded, the visitor has scrolled and the player has been fully
+  on screen for about a second; then a muted preview loops until someone presses play, and the full film streams
   as HLS (`assets/hls/main/master.m3u8`, 540p to 4K at 60 fps, 6 s segments, H.264 8-bit; the
   audio is the master's own AAC, copied untouched) and the player picks the size for the
   screen and the connection (`capLevelToPlayerSize`, so fullscreen on a 4K screen gets 4K).
@@ -202,23 +202,22 @@ python -m http.server 8000
   sound, set `START_WITH_SOUND` at the top of `case-study.js`. The seek bar is the film's own
   colors, split into its seven beats; hovering shows the frame (`assets/film-thumbs.webp`).
 - **Beat by beat**: seven beats, each with a note. The film plays that beat on a loop beside
-  it, and Turinoz's cursor (the Curve Lab / Spectra tour cursor) points at the detail and says
-  one line. A beat's times, cursor position and line are the `data-` attributes on its `<li>`
-  in `index.html` (`data-t0`, `data-t1`, `data-x`, `data-y` in % of the frame, `data-say`).
+  it, with nothing drawn over the frame (the old pointing cursor and its comments are gone;
+  `data-x`, `data-y` and `data-say` are left on each `<li>` but unused). A beat's times are
+  `data-t0` and `data-t1` on its `<li>` in `index.html`.
   `data-loop` ends the loop earlier than the beat when the next scene bleeds in (beat 01
   loops to 1.45 s, before the light turns red).
   The seek bar's beat names come from the same list.
 - **Styleframes**: six frames, numbered SF 01 to 06 in film order, each with one line. The rail
   is a loop (the script puts three copies in a track; the copies are hidden from screen readers)
   that drifts slowly by itself and stops while the pointer is on it. Drag or swipe it and it
-  coasts, then settles on a card; the arrows and arrow keys step one card.
+  stays where it is let go (no momentum, no snap); the arrows and arrow keys step one card.
 - **One language**: the three films to scale, each bar drawn from its own colors with a
   playhead in real time; the short cut player; the logo loop frame by frame: a 1440 px video
   of the LogoLoop master's centre (`assets/logo-loop-v1.av1.mp4`, with an H.264 copy; 86
-  frames, a key frame every 6) that the pointer scrubs, and a sprite sheet
-  (`assets/logo-frames.webp`) that only draws the five key-pose thumbnails.
-- Everything that moves sleeps off screen, in a hidden tab, while a film plays, when the nav's
-  pause button is on, and for visitors who prefer reduced motion (stills instead of loops).
+  frames) that just loops (no scrubbing), with a frame counter, and a sprite sheet
+  (`assets/logo-frames.webp`) that draws the five key-pose pictures under it (not clickable).
+- Everything that moves sleeps off screen, in a hidden tab, while a film plays, and for visitors who prefer reduced motion (stills instead of loops).
 - Removed in the redesign (no longer used by the page): the old hook/workflow/outro loops and
   their posters, the six story stills, the 16:9 logo loop copy and the old main posters
   (`film-poster.webp` too, replaced by the end card). Later

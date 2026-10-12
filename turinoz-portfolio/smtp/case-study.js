@@ -173,7 +173,7 @@
       this.strip = new Strip($('.fp-colors', root), COLORS[this.kind] || []);
       this.isMain = this.kind === 'main';
       this.mode = this.prev ? 'preview' : 'film';
-      this.idle = !!this.prev; this.full = false;   // the main film waits on its end card until the visitor scrolls down to it
+      this.idle = !!this.prev; this.inView = false; this.inSince = 0; this.wait = 0;   // the main film waits on its end card until the visitor scrolls down to it
       if (this.idle) root.classList.add('is-idle');
       this.visible = false; this.pending = null; this.dragging = false; this.lastAct = -1; this.raf = 0; this.aria = 0;
       this.sound = START_WITH_SOUND;
@@ -183,7 +183,9 @@
       this.build(); this.bind(); this.ui(); this.paint();
       new IntersectionObserver(es => {
         const e = es[0]; this.visible = e.isIntersecting;
-        this.full = e.intersectionRatio >= .8 || e.intersectionRect.height >= innerHeight * .8;
+        const was = this.inView;
+        this.inView = e.intersectionRatio >= .9 || e.intersectionRect.height >= innerHeight * .9;
+        if (this.inView && !was) this.inSince = performance.now();
         this.sync(); if (this.visible) this.loop();
       }, { threshold: [0, .05, .2, .4, .6, .7, .8, .9, 1] }).observe(root);
       sleepers.add(this);
@@ -359,7 +361,14 @@
     }
     sync() {   // the muted preview loops only when nothing else asks for attention
       if (!this.prev) return;
-      const on = this.mode === 'preview' && this.visible && (!this.idle || (this.full && armed)) && !reduce() && !paused() && !document.hidden && !filmPlaying();
+      // the first start waits a beat after the player is fully in view
+      let ready = !this.idle;
+      if (this.idle && this.inView && armed) {
+        const left = 900 - (performance.now() - Math.max(this.inSince, armedAt));
+        if (left <= 0) ready = true;
+        else { clearTimeout(this.wait); this.wait = setTimeout(() => this.sync(), left + 20); }
+      }
+      const on = this.mode === 'preview' && this.visible && ready && !reduce() && !paused() && !document.hidden && !filmPlaying();
       if (on) {
         if (this.idle) { this.idle = false; this.root.classList.remove('is-idle'); if (this.prev.readyState >= 1) this.prev.currentTime = 0; }
         if (this.prev.preload === 'none') this.prev.preload = 'auto';
@@ -369,10 +378,10 @@
     }
   }
   // nothing autoplays until the page has loaded and the visitor has scrolled
-  let armed = false;
+  let armed = false, armedAt = 0;
   const arm = () => {
     if (armed || document.readyState !== 'complete' || scrollY < 40) return;
-    armed = true; removeEventListener('scroll', arm); players.forEach(p => p.sync());
+    armed = true; armedAt = performance.now(); removeEventListener('scroll', arm); players.forEach(p => p.sync());
   };
   const players = $$('[data-player]').map(el => new Player(el));
   addEventListener('scroll', arm, { passive: true }); addEventListener('load', arm);
@@ -384,12 +393,12 @@
   });
 
   /* ==========================================================================
-     BEAT BY BEAT — the film plays each beat; Turinoz's cursor points at the detail
+     BEAT BY BEAT — the film plays each beat beside its note
      ========================================================================== */
   const stage = $('#stage');
   const S = stage ? {
     frame: $('.bt-frame', stage), video: $('.bt-video', stage), still: $('.bt-still', stage),
-    cur: $('.tcur', stage), bub: $('.tcur .bub', stage), tx: $('.tcur .tx', stage), tc: $('.bt-tc', stage),
+    tc: $('.bt-tc', stage),
     mini: $('.bt-mini', stage), range: $('.bt-range', stage), name: $('.bt-name', stage), span: $('.bt-span', stage),
     strip: null, active: -1, visible: false, raf: 0, token: 0, seeking: false,
   } : null;
@@ -416,7 +425,6 @@
     if (S.still.getAttribute('src') !== b.still) S.still.src = b.still;
     S.tc.textContent = fmt1(b.t0);
     playBeat();
-    pointAt(b);
   }
   function stageMayMove() { return S.visible && !reduce() && !paused() && !document.hidden && !filmPlaying(); }
   function playBeat() {
@@ -446,35 +454,6 @@
     };
     S.raf = requestAnimationFrame(tick);
   }
-  // Turinoz's cursor: glides to the detail, taps, then says one line
-  function pointAt(b) {
-    const tok = ++S.token, cur = S.cur, fw = S.frame.clientWidth, fh = S.frame.clientHeight;
-    const x = b.x / 100 * fw, y = b.y / 100 * fh;
-    // measure the line first, then pick the side with room (and nudge it in if neither has)
-    S.bub.classList.remove('on', 'typing'); S.tx.textContent = b.say || '';
-    const bw = S.bub.offsetWidth + 4; S.tx.textContent = '';
-    const right = x + 20 + bw <= fw - 6, leftOk = x - 12 - bw >= 6;
-    const left = !right && leftOk;
-    cur.classList.toggle('left', left); cur.classList.toggle('up', b.y > 74);
-    let nudge = 0;
-    if (!right && !leftOk) nudge = (fw - 6 - bw) - (x + 20);
-    S.bub.style.marginLeft = nudge ? nudge.toFixed(0) + 'px' : '';
-    if (reduce()) { cur.style.transition = 'opacity .3s'; }
-    cur.style.transform = `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0)`;
-    cur.classList.add('on');
-    const wait = (ms) => new Promise(r => setTimeout(r, ms));
-    (async () => {
-      await wait(reduce() ? 60 : 980); if (tok !== S.token) return;
-      cur.classList.add('press', 'clk'); await wait(160); cur.classList.remove('press');
-      await wait(120); if (tok !== S.token) return;
-      S.bub.classList.add('on', 'typing');
-      const txt = b.say || '';
-      if (reduce()) { S.tx.textContent = txt; }
-      else for (let i = 1; i <= txt.length; i++) { if (tok !== S.token) return; S.tx.textContent = txt.slice(0, i); await wait(26 + (txt[i - 1] === ' ' ? 30 : 0)); }
-      await wait(900); if (tok !== S.token) return;
-      S.bub.classList.remove('typing'); cur.classList.remove('clk');
-    })();
-  }
   if (S) {
     S.strip = new Strip($('canvas', S.mini), COLORS.main);
     S.strip.r = [0, BEATS[0].t1 / DUR];
@@ -486,7 +465,6 @@
       BEATS[k].el.scrollIntoView({ behavior: reduce() ? 'auto' : 'smooth', block: innerWidth <= 900 ? 'start' : 'center' });
     });
     S.mini.setAttribute('data-cursor', 'Go to beat');
-    new ResizeObserver(() => { if (S.active >= 0) { const b = BEATS[S.active]; S.cur.style.transition = 'none'; S.cur.style.transform = `translate3d(${(b.x / 100 * S.frame.clientWidth).toFixed(1)}px,${(b.y / 100 * S.frame.clientHeight).toFixed(1)}px,0)`; void S.cur.offsetWidth; S.cur.style.transition = ''; } }).observe(S.frame);
     const stageSync = () => { if (S.active < 0) return; if (stageMayMove()) playBeat(); else { S.video.pause(); S.frame.classList.remove('live'); } };
     new IntersectionObserver(es => { S.visible = es[0].isIntersecting; stageSync(); }, { rootMargin: '200px 0px' }).observe($('.bt'));
     S.sync = stageSync; sleepers.add(S);
@@ -577,10 +555,7 @@
       const d = R.drag; if (!d || (e && e.pointerId !== d.id)) return;
       R.drag = null; rail.classList.remove('drag');
       if (!d.live) { go(); return; }
-      const h = d.hist, a = h[0], z = h[h.length - 1], span = (z[0] - a[0]) / 1000;
-      const vel = span > .008 && performance.now() - z[0] < 80 ? -(z[1] - a[1]) / span : 0;
-      R.glide = reduce() ? 0 : clamp(vel, -4200, 4200);
-      if (!R.glide) snapTo(Math.round(R.x / R.step) * R.step); else go();
+      R.v = 0; R.resumeAt = performance.now() + 1800; go();   // it stays where it was let go, no snap
     };
     rail.addEventListener('pointerup', release); rail.addEventListener('pointercancel', release);
     rail.addEventListener('click', e => { if (R.moved) { e.preventDefault(); e.stopPropagation(); R.moved = false; } }, true);
@@ -605,8 +580,8 @@
 
   const lg = $('.lg-stage');
   if (lg) {
-    const vid = $('.lg-video', lg), fEl = $('.lg-f b', lg), modeEl = $('.lg-mode span', lg), rail2 = $('.lg-rail', lg), keys = $$('.lg-keys button');
-    const L = { f: 0, scrub: false, visible: false, raf: 0, hold: 0, want: null };
+    const vid = $('.lg-video', lg), fEl = $('.lg-f b', lg), modeEl = $('.lg-mode span', lg), rail2 = $('.lg-rail', lg), keys = $$('.lg-keys .lg-key');
+    const L = { f: 0, visible: false, raf: 0 };
     const KEYF = keys.map(k => +k.dataset.f);
     const sizeKeys = () => keys.forEach(k => {
       const s = $('span', k), w = s.offsetWidth, f = +k.dataset.f;
@@ -617,46 +592,23 @@
       f = ((Math.round(f) % LOGO.frames) + LOGO.frames) % LOGO.frames; L.f = f;
       fEl.textContent = String(f).padStart(2, '0');
       rail2.style.setProperty('--lp', (f / (LOGO.frames - 1)).toFixed(4));
-      lg.setAttribute('aria-valuenow', String(f));
       let near = 0; KEYF.forEach((k, i) => { if (f >= k) near = i; });
       keys.forEach((k, i) => k.classList.toggle('on', i === near));
     };
-    const seek = f => {                         // scrubbing: park the film on that frame
-      show(f);
-      const t = (L.f + .5) / LOGO.fps;
-      if (vid.readyState >= 1) vid.currentTime = t; else L.want = t;
-    };
-    vid.addEventListener('loadedmetadata', () => { if (L.want != null) { vid.currentTime = L.want; L.want = null; } });
-    const mayPlay = () => L.visible && !L.scrub && !reduce() && !paused() && !document.hidden;
+    const mayPlay = () => L.visible && !reduce() && !paused() && !document.hidden;
     const tick = () => {
       L.raf = 0;
       if (!mayPlay()) return;
       show(Math.min(LOGO.frames - 1, Math.floor(vid.currentTime * LOGO.fps)));
       L.raf = requestAnimationFrame(tick);
     };
-    const resume = () => {
-      if (!mayPlay()) { vid.pause(); return; }
+    L.sync = () => {                            // it just plays: no scrubbing, the key poses are pictures
+      modeEl.textContent = mayPlay() || !L.visible ? 'Playing' : 'Paused';
+      if (!mayPlay()) { vid.pause(); if (L.raf) { cancelAnimationFrame(L.raf); L.raf = 0; } return; }
       const p = vid.play(); if (p && p.catch) p.catch(() => {});
       if (!L.raf) L.raf = requestAnimationFrame(tick);
     };
-    const setMode = s => { L.scrub = s; lg.classList.toggle('scrub', s); modeEl.textContent = s ? 'Scrubbing' : (reduce() || paused() ? 'Paused' : 'Playing'); if (s) vid.pause(); else resume(); };
-    L.sync = () => { setMode(L.scrub); if (!mayPlay() && L.raf) { cancelAnimationFrame(L.raf); L.raf = 0; } };
     sleepers.add(L);
-    const fromX = e => { const r = lg.getBoundingClientRect(); return clamp((e.clientX - r.left) / r.width, 0, 1) * (LOGO.frames - 1); };
-    lg.addEventListener('pointermove', e => {
-      if (e.pointerType === 'mouse' || e.buttons) { clearTimeout(L.hold); if (!L.scrub) setMode(true); seek(fromX(e)); }
-    });
-    lg.addEventListener('pointerdown', e => { clearTimeout(L.hold); setMode(true); seek(fromX(e)); });
-    lg.addEventListener('pointerleave', () => { clearTimeout(L.hold); L.hold = setTimeout(() => setMode(false), 500); });
-    lg.addEventListener('pointerup', e => { if (e.pointerType !== 'mouse') { clearTimeout(L.hold); L.hold = setTimeout(() => setMode(false), 1600); } });
-    lg.addEventListener('keydown', e => {
-      const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
-      if (!d && e.key !== 'Home' && e.key !== 'End') return;
-      e.preventDefault(); clearTimeout(L.hold); setMode(true);
-      seek(e.key === 'Home' ? 0 : e.key === 'End' ? LOGO.frames - 1 : L.f + d * (e.shiftKey ? 5 : 1));
-    });
-    lg.addEventListener('blur', () => { clearTimeout(L.hold); L.hold = setTimeout(() => setMode(false), 400); });
-    keys.forEach(k => k.addEventListener('click', () => { clearTimeout(L.hold); setMode(true); seek(+k.dataset.f); L.hold = setTimeout(() => setMode(false), 1800); }));
     new ResizeObserver(sizeKeys).observe(lg);
     new IntersectionObserver(es => { L.visible = es[0].isIntersecting; L.sync(); }, { threshold: .1 }).observe(lg);
     new IntersectionObserver(es => {            // the loop downloads when it is about to be seen, not before
