@@ -3,7 +3,7 @@
    smtp.dev — product film case study (Turinoz)
    One file, no libraries. In order:
      helpers · color strips · reveal & nav · label cursor · players (film + short)
-     · beat by beat (with Turinoz's cursor) · refinement wipe · styleframes rail
+     · beat by beat (with Turinoz's cursor) · styleframes rail
      · lengths + logo scrubber · delivery terminal · hero (title, dust) · day / night · pause all
    Everything that moves sleeps off screen, in a hidden tab, while a film plays
    (for the muted loops), when "Pause all motion" is on, and for visitors who
@@ -450,78 +450,6 @@
     new IntersectionObserver(es => { S.visible = es[0].isIntersecting; stageSync(); }, { rootMargin: '200px 0px' }).observe($('.bt'));
     S.sync = stageSync; sleepers.add(S);
     setBeat(0);
-  }
-
-  /* ==========================================================================
-     REFINEMENT — drag to compare
-     ========================================================================== */
-  const wipe = $('#wipe');
-  if (wipe) {
-    const PAIRS = [
-      { early: 'assets/styleframe-10.webp', final: 'assets/workflow-final.webp', l: 'Exploration · SF 10', r: 'Final film · 0:15',
-        ea: 'Early styleframe: the domains screen as a floating glass panel with soft corners.', fa: 'Final film: the smtp.dev domains screen, flat and close to the real product.',
-        ce: 'Floating glass, soft corners, a lot of blur and a caption on top.', cf: 'The real layout: flat, direct, the way it looks after signup.' },
-      { early: 'assets/styleframe-15.webp', final: 'assets/start-testing-final.webp', l: 'Exploration · SF 15', r: 'Final film · 0:28',
-        ea: 'Early styleframe: That’s it, start testing, as a toast over a blurred screen.', fa: 'Final film: Start testing, alone in its own frame.',
-        ce: 'The last step tucked into a toast: That’s it, start testing.', cf: 'Given a frame of its own: That’s it. Then Start testing.' },
-    ];
-    const handle = $('.wipe-handle', wipe), imgF = $('.wipe-final', wipe), imgE = $('.wipe-early img', wipe);
-    const lblL = $('.wipe-l span', wipe), lblR = $('.wipe-r span', wipe), capE = $('.cap-early'), capF = $('.cap-final');
-    const seg = $('#refine .seg');
-    let x = 50, touched = false, hinted = false, down = false;
-    const set = v => { x = clamp(v, 0, 100); wipe.style.setProperty('--x', x.toFixed(2) + '%'); handle.setAttribute('aria-valuenow', String(Math.round(x))); };
-    const from = e => { const r = wipe.getBoundingClientRect(); return (e.clientX - r.left) / r.width * 100; };
-    wipe.addEventListener('pointerdown', e => {
-      if (e.button !== 0) return;
-      touched = true; down = true; wipe.classList.add('drag');
-      if (e.pointerType === 'mouse') { e.preventDefault(); wipe.setPointerCapture(e.pointerId); }
-      set(from(e));
-    });
-    wipe.addEventListener('pointermove', e => { if (down) set(from(e)); });
-    const up = () => { down = false; wipe.classList.remove('drag'); };
-    wipe.addEventListener('pointerup', up); wipe.addEventListener('pointercancel', up); wipe.addEventListener('lostpointercapture', up);
-    // touch: a sideways swipe drags, a vertical one scrolls (touch-action: pan-y)
-    handle.addEventListener('keydown', e => {
-      const d = e.key === 'ArrowRight' || e.key === 'ArrowUp' ? 5 : e.key === 'ArrowLeft' || e.key === 'ArrowDown' ? -5 : 0;
-      if (e.key === 'Home') { touched = true; set(0); e.preventDefault(); } else if (e.key === 'End') { touched = true; set(100); e.preventDefault(); }
-      if (d) { e.preventDefault(); touched = true; set(x + d * (e.shiftKey ? 2 : 1)); }
-    });
-    // a one-time hint that it moves
-    new IntersectionObserver((es, o) => {
-      if (!es[0].isIntersecting || hinted) return; hinted = true; o.disconnect();
-      if (reduce()) return;
-      const keys = [[0, 50], [.42, 30], [1.05, 70], [1.55, 50]], t0 = performance.now() + 500;
-      const ease = p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
-      const tick = now => {
-        if (touched) return;
-        const t = (now - t0) / 1000; if (t < 0) { requestAnimationFrame(tick); return; }
-        let k = 0; while (k < keys.length - 2 && t > keys[k + 1][0]) k++;
-        const [ta, va] = keys[k], [tb, vb] = keys[k + 1], p = clamp((t - ta) / (tb - ta), 0, 1);
-        set(va + (vb - va) * ease(p));
-        if (t < keys[keys.length - 1][0]) requestAnimationFrame(tick);
-      };
-      requestAnimationFrame(tick);
-    }, { threshold: .5 }).observe(wipe);
-    const show = i => {
-      const P = PAIRS[i]; seg.dataset.on = String(i);
-      if (!down) set(50);
-      $$('button', seg).forEach((b, j) => b.setAttribute('aria-selected', String(j === i)));
-      wipe.classList.add('swapping'); capE.style.opacity = capF.style.opacity = '0';
-      setTimeout(() => {
-        let n = 0; const done = () => { if (++n >= 2) { wipe.classList.remove('swapping'); } };
-        imgF.onload = done; imgE.onload = done; imgF.onerror = done; imgE.onerror = done;
-        imgF.src = P.final; imgE.src = P.early; imgF.alt = P.fa; imgE.alt = P.ea;
-        lblL.textContent = P.l; lblR.textContent = P.r; capE.textContent = P.ce; capF.textContent = P.cf;
-        capE.style.opacity = capF.style.opacity = '';
-        if (imgF.complete && imgE.complete) wipe.classList.remove('swapping');
-      }, 230);
-    };
-    $$('button', seg).forEach((b, i) => b.addEventListener('click', () => show(i)));
-    seg.addEventListener('keydown', e => {
-      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
-      const i = e.key === 'ArrowRight' ? 1 : 0; show(i); $$('button', seg)[i].focus();
-    });
-    set(50);
   }
 
   /* ==========================================================================
