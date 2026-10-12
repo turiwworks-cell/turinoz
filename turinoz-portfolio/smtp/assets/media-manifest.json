@@ -1,0 +1,196 @@
+{
+ "source": "Local SMTP project files only; no remote downloads.",
+ "video_encoding": "H.264 High, yuv420p 8-bit, CRF 19, BT.709, faststart",
+ "audio": "Complete films preserve the master AAC audio bitstream. All process loops have no audio track.",
+ "note": "Rebuilt for the October 2026 redesign of the case study. The muted film preview the page and the portfolio tile share lives in ../../media/ (smtp-film-preview.av1.mp4, smtp-film-preview.mp4). The colors of the films are in ../film-data.js.",
+ "files": [
+  {
+   "name": "beat-01.webp",
+   "bytes": 6866,
+   "width": 1280,
+   "height": 720,
+   "description": "Main-film frame 0.9s: >> Email testing. Still for beat 01 (Terminal)."
+  },
+  {
+   "name": "beat-02.webp",
+   "bytes": 35910,
+   "width": 1280,
+   "height": 720,
+   "description": "Main-film frame 3.1s: stacked SMTP errors under red light. Still for beat 02 (Pressure)."
+  },
+  {
+   "name": "beat-03.webp",
+   "bytes": 5858,
+   "width": 1280,
+   "height": 720,
+   "description": "Main-film frame 4.1s: // Yeah, it’s a pain. Still for beat 03 (Voice)."
+  },
+  {
+   "name": "beat-04.webp",
+   "bytes": 8606,
+   "width": 1280,
+   "height": 720,
+   "description": "Main-film frame 10.2s: but you [mark] can just. Still for beat 04 (Turn)."
+  },
+  {
+   "name": "beat-05.webp",
+   "bytes": 12294,
+   "width": 1280,
+   "height": 720,
+   "description": "Main-film frame 20.9s: the Update MX records dialog. Still for beat 05 (Four steps)."
+  },
+  {
+   "name": "beat-06.webp",
+   "bytes": 9256,
+   "width": 1280,
+   "height": 720,
+   "description": "Main-film frame 36.2s: Not SendGrid. Not SES. Still for beat 06 (Promise)."
+  },
+  {
+   "name": "beat-07.webp",
+   "bytes": 13098,
+   "width": 1280,
+   "height": 720,
+   "description": "Main-film frame 49.0s: mark, wordmark and tagline. Still for beat 07 (Mark)."
+  },
+  {
+   "name": "film-poster.webp",
+   "bytes": 47334,
+   "width": 1600,
+   "height": 900,
+   "description": "Main-film frame 3.1s, poster for the film player."
+  },
+  {
+   "name": "film-thumbs.webp",
+   "bytes": 250494,
+   "width": 4800,
+   "height": 2520,
+   "description": "Hover thumbnails for the film player: 210 frames of the main film at 4 per second, 320 × 180 each, 15 per row."
+  },
+  {
+   "name": "logo-frames.webp",
+   "bytes": 139166,
+   "width": 3520,
+   "height": 2560,
+   "description": "All 88 frames of the square logo loop (media/smtp-logo-loop.mp4), cropped around the mark, 320 × 320 each, 11 per row."
+  },
+  {
+   "name": "main-film-v1.mp4",
+   "bytes": 16822470,
+   "description": "Complete main product and brand film. Original AAC stream copied without processing.",
+   "duration_seconds": 52.586667,
+   "streams": [
+    {
+     "codec_name": "h264",
+     "codec_type": "video",
+     "width": 1920,
+     "height": 1080,
+     "pix_fmt": "yuv420p",
+     "avg_frame_rate": "60/1"
+    },
+    {
+     "codec_name": "aac",
+     "codec_type": "audio",
+     "sample_rate": "48000",
+     "channels": 2,
+     "avg_frame_rate": "0/0"
+    }
+   ],
+   "faststart_verified": true
+  },
+  {
+   "name": "share-cover-v1.jpg",
+   "bytes": 89888,
+   "width": 1200,
+   "height": 630,
+   "description": "Social-sharing cover made from supplied delivery poster 6; centered crop."
+  },
+  {
+   "name": "short-film-v1.mp4",
+   "bytes": 11263041,
+   "description": "Complete secondary product film. Original AAC stream copied without processing.",
+   "duration_seconds": 35.178667,
+   "streams": [
+    {
+     "codec_name": "h264",
+     "codec_type": "video",
+     "width": 1920,
+     "height": 1080,
+     "pix_fmt": "yuv420p",
+     "avg_frame_rate": "60/1"
+    },
+    {
+     "codec_name": "aac",
+     "codec_type": "audio",
+     "sample_rate": "48000",
+     "channels": 2,
+     "avg_frame_rate": "0/0"
+    }
+   ],
+   "faststart_verified": true
+  },
+  {
+   "name": "short-poster.webp",
+   "bytes": 48606,
+   "width": 1600,
+   "height": 900,
+   "description": "Secondary-film frame 18s: zoomed navigation and domains."
+  },
+  {
+   "name": "start-testing-final.webp",
+   "bytes": 19420,
+   "width": 1600,
+   "height": 900,
+   "description": "Main-film frame 28.5s: final standalone Start testing message."
+  },
+  {
+   "name": "styleframe-01.webp",
+   "bytes": 171560,
+   "width": 1600,
+   "height": 900,
+   "description": "Early styleframe 01: monospace email testing opening."
+  },
+  {
+   "name": "styleframe-03.webp",
+   "bytes": 135592,
+   "width": 1600,
+   "height": 900,
+   "description": "Early styleframe 03: layered terminal errors."
+  },
+  {
+   "name": "styleframe-09.webp",
+   "bytes": 114014,
+   "width": 1600,
+   "height": 900,
+   "description": "Early styleframe 09: blue relief transition."
+  },
+  {
+   "name": "styleframe-10.webp",
+   "bytes": 49458,
+   "width": 1600,
+   "height": 900,
+   "description": "Early styleframe 10: stylized product UI with explanatory caption."
+  },
+  {
+   "name": "styleframe-15.webp",
+   "bytes": 22942,
+   "width": 1600,
+   "height": 900,
+   "description": "Early styleframe 15: success toast with green progress line."
+  },
+  {
+   "name": "styleframe-25.webp",
+   "bytes": 28538,
+   "width": 1600,
+   "height": 900,
+   "description": "Early styleframe 25: logo and tagline ending."
+  },
+  {
+   "name": "workflow-final.webp",
+   "bytes": 44218,
+   "width": 1600,
+   "height": 900,
+   "description": "Main-film frame 15s: completed product domain UI."
+  }
+ ]
+}

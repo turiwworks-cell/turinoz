@@ -11,16 +11,46 @@ fonts/                  Archivo, Inter, Roboto, JetBrains Mono (licenses inside)
 vendor/lottie.min.js    Lottie player for the Sitemate tile
 rive/                   Rive files for the live tiles
   sphere.riv            Interactive Sphere tile
-  eye_icon.riv          Eye & Planet tile (same files as lab.turinoz.co/eye-planet/)
+  eye_icon.riv          Eye tile and Planet tile (same files as lab.turinoz.co/eye-planet/)
   planet_icon.riv
-  vendor/               the Rive runtime (rive.js + .wasm), shared by both tiles;
-                        file-mode.js is only fetched when the page is opened by double-click
+  digitigrade.riv       Digitigrade tile (the same file the digitigrade/ page carries inline)
+  vendor/               the Rive runtime (rive.js + .wasm), shared by all three tiles and by
+                        digitigrade/; file-mode.js is only fetched when the page is opened by
+                        double-click
+curve-lab/              the Curve Lab website and what its tile shows
+  index.html            the website, with the tool built in (works from any folder, even by double-click)
+  app.html              the tool on its own; the website's "Open" buttons go here
+  also-inside.html      one section of the website, playing by itself, for the Curve Lab tile
+digitigrade/            Digitigrade's own page ("Open" on its tile); its fonts are inside,
+                        the Rive runtime is ../rive/vendor/
+spectra/
+  tile.html             the Spectra game, laid out for its tile and played by Turinoz's cursor
+                        (uses ../fonts/; nothing else)
 media/                  client videos
-  smtp-logo-loop.av1.mp4   AV1, 10-bit (most browsers pick this one, ~140 KB)
-  smtp-logo-loop.mp4       H.264 fallback (Safari / older devices)
+  smtp-logo-loop.av1.mp4      AV1, 10-bit (most browsers pick this one, ~140 KB)
+  smtp-logo-loop.mp4          H.264 fallback (Safari / older devices)
   smtp-logo-loop-poster.jpg
+  smtp-film-preview.av1.mp4   the whole smtp.dev film, muted, 1280 × 720, 30 fps, AV1 10-bit (~1.3 MB)
+  smtp-film-preview.mp4       the same in H.264 (~2.5 MB). Shared by the film tile and the case study
+  smtp-film-poster.jpg        its poster (the red errors at 0:03)
+  smtp-film-colors.png        the film's own colors, one pixel per tenth of a second (the tile's bar)
+smtp/                   smtp.dev product film case study
+  index.html            the page
+  case-study.css        its styles (dark, in the film's own light)
+  case-study.js         its behaviour: player, beats, compare, frames, logo scrubber
+  film-data.js          the colors of the three films, measured from their frames
+  assets/               the full films, stills, styleframes, thumbnails; media-manifest.json lists them
 sitemate/               Storm motion system page (the Sitemate case study)
   films/, sprites/      its videos and sketch sheets, loaded only when scrolled to
+scoreline/              Scoreline case study (the live football app), and the app itself
+  index.html            the page
+  case-study.css        its styles (black, in the app's own night and spectra)
+  case-study.js         its behaviour: the phone, decisions, curves, timing stage, touch, race,
+                        Rive, process, terminal
+  assets/               stills from the real app (posters, phone shots for small screens, the
+                        desktop, the tile's poster) and share-cover.jpg
+  app/                  the real Scoreline build (scoreline-brain, SCORELINE_BASE=/scoreline/app/):
+                        the phone on the page and the grid tile both run this copy
 ```
 
 ## Deploying to Netlify
@@ -38,18 +68,77 @@ python -m http.server 8000
 
 ## The tiles that changed
 
-- **smtp.dev logo loop** (replaces "Agent, appear"). Muted, loops, no sound track in
-  the file. Nothing downloads until the tile is near the screen; it plays only while
-  visible and pauses behind a study or a hidden tab. With reduced motion turned on it
-  shows the poster and plays on hover. The original was 3200 × 2400 HEVC 10-bit, which
-  Chrome and Firefox can't play everywhere; these are 1080 × 1080 centre crops.
-- **Eye & Planet** now runs the real Rive icons. They only react while the pointer is
-  inside the tile; outside it they're left alone and drift into their own idle motion.
-  The chip in the top-left shows the state for both: Idle, Watching, Poked, Holding,
-  Dragging, Spinning, Thrown. "Open" goes to https://lab.turinoz.co/eye-planet/.
-  If the browser has no hardware WebGL2, the old JS drawing takes over.
-- Settings for the Eye & Planet tile (icon size, positions) are in `RIVE_EP` near the
-  end of the main script in `index.html`.
+- **smtp.dev product film** (row 3, two columns wide, where Numerals and the Eye were) is the
+  explainer. A muted preview of the whole film loops in it, with the same rules as the other
+  client videos (nothing downloads until it is near the screen; it plays only while visible;
+  it pauses behind a study or in a hidden tab; reduced motion shows the poster and plays on
+  hover). The thin bar inside is the film's own colors with a playhead that follows the video,
+  and the chip shows the time. The frame is as tall as a one-column tile, so the row keeps its
+  height next to Digitigrade; below 1100 px it is 16:9. The whole tile opens `smtp/`.
+  Script: "smtp.dev film tile" (right after the client loops in the main script).
+- **smtp.dev logo loop** stays where it was (row 2, first column) and is a Shot again, not a
+  link to the case study. Its caption links to the film.
+- **Eye** moved down to row 4, in the place of "Agent, spin". **Numerals** and **Agent, spin**
+  are parked in comments next to where they were, so either can come back as it was.
+- **Planet** and **Eye** are two tiles, each icon alone and centred. Both run the real Rive icons
+  and only react while the pointer is inside their own tile. Each chip shows its icon's
+  state: Idle, Watching, Poked (eye), Holding, Dragging, Spinning, Thrown (planet).
+  "Open" on both goes to https://lab.turinoz.co/eye-planet/.
+  If the browser has no hardware WebGL2, the old JS drawing takes over, one icon per tile.
+- Settings (icon size alone in a tile: `one`, two in a tile: `icon` and `at`) are in
+  `RIVE_EP` near the end of the main script in `index.html`.
+
+## Curve Lab tile
+
+- Shows website design, not the tool: one section of the Curve Lab website ("Also inside"),
+  in `curve-lab/also-inside.html`, playing by itself in an iframe. On the site, scroll moves
+  its playhead; here time does: each of the eight features rests about a second, then the
+  next curve is written over it in about two (`SEG` in that file), and after the eighth it
+  starts over. Nothing in the tile reacts to the pointer.
+- It is drawn at one size and scaled to the tile; tall frames (phones) get a two-column
+  version. Light or dark follows this page. It sleeps while off screen, behind a study, or in
+  a hidden tab.
+- "Open website" and the title open `curve-lab/` in a new tab. The old Curve Lab study page
+  is still in `index.html` (`#curve-lab`), just no longer linked from the grid.
+
+## Digitigrade tile (replaces Spectra's place in row 3)
+
+- The real `digitigrade.riv`, two columns wide. The .riv also draws readouts in its four
+  corners; the tile is framed on the walker's band (legs, numerals, ruler), so those stay
+  outside it. The band and sizes are `RIVE_DG` in the main script of `index.html`.
+- As on its own page, the whole page is its touchpad: a mouse steers it from anywhere, a
+  finger only inside the tile. With the pointer or focus on the tile, digits 0–9 send it to
+  that numeral.
+- Three controls in the tile: the status chip top-left ("Following you" / "Avoiding you"
+  while you steer it, "On its own" after 2 s without a move), Sound top-centre, and
+  Follow / Avoid at the bottom (Avoid is the file's own `countMeOut` switch).
+- Sound starts on. Once the cursor has been off the page for 5 seconds it switches itself off
+  (and stays off until switched back on). It is silent while the tile is off screen, behind a
+  study, or in a hidden tab.
+- "Open" goes to `digitigrade/`, in a new tab, like Eye and Planet.
+- If the browser has no hardware WebGL2, the old JS leg drawing takes over.
+- Spectra moved to the slot in row 4 where the old Digitigrade stand-in was, one column wide
+  (see "Spectra tile" below).
+
+## Spectra tile
+
+- Shows the game itself, not a drawing of it: `spectra/tile.html`, the plain-canvas build of
+  Spectra (the same code as the Telegram version) laid out again for the tile. Everything is
+  drawn on a 320 × 400 board and scaled to the frame; square frames (phones) get side margins.
+  Light or dark follows this page.
+- Turinoz's cursor plays it: the tour cursor from the Curve Lab website, with his mark in the
+  caption. It plays a run of three colours, plays with the cards it kept (fans them, brings one
+  forward, flicks one away, copies a hex), reads its score, and starts again. Its lines are `SAY`
+  near the top of that file. It never touches the visitor's clipboard.
+- "Play yourself" (top right of the frame) hands the game over: the frame takes the pointer, the
+  cursor says so and leaves. "Watch demo" gives it back; so does 35 s without a touch
+  (`IDLE_SECONDS`). On a narrow tile the button reads "Play" / "Watch".
+- One clock runs the game and the cursor, so it sleeps as a whole while off screen, behind a
+  study, or in a hidden tab, and picks up where it was.
+- With reduced motion turned on there is no tour: a finished round stands still, and
+  "Play yourself" still works.
+- "Open" goes into the Spectra study (`#spectra`), like the old tile did; the study's hero is
+  still the old drawing (`R.spectra`).
 
 ## Sitemate tile
 
@@ -59,3 +148,75 @@ python -m http.server 8000
 - The prompt it types is `PROMPT` in the "SITEMATE TILE" script at the end of
   `index.html`. The Lottie clips are the JSON block `#smClips` just above it.
 - "View project", the tile title and "See the full system" all open `sitemate/`.
+
+## smtp.dev case study (`smtp/`)
+
+- Dark on purpose: the page takes on the film's light, the way the Sitemate page takes on
+  Storm blue. Same fonts as the portfolio (Archivo, Inter, JetBrains Mono, from `../fonts/`).
+- **The film**: a muted preview loops until someone presses play; then the full 1080p film
+  (`assets/main-film-v1.mp4`, original sound untouched) takes over. Sound starts off; the
+  sound button turns it on (in the preview it starts the film from the top). To start with
+  sound, set `START_WITH_SOUND` at the top of `case-study.js`. The seek bar is the film's own
+  colors, split into its seven beats; hovering shows the frame (`assets/film-thumbs.webp`).
+- **Beat by beat**: seven beats, each with a note. The film plays that beat on a loop beside
+  it, and Turinoz's cursor (the Curve Lab / Spectra tour cursor) points at the detail and says
+  one line. A beat's times, cursor position and line are the `data-` attributes on its `<li>`
+  in `index.html` (`data-t0`, `data-t1`, `data-x`, `data-y` in % of the frame, `data-say`).
+  The seek bar's beat names come from the same list.
+- **Refinement**: drag to compare an early styleframe with the final film (two pairs).
+- **Styleframes**: six of the 25, with what each one became. Drag, swipe or use the arrows.
+- **One language**: the three films to scale, each bar drawn from its own colors with a
+  playhead in real time; the short cut player; the logo loop frame by frame
+  (`assets/logo-frames.webp`, move across it to scrub).
+- Everything that moves sleeps off screen, in a hidden tab, while a film plays, when the nav's
+  pause button is on, and for visitors who prefer reduced motion (stills instead of loops).
+- Removed in the redesign (no longer used by the page): the old hook/workflow/outro loops and
+  their posters, the six story stills, the 16:9 logo loop copy and the old main poster.
+- Previewing locally needs a server that answers byte ranges, or the films can't seek
+  (Python's `http.server` doesn't; `npx serve` or Netlify do).
+- After deploying, set `og:image` in `smtp/index.html` to the absolute URL of
+  `smtp/assets/share-cover-v1.jpg`.
+
+
+## Scoreline tile (row 4, two columns, in the Live score concept's place)
+
+- The real app, not a picture of it: `scoreline/app/` runs its demo evening in an iframe. It loads when
+  the tile nears the screen and is drawn at a fixed size, scaled to the frame: two panes (at least 540
+  tall, so the live cards keep their minutes) when the frame is wide, the phone when it's narrow. On
+  phones the frame is 4:5.
+- It takes no pointer; the whole frame, the title and "View case study" open `scoreline/`.
+- Through the app's own review bridge (same origin, `window.scorelineReviewHost`) a goal, a red card
+  and another goal play once each while the tile is on screen (`MOMENTS` in the "Scoreline tile"
+  script). The evening pauses off screen, behind a study, or in a hidden tab.
+- The poster (`scoreline/assets/tile.webp`) shows until the app has painted.
+- The Live score concept tile is parked in a comment next to it, and its study is still in the study
+  layer (`#live-score`), no longer linked from the grid. Spectra's "Next" now goes to Scoreline.
+
+## Scoreline case study (`scoreline/`)
+
+- Black on purpose: the page takes on the app's night, its five spectrum gradients and its live green.
+  Same fonts as the other studies (Archivo, Inter, JetBrains Mono from `../fonts/`), plus Hanken
+  Grotesk (the app's face, from `app/fonts/`) where it shows the app's type. The page moves on the
+  app's own curves.
+- **The phone**: one live copy of the app (`app/`) the whole way down. It sits beside the sections
+  marked `data-dock="phone"` (hero, roles, decisions, try it) and steps aside for the wide ones; the
+  "Try the demo" pill brings it back from anywhere. Goal, Red card, Pause, Restart and Take control
+  are the app's own review calls. The page moves the app between screens through its router without
+  adding history, and Turinoz's cursor points at the detail each decision is about.
+- **Decisions**: twelve, each with its goal. A decision's screen, where to look and the cursor's line
+  are the `data-` attributes on its `<li>` (`data-route`, `data-point`, `data-scroll`, `data-say`).
+  On small screens each one has a still and a "Show me in the demo" button instead.
+- **Motion**: the ten curves with their four numbers, each drawn against the browser's `ease`; the
+  fourteen section timings, played with their exact numbers on the stage; the touch tier (hover light,
+  press, letter roll) at the app's values; a race against the default.
+- **Rive**: the two real files (`app/rive/live-icon.riv`, `app/rive/moments.riv`) on the portfolio's
+  shared runtime (`../rive/vendor/`): Live on/off and the count; GOAAAL in any team's colours, or RED
+  CARD, with the phases on a timeline.
+- **Build**: the honest status. The demo is complete; the real-API mode is wired and tested against a
+  stand-in backend; no real provider, accounts or device testing yet.
+- Needs a server (the app is ES modules); `python -m http.server` is enough for the page. The
+  `[[redirects]]` rule in `netlify.toml` lets a reload on one of the app's screens find its page.
+- Rebuilding the app: in scoreline-brain, `SCORELINE_BASE=/scoreline/app/ npm run build`, then copy
+  `dist/` to `scoreline/app/` (without `_redirects`).
+- After deploying, set `og:image` in `scoreline/index.html` to the absolute URL of
+  `scoreline/assets/share-cover.jpg`.

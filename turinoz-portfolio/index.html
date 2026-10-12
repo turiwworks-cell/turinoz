@@ -488,7 +488,7 @@ html[data-no-chat] .tz-sbtn[data-ask="about"]{display:none}
 .media[data-rive-ep] .ep-hit{position:absolute;inset:0;z-index:1;touch-action:pan-y;-webkit-tap-highlight-color:transparent}
 .media[data-rive-ep] .ep-hit.is-planet{cursor:grab}
 .media[data-rive-ep] .ep-hit.is-down{cursor:grabbing}
-/* one state chip for both icons, same shape as the "Live in Sitemate" chip */
+/* one state chip per icon, same shape as the "Live in Sitemate" chip */
 .ep-state{position:absolute;z-index:6;left:14px;top:14px;display:inline-flex;align-items:center;gap:7px;height:26px;padding:0 10px 0 9px;border-radius:999px;
   font:500 12px/1 var(--ui);letter-spacing:-.005em;white-space:nowrap;color:var(--deep-ink);pointer-events:none;
   background:rgba(9,10,9,.62);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);
@@ -499,6 +499,142 @@ html[data-no-chat] .tz-sbtn[data-ask="about"]{display:none}
 .ep-state i::after{content:"";position:absolute;inset:-3px;border-radius:50%;border:1.5px solid #4CC764;opacity:0;animation:stPing 2.2s var(--ease) infinite}
 .ep-state.is-idle i{background:#5B605A}
 .ep-state.is-idle i::after{animation:none}
+
+/* ---------- live Rive Digitigrade tile ----------
+   Two columns wide, in Spectra's old place. One square canvas, larger than the tile and
+   centred on the walker's band (legs, numerals, ruler): the .riv also draws readouts in its
+   four corners, and those fall outside the tile. Band and sizes: RIVE_DG in the main script. */
+.tile--wide{grid-column:span 2}
+.tile--wide .media{aspect-ratio:auto;flex:1 1 auto;min-height:0}
+.tile--one[data-kind="study"]{grid-column:auto}                       /* a study tile one column wide (Spectra) */
+.tile--one[data-kind="study"] .media{aspect-ratio:4/5;flex:none}
+/* ---------- smtp.dev product film tile (row 3, two columns): a muted preview of the film ----------
+   Its frame is as tall as the one-column tiles, so the row keeps its height next to Digitigrade.
+   The bar is the film's own colors (one stripe per tenth of a second) with a playhead. */
+.tile.tile--film[data-kind] .media{aspect-ratio:33/20;flex:none}
+.media--film{background:#0D0C0F}
+.fm-chip{position:absolute;z-index:6;left:14px;top:14px;display:inline-flex;align-items:center;gap:7px;height:26px;padding:0 10px 0 9px;border-radius:999px;
+  font:500 12px/1 var(--ui);letter-spacing:-.005em;white-space:nowrap;color:var(--deep-ink);pointer-events:none;
+  background:rgba(9,10,9,.62);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.fm-chip i{width:7px;height:7px;border-radius:50%;flex:none;background:#3F7CFF;box-shadow:0 0 0 3px rgba(63,124,255,.25)}
+.fm-chip b{font:460 11px/1 var(--mono);color:var(--deep-2);font-variant-numeric:tabular-nums;margin-left:1px}
+.fm-bar{position:absolute;z-index:6;left:16px;right:16px;bottom:16px;height:4px;border-radius:3px;pointer-events:none;
+  background:url(media/smtp-film-colors.png) 0 0/100% 100% no-repeat;image-rendering:pixelated;box-shadow:0 0 0 1px rgba(0,0,0,.25);
+  transition:height .35s var(--ease)}
+.fm-bar::before{content:"";position:absolute;top:0;bottom:0;right:0;left:calc(var(--p,0)*100%);border-radius:0 3px 3px 0;background:rgba(10,10,12,.55)}
+.fm-bar u{position:absolute;top:-4px;bottom:-4px;left:calc(var(--p,0)*100%);width:2px;margin-left:-1px;border-radius:2px;background:#fff;text-decoration:none;
+  box-shadow:0 0 8px rgba(255,255,255,.5)}
+.tile--film:hover .fm-bar,.tile--film:focus-visible .fm-bar{height:6px}
+.tile--film:hover .cta svg,.tile--film:focus-visible .cta svg{transform:translateX(2px)}
+@media (max-width:1100px){ .tile--wide .media{flex:none;aspect-ratio:16/9} }
+@media (max-width:1100px){ .tile.tile--film[data-kind] .media{aspect-ratio:16/9} }
+@media (max-width:720px){
+  .tile--wide{grid-column:auto}
+  .tile.tile--wide .media{aspect-ratio:4/3}
+  .tile.tile--one[data-kind="study"] .media{aspect-ratio:1}
+  .tile.tile--film[data-kind] .media{aspect-ratio:16/9}
+  .fm-chip{left:10px;top:10px;height:24px;padding:0 9px 0 8px;font-size:11.5px}
+  .fm-bar{left:12px;right:12px;bottom:12px}
+}
+/* ---------- Curve Lab website tile: a section of the site, playing on its own ----------
+   The page inside (curve-lab/also-inside.html) uses the site's own paper, light or dark like this page, so the frame matches it. */
+.media--site{background:#F1F0EC}
+.media--site iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;pointer-events:none;background:transparent;color-scheme:normal}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .media--site{background:#0C0C0B} }
+:root[data-theme="dark"] .media--site{background:#0C0C0B}
+/* ---------- Spectra tile: the game itself (spectra/tile.html), played by Turinoz's cursor ----------
+   The page inside uses the game's own ground, light or dark like this page, so the frame matches it.
+   It takes no pointer until "Play yourself" hands it over (.is-playing). */
+.media--spectra{background:#F1F0EB}
+.media--spectra iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;pointer-events:none;background:transparent;color-scheme:normal}
+.media--spectra.is-playing iframe{pointer-events:auto}
+.sp-play{position:absolute;z-index:6;top:12px;right:12px;display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 11px 0 9px;margin:0;border:0;border-radius:999px;
+  background:rgba(255,255,255,.8);box-shadow:inset 0 0 0 1px rgba(19,19,18,.1);color:#131312;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  font:500 12px/1 var(--ui);letter-spacing:-.005em;white-space:nowrap;cursor:pointer;-webkit-tap-highlight-color:transparent;
+  opacity:0;pointer-events:none;transition:opacity .5s var(--ease),box-shadow .25s var(--ease),transform .4s cubic-bezier(.34,1.56,.64,1)}
+.media--spectra.is-ready .sp-play{opacity:1;pointer-events:auto}
+.sp-play:hover{box-shadow:inset 0 0 0 1px rgba(19,19,18,.32)}
+.sp-play:active{transform:scale(.96)}
+.sp-play:focus-visible{outline:2px solid var(--select);outline-offset:2px}
+.sp-play svg{width:11px;height:11px;flex:none}
+.sp-play .sp-watch,.sp-play[aria-pressed="true"] .sp-go{display:none}
+/* ---------- Scoreline tile: the real app (scoreline/app/), two columns wide, in the Live score concept's place ----------
+   The app is drawn at a fixed size and scaled to the frame (the script sets --sl-w, --sl-h and --sl-k), so the
+   frame shows two panes when wide and the phone when narrow. The poster stays until the app has painted. */
+.media--sl{background:#000}
+.media--sl .sl-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:0 0;transition:opacity .7s var(--ease);z-index:1}
+.media--sl.is-ready .sl-poster{opacity:0}
+.media--sl iframe{position:absolute;left:0;top:0;width:var(--sl-w,920px);height:var(--sl-h,555px);border:0;transform:scale(var(--sl-k,1));transform-origin:0 0;pointer-events:none;background:#000;color-scheme:dark}
+.sl-cover{position:absolute;inset:0;z-index:4;border-radius:inherit}
+.sl-cover:focus-visible{outline:2px solid var(--select);outline-offset:-4px}
+.sl-chip{position:absolute;z-index:6;left:14px;top:14px;display:inline-flex;align-items:center;gap:7px;height:26px;padding:0 10px 0 9px;border-radius:999px;
+  font:500 12px/1 var(--ui);letter-spacing:-.005em;white-space:nowrap;color:#F3F2EF;pointer-events:none;
+  background:rgba(9,10,9,.66);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.sl-chip i{width:7px;height:7px;border-radius:50%;flex:none;background:#34E39A;box-shadow:0 0 0 3px rgba(52,227,154,.22)}
+.sl-chip b{font:460 11px/1 var(--mono);color:#85847F;margin-left:1px}
+.tile--sl:hover .cta svg{transform:translateX(2px)}
+@media (max-width:720px){ .tile.tile--sl[data-kind] .media{aspect-ratio:4/5} }
+.sp-play[aria-pressed="true"] .sp-watch{display:inline-flex;align-items:center;gap:6px}
+.sp-play .sp-go{display:inline-flex;align-items:center;gap:6px}
+.media--spectra.is-small .sp-play .sp-more{display:none}   /* a narrow tile: "Play" / "Watch" */
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .media--spectra{background:#0B0B0C}
+  :root:not([data-theme="light"]) .sp-play{background:rgba(22,22,24,.72);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);color:#F6F5F2}
+  :root:not([data-theme="light"]) .sp-play:hover{box-shadow:inset 0 0 0 1px rgba(255,255,255,.3)}
+}
+:root[data-theme="dark"] .media--spectra{background:#0B0B0C}
+:root[data-theme="dark"] .sp-play{background:rgba(22,22,24,.72);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);color:#F6F5F2}
+:root[data-theme="dark"] .sp-play:hover{box-shadow:inset 0 0 0 1px rgba(255,255,255,.3)}
+@media (max-width:720px){ .sp-play{top:10px;right:10px;height:24px;padding:0 10px 0 8px;font-size:11.5px} }
+.media[data-rive-dg]{background:#0A0A0B}                              /* the artboard's own colour, so there is no seam */
+.media[data-rive-dg] .dg-cv{position:absolute;inset:auto;display:block;opacity:0;transition:opacity .9s var(--ease);pointer-events:none}
+.media[data-rive-dg].is-ready .dg-cv{opacity:1}
+.media[data-rive-dg] .dg-hit{position:absolute;inset:0;z-index:1;touch-action:pan-y;-webkit-tap-highlight-color:transparent}
+/* its three controls: status (top left), sound (top centre), follow / avoid (bottom centre).
+   Same glass as the Eye & Planet chip. */
+.dg-state,.dg-snd,.dg-seg{position:absolute;z-index:6;border-radius:999px;background:rgba(9,10,9,.62);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);
+  font:500 12px/1 var(--ui);letter-spacing:-.005em;white-space:nowrap;color:var(--deep-ink);
+  opacity:0;pointer-events:none;transition:opacity .5s var(--ease),color .3s var(--ease),box-shadow .25s var(--ease)}
+.media[data-rive-dg].is-ready .dg-state{opacity:1}
+.media[data-rive-dg].is-ready .dg-snd,.media[data-rive-dg].is-ready .dg-seg{opacity:1;pointer-events:auto}
+.dg-state{left:14px;top:14px;display:inline-flex;align-items:center;gap:7px;height:26px;padding:0 10px 0 9px}
+.dg-state.is-idle{color:var(--deep-2)}
+.dg-state i{position:relative;width:7px;height:7px;border-radius:50%;flex:none;background:#4CC764;transition:background-color .3s var(--ease)}
+.dg-state i::after{content:"";position:absolute;inset:-3px;border-radius:50%;border:1.5px solid #4CC764;opacity:0;animation:stPing 2.2s var(--ease) infinite}
+.dg-state.is-idle i{background:#5B605A}
+.dg-state.is-idle i::after{animation:none}
+.dg-snd{left:50%;top:13px;transform:translateX(-50%);display:inline-flex;align-items:center;gap:7px;height:28px;padding:0 12px 0 10px;border:0;margin:0;cursor:pointer;
+  -webkit-tap-highlight-color:transparent}
+.dg-snd:hover{box-shadow:inset 0 0 0 1px rgba(255,255,255,.3)}
+.dg-snd:active{transform:translateX(-50%) scale(.96)}
+.dg-snd:focus-visible{outline:2px solid var(--select);outline-offset:2px}
+.dg-snd svg{width:15px;height:15px;flex:none;overflow:visible}
+.dg-snd b{font-weight:500}
+.dg-snd .wave{transform-origin:9px 11px;transition:opacity .25s,transform .3s var(--ease)}
+.dg-snd .x{opacity:0;transition:opacity .2s}
+.dg-snd[aria-pressed="false"]{color:var(--deep-2)}
+.dg-snd[aria-pressed="false"] .wave{opacity:0;transform:scale(.6)}
+.dg-snd[aria-pressed="false"] .x{opacity:1}
+.dg-seg{left:50%;bottom:14px;transform:translateX(-50%);display:grid;grid-template-columns:1fr 1fr;padding:3px}
+.dg-seg::before{content:"";position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);border-radius:999px;background:var(--deep-ink);
+  transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.dg-seg[data-mode="avoid"]::before{transform:translateX(100%)}
+.dg-seg button{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:84px;height:26px;padding:0 13px 0 11px;margin:0;
+  border:0;border-radius:999px;background:none;font:inherit;color:var(--deep-2);cursor:pointer;transition:color .3s var(--ease);-webkit-tap-highlight-color:transparent}
+.dg-seg button:hover{color:var(--deep-ink)}
+.dg-seg button[aria-checked="true"]{color:#141614}
+.dg-seg button:focus-visible{outline:2px solid var(--select);outline-offset:2px}
+.dg-seg button:disabled{opacity:.4;cursor:default}
+.dg-seg svg{width:13px;height:13px;flex:none}
+@media (max-width:720px){
+  .dg-state{left:10px;top:10px;height:24px;padding:0 9px 0 8px;font-size:11.5px}
+  .dg-snd{top:9px;height:26px;padding:0 10px 0 9px;font-size:11.5px}
+  .dg-seg{bottom:10px}
+  .dg-seg button{min-width:74px;height:24px;font-size:11.5px}
+}
+@media (max-width:420px){ .dg-snd span{display:none} .dg-snd{width:30px;padding:0;justify-content:center} }
+@media (max-width:360px){ .dg-state{font-size:11px;padding:0 8px 0 7px;gap:6px} }
+@media (prefers-reduced-motion:reduce){ .dg-state i::after{animation:none} .dg-seg::before,.dg-snd .wave{transition:none} }
 
 /* ---------- client loop tiles (muted video) ---------- */
 .media--video{background:#161616}
@@ -981,8 +1117,9 @@ html[data-no-chat] .tz-sbtn[data-ask="about"]{display:none}
         -->
 
         <!-- row 2 -->
+        <!-- smtp.dev logo loop: client loop, muted, starts when the tile is on screen (files in media/).
+             The film it comes from is the wide smtp.dev tile in row 3. -->
         <figure class="tile" data-kind="shot">
-          <!-- client loop: muted, starts when the tile is on screen (files in media/) -->
           <div class="media media--video">
             <video data-loop muted loop playsinline disablepictureinpicture disableremoteplayback preload="none" poster="media/smtp-logo-loop-poster.jpg" aria-label="The smtp.dev logo: a check mark that opens into an inbox and folds back">
               <source src="media/smtp-logo-loop.av1.mp4" type='video/mp4; codecs="av01.0.08M.10"'>
@@ -990,36 +1127,73 @@ html[data-no-chat] .tz-sbtn[data-ask="about"]{display:none}
             </video>
           </div>
           <figcaption class="cap"><span class="t">smtp.dev logo loop</span><span class="k mono"><i class="g g-shot"></i>Shot</span>
-            <span class="d">Client work for <a href="https://smtp.dev" target="_blank" rel="noopener">smtp.dev</a>.</span></figcaption>
+            <span class="d">A check that opens into an inbox and folds back. The mark the <a href="smtp/">smtp.dev product film</a> ends on.</span></figcaption>
         </figure>
-        <div class="tile" data-kind="live" data-hint="Move over it">
-          <!-- the real Rive icons (rive/eye_icon.riv, rive/planet_icon.riv), loaded when the tile comes into view -->
-          <div class="media dark" data-rive-ep role="img" aria-label="An eye and a planet icon. Move over them, press the eye, drag the planet sideways.">
-            <canvas class="ep-cv" data-icon="eye"></canvas><canvas class="ep-cv" data-icon="planet"></canvas>
+        <div class="tile" data-kind="live" data-hint="Drag it sideways">
+          <!-- the real Rive planet (rive/planet_icon.riv), alone and centred; loaded when the tile comes into view -->
+          <div class="media dark" data-rive-ep role="img" aria-label="A planet icon. Move over it, drag it sideways to throw it.">
+            <canvas class="ep-cv" data-icon="planet"></canvas>
             <div class="ep-hit"></div>
             <span class="ep-state is-idle" aria-hidden="true"><i></i><span>Idle</span></span>
           </div>
-          <div class="cap"><span class="t">Eye &amp; Planet</span>
+          <div class="cap"><span class="t">Planet</span>
             <a class="cta cta--ghost" href="https://lab.turinoz.co/eye-planet/" target="_blank" rel="noopener">Open<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg></a>
-            <span class="d">Two icons that watch and orbit your pointer. Icon design by Lucas Fields.</span></div>
+            <span class="d">An icon that orbits your pointer. Drag it sideways and let go. Icon design by Lucas Fields.</span></div>
         </div>
-        <a class="tile" data-kind="study" href="#curve-lab">
-          <div class="media" data-r="curvetile"><canvas></canvas></div>
-          <div class="cap"><span class="t">Curve Lab</span><span class="k mono"><i class="g g-study"></i>Study</span>
-            <span class="d">A small curve editor and motion inspector I built for myself. Free, no login.</span></div>
-        </a>
+        <!-- Curve Lab: a section of its website (curve-lab/also-inside.html), playing on its own. Not interactive. -->
+        <div class="tile tile--site" data-kind="study" id="clTile">
+          <div class="media media--site">
+            <iframe src="curve-lab/also-inside.html" title="The Curve Lab website, its Also inside section playing" loading="lazy" tabindex="-1" aria-hidden="true"></iframe>
+          </div>
+          <div class="cap"><a class="t" href="curve-lab/" target="_blank" rel="noopener">Curve Lab</a>
+            <a class="cta cta--solid" href="curve-lab/" target="_blank" rel="noopener"><span class="live" aria-hidden="true"></span>Open website<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg></a>
+            <span class="d">Website design for my own product.</span></div>
+        </div>
 
         <!-- row 3 -->
-        <a class="tile" data-kind="study" href="#spectra">
-          <div class="media" data-r="spectra"><canvas></canvas></div>
-          <div class="cap"><span class="t">Spectra</span><span class="k mono"><i class="g g-study"></i>Study</span>
-            <span class="d">A color-guessing toy. See a color for a moment, then mix it back from memory.</span></div>
+        <!-- Digitigrade: the real Rive piece (rive/digitigrade.riv), loaded when the tile comes into view.
+             As on its own page, the whole page is its touchpad. Script: "live Rive Digitigrade". -->
+        <div class="tile tile--wide" data-kind="live" data-hint="Point anywhere">
+          <div class="media dark" data-rive-dg tabindex="0" role="group" aria-label="Digitigrade, a live Rive piece: a four-legged walker on the numerals 0 to 9. It follows your pointer anywhere on the page. Type a digit to send it there.">
+            <canvas class="dg-cv"></canvas>
+            <div class="dg-hit"></div>
+            <span class="dg-state is-idle" aria-hidden="true"><i></i><span>On its own</span></span>
+            <button class="dg-snd" type="button" aria-pressed="true" aria-label="Sound"><svg viewBox="0 0 22 22" aria-hidden="true"><path d="M3 8.5h3.2L11 4.5v13l-4.8-4H3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><g class="wave" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M14.2 8.2a4 4 0 0 1 0 5.6"/><path d="M16.8 5.6a7.6 7.6 0 0 1 0 10.8"/></g><g class="x" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="m14.5 8.5 5 5M19.5 8.5l-5 5"/></g></svg><span>Sound <b>on</b></span></button>
+            <div class="dg-seg" data-mode="follow" role="radiogroup" aria-label="Mode">
+              <button type="button" role="radio" aria-checked="true" data-mode="follow"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="16" cy="11" r="3.2" fill="currentColor"/><path d="M2 11h8.5M7 7.5 10.5 11 7 14.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Follow</button>
+              <button type="button" role="radio" aria-checked="false" tabindex="-1" data-mode="avoid"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="5" cy="11" r="3.2" fill="currentColor"/><path d="M11 11h9M16.5 7.5 20 11l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Avoid</button>
+            </div>
+          </div>
+          <div class="cap"><span class="t">Digitigrade</span>
+            <a class="cta cta--ghost" href="digitigrade/" target="_blank" rel="noopener">Open<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg></a>
+            <span class="d">It walks on numerals and clicks them like keys. Point anywhere and it comes to you. Idea, design and animation by me.</span></div>
+        </div>
+        <!-- smtp.dev product film (the explainer): two columns wide, where Numerals and Eye were.
+             A muted preview of the whole film loops (media/smtp-film-preview*.mp4, same loop rules as the
+             other client videos). The bar is the film's own colors (media/smtp-film-colors.png) with a
+             playhead that follows the video. The whole tile opens the case study (smtp/).
+             Script: "smtp.dev film tile". -->
+        <a class="tile tile--film" data-kind="study" href="smtp/" aria-label="smtp.dev product film: view the case study">
+          <div class="media media--video media--film">
+            <video data-loop data-film muted loop playsinline disablepictureinpicture disableremoteplayback preload="none" poster="media/smtp-film-poster.jpg" aria-label="The smtp.dev product film: red terminal errors give way to a calm, blue walk through the product">
+              <source src="media/smtp-film-preview.av1.mp4" type='video/mp4; codecs="av01.0.05M.10"'>
+              <source src="media/smtp-film-preview.mp4" type='video/mp4; codecs="avc1.64001F"'>
+            </video>
+            <span class="fm-chip" aria-hidden="true"><i></i><span>Product film</span><b>0:00</b></span>
+            <span class="fm-bar" aria-hidden="true"><u></u></span>
+          </div>
+          <div class="cap"><span class="t">smtp.dev product film</span>
+            <span class="cta cta--solid">View case study<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6h8M6.8 2.8 10 6 6.8 9.2"/></svg></span>
+            <span class="d">From the pain of testing email to four calm steps, in 53 seconds. Concept, design and animation by me.</span></div>
         </a>
+        <!-- Numerals is parked: the smtp.dev film took its place (with the Eye's). To bring it back, put this tile back in.
         <div class="tile" data-kind="live" data-hint="Press and hold">
           <div class="media dark" data-r="numerals" role="img" aria-label="Numerals drifting that form a circle when pressed"><canvas></canvas></div>
           <div class="cap"><span class="t">Numerals</span><span class="k mono"><i class="g g-live"></i>Live</span>
             <span class="d">Numbers moving from chaos into a mark. Press and hold.</span></div>
         </div>
+        -->
+        <!-- Mark study 02 (the "turinoz" wordmark) is parked. To bring it back, put this tile back in.
         <figure class="tile" data-kind="shot" data-dur="4.8">
           <div class="media" role="img" aria-label="The word turinoz changing weight and width, letter by letter">
             <div class="wordshot" aria-hidden="true"><span style="--i:0">t</span><span style="--i:1">u</span><span style="--i:2">r</span><span style="--i:3">i</span><span style="--i:4">n</span><span style="--i:5">o</span><span style="--i:6">z</span></div>
@@ -1027,23 +1201,65 @@ html[data-no-chat] .tz-sbtn[data-ask="about"]{display:none}
           <figcaption class="cap"><span class="t">Mark study 02</span><span class="k mono"><i class="g g-shot"></i>Shot</span>
             <span class="d">Weight and width moving through a wordmark.</span></figcaption>
         </figure>
-
+        -->
         <!-- row 4 -->
+        <div class="tile" data-kind="live" data-hint="Press it">
+          <!-- the real Rive eye (rive/eye_icon.riv), alone and centred; loaded when the tile comes into view.
+               It moved down here from row 3; Agent, spin is parked below. -->
+          <div class="media dark" data-rive-ep role="img" aria-label="An eye icon. It watches your pointer; press it.">
+            <canvas class="ep-cv" data-icon="eye"></canvas>
+            <div class="ep-hit"></div>
+            <span class="ep-state is-idle" aria-hidden="true"><i></i><span>Idle</span></span>
+          </div>
+          <div class="cap"><span class="t">Eye</span>
+            <a class="cta cta--ghost" href="https://lab.turinoz.co/eye-planet/" target="_blank" rel="noopener">Open<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg></a>
+            <span class="d">An icon that keeps an eye on your pointer. Press it. Icon design by Lucas Fields.</span></div>
+        </div>
+        <!-- Agent, spin is parked: the Eye sits in its place now. To bring it back, put this tile back in.
         <figure class="tile" data-kind="shot" data-dur="2.4">
           <div class="media" data-r="agent" data-mode="spin" data-variant="b" role="img" aria-label="The Agent cylinder spinning"><canvas></canvas></div>
           <figcaption class="cap"><span class="t">Agent, spin</span><span class="k mono"><i class="g g-shot"></i>Shot</span>
             <span class="d">The idle spin, in the second color version.</span></figcaption>
         </figure>
-        <div class="tile" data-kind="live" data-hint="Move across it">
-          <div class="media" data-r="digitigrade" role="img" aria-label="A jointed leg that reaches toward the pointer"><canvas></canvas></div>
-          <div class="cap"><span class="t">Digitigrade</span><span class="k mono"><i class="g g-live"></i>Live</span>
-            <span class="d">An interactive Rive piece. Idea, design and animation by me.</span></div>
+        -->
+        <!-- Spectra: the game itself (spectra/tile.html), laid out for this tile and played by Turinoz's cursor.
+             "Play yourself" hands it to the visitor. Script: "Spectra tile". "Open" goes into the study (#spectra). -->
+        <div class="tile tile--one" data-kind="study" id="spTile">
+          <div class="media media--spectra" role="group" aria-label="Spectra, a color-guessing game. Turinoz's cursor is playing it; Play yourself hands it to you.">
+            <iframe src="spectra/tile.html" title="Spectra, playing on its own" loading="lazy" tabindex="-1" aria-hidden="true" allow="clipboard-write"></iframe>
+            <button class="sp-play" type="button" aria-pressed="false">
+              <span class="sp-go"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3.6 2.1v7.8L9.9 6z" fill="currentColor" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg><span>Play<span class="sp-more"> yourself</span></span></span>
+              <span class="sp-watch"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.6 1.4v8.4l2.3-2.1 1.6 3.4 1.5-.7-1.6-3.3 3.2-.2z" fill="currentColor" stroke="currentColor" stroke-width=".8" stroke-linejoin="round"/></svg><span>Watch<span class="sp-more"> demo</span></span></span>
+            </button>
+          </div>
+          <div class="cap"><span class="t">Spectra</span>
+            <a class="cta cta--ghost" href="#spectra">Open<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg></a>
+            <span class="d">Worth bringing over from the Lab: an old idea, rebuilt as a design and motion study until it played its best. Now a Telegram game.</span></div>
         </div>
+        <!-- Scoreline: the real app (scoreline/app/, its own demo evening) in place of the Live score concept tile.
+             Loaded when the tile comes near the screen, drawn at a fixed size and scaled to the frame: two panes
+             on a wide tile, the phone on a narrow one. It takes no pointer; the whole frame opens the case study
+             (scoreline/). A goal, a red card and another goal play once each while it's on screen.
+             It sleeps (the demo pauses) off screen, behind a study, or in a hidden tab. Script: "Scoreline tile".
+             The Live score concept tile is parked below, and its study is still in the study layer (#live-score). -->
+        <div class="tile tile--sl" data-kind="study" id="slTile">
+          <div class="media media--sl">
+            <img class="sl-poster" src="scoreline/assets/tile.webp" alt="" width="1380" height="833" loading="lazy" decoding="async">
+            <iframe data-src="scoreline/app/" title="Scoreline, the real app running its demo evening" tabindex="-1" aria-hidden="true"></iframe>
+            <a class="sl-cover" href="scoreline/" aria-label="Scoreline: view the case study"></a>
+            <span class="sl-chip" aria-hidden="true"><i></i><span>Live demo</span><b>the real app</b></span>
+          </div>
+          <div class="cap"><a class="t" href="scoreline/">Scoreline</a>
+            <a class="cta cta--solid" href="scoreline/">View case study<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6h8M6.8 2.8 10 6 6.8 9.2"/></svg></a>
+            <span class="d">A live football app. Design, motion, Rive and every decision by me; the code by AI, over hundreds of rounds. That’s the real demo running.</span></div>
+        </div>
+        <!-- Live score concept is parked: Scoreline took its place. To bring it back, put this tile back in.
         <a class="tile" data-kind="study" href="#live-score">
           <div class="media dark" data-r="score"><canvas></canvas></div>
           <div class="cap"><span class="t">Live score concept</span><span class="k mono"><i class="g g-study"></i>Study</span>
             <span class="d">A match-day app in Rive, built around one Live switch. In progress.</span></div>
         </a>
+        -->
       </div>
 
 </div>
@@ -1109,7 +1325,7 @@ html[data-no-chat] .tz-sbtn[data-ask="about"]{display:none}
 
   <!-- ===== Spectra ===== -->
   <article class="study" data-study="spectra" hidden aria-labelledby="h-spectra">
-    <div class="study-bar"><a class="back" href="#work"><span class="back-glyph"></span>Index</a><a class="next" href="#live-score">Next: Live score concept</a></div>
+    <div class="study-bar"><a class="back" href="#work"><span class="back-glyph"></span>Index</a><a class="next" href="scoreline/">Next: Scoreline</a></div>
     <header class="study-head">
       <span class="study-kind mono"><i class="g g-study"></i>Study</span>
       <h1 class="study-title" id="h-spectra" tabindex="-1">Spectra</h1>
@@ -1137,7 +1353,7 @@ html[data-no-chat] .tz-sbtn[data-ask="about"]{display:none}
       <h2>Next</h2>
       <div class="body"><p>A Telegram mini app, @colplaybot, rebuilt for the web without Rive, with a two-player challenge of three colors per run.</p></div>
     </section>
-    <a class="next-big" href="#live-score"><span class="nl">Next study</span><span class="nt">Live score concept</span></a>
+    <a class="next-big" href="scoreline/"><span class="nl">Next study</span><span class="nt">Scoreline</span></a>
   </article>
 
   <!-- ===== Live score concept ===== -->
@@ -1209,6 +1425,32 @@ html[data-no-chat] .tz-sbtn[data-ask="about"]{display:none}
 /* ==========================================================================
    Work view: canvas pieces + study pages (from turinoz.co)
    ========================================================================== */
+/* Sound gate for the Digitigrade tile (same as on its own page). The .riv's script plays its key
+   clicks with Audio.play(), which ignores Rive's own volume, so muting happens at the Web Audio
+   output: everything headed for the speakers passes through one gain node per audio context,
+   and the sound switch fades that gain. It has to be in place before rive.js loads; the other
+   Rive tiles make no sound, so it changes nothing for them. */
+(() => {
+  if (!window.AudioNode || !window.AudioDestinationNode) return;
+  const masters = new Map(), connect = AudioNode.prototype.connect;
+  let muted = false;      // sound is on from the start
+  AudioNode.prototype.connect = function (dest, ...rest) {
+    if (!(dest instanceof AudioDestinationNode) || this.__dgMaster) return connect.call(this, dest, ...rest);
+    const ctx = dest.context;
+    let g = masters.get(ctx);
+    if (!g) { g = ctx.createGain(); g.__dgMaster = true; g.gain.value = muted ? 0 : 1; connect.call(g, dest); masters.set(ctx, g); }
+    return connect.call(this, g, ...rest);
+  };
+  window.__dgMute = m => {
+    muted = m;
+    masters.forEach((g, ctx) => {
+      if (ctx.state === 'closed') return;
+      try { g.gain.setTargetAtTime(m ? 0 : 1, ctx.currentTime, 0.015); } catch (e) { g.gain.value = m ? 0 : 1; }
+      if (!m && ctx.state === 'suspended') ctx.resume().catch(() => {});
+    });
+  };
+})();
+
 (() => {
 'use strict';
 const $ = (s, el = document) => el.querySelector(s);
@@ -1502,10 +1744,11 @@ R.eyeplanet = {
   interactive: true, poster: 1,
   init(p) { Object.assign(p.s, { ix: 0, iy: 0, ra: 0, nextBlink: 2.2 }); },
   draw(p, ctx, w, h, t, dt) {
-    const s = p.s, u = Math.min(w * .6, h * .36);
-    const ex = w / 2, ey = h * .31, px = w / 2, py = h * .7;
+    const s = p.s, only = p.el.dataset.only || '', u = only ? Math.min(w * .7, h * .56) : Math.min(w * .6, h * .36);
+    const ex = w / 2, ey = only ? h / 2 : h * .31, px = w / 2, py = only ? h / 2 : h * .7;
     ctx.lineWidth = 2.25; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     // --- eye ---
+    if (only !== 'planet') {
     let open = 1;
     if (t > s.nextBlink) { const b = (t - s.nextBlink) / .2; if (b >= 1) s.nextBlink = t + 2.6 + Math.random() * 2.4; else open = 1 - Math.sin(Math.PI * b); }
     let lx, ly;
@@ -1524,6 +1767,8 @@ R.eyeplanet = {
     ctx.beginPath(); ctx.arc(ex + s.ix + u * .03, ey + s.iy - u * .03, u * .022, 0, TAU); ctx.fill();
     ctx.restore();
     ctx.strokeStyle = C.ink; almond(); ctx.stroke();
+    }
+    if (only === 'eye') return;
     // --- planet ---
     const tr = p.ptr.in ? (p.ptr.x / w - .5) * 1.1 : Math.sin(t * .6) * .28;
     s.ra = lerp(s.ra, tr - .22, 1 - Math.exp(-dt * 6));
@@ -2097,7 +2342,8 @@ R.score = {
 };
 
 /* ================= Rive runtime =================
-   One copy of the runtime (rive/vendor/), shared by the sphere and Eye & Planet tiles.
+   One copy of the runtime (rive/vendor/), shared by the sphere, Eye & Planet and Digitigrade tiles
+   (and by the digitigrade/ page).
    It loads once, the first time either tile gets near the screen. Pages opened by
    double-clicking (file://) get rive/vendor/file-mode.js first, which carries the
    WebAssembly and the .riv files inline. */
@@ -2321,15 +2567,14 @@ const RIVE_EP = {
   stateMachine: 'State Machine 1',
   art: 500,                          // both artboards are 500 × 500, icon at the centre
   view: 375,                         // artboard units across each icon's square canvas (as in the lab page)
-  icon: { w: .44, h: .34 },          // icon width (150 units) as a share of the tile, the smaller of w × width and h × height
-  at: { eye: .29, planet: .71 },     // icon centres, as a share of the tile's height
+  icon: { w: .44, h: .34 },          // two icons in one tile: icon width (150 units) as a share of the tile, the smaller of w × width and h × height
+  one: { w: .56, h: .44 },           // one icon alone in its tile (Eye, Planet): the same, centred
+  at: { eye: .29, planet: .71 },     // two icons in one tile: icon centres, as a share of the tile's height
   // values read from the icons' scripts: script units per artboard unit, and the hit radius
   spec: { eye: { scale: 150 / 354, hit: 221.25 }, planet: { scale: 150 / 350, hit: 250 } },
   boredAfter: 3500,                  // the eye's own rule: a still pointer is ignored after 3.5 s
 };
-const eyePlanet = (() => {
-  const el = $('[data-rive-ep]');
-  if (!el) return null;
+const eyePlanet = $$('[data-rive-ep]').map(el => (() => {
   const hit = $('.ep-hit', el), chip = $('.ep-state', el), chipText = $('.ep-state span', el);
   const icons = $$('.ep-cv', el).map(canvas => ({ canvas, kind: canvas.dataset.icon, r: null, ready: false, cx: 0, cy: 0, side: 0, zoom: 1 }));
   let fallback = null, ready = false, running = false, visible = false, guard = 0;
@@ -2338,15 +2583,16 @@ const eyePlanet = (() => {
   function place() {
     const w = el.clientWidth, h = el.clientHeight;
     if (!w || !h || fallback) return;
-    const iconPx = Math.min(w * RIVE_EP.icon.w, h * RIVE_EP.icon.h);
+    const solo = icons.length === 1, share = solo ? RIVE_EP.one : RIVE_EP.icon;
+    const iconPx = Math.min(w * share.w, h * share.h);
     const side = iconPx * RIVE_EP.view / 150, d = Math.min(2, window.devicePixelRatio || 1);
     for (const o of icons) {
-      o.cx = w / 2; o.cy = h * RIVE_EP.at[o.kind]; o.side = side; o.zoom = RIVE_EP.art / RIVE_EP.view;
+      o.cx = w / 2; o.cy = solo ? h / 2 : h * RIVE_EP.at[o.kind]; o.side = side; o.zoom = RIVE_EP.art / RIVE_EP.view;
       const c = o.canvas;
       c.style.width = c.style.height = side + 'px';
       c.style.left = (o.cx - side / 2) + 'px'; c.style.top = (o.cy - side / 2) + 'px';
       const mid = h * (RIVE_EP.at.eye + RIVE_EP.at.planet) / 2, top = o.cy - side / 2;   // split the tile between the two
-      c.style.clipPath = o.kind === 'eye' ? `inset(0 0 ${Math.max(0, top + side - mid)}px 0)` : `inset(${Math.max(0, mid - top)}px 0 0 0)`;
+      c.style.clipPath = solo ? '' : o.kind === 'eye' ? `inset(0 0 ${Math.max(0, top + side - mid)}px 0)` : `inset(${Math.max(0, mid - top)}px 0 0 0)`;
       const px = Math.round(side * d);
       if (c.width !== px || c.height !== px) { c.width = px; c.height = px; }
       if (o.ready) {
@@ -2372,6 +2618,7 @@ const eyePlanet = (() => {
   }
   const all = (type, x, y) => icons.forEach(o => send(o, type, x, y));
   function within(o, x, y) {               // inside the icon's own hit radius (script units)
+    if (!o || !o.ready) return false;
     const [cx, cy] = centre(o), ppu = o.side * o.zoom / RIVE_EP.art, sp = RIVE_EP.spec[o.kind];
     return Math.hypot((x - cx) / ppu / sp.scale, (y - cy) / ppu / sp.scale) <= sp.hit;
   }
@@ -2486,6 +2733,7 @@ const eyePlanet = (() => {
     el.classList.remove('dark');
     el.appendChild(document.createElement('canvas'));
     el.dataset.r = 'eyeplanet';
+    if (icons.length === 1) el.dataset.only = icons[0].kind;   // the stand-in draws just this one
     fallback = mountPiece(el);
     el.classList.add('is-ready');
   }
@@ -2529,7 +2777,292 @@ const eyePlanet = (() => {
     afterLoad(() => riveRuntime().then(boot, fail));
   }, { rootMargin: '400px' }).observe(el);
 
-  return { state: () => ({ ready, running, fallback: !!fallback, label: shown }) };
+  return { kinds: icons.map(o => o.kind), state: () => ({ ready, running, fallback: !!fallback, label: shown }) };
+})());
+
+/* ================= live Rive Digitigrade =================
+   The real digitigrade.riv (the same piece as digitigrade/, which "Open" goes to). One Luau
+   script draws the walker, the numerals, the key clicks, and readouts in the artboard's four
+   corners; the tile only shows the walker's band, so the corners stay outside it.
+   As on its own page, the whole page is its touchpad: a mouse steers it from anywhere, a finger
+   only inside the tile. Digits 0–9 send it to a numeral while the pointer or focus is on the tile.
+   The chip says whether you're steering it or it's on its own. Sound starts on and switches
+   itself off once the cursor has been off the page for 5 seconds. Same guard rails as the
+   other Rive tiles: default GPU, no software WebGL, the JS stand-in if Rive can't start, and
+   it rests (silent) while off screen, behind a study, or in a hidden tab. */
+const RIVE_DG = {
+  stateMachine: 'State Machine 1',
+  art: 1080,                                  // the artboard is 1080 × 1080
+  band: { x: 540, y: 484, w: 1020, h: 420 },  // what always stays in view: centre, width, height (artboard units)
+  maxView: 712,                               // the tallest slice that still hides the corner readouts (they end at y 125 and start at y 1016)
+  idle: 2000,                                 // the script's idleDelay: this long without a move, it walks on its own
+  muteAfter: 5000,                            // cursor off the page this long → sound off
+};
+const digitigrade = (() => {
+  const el = $('[data-rive-dg]');
+  if (!el) return null;
+  const root = document.documentElement;
+  const canvas = $('.dg-cv', el), hit = $('.dg-hit', el);
+  const chip = $('.dg-state', el), chipText = $('.dg-state span', el);
+  const sndBtn = $('.dg-snd', el), sndWord = $('.dg-snd b', el);
+  const segEl = $('.dg-seg', el), modeBtns = $$('.dg-seg button', el);
+  const ART = RIVE_DG.art, MID = ART / 2;
+  const SP = 75.6, WALK_Y = 390, NOD_Y = 250;   // read from the script: numerals 75.6 apart; where a walk "points"
+  let r = null, vm = null, ready = false, running = false, visible = false, fallback = null, guard = 0;
+  let flee = false, sound = true;
+
+  /* geometry: the square canvas is centred on the band, scaled so the band fills the tile's width */
+  function place() {
+    const w = el.clientWidth, h = el.clientHeight;
+    if (!w || !h || fallback) return;
+    const B = RIVE_DG.band;
+    const s = Math.max(Math.min(w / B.w, h / B.h), h / RIVE_DG.maxView);   // px per artboard unit
+    const side = ART * s, d = Math.min(2, window.devicePixelRatio || 1);
+    canvas.style.width = canvas.style.height = side + 'px';
+    canvas.style.left = (w / 2 - B.x * s) + 'px';
+    canvas.style.top = (h / 2 - B.y * s) + 'px';
+    const px = Math.round(side * d);
+    if (canvas.width !== px || canvas.height !== px) { canvas.width = px; canvas.height = px; }
+    if (ready) { r.resizeToCanvas(); r._needsRedraw = true; }
+  }
+  new ResizeObserver(place).observe(el);
+  place();
+
+  /* pointer → the canvas, as the mouse events its listeners read */
+  function send(type, x, y) {
+    if (!ready || !running) return;
+    if (!x && !y) x = .01;
+    canvas.dispatchEvent(new MouseEvent(type, { clientX: x, clientY: y, button: 0, bubbles: false }));
+  }
+  const boardToClient = (bx, by) => { const b = canvas.getBoundingClientRect(); return { x: b.left + bx / ART * b.width, y: b.top + by / ART * b.height }; };
+  const inTile = (x, y) => { const b = el.getBoundingClientRect(); return x >= b.left && x <= b.right && y >= b.top && y <= b.bottom; };
+
+  const ptr = { x: 0, y: 0, t: -1e9, on: false };
+  let over = false, mouseDown = false;
+  function steer(x, y) {
+    ptr.x = x; ptr.y = y; ptr.on = true;
+    if (walk) {                                   // a walk owns the pointer until you clearly move away
+      if (walk.ax === null) { walk.ax = x; walk.ay = y; }
+      if (Math.hypot(x - walk.ax, y - walk.ay) < 28) return;
+      stopWalk();
+    }
+    held = null;
+    ptr.t = performance.now();
+    send('mousemove', x, y);
+  }
+  function away() { if (!ptr.on) return; ptr.on = false; if (!walk) send('mouseout', ptr.x, ptr.y); }
+
+  // mouse: anywhere on the page
+  addEventListener('pointermove', e => {
+    if (e.pointerType !== 'mouse') return;
+    cancelMute();
+    over = inTile(e.clientX, e.clientY);
+    steer(e.clientX, e.clientY);
+  }, { passive: true });
+  hit.addEventListener('pointerdown', e => {
+    if (e.pointerType !== 'mouse' || e.button !== 0) return;
+    steer(e.clientX, e.clientY);
+    if (!walk) { send('mousedown', e.clientX, e.clientY); mouseDown = true; }
+  });
+  addEventListener('pointerup', e => {
+    if (e.pointerType !== 'mouse' || !mouseDown) return;
+    mouseDown = false;
+    if (!walk) send('mouseup', e.clientX, e.clientY);
+  }, { passive: true });
+  // finger or pen: only inside the tile, and only after a beat, so a finger that starts scrolling never steers it
+  let pid = null, heldTouch = null, holdTimer = 0;
+  const touchPress = p => { heldTouch = null; steer(p.x, p.y); send('mousedown', p.x, p.y); };
+  hit.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse' || pid !== null) return;
+    pid = e.pointerId;
+    try { hit.setPointerCapture(pid); } catch (_) {}
+    heldTouch = { x: e.clientX, y: e.clientY };
+    holdTimer = setTimeout(() => heldTouch && touchPress(heldTouch), 110);
+  });
+  hit.addEventListener('pointermove', e => {
+    if (e.pointerId !== pid) return;
+    if (heldTouch) { clearTimeout(holdTimer); touchPress(heldTouch); }
+    steer(e.clientX, e.clientY);
+  });
+  const endTouch = (e, cancel) => {
+    if (pid === null || e.pointerId !== pid) return;
+    pid = null; clearTimeout(holdTimer);
+    if (heldTouch) { if (cancel) { heldTouch = null; return; } touchPress({ x: e.clientX, y: e.clientY }); }
+    if (!cancel) send('mouseup', e.clientX, e.clientY);
+    away();
+  };
+  hit.addEventListener('pointerup', e => endTouch(e, false));
+  hit.addEventListener('pointercancel', e => endTouch(e, true));
+  hit.addEventListener('lostpointercapture', e => endTouch(e, true));
+  // the cursor leaves the page: the walker goes its own way, and 5 s later the sound switches off
+  const left = () => { over = false; away(); armMute(); };
+  root.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') left(); });
+  addEventListener('mouseout', e => { if (!e.relatedTarget) left(); });
+  addEventListener('blur', left);
+  addEventListener('focus', cancelMute);
+  // the page scrolls under a still mouse: to the board, that's a moving pointer
+  let scrollQueued = false;
+  addEventListener('scroll', () => {
+    if (!ptr.on || walk || scrollQueued) return;
+    scrollQueued = true;
+    requestAnimationFrame(() => { scrollQueued = false; over = inTile(ptr.x, ptr.y); ptr.t = performance.now(); send('mousemove', ptr.x, ptr.y); });
+  }, { capture: true, passive: true });
+
+  /* digits: walk to a numeral (the pointer is moved for it, a little each frame) */
+  const queue = [];
+  let walk = null, held = null, heldUntil = 0, lastD = null, lastDT = -1e9;
+  function enqueue(d) { if (queue.length >= 24) return; queue.push(d); if (!walk) nextWalk(performance.now()); }
+  function nextWalk(now) {
+    const prev = walk, d = queue.shift();
+    if (d === undefined) {
+      if (prev) { held = prev.d; heldUntil = now + RIVE_DG.idle; lastD = prev.d; lastDT = now; }
+      walk = null;
+      return;
+    }
+    const from = prev ? prev.d : (now - lastDT < RIVE_DG.idle ? lastD : null);
+    const dist = from === null ? 3 : Math.abs(d - from);
+    walk = {
+      d, t0: now, sent: 0, j: 1, nod: from === d,
+      dur: from === d ? 560 : Math.min(1900, 420 + 240 * dist),
+      ax: prev ? prev.ax : (ptr.on ? ptr.x : null), ay: prev ? prev.ay : (ptr.on ? ptr.y : null),
+    };
+    held = null;
+  }
+  function stopWalk() { queue.length = 0; walk = null; held = null; }
+  function stepWalk(now) {
+    if (!walk) return;
+    if (now - walk.t0 >= walk.dur) { nextWalk(now); if (!walk) return; }
+    if (now - walk.sent < 70) return;
+    walk.sent = now; walk.j = -walk.j;            // ±0.6 units each send, so the script keeps counting it as a live pointer
+    const p = boardToClient(MID + (walk.d - 4.5) * SP + walk.j * 0.6, walk.nod && now - walk.t0 < 220 ? NOD_Y : WALK_Y);
+    send('mousemove', p.x, p.y);
+  }
+  addEventListener('keydown', e => {
+    if (!running || e.metaKey || e.ctrlKey || e.altKey) return;
+    const t = e.target;
+    if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+    if (!over && !el.contains(document.activeElement)) return;
+    if (/^[0-9]$/.test(e.key)) enqueue(+e.key);
+    else if (e.key === 'Escape' && (walk || queue.length)) stopWalk();
+  });
+
+  /* switches */
+  function setFlee(v) {
+    flee = v;
+    segEl.dataset.mode = v ? 'avoid' : 'follow';
+    modeBtns.forEach(b => {
+      const on = (b.dataset.mode === 'avoid') === v;
+      b.setAttribute('aria-checked', String(on));
+      b.tabIndex = on ? 0 : -1;
+    });
+    if (vm) vm.value = v;
+  }
+  modeBtns.forEach(b => b.addEventListener('click', () => setFlee(b.dataset.mode === 'avoid')));
+  segEl.addEventListener('keydown', e => {             // arrows move between the two, like any radio group
+    if (!/^Arrow(Left|Right|Up|Down)$/.test(e.key)) return;
+    e.preventDefault();
+    setFlee(!flee);
+    modeBtns[flee ? 1 : 0].focus();
+  });
+  let muteTimer = 0;
+  function cancelMute() { clearTimeout(muteTimer); muteTimer = 0; }
+  function armMute() { cancelMute(); if (sound && running) muteTimer = setTimeout(() => setSound(false), RIVE_DG.muteAfter); }
+  function setSound(v) {
+    sound = v;
+    if (!v) cancelMute();
+    sndBtn.setAttribute('aria-pressed', String(v));
+    sndWord.textContent = v ? 'on' : 'off';
+    sndBtn.title = v ? 'Turn sound off' : 'Turn sound on';
+    if (window.__dgMute) window.__dgMute(!v);
+  }
+  sndBtn.addEventListener('click', () => setSound(!sound));
+  setSound(true);
+  // browsers hold audio until a tap, click or key; the first one lets it through
+  const unlock = () => { if (sound && window.__dgMute) window.__dgMute(false); };
+  ['pointerdown', 'keydown', 'touchend'].forEach(t => addEventListener(t, unlock, { passive: true }));
+
+  /* the chip: steered by you, or on its own */
+  let shown = '';
+  function label(now) {
+    if (walk) return (flee ? 'Avoiding ' : 'Walking to ') + walk.d;
+    if (held !== null && now < heldUntil) return (flee ? 'Clear of ' : 'At ') + held;
+    if (now - ptr.t < RIVE_DG.idle) return flee ? 'Avoiding you' : 'Following you';
+    return 'On its own';
+  }
+  function tick(now) {
+    if (fallback) return;
+    stepWalk(now);
+    if (running) {
+      const t = label(now);
+      if (t !== shown) { shown = t; chipText.textContent = t; chip.classList.toggle('is-idle', t === 'On its own'); }
+      if (held !== null && now >= heldUntil) held = null;
+    }
+    requestAnimationFrame(tick);
+  }
+
+  /* it rests while off screen, behind a study, or in a hidden tab (and so it's silent) */
+  const sync = () => {
+    if (!ready) return;
+    const on = visible && !root.classList.contains('study-open') && !document.hidden;
+    if (on === running) return;
+    running = on;
+    if (on) { r.play(); if (ptr.on && !walk) send('mousemove', ptr.x, ptr.y); }
+    else r.pause();
+  };
+  new IntersectionObserver(es => { for (const e of es) visible = e.isIntersecting; sync(); }).observe(el);
+  new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['class'] });
+  document.addEventListener('visibilitychange', sync);
+
+  function fail(err) {
+    if (fallback) return;
+    if (err) console.warn('Digitigrade: Rive did not start, using the JS stand-in.', err);
+    ready = false; running = false; clearTimeout(guard);
+    try { r && r.cleanup(); } catch (_) {}
+    [canvas, hit, chip, sndBtn, segEl].forEach(n => n.remove());
+    el.removeAttribute('data-rive-dg'); el.removeAttribute('tabindex'); el.classList.remove('dark');
+    el.setAttribute('role', 'img'); el.setAttribute('aria-label', 'A jointed leg that reaches toward the pointer');
+    el.appendChild(document.createElement('canvas'));
+    el.dataset.r = 'digitigrade';
+    fallback = mountPiece(el);
+    el.classList.add('is-ready');
+  }
+  guardGL(canvas, () => fail('no hardware WebGL2'));
+  canvas.addEventListener('webglcontextlost', e => { e.preventDefault(); fail('WebGL context lost'); });
+
+  function boot() {
+    if (fallback) return;
+    if (!window.rive) return fail('runtime missing');
+    const inl = window.__DIGITIGRADE_INLINE;
+    try {
+      r = new rive.Rive({
+        ...(inl ? { buffer: Uint8Array.from(atob(inl), c => c.charCodeAt(0)).buffer } : { src: RIVE_BASE + 'digitigrade.riv' }),
+        canvas, stateMachine: RIVE_DG.stateMachine, autoplay: true, autoBind: true,
+        layout: new rive.Layout({ fit: rive.Fit.Contain, alignment: rive.Alignment.Center }),
+        onLoad: () => {
+          if (fallback) { try { r.cleanup(); } catch (_) {} return; }
+          clearTimeout(guard);
+          try { vm = r.viewModelInstance ? r.viewModelInstance.boolean('countMeOut') : null; } catch (_) { vm = null; }
+          if (vm) vm.value = flee; else modeBtns.forEach(b => { b.disabled = true; });
+          r.resizeDrawingSurfaceToCanvas = place;   // the canvas size is ours, not the runtime's
+          ready = true; running = true;
+          place(); sync();
+          if (running && ptr.on) send('mousemove', ptr.x, ptr.y);
+          requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('is-ready')));
+          requestAnimationFrame(tick);
+        },
+        onLoadError: fail,
+      });
+    } catch (e) { fail(e); }
+  }
+  let started = false;
+  new IntersectionObserver((es, obs) => {
+    if (!es.some(e => e.isIntersecting) || started) return;
+    obs.disconnect(); started = true;
+    guard = setTimeout(() => fail('timeout'), 20000);
+    afterLoad(() => riveRuntime().then(boot, fail));
+  }, { rootMargin: '400px' }).observe(el);
+
+  return { state: () => ({ ready, running, visible, fallback: !!fallback, label: shown, sound, mode: flee ? 'avoid' : 'follow', over, walk: walk ? walk.d : null, queue: queue.length }) };
 })();
 
 /* ================= client loops (muted video tiles) =================
@@ -2564,12 +3097,109 @@ const eyePlanet = (() => {
   mqReduce.addEventListener && mqReduce.addEventListener('change', all);
 })();
 
+/* ================= smtp.dev film tile =================
+   The bar under the preview is the film's own colors; its playhead and the time in the chip
+   follow the video. It only ticks while the video plays (the loop rules above decide that). */
+(() => {
+  const v = $('video[data-film]');
+  if (!v) return;
+  const media = v.closest('.media'), time = $('.fm-chip b', media);
+  const fmt = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+  let raf = 0;
+  const paint = () => {
+    const d = v.duration || 52.57;
+    media.style.setProperty('--p', Math.min(1, v.currentTime / d).toFixed(4));
+    time.textContent = fmt(v.currentTime);
+  };
+  const tick = () => { raf = 0; paint(); if (!v.paused) raf = requestAnimationFrame(tick); };
+  v.addEventListener('play', () => { if (!raf) raf = requestAnimationFrame(tick); });
+  v.addEventListener('seeked', paint);
+  v.addEventListener('loadedmetadata', paint);
+})();
+
+/* ================= Spectra tile =================
+   The game runs in its own page (spectra/tile.html) and plays itself: Turinoz's cursor.
+   "Play yourself" hands it over (the frame starts taking the pointer); "Watch demo" gives it
+   back, and so does the page itself after 35 s without a touch. They talk by postMessage,
+   so it also works when the folder is opened by double-click. The page inside sleeps on
+   its own while off screen, behind a study, or in a hidden tab. */
+(() => {
+  const media = $('#spTile .media--spectra');
+  if (!media) return;
+  const frame = $('iframe', media), btn = $('.sp-play', media);
+  let mode = 'demo';
+  const show = m => {
+    mode = m;
+    media.classList.toggle('is-playing', m === 'play');
+    btn.setAttribute('aria-pressed', String(m === 'play'));
+    btn.setAttribute('aria-label', m === 'play' ? 'Watch the demo' : 'Play Spectra yourself');
+  };
+  const send = m => { try { frame.contentWindow.postMessage({ spectra: 1, mode: m }, '*'); } catch (_) {} };
+  btn.addEventListener('click', () => { const m = mode === 'play' ? 'demo' : 'play'; show(m); send(m); });
+  addEventListener('message', e => {
+    if (!frame.contentWindow || e.source !== frame.contentWindow || !e.data || !e.data.spectra) return;
+    if (e.data.ready) { media.classList.add('is-ready'); if (mode === 'play') send('play'); }
+    if (e.data.mode === 'play' || e.data.mode === 'demo') show(e.data.mode);
+  });
+  show('demo');
+  const narrow = w => media.classList.toggle('is-small', w < 270);
+  if ('ResizeObserver' in window) new ResizeObserver(es => narrow(es[0].contentRect.width)).observe(media);
+  else narrow(media.clientWidth);
+})();
+
+/* ================= Scoreline tile =================
+   The real app (scoreline/app/) runs its demo evening in the tile. It loads when the tile nears the
+   screen, is drawn at a fixed size and scaled to the frame (two panes when the frame is wide, the
+   phone when it's narrow), and takes no pointer: the frame opens the case study. Through the app's
+   own review bridge (same origin) a goal, a red card and another goal play once each while the
+   tile is on screen, and the evening pauses off screen, behind a study, or in a hidden tab. */
+(() => {
+  const media = $('#slTile .media--sl');
+  if (!media) return;
+  const frame = $('iframe', media);
+  let app = null, seen = false, visible = false, started = false, timer = 0, step = 0;
+  const MOMENTS = [[6000, 'goal'], [26000, 'red'], [30000, 'goal']];    // ms after the previous one, while on screen
+  window.scorelineReviewHost = {
+    attach(f) { app = f; setTimeout(() => media.classList.add('is-ready'), 900); sync(); },
+    detach(f) { if (app === f) app = null; },
+  };
+  const fit = () => {
+    const w = media.clientWidth, h = media.clientHeight;
+    if (!w || !h) return;
+    // wide: two panes, drawn at least 540 tall so the live cards keep their minutes; narrow: the phone
+    const L = w < 520 ? 390 : Math.max(820, w, Math.round(540 * w / h)), H = L * h / w;
+    media.style.setProperty('--sl-w', L + 'px'); media.style.setProperty('--sl-h', H.toFixed(1) + 'px');
+    media.style.setProperty('--sl-k', (w / L).toFixed(5));
+  };
+  const awake = () => visible && !document.hidden && !document.documentElement.classList.contains('study-open');
+  const next = () => {
+    clearTimeout(timer);
+    if (!app || step >= MOMENTS.length || !awake()) return;
+    timer = setTimeout(() => { if (!awake() || !app) return; app.scene(MOMENTS[step][1]).catch(() => {}); step++; next(); }, MOMENTS[step][0]);
+  };
+  function sync() {
+    if (!app) return;
+    try { const st = app.state(); if (awake() && st.paused) app.resume(); else if (!awake() && !st.paused) app.pause(); } catch (_) {}
+    next();
+  }
+  fit();
+  if ('ResizeObserver' in window) new ResizeObserver(fit).observe(media);
+  new IntersectionObserver(es => {
+    visible = es[0].isIntersecting;
+    if (visible && !started) { started = true; frame.src = frame.dataset.src; }
+    sync();
+  }, { rootMargin: '200px 0px' }).observe(media);
+  document.addEventListener('visibilitychange', sync);
+  new MutationObserver(sync).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+})();
+
 /* ================= studies ================= */
 const STUDIES = new Set(['curve-lab', 'spectra', 'live-score']);
 const layer = $('#studyLayer'), backdrop = $('#studyBackdrop'), page = $('#page');
 const PARTS = '.study-bar, .study-head, .study-sec, .next-big';
 let openId = null, openFrom = null;
-const gridTile = id => $(`#grid a.tile[href="#${id}"]`);
+// a study tile is a link itself, or (Spectra) holds an "Open" link to its study
+const gridTile = id => { const a = $(`#grid a[href="#${id}"]`); return a && (a.classList.contains('tile') ? a : a.closest('.tile')); };
 const flip = (el, a, b, reverse, dur) => {
   const f = `translate(${a.left - b.left}px,${a.top - b.top}px) scale(${a.width / b.width},${a.height / b.height})`;
   const k = [{ transformOrigin: '0 0', transform: f }, { transformOrigin: '0 0', transform: 'none' }];
@@ -2611,7 +3241,7 @@ function closeStudy() {
   const done = () => {
     if (finished) return; finished = true;
     finishClose(art);
-    if (back) { try { back.focus({ preventScroll: true }); } catch (_) {} }
+    if (back) { try { (back.matches('a[href]') ? back : $('a[href^="#"]', back) || back).focus({ preventScroll: true }); } catch (_) {} }
     try { history.replaceState(null, '', '#work'); } catch (_) {}
     anims.forEach(a => a.cancel());
   };
@@ -2628,7 +3258,7 @@ document.addEventListener('click', e => {
   const a = e.target.closest('a[href^="#"]');
   if (!a) return;
   const id = a.getAttribute('href').slice(1);
-  if (STUDIES.has(id)) { e.preventDefault(); openStudy(id, a.classList.contains('tile') ? a : null); return; }
+  if (STUDIES.has(id)) { e.preventDefault(); openStudy(id, a.classList.contains('tile') ? a : a.closest('#grid .tile')); return; }
   if (openId && a.classList.contains('back')) { e.preventDefault(); closeStudy(); return; }
   if (!id || id === 'work') e.preventDefault();
 });
@@ -2656,7 +3286,8 @@ window.__tzSite = {
   },
   isStudy: id => STUDIES.has(id),
   sphere: () => sphereLink.state(),
-  eyePlanet: () => eyePlanet && eyePlanet.state(),
+  eyePlanet: () => eyePlanet.map(t => Object.assign({ icons: t.kinds }, t.state())),
+  digitigrade: () => digitigrade && digitigrade.state(),
 };
 
 /* ================= boot ================= */
@@ -2732,15 +3363,18 @@ const LINES = {
   "Interactive Sphere": ["go on, spin it. it likes it", "press and hold. it gets shy"],
   "Mark study 01": ["a logo, built from its own scaffolding", "3 seconds of satisfying. watch the loop"],
   "Density curve": ["drag the dot. the sphere follows", "one rule, three numbers. it can't break"],
-  "smtp.dev logo loop": ["a real one. shipped for smtp.dev", "check mark, inbox, check mark. forever"],
-  "Eye & Planet": ["it's watching you. in a friendly way", "drag the planet sideways. throw it"],
-  "Curve Lab": ["I got obsessed with easing, so I built a tool", "free curve editor. open it and play"],
+  "smtp.dev product film": ["red errors, then blue calm. 53 seconds", "every beat has a job. it's all inside"],
+  "smtp.dev logo loop": ["a check that opens into an inbox. and back", "the mark the film ends on. on repeat"],
+  "Planet": ["drag it sideways. throw it", "it orbits you. slowly. politely"],
+  "Eye": ["it's watching you. in a friendly way", "press it. it blinks"],
+  "Curve Lab": ["the site I designed for my own tool", "every section moves on its own curve"],
   "Spectra": ["think you've got a good eye? prove it", "a color game. mildly addictive"],
   "Numerals": ["press and hold. chaos → calm", "numbers, but make it zen"],
   "Mark study 02": ["my name, doing yoga", "weight & width, breathing in and out"],
   "Agent, spin": ["the idle spin. hypnotic, right?", "same spin, new outfit"],
-  "Digitigrade": ["it reaches for your cursor. say hi", "a leg with opinions. move across it"],
+  "Digitigrade": ["four legs, ten keys. point and it comes to you", "switch it to avoid and watch it run"],
   "Live score concept": ["one switch, the whole app reacts", "match-day app in Rive. sneak peek inside"],
+  "Scoreline": ["that's the real app running. not a video", "every call was mine. AI typed the code"],
 };
 const QUIP = {
   welcome: ["welcome in 👋", "this is where I keep the good stuff", "make yourself at home"],
@@ -2756,6 +3390,7 @@ const STUDY_SAY = [
   ['[data-r="curveeditor"]', "drag the handles. go wild"],
   ["#copyCurve", "steal it, I don't mind"],
   [".presets .chip", "try overshoot. trust me"],
+  [".sp-play", "two seconds. that's all you get|go on, I'll watch"],     // the Spectra tile's Play yourself
 ];
 
 /* ---------- setup ---------- */

@@ -1,0 +1,1219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spectra · tile</title>
+<meta name="description" content="Spectra, a colour-guessing game by Turinoz, played by its own cursor inside a portfolio tile.">
+<meta name="robots" content="noindex">
+<style>
+/* The portfolio's own font files (../fonts), so the tile looks the same on every system. */
+@font-face{font-family:"Inter";src:url(../fonts/inter.woff2) format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+@font-face{font-family:"JB Mono";src:url(../fonts/jetbrains-mono.woff2) format("woff2");font-weight:100 800;font-style:normal;font-display:swap}
+:root{
+  --bg:#0b0b0c; --ui:cubic-bezier(.2,.8,.2,1);
+  --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --bub:#F2F0EB; --bub-ink:#171716; --bub-ring:rgba(0,0,0,.08);
+  color-scheme:dark;
+}
+/* light page: the caption flips to dark so it still reads on the light game */
+:root.light{--bub:#1C1C1E; --bub-ink:#F2F0EB; --bub-ring:rgba(255,255,255,.08); color-scheme:light}
+html,body{margin:0;height:100%;background:var(--bg);overflow:hidden;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+canvas{position:fixed;inset:0;display:block;width:100%;height:100%;touch-action:pan-y;outline:none}
+body.play canvas{touch-action:none}
+
+/* ---------- the tour cursor: the same one as on the Curve Lab website ---------- */
+.tcur{position:absolute;left:0;top:0;z-index:4;pointer-events:none;opacity:0;transition:opacity .6s var(--ui);will-change:transform}
+.tcur.on{opacity:1}
+.tcur .arrow{position:absolute;left:-5px;top:-3px;width:25px;height:25px;overflow:visible;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35)) drop-shadow(0 5px 9px rgba(0,0,0,.32));transform-origin:5px 3px;transition:transform .22s var(--ui)}
+.tcur .arrow path{fill:#fff;stroke:#111;stroke-width:1.25;stroke-linejoin:round}
+.tcur.press .arrow{transform:scale(.86)}
+.tcur .ring{position:absolute;left:-18px;top:-18px;width:36px;height:36px;border-radius:50%;border:1.5px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.12);opacity:0}
+.tcur.clk .ring{animation:ring .7s var(--ui)}
+@keyframes ring{0%{opacity:.85;transform:scale(.2)}100%{opacity:0;transform:scale(1.25)}}
+.tcur .bub{position:absolute;left:20px;top:26px;display:flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;border-radius:12px;background:var(--bub);color:var(--bub-ink);
+  font:500 12.5px/1.25 var(--sans);letter-spacing:-.005em;white-space:nowrap;box-shadow:0 16px 34px -12px rgba(0,0,0,.6),0 0 0 1px var(--bub-ring);
+  opacity:0;transform-origin:0 0;transform:translate(var(--bx,0px),var(--by,0px)) scale(var(--bs,.94));transition:opacity .35s var(--ui),transform .6s var(--ui),width .45s var(--ui)}
+.tcur .bub.on{opacity:1;--bs:1}
+.tcur .bub.out{opacity:0;--bs:.98}
+/* who's talking: Turinoz's mark, where the tour shows its step number */
+.tcur .bub em{flex:none;width:20px;height:20px;border-radius:50%;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.14)}
+.tcur .bub em svg{display:block;width:100%;height:100%}
+.tcur .bub b{display:flex;align-items:center;min-width:0;overflow:hidden;font-weight:500}
+.tcur .bub .caret{flex:none;width:1.5px;height:14px;margin-left:2px;border-radius:1px;background:currentColor;opacity:0}
+.tcur .bub.typing .caret{opacity:.75;animation:caret .9s steps(1) infinite}
+@keyframes caret{50%{opacity:0}}
+.tcur.up .bub{--by:calc(-100% - 50px)}
+@media (max-width:250px){ .tcur .bub em{display:none} .tcur .bub{padding-left:10px;font-size:11.5px} }
+@media (prefers-reduced-motion:reduce){ .tcur,.tcur .bub{transition:none} }
+</style>
+</head>
+<body>
+<canvas id="c" aria-label="Spectra"></canvas>
+<script>
+"use strict";
+// =============================================================================
+// SPECTRA / portfolio tile — the plain-canvas build of the game (mobile/), laid out
+// again for a 4:5 tile (a 320 × 400 board, scaled to whatever frame it sits in).
+// In the tile, Turinoz's cursor plays it: three colours, then a little play with the
+// cards, then the results, and again. "Play yourself" (in the page around it) hands
+// the game over; "Watch demo", or 35 s without a touch, gives it back to the cursor.
+// It sleeps while off screen, behind a study, or in a hidden tab.
+// =============================================================================
+(() => {
+const W = 320, H = 400, RUN_LENGTH = 3;
+const LOOK_SECONDS = 2.1, EXIT_SECONDS = 0.34, IDLE_SECONDS = 35;
+const FONT = '"Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
+
+// The board. Everything below is in board units (320 × 400).
+const L = {
+  rx: 22, rw: 276,
+  hero:  { x: 22, y: 64, w: 276, h: 186, r: 22 },     // ready / look
+  strip: { x: 22, y: 64, w: 276, h: 72, r: 18 },      // mix: your colour, live
+  left:  { x: 22, y: 64, w: 138, h: 116, r: 18 },     // result: the colour you were shown
+  right: { x: 160, y: 64, w: 138, h: 116, r: 18 },    // result: yours
+  bar: 262, headTitle: 296, headLine: 316,
+  rowTop: 148, rowGap: 62, labelOff: 8, trackOff: 18, trackH: 28, inset: 11, capW: 18, capH: 40,
+  pairLabel: 198, pairHex: 214, score: 256, rule: 266,
+  driftTop: 283, driftGap: 17, driftX0: 100, driftX1: 250,
+  button: { cx: 160, cy: 362, h: 38, pad: 24, minW: 276 },
+  stack: { top: 58, bottom: 338 },
+  sum: { label: 82, score: 126, rule: 138, rows: 150, rowH: 62 },
+};
+// a kept colour is the phone card (292 × 340) at 64 %
+const CARD = { w: 292, h: 340, r: 28 }, CK = 0.64, CW = CARD.w * CK, CH = CARD.h * CK;
+const CARDS = { keep: 8, show: 4, dx: 14, dy: 16, fanDx: 18, fanDy: 21, fanRot: 3.5, throw: 60 };
+const FEEL = {
+  soft: [170, 26], snap: [520, 40], bounce: [620, 26], glide: [900, 60], theme: [110, 21], count: [55, 14.8],
+};
+const DARK = {
+  ground: [11, 11, 12], surface: [22, 22, 24], card: [27, 27, 30],
+  ink: [246, 245, 242], muted: [130, 129, 123], faint: [74, 74, 71],
+  chip: [255, 255, 255], onchip: [11, 11, 12], shadow: [0, 0, 0],
+  ringA: 0.08, shadowA: 0.55, capA: 0.40,
+};
+const LIGHT = {
+  ground: [241, 240, 235], surface: [255, 255, 255], card: [255, 255, 255],
+  ink: [19, 19, 18], muted: [119, 118, 110], faint: [186, 185, 178],
+  chip: [19, 19, 18], onchip: [255, 255, 255], shadow: [22, 22, 26],
+  ringA: 0.08, shadowA: 0.20, capA: 0.22,
+};
+const COLOURS = [
+  ["Crimson", 224, 49, 49], ["Scarlet", 235, 72, 54], ["Coral", 246, 124, 94],
+  ["Rust", 176, 78, 36], ["Amber", 240, 168, 40], ["Ochre", 214, 158, 62],
+  ["Lemon", 232, 214, 84], ["Sand", 212, 192, 154], ["Olive", 134, 142, 68],
+  ["Moss", 104, 138, 62], ["Forest", 46, 108, 76], ["Emerald", 40, 172, 112],
+  ["Mint", 122, 202, 166], ["Teal", 28, 150, 152], ["Cyan", 52, 184, 218],
+  ["Azure", 58, 134, 236], ["Cobalt", 44, 76, 198], ["Indigo", 78, 68, 178],
+  ["Violet", 124, 84, 226], ["Orchid", 172, 100, 198], ["Magenta", 210, 72, 152],
+  ["Rose", 238, 106, 140], ["Plum", 112, 62, 96], ["Slate", 96, 110, 124],
+];
+const VERDICTS = [[0.90, "REMARKABLE"], [0.78, "SHARP"], [0.62, "CLOSE"], [0.42, "ROUGH"], [0, "WIDE"]];
+const FAMILIES = [
+  [0, "red"], [18, "vermilion"], [38, "orange"], [52, "amber"], [62, "yellow"],
+  [80, "chartreuse"], [110, "green"], [150, "jade"], [175, "teal"], [195, "cyan"],
+  [215, "azure"], [240, "blue"], [262, "indigo"], [282, "violet"], [305, "magenta"],
+  [330, "rose"], [350, "crimson"],
+];
+const DEG = "°";
+
+// What the cursor says. Lower case, short: it has to fit a small tile.
+const SAY = {
+  intro: ["two seconds each. watch", "do I still have the eye?", "no hex codes. just eyes"],
+  look: ["don't blink", "hold it… hold it…", "got it. I think"],
+  last: ["last one", "last one. focus"],
+  hue: ["hue first", "hue first. the easy part"],
+  richer: ["more colour", "richer than that"],
+  softer: ["softer", "a touch greyer"],
+  brighter: ["brighter", "lighter. there"],
+  darker: ["darker", "deeper. there"],
+  cards: ["three for the collection", "my little palette"],
+  again: ["one more?", "again"],
+  yours: ["your turn 👀", "go on, beat that"],
+  back: ["my turn again", "ok, watch this"],
+};
+
+// ---- maths -------------------------------------------------------------------
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const mix = (a, b, t) => a + (b - a) * t;
+const round = (v) => Math.floor(v + 0.5);
+const mix3 = (a, b, t) => [mix(a[0], b[0], t), mix(a[1], b[1], t), mix(a[2], b[2], t)];
+const pick = (a) => a[Math.floor(Math.random() * a.length)];
+const rand = (a, b) => a + Math.random() * (b - a);
+let GA = 1;
+const col = (c, a = 1) => `rgba(${round(clamp(c[0], 0, 255))},${round(clamp(c[1], 0, 255))},${round(clamp(c[2], 0, 255))},${clamp(a * GA, 0, 1)})`;
+
+function decode(v) { v /= 255; return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }
+function lab(c) {
+  const r = decode(c[0]), g = decode(c[1]), b = decode(c[2]);
+  const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+  const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+  const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+  return [0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s,
+          1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s,
+          0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s];
+}
+function accuracy(a, b) {
+  const p = lab(a), q = lab(b);
+  const d = Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]);
+  return clamp(1 - d / 0.42, 0, 1) ** 0.85;
+}
+function hsb2rgb(h, s, v) {
+  h = ((h % 360) + 360) % 360; s = clamp(s, 0, 100) / 100; v = clamp(v, 0, 100) / 100;
+  const c = v * s, x = c * (1 - Math.abs((h / 60) % 2 - 1)), m = v - c;
+  let r = 0, g = 0, b = 0;
+  if (h < 60) { r = c; g = x; } else if (h < 120) { r = x; g = c; } else if (h < 180) { g = c; b = x; }
+  else if (h < 240) { g = x; b = c; } else if (h < 300) { r = x; b = c; } else { r = c; b = x; }
+  return [(r + m) * 255, (g + m) * 255, (b + m) * 255];
+}
+function rgb2hsb(c) {
+  const r = c[0] / 255, g = c[1] / 255, b = c[2] / 255;
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+  let h = 0;
+  if (d > 0) {
+    if (mx === r) h = 60 * ((((g - b) / d) % 6 + 6) % 6);
+    else if (mx === g) h = 60 * ((b - r) / d + 2);
+    else h = 60 * ((r - g) / d + 4);
+  }
+  return [((h % 360) + 360) % 360, mx > 0 ? d / mx * 100 : 0, mx * 100];
+}
+const hex = (c) => "#" + c.map((v) => round(clamp(v, 0, 255)).toString(16).padStart(2, "0")).join("").toUpperCase();
+function family(h) {
+  h = ((h % 360) + 360) % 360;
+  for (let i = FAMILIES.length - 1; i >= 0; i--) if (h >= FAMILIES[i][0]) return FAMILIES[i][1];
+  return "red";
+}
+const minJerk = (t) => t * t * t * (10 - 15 * t + 6 * t * t);
+
+// ---- springs -------------------------------------------------------------------
+const springs = [];
+const newSpring = (x, p) => ({ x, v: 0, t: x, k: p[0], c: p[1] });
+const spring = (x, p) => { const s = newSpring(x, p); springs.push(s); return s; };
+function stepSpring(s, dt) {
+  if (s.v === 0 && s.x === s.t) return;
+  const n = Math.max(1, Math.ceil(dt * 240)), h = dt / n;
+  for (let i = 0; i < n; i++) { const a = s.k * (s.t - s.x) - s.c * s.v; s.v += a * h; s.x += s.v * h; }
+  if (Math.abs(s.t - s.x) < 0.0005 && Math.abs(s.v) < 0.0005) { s.x = s.t; s.v = 0; }
+}
+const snap = (s, x) => { s.x = x; s.t = x; s.v = 0; };
+
+function copyText(text) {
+  let done = false;
+  try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).catch(fallback); done = true; } } catch (e) {}
+  if (!done) fallback();
+  function fallback() {
+    try {
+      const t = document.createElement("textarea");
+      t.value = text; t.setAttribute("readonly", ""); t.style.position = "fixed"; t.style.opacity = "0";
+      document.body.appendChild(t); t.select(); document.execCommand("copy"); t.remove();
+    } catch (e) {}
+  }
+}
+
+// ---- canvas ----------------------------------------------------------------------
+const canvas = document.getElementById("c");
+const ctx = canvas.getContext("2d");
+let scale = 1, offX = 0, offY = 0, dpr = 1;
+function resize() {
+  dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const cw = canvas.clientWidth || innerWidth, ch = canvas.clientHeight || innerHeight;
+  canvas.width = Math.max(1, Math.round(cw * dpr)); canvas.height = Math.max(1, Math.round(ch * dpr));
+  scale = Math.min(cw / W, ch / H);
+  offX = (cw - W * scale) / 2; offY = (ch - H * scale) / 2;
+}
+
+function font(size, weight) { return `${weight || 500} ${size}px ${FONT}`; }
+function setSpacing(v) { try { ctx.letterSpacing = (v || 0) + "px"; } catch (e) {} }
+function tw(value, size, track, weight) {
+  ctx.font = font(size, weight); setSpacing(track);
+  const w = ctx.measureText(value).width; setSpacing(0); return w;
+}
+function txt(value, x, y, size, c, a = 1, align = "left", track = 0, weight = 500) {
+  if (a * GA <= 0.004) return;
+  ctx.font = font(size, weight); setSpacing(track);
+  ctx.textAlign = align; ctx.textBaseline = "alphabetic";
+  ctx.fillStyle = col(c, a); ctx.fillText(value, x, y); setSpacing(0);
+}
+// rounded rect with its own radius per corner: [top-left, top-right, bottom-right, bottom-left]
+function path4(x, y, w, h, rad) {
+  const m = Math.max(0, Math.min(w / 2, h / 2));
+  const [tl, tr, br, bl] = rad.map((r) => clamp(r, 0, m));
+  ctx.beginPath();
+  ctx.moveTo(x + tl, y);
+  ctx.lineTo(x + w - tr, y); if (tr) ctx.arcTo(x + w, y, x + w, y + tr, tr);
+  ctx.lineTo(x + w, y + h - br); if (br) ctx.arcTo(x + w, y + h, x + w - br, y + h, br);
+  ctx.lineTo(x + bl, y + h); if (bl) ctx.arcTo(x, y + h, x, y + h - bl, bl);
+  ctx.lineTo(x, y + tl); if (tl) ctx.arcTo(x, y, x + tl, y, tl);
+  ctx.closePath();
+}
+const rr = (x, y, w, h, r) => path4(x, y, w, h, [r, r, r, r]);
+function fillRR(x, y, w, h, r, c, a = 1) { rr(x, y, w, h, r); ctx.fillStyle = col(c, a); ctx.fill(); }
+function ring(x, y, w, h, r, c, a, width = 1) { rr(x, y, w, h, r); ctx.strokeStyle = col(c, a); ctx.lineWidth = width; ctx.stroke(); }
+function rect(x, y, w, h, c, a = 1) { ctx.fillStyle = col(c, a); ctx.fillRect(x, y, w, h); }
+function dot(cx, cy, r, c, a = 1) { ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fillStyle = col(c, a); ctx.fill(); }
+
+// ---- state -------------------------------------------------------------------------
+const S = {
+  time: 0, stageTime: 0, stage: "ready", round: 0, played: 0, total: 0, best: 0,
+  name: "", verdict: "", target: [128, 128, 128], guess: [128, 128, 128], score: 0,
+  theme: "dark", queue: [], gen: 0,
+  pointerId: null, pressed: "", pressedArg: 0, hover: "", hoverArg: 0, hoverRow: 0, grab: 0,
+  downX: 0, downY: 0, dragging: false, dragDx: 0, dragDy: 0, virtual: false,
+  cards: [], drift: null, val: [200, 50, 60], max: [360, 100, 100],
+  btnLabel: "", btnPrev: "",
+};
+S.themeT = spring(0, FEEL.theme);
+S.disp = []; S.rowA = []; S.rowHover = []; S.capScale = []; S.driftT = [];
+for (let i = 0; i < 3; i++) {
+  S.disp.push(spring(S.val[i], FEEL.glide)); S.rowA.push(spring(0, FEEL.soft));
+  S.rowHover.push(spring(0, FEEL.soft)); S.capScale.push(spring(1, FEEL.bounce)); S.driftT.push(spring(0, FEEL.snap));
+}
+S.gIntro = spring(1, FEEL.soft); S.gLook = spring(0, FEEL.soft); S.gResult = spring(0, FEEL.soft);
+S.scrim = spring(0, FEEL.soft); S.swapT = spring(0, FEEL.soft); S.lookSwap = spring(0, FEEL.soft);
+S.scoreShown = spring(0, FEEL.count); S.fanT = spring(0, FEEL.snap);
+// a colour block: position and size spring separately, so the hero can become a strip, then half of a pair
+const block = (R, a) => ({
+  x: spring(R.x, FEEL.snap), y: spring(R.y, FEEL.snap), w: spring(R.w, FEEL.snap), h: spring(R.h, FEEL.snap), r: spring(R.r, FEEL.snap),
+  a: spring(a, FEEL.soft), k: spring(1, FEEL.bounce), seam: spring(0, FEEL.snap),
+});
+const moveBlock = (B, R) => { B.x.t = R.x; B.y.t = R.y; B.w.t = R.w; B.h.t = R.h; B.r.t = R.r; };
+const snapBlock = (B, R) => { snap(B.x, R.x); snap(B.y, R.y); snap(B.w, R.w); snap(B.h, R.h); snap(B.r, R.r); };
+S.A = block(L.hero, 1); S.B = block(L.left, 0);
+S.btnVis = spring(1, FEEL.soft); S.btnScale = spring(1, FEEL.bounce); S.btnSwap = spring(1, FEEL.soft); S.btnW = spring(0, FEEL.snap);
+S.live = [spring(74, FEEL.soft), spring(74, FEEL.soft), spring(71, FEEL.soft)];
+S.toast = spring(0, FEEL.soft); S.toastText = ""; S.toastUntil = -1;
+S.pal = {};
+S.gSummary = spring(0, FEEL.soft);
+S.sumRow = [spring(0, FEEL.snap), spring(0, FEEL.snap), spring(0, FEEL.snap)];
+S.run = null; S.roundIdx = 0;
+
+// ---- runs ----------------------------------------------------------------------------
+function randomPicks() {
+  const bag = COLOURS.map((_, i) => i), out = [];
+  while (out.length < RUN_LENGTH) out.push(bag.splice(Math.floor(Math.random() * bag.length), 1)[0]);
+  return out;
+}
+function startRun(picks) { S.run = { picks, guesses: [], scores: [] }; S.roundIdx = 0; }
+const avgOf = (a) => a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0;
+function later(delay, fn) { S.queue.push({ t: delay, fn, gen: S.gen }); }
+function clearQueue() { S.gen++; S.queue = []; }
+const trackTop = (i) => L.rowTop + i * L.rowGap + L.trackOff;
+const railX = (i, v) => L.rx + L.inset + v / S.max[i] * (L.rw - L.inset * 2);
+
+function setButton(label, instant) {
+  if (label === S.btnLabel && !instant) return;
+  if (label !== S.btnLabel) { S.btnPrev = S.btnLabel; S.btnLabel = label; }
+  const w = Math.max(tw(label, 14, 0, 600) + L.button.pad * 2, L.button.minW);
+  if (instant || S.btnVis.x < 0.05) { snap(S.btnSwap, 1); snap(S.btnW, w); S.btnPrev = ""; }
+  else { snap(S.btnSwap, 0); S.btnSwap.t = 1; S.btnW.t = w; }
+}
+function setTheme(mode, instant) {
+  if (mode === S.theme && !instant) return;
+  S.theme = mode;
+  S.themeT.t = mode === "light" ? 1 : 0;
+  if (instant) snap(S.themeT, S.themeT.t);
+  document.documentElement.classList.toggle("light", mode === "light");
+}
+
+function newRound() {
+  clearQueue();
+  const fromReady = S.stage === "ready";
+  if (!S.run) startRun(randomPicks());
+  if (S.roundIdx === 0) S.cards = [];
+  const c = COLOURS[S.run.picks[S.roundIdx]];
+  S.name = c[0]; S.target = [c[1], c[2], c[3]];
+  S.round = S.roundIdx + 1; S.stage = "look"; S.stageTime = 0;
+  S.gSummary.t = 0;
+  S.val = [200, 50, 60];
+  for (let i = 0; i < 3; i++) { snap(S.disp[i], S.val[i]); S.rowA[i].t = 0; }
+  const A = S.A;
+  A.seam.t = 0;
+  if (fromReady) { moveBlock(A, L.hero); S.lookSwap.t = 1; A.k.v -= 1.6; A.a.t = 1; }
+  else { snapBlock(A, L.hero); snap(A.seam, 0); snap(A.k, 0.9); A.k.t = 1; snap(A.a, 0); A.a.t = 1; snap(S.lookSwap, 1); }
+  S.B.a.t = 0;
+  S.gIntro.t = 0; S.gLook.t = 1; S.gResult.t = 0; S.scrim.t = 0; S.btnVis.t = 0;
+  snap(S.swapT, 0);
+}
+function toMix() {
+  clearQueue();
+  S.stage = "mix"; S.stageTime = 0; S.gLook.t = 0; S.swapT.t = 1;
+  moveBlock(S.A, L.strip);
+  for (let i = 0; i < 3; i++) later(0.05 + 0.07 * i, () => { S.rowA[i].t = 1; });
+  setButton("Lock it");
+  later(0.18, () => { S.btnVis.t = 1; });
+}
+function buildDrift() {
+  const you = rgb2hsb(S.guess), tru = rgb2hsb(S.target);
+  const dh = ((you[0] - tru[0] + 540) % 360) - 180, ds = you[1] - tru[1], db = you[2] - tru[2];
+  const label = (d, u) => { d = round(d); if (d === 0) return "exact"; return (d > 0 ? "+" : "") + d + u; };
+  const hueStops = []; for (let k = 0; k <= 12; k++) hueStops.push([k / 12, hsb2rgb(k * 30, 70, 92)]);
+  S.drift = [
+    { n: "HUE", a: you[0] / 360, b: tru[0] / 360, label: label(dh, DEG), hit: Math.abs(dh) <= 8, stops: hueStops },
+    { n: "SATURATION", a: you[1] / 100, b: tru[1] / 100, label: label(ds, "%"), hit: Math.abs(ds) <= 5,
+      stops: [[0, hsb2rgb(tru[0], 0, tru[2])], [1, hsb2rgb(tru[0], 100, tru[2])]] },
+    { n: "BRIGHTNESS", a: you[2] / 100, b: tru[2] / 100, label: label(db, "%"), hit: Math.abs(db) <= 5,
+      stops: [[0, hsb2rgb(tru[0], tru[1], 0)], [1, hsb2rgb(tru[0], tru[1], 100)]] },
+  ];
+  S.dh = dh;
+}
+function toResult() {
+  clearQueue();
+  S.guess = hsb2rgb(S.val[0], S.val[1], S.val[2]);
+  S.score = accuracy(S.guess, S.target);
+  S.played++; S.total += S.score; S.best = Math.max(S.best, S.score);
+  S.run.guesses[S.roundIdx] = S.guess.map(round); S.run.scores[S.roundIdx] = accuracy(S.run.guesses[S.roundIdx], S.target);
+  S.stage = "result"; S.stageTime = 0;
+  for (let i = 0; i < 3; i++) S.rowA[i].t = 0;
+  // the strip splits: yours slides right, the real one comes in on the left
+  const A = S.A, B = S.B;
+  moveBlock(A, L.right); A.seam.t = 1;
+  snapBlock(B, { x: L.left.x, y: L.strip.y, w: L.left.w, h: L.strip.h, r: L.strip.r }); snap(B.seam, 0); snap(B.k, 1);
+  snap(B.a, 0); B.a.t = 1; moveBlock(B, L.left); B.seam.t = 1;
+  S.verdict = VERDICTS[VERDICTS.length - 1][1];
+  for (const v of VERDICTS) if (S.score >= v[0]) { S.verdict = v[1]; break; }
+  buildDrift();
+  S.gResult.t = 1;
+  snap(S.scoreShown, 0); later(0.12, () => { S.scoreShown.t = S.score; });
+  for (let i = 0; i < 3; i++) { snap(S.driftT[i], 0); later(0.32 + 0.09 * i, () => { S.driftT[i].t = 1; }); }
+  setButton("Keep the colour");
+}
+
+// ---- card stack ----------------------------------------------------------------------
+const frontCard = () => S.cards[S.cards.length - 1] || null;
+// the stack sits in the middle of the free space; it moves over as it grows
+function stackOrigin() {
+  const nv = clamp(S.cards.length, 1, CARDS.show);
+  const w = CW + (nv - 1) * CARDS.dx, h = CH + (nv - 1) * CARDS.dy;
+  return [(W - w) / 2, L.stack.top + (L.stack.bottom - L.stack.top - h) / 2];
+}
+function makeCard() {
+  const hsb = rgb2hsb(S.target);
+  const chip = round(S.score * 100) + "%";
+  const [x0, y0] = stackOrigin();
+  return {
+    name: S.name, rgb: S.target, shade: hsb2rgb(hsb[0], hsb[1] + 14, hsb[2] - 26), hexText: hex(S.target),
+    chip, chipW: 15 + 12 + 7 + tw(chip, 13, 0, 600) + 15,
+    x: newSpring(x0, FEEL.snap), y: newSpring(y0 + 40, FEEL.snap), a: newSpring(0, FEEL.soft), s: newSpring(0.95, FEEL.snap),
+    rot: newSpring(0, FEEL.snap), lift: newSpring(0, FEEL.bounce), badgeS: newSpring(1, FEEL.bounce), copyT: newSpring(0, FEEL.bounce),
+    hold: 0.16, flying: 0, copyUntil: -1,
+  };
+}
+function toReveal() {
+  clearQueue();
+  S.stage = "reveal"; S.stageTime = 0;
+  const n = S.cards.length;
+  S.cards.forEach((c, idx) => { c.hold = 0.03 * Math.min(n - 1 - idx, 3); c.flying = 0; });
+  S.cards.push(makeCard());
+  while (S.cards.length > CARDS.keep) S.cards.shift();
+  S.scrim.t = 1; S.gResult.t = 0; S.A.a.t = 0; S.B.a.t = 0;
+  setButton(S.roundIdx < RUN_LENGTH - 1 ? "Next colour" : "See results");
+}
+function toExit() {
+  clearQueue();
+  S.stage = "exit"; S.stageTime = 0; S.scrim.t = 0; S.gResult.t = 0;
+  S.A.a.t = 0; S.B.a.t = 0; S.btnVis.t = 0; S.dragging = false;
+  for (const c of S.cards) { c.a.t = 0; c.y.t += 28; c.rot.t = 0; }
+}
+function toSummary() {
+  clearQueue();
+  S.stage = "summary"; S.stageTime = 0;
+  S.scrim.t = 0; S.gResult.t = 0; S.A.a.t = 0; S.B.a.t = 0; S.dragging = false;
+  for (const c of S.cards) { c.a.t = 0; c.y.t += 28; c.rot.t = 0; }
+  S.gSummary.t = 1;
+  for (let i = 0; i < 3; i++) { snap(S.sumRow[i], 0); later(0.15 + 0.08 * i, () => { S.sumRow[i].t = 1; }); }
+  snap(S.scoreShown, 0); later(0.1, () => { S.scoreShown.t = avgOf(S.run.scores); });
+  setButton("Play again");
+}
+function playAgain() {
+  S.run = null; S.roundIdx = 0;
+  S.gSummary.t = 0; S.btnVis.t = 0;
+  S.stage = "exit"; S.stageTime = 0;
+}
+// back to the start screen, from wherever the game is (used when the game changes hands)
+function resetToReady() {
+  clearQueue(); release();
+  S.hover = ""; S.hoverArg = 0; S.hoverRow = 0;
+  S.stage = "ready"; S.stageTime = 0; S.run = null; S.roundIdx = 0; S.round = 0;
+  for (const c of S.cards) { c.a.t = 0; c.y.t += 20; c.rot.t = 0; c.flying = 0; }
+  later(0.6, () => { if (S.stage === "ready") S.cards = []; });
+  S.scrim.t = 0; S.gResult.t = 0; S.gLook.t = 0; S.gSummary.t = 0; S.gIntro.t = 1;
+  for (let i = 0; i < 3; i++) S.rowA[i].t = 0;
+  const A = S.A;
+  if (A.a.x > 0.5 && S.lookSwap.x < 0.05) moveBlock(A, L.hero);
+  else { snapBlock(A, L.hero); snap(A.a, 0); snap(A.k, 0.96); A.k.t = 1; }
+  A.a.t = 1; A.seam.t = 0; snap(S.lookSwap, 0); snap(S.swapT, 0); S.B.a.t = 0;
+  S.val = [200, 50, 60];
+  for (let i = 0; i < 3; i++) snap(S.disp[i], S.val[i]);
+  setButton("Start"); S.btnVis.t = 1;
+}
+function showToast(t) { S.toastText = t; S.toastUntil = S.time + 1.5; }
+function copyFront(virtual) {
+  const c = frontCard(); if (!c) return;
+  c.copyUntil = S.time + 1.4; c.badgeS.v -= 5;
+  if (!virtual) copyText(c.hexText);        // the cursor never touches your clipboard
+  showToast("Copied " + c.hexText);
+}
+function bringForward(idx) {
+  const c = S.cards.splice(idx, 1)[0]; S.cards.push(c);
+  c.s.v += 1.3; c.lift.v -= 160;
+}
+function throwFront(dir) {
+  const c = frontCard(); if (!c || S.cards.length < 2) return;
+  const [x0, y0] = stackOrigin();
+  c.flying = 0.15; c.x.t = x0 + dir * 260; c.y.t = y0 - 20; c.rot.t = dir * 16;
+}
+
+// ---- input: one pointer at a time, a real one or the cursor's -------------------------
+const cardRect = (c) => [c.x.x, c.y.x + c.lift.x, CW, CH];
+function hitTest(x, y) {
+  const st = S.stage;
+  if ((st === "ready" || st === "mix" || st === "result" || st === "reveal" || st === "summary") && S.btnVis.t > 0.5) {
+    const w = S.btnW.x, b = L.button;
+    if (Math.abs(x - b.cx) <= w / 2 + 4 && Math.abs(y - b.cy) <= b.h / 2 + 5) return ["action"];
+  }
+  if (st === "mix") {
+    for (let i = 0; i < 3; i++) {
+      const cy = trackTop(i) + L.trackH / 2;
+      if (Math.abs(y - cy) <= 24 && x >= L.rx - 14 && x <= L.rx + L.rw + 14) return ["rail", i + 1];
+    }
+  }
+  if (st === "reveal") {
+    const n = S.cards.length, front = S.cards[n - 1];
+    if (front && front.flying <= 0) {
+      const [cx, cy, cw, ch] = cardRect(front);
+      if (x >= cx + cw - 70 * CK && x <= cx + cw - 14 * CK && y >= cy + 14 * CK && y <= cy + 70 * CK) return ["copy"];
+      if (x >= cx && x <= cx + cw && y >= cy && y <= cy + ch) return ["card"];
+    }
+    for (let idx = n - 2; idx >= Math.max(0, n - CARDS.show); idx--) {
+      const [cx, cy, cw, ch] = cardRect(S.cards[idx]);
+      if (x >= cx && x <= cx + cw && y >= cy && y <= cy + ch) return ["back", idx];
+    }
+  }
+  return [""];
+}
+function setValue(i, x) {
+  const span = L.rw - L.inset * 2;
+  const t = clamp((x - (L.rx + L.inset)) / span, 0, 1);
+  S.val[i - 1] = round(t * S.max[i - 1]);
+}
+function activate(action, arg, virtual) {
+  if (action === "action") {
+    if (S.stage === "ready") newRound();
+    else if (S.stage === "mix") toResult();
+    else if (S.stage === "result") toReveal();
+    else if (S.stage === "reveal") {
+      if (S.roundIdx < RUN_LENGTH - 1) { S.roundIdx++; toExit(); } else toSummary();
+    } else if (S.stage === "summary") playAgain();
+  } else if (action === "copy") copyFront(virtual);
+  else if (action === "card") { const c = frontCard(); if (c) c.lift.v -= 360; }
+  else if (action === "back") bringForward(arg);
+}
+function release() { S.pointerId = null; S.pressed = ""; S.pressedArg = 0; S.grab = 0; S.dragging = false; S.dragDx = 0; S.dragDy = 0; }
+function hoverAt(x, y) {
+  const [action, arg = 0] = hitTest(x, y);
+  S.hover = action; S.hoverArg = arg; S.hoverRow = action === "rail" ? arg : 0;
+}
+function inDown(x, y, id) {
+  if (S.pointerId !== null) return false;
+  const [action, arg = 0] = hitTest(x, y);
+  if (!action) return false;
+  S.pointerId = id; S.pressed = action; S.pressedArg = arg;
+  S.hover = action; S.hoverArg = arg; S.downX = x; S.downY = y;
+  if (action === "rail") { S.grab = arg; S.hoverRow = arg; setValue(arg, x); }
+  return true;
+}
+function inMove(x, y, id) {
+  if (S.pointerId === null) { hoverAt(x, y); return; }
+  if (S.pointerId !== id) return;
+  if (S.grab > 0) { setValue(S.grab, x); return; }
+  if (S.pressed === "card") {
+    const dx = x - S.downX, dy = y - S.downY;
+    if (!S.dragging && dx * dx + dy * dy > 36) S.dragging = true;
+    if (S.dragging) { S.dragDx = dx; S.dragDy = dy; return; }
+  }
+  const [action, arg = 0] = hitTest(x, y);
+  S.hover = action; S.hoverArg = arg;
+}
+function inUp(x, y, id, cancelled, virtual, keepHover) {
+  if (S.pointerId !== id) return;
+  const pressed = S.pressed, pressedArg = S.pressedArg;
+  if (S.grab > 0) { if (!cancelled) setValue(S.grab, x); release(); if (keepHover) hoverAt(x, y); else { S.hover = ""; S.hoverRow = 0; } return; }
+  if (S.dragging) {
+    const dx = S.dragDx; release(); S.hover = "";
+    if (!cancelled && Math.abs(dx) > CARDS.throw) throwFront(dx < 0 ? -1 : 1);
+    return;
+  }
+  const [action, arg = 0] = hitTest(x, y);
+  release(); S.hover = ""; S.hoverArg = 0; S.hoverRow = 0;
+  if (!cancelled && pressed && pressed === action && pressedArg === arg) activate(action, arg, virtual);
+  if (keepHover) hoverAt(x, y);
+}
+
+// ---- update --------------------------------------------------------------------------
+function updatePalette() {
+  const t = S.themeT.x;
+  for (const k in DARK) S.pal[k] = Array.isArray(DARK[k]) ? mix3(DARK[k], LIGHT[k], t) : mix(DARK[k], LIGHT[k], t);
+}
+function targetCards(dt) {
+  const n = S.cards.length, fan = S.fanT.x, [x0, y0] = stackOrigin();
+  for (let idx = 0; idx < S.cards.length; idx++) {
+    const c = S.cards[idx], b = n - 1 - idx;
+    if (c.flying > 0) {
+      c.flying -= dt;
+      if (c.flying <= 0) { S.cards.splice(idx, 1); S.cards.unshift(c); c.flying = 0; return targetCards(0); }
+    } else if (c.hold > 0) c.hold -= dt;
+    else {
+      let x = x0 + b * mix(CARDS.dx, CARDS.fanDx, fan), y = y0 + b * mix(CARDS.dy, CARDS.fanDy, fan), rot = b * CARDS.fanRot * fan;
+      if (b === 0 && S.dragging) { x += S.dragDx; y += S.dragDy * 0.3; rot = S.dragDx * 0.05; }
+      if (b > 0 && S.hover === "back" && S.hoverArg === idx) y -= 8;
+      c.x.t = x; c.y.t = y; c.rot.t = rot; c.s.t = 1; c.a.t = b < CARDS.show ? 1 : 0;
+    }
+    if (b === 0) {
+      c.lift.t = S.hover === "card" && !S.dragging ? -4 : 0;
+      c.badgeS.t = S.hover === "copy" ? 1.1 : 1;
+    } else { c.lift.t = 0; c.badgeS.t = 1; }
+    c.copyT.t = S.time < c.copyUntil ? 1 : 0;
+  }
+}
+function advance(dt) {
+  S.time += dt; S.stageTime += dt;
+  const list = S.queue; S.queue = [];
+  for (const q of list) if (q.gen === S.gen) { q.t -= dt; if (q.t <= 0) q.fn(); else S.queue.push(q); }
+  if (S.stage === "look" && S.stageTime >= LOOK_SECONDS) toMix();
+  if (S.stage === "exit" && S.stageTime >= EXIT_SECONDS) newRound();
+
+  const hoverBtn = S.hover === "action";
+  S.btnScale.t = S.pressed === "action" && hoverBtn ? 0.955 : 1;
+  const mixing = S.stage === "mix";
+  for (let i = 0; i < 3; i++) {
+    const held = S.grab === i + 1, over = mixing && S.hoverRow === i + 1;
+    S.rowHover[i].t = held || over ? 1 : 0;
+    S.capScale[i].t = held ? 1.12 : over ? 1.04 : 1;
+    S.disp[i].t = S.val[i];
+  }
+  const overStack = S.hover === "card" || S.hover === "back" || S.hover === "copy";
+  S.fanT.t = S.stage === "reveal" && overStack && !S.dragging && S.cards.length > 1 ? 1 : 0;
+  if (S.stage === "reveal") targetCards(dt);
+
+  let lt;
+  if (S.stage === "ready" || S.stage === "look") lt = S.pal.faint || DARK.faint;
+  else if (S.stage === "mix") lt = hsb2rgb(S.disp[0].x, S.disp[1].x, S.disp[2].x);
+  else if (S.stage === "result") lt = S.guess;
+  else if (S.stage === "summary") lt = COLOURS[S.run.picks[0]].slice(1);
+  else { const c = frontCard(); lt = c ? c.rgb : S.target; }
+  for (let i = 0; i < 3; i++) S.live[i].t = lt[i];
+  S.toast.t = S.time < S.toastUntil ? 1 : 0;
+
+  for (const s of springs) stepSpring(s, dt);
+  if (S.stage === "summary" || S.stage === "ready") for (const c of S.cards) { c.a.t = 0; }
+  for (const c of S.cards) for (const k of ["x", "y", "a", "s", "rot", "lift", "badgeS", "copyT"]) stepSpring(c[k], dt);
+  updatePalette();
+}
+
+// ---- drawing ---------------------------------------------------------------------------
+// inner: the side that meets the other half of the pair; its corners square off as the pair closes
+function drawBlock(P, B, c, inner) {
+  const a = B.a.x; if (a < 0.004) return;
+  GA = a;
+  const k = B.k.x, w = Math.max(0, B.w.x), h = Math.max(0, B.h.x);
+  const sw = w * k, sh = h * k, x = B.x.x + (w - sw) / 2, y = B.y.x + (h - sh) / 2;
+  const r = B.r.x * k, ri = r * (1 - clamp(B.seam.x, 0, 1));
+  const rad = inner === "left" ? [ri, r, r, ri] : [r, ri, ri, r];
+  path4(x, y, sw, sh, rad); ctx.fillStyle = col(c, 1); ctx.fill();
+  path4(x + 0.5, y + 0.5, sw - 1, sh - 1, rad.map((v) => Math.max(0, v - 0.5)));
+  ctx.strokeStyle = col(P.ink, P.ringA); ctx.lineWidth = 1; ctx.stroke();
+}
+function drawLeft(P) {
+  const st = S.stage;
+  let colA;
+  if (st === "ready") colA = P.surface;
+  else if (st === "look") colA = mix3(P.surface, S.target, S.lookSwap.x);
+  else if (st === "mix") colA = mix3(S.target, hsb2rgb(S.disp[0].x, S.disp[1].x, S.disp[2].x), S.swapT.x);
+  else colA = S.guess;
+  drawBlock(P, S.A, colA, "left");
+  drawBlock(P, S.B, S.target, "right");
+
+  const gi = S.gIntro.x;
+  if (gi > 0.004) { GA = gi * S.A.a.x; const h = L.hero; txt("2s", h.x + h.w / 2, h.y + h.h / 2 + 16, 46, P.faint, 1, "center", -1, 600); }
+
+  const g = S.gLook.x;
+  if (g > 0.004) {
+    GA = g;
+    const prog = st === "look" ? clamp(S.stageTime / LOOK_SECONDS, 0, 1) : 1;
+    rect(L.rx, L.bar, L.rw, 2, P.ink, 0.12);
+    rect(L.rx, L.bar, L.rw * (1 - prog), 2, P.ink, 1);
+  }
+  const gr = S.gResult.x;
+  if (gr > 0.004) {
+    GA = gr;
+    const lx = L.left.x, rx = L.right.x;
+    txt(S.name.toUpperCase(), lx, L.pairLabel, 9.5, P.muted, 1, "left", 0.6, 600);
+    txt(hex(S.target), lx, L.pairHex, 12, P.ink);
+    txt("YOURS", rx, L.pairLabel, 9.5, P.muted, 1, "left", 0.6, 600);
+    txt(hex(S.guess), rx, L.pairHex, 12, P.ink);
+  }
+}
+function drawHeading(P, alpha, title, line) {
+  if (alpha <= 0.004) return;
+  GA = alpha; ctx.save(); ctx.translate(0, (1 - alpha) * 10);
+  txt(title, L.rx, L.headTitle, 30, P.ink, 1, "left", -1.1, 700);
+  txt(line, L.rx, L.headLine, 12.5, P.muted);
+  ctx.restore();
+}
+const RAIL_NAMES = ["HUE", "SATURATION", "BRIGHTNESS"], RAIL_UNITS = [DEG, "%", "%"];
+function drawRails(P) {
+  const rx = L.rx, rw = L.rw, inset = L.inset;
+  const h = S.disp[0].x, s = S.disp[1].x, b = S.disp[2].x;
+  for (let i = 0; i < 3; i++) {
+    const ra = S.rowA[i].x; if (ra <= 0.004) continue;
+    GA = ra;
+    const top = L.rowTop + i * L.rowGap, ty = trackTop(i), v = S.disp[i].x, active = S.rowHover[i].x;
+    ctx.save(); ctx.translate(0, (1 - ra) * 10);
+    txt(RAIL_NAMES[i], rx, top + L.labelOff, 9.5, P.muted, 1, "left", 0.8, 600);
+    txt(round(v) + RAIL_UNITS[i], rx + rw, top + L.labelOff + 0.5, 12, mix3(P.muted, P.ink, 0.5 + 0.5 * active), 1, "right", 0, 600);
+    const grad = ctx.createLinearGradient(rx, 0, rx + rw, 0);
+    if (i === 0) { const ss = Math.max(s, 22), bb = Math.max(b, 50); for (let k = 0; k <= 12; k++) grad.addColorStop(k / 12, col(hsb2rgb(k * 30, ss, bb))); }
+    else if (i === 1) { grad.addColorStop(0, col(hsb2rgb(h, 0, b))); grad.addColorStop(1, col(hsb2rgb(h, 100, b))); }
+    else { grad.addColorStop(0, col(hsb2rgb(h, s, 0))); grad.addColorStop(1, col(hsb2rgb(h, s, 100))); }
+    rr(rx, ty, rw, L.trackH, L.trackH / 2); ctx.fillStyle = grad; ctx.fill();
+    ring(rx + 0.5, ty + 0.5, rw - 1, L.trackH - 1, L.trackH / 2, P.ink, P.ringA * (1 + 1.6 * active));
+
+    const cx = rx + inset + v / S.max[i] * (rw - inset * 2), cy = ty + L.trackH / 2;
+    const sy = S.capScale[i].x, sx = 1 + (sy - 1) * 0.6, lift = (sy - 1) * 20;
+    const cw = L.capW * sx, ch = L.capH * sy;
+    ctx.save();
+    ctx.shadowColor = col(P.shadow, P.capA * (1 + (sy - 1) * 4));
+    ctx.shadowBlur = 8 * scale * dpr; ctx.shadowOffsetY = (2.5 + lift) * scale * dpr;
+    fillRR(cx - cw / 2, cy - ch / 2, cw, ch, cw / 2, P.chip, 1);
+    ctx.restore();
+    rect(cx - 1, cy - 6 * sy, 2, 12 * sy, P.onchip, 0.28);
+    ctx.restore();
+  }
+}
+function drawResult(P) {
+  const g = S.gResult.x; if (g <= 0.004 || !S.drift) return;
+  GA = g;
+  const rx = L.rx, rw = L.rw;
+  ctx.save(); ctx.translate(0, (1 - g) * 10);
+  txt(round(S.scoreShown.x * 100) + "%", rx, L.score, 44, P.ink, 1, "left", -2, 700);
+  txt(S.verdict, rx + rw, L.score, 10, P.muted, 1, "right", 0.8, 600);
+  rect(rx, L.rule, rw, 1, P.ink, P.ringA * 1.4);
+  const x0 = L.driftX0, x1 = L.driftX1, bw = x1 - x0;
+  for (let i = 0; i < 3; i++) {
+    const d = S.drift[i], cy = L.driftTop + i * L.driftGap;
+    txt(d.n, rx, cy + 3.2, 9, P.muted, 1, "left", 0.8, 600);
+    txt(d.label, rx + rw, cy + 4, 11, d.hit ? P.ink : P.muted, 1, "right", 0, 600);
+    const grad = ctx.createLinearGradient(x0, 0, x1, 0);
+    for (const st of d.stops) grad.addColorStop(st[0], col(st[1], 0.4));
+    rr(x0, cy - 1.5, bw, 3, 1.5); ctx.fillStyle = grad; ctx.fill();
+    const t = S.driftT[i].x, ax = x0 + d.a * bw, bx = x0 + d.b * bw, yx = mix(bx, ax, t);
+    rect(Math.min(bx, yx), cy - 0.75, Math.abs(yx - bx), 1.5, P.ink, 0.34);
+    dot(bx, cy, 6, P.ground); dot(bx, cy, 4.2, S.target);
+    dot(yx, cy, 6, P.ground); dot(yx, cy, 4.2, P.ink);
+  }
+  ctx.restore();
+}
+function drawCopyIcon(ink, a, k) {
+  ctx.lineWidth = 1.4; ctx.strokeStyle = col(ink, a);
+  rr(-8 * k, -8 * k, 11 * k, 11 * k, 2.6 * k); ctx.stroke();
+  rr(-3 * k, -3 * k, 11 * k, 11 * k, 2.6 * k); ctx.fillStyle = col([255, 255, 255], 0.95 * a); ctx.fill(); ctx.stroke();
+}
+// the phone card, drawn at its own size (292 × 340) and scaled into the tile
+function drawCard(P, c) {
+  const a = c.a.x; if (a < 0.004) return;
+  GA = a;
+  const C = CARD, s = c.s.x * CK, rot = c.rot.x * Math.PI / 180;
+  const cx = c.x.x + CW / 2, cy = c.y.x + c.lift.x + CH / 2;
+  ctx.save();
+  ctx.translate(cx, cy); ctx.rotate(rot); ctx.scale(s, s); ctx.translate(-C.w / 2, -C.h / 2);
+
+  ctx.save();
+  ctx.shadowColor = col(P.shadow, P.shadowA);
+  ctx.shadowBlur = 44 * scale * dpr * CK; ctx.shadowOffsetY = (18 - c.lift.x * 1.2) * scale * dpr * CK;
+  fillRR(0, 0, C.w, C.h, C.r, P.card, 1);
+  ctx.restore();
+  ring(0.5, 0.5, C.w - 1, C.h - 1, C.r, P.ink, P.ringA * 1.4);
+
+  const grad = ctx.createLinearGradient(100, 13, 190, 265);
+  grad.addColorStop(0, col(c.rgb)); grad.addColorStop(0.12, col(c.rgb)); grad.addColorStop(1, col(c.shade));
+  rr(13, 13, C.w - 26, 252, 19); ctx.fillStyle = grad; ctx.fill();
+
+  // copy badge
+  const bs = c.badgeS.x, bcx = C.w - 42, bcy = 42;
+  fillRR(bcx - 17 * bs, bcy - 17 * bs, 34 * bs, 34 * bs, 11 * bs, [255, 255, 255], 0.84);
+  const ink = [22, 22, 26], t = clamp(c.copyT.x, 0, 1);
+  ctx.save(); ctx.translate(bcx, bcy);
+  if (t < 0.99) drawCopyIcon(ink, 1 - t, bs * (1 - 0.35 * t));
+  if (c.copyT.x > 0.01) {
+    const k = bs * (0.55 + 0.45 * c.copyT.x);
+    ctx.beginPath(); ctx.moveTo(-7 * k, 0.6 * k); ctx.lineTo(-2.6 * k, 5 * k); ctx.lineTo(7 * k, -4.6 * k);
+    ctx.strokeStyle = col(ink, t); ctx.lineWidth = 2; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.stroke();
+  }
+  ctx.restore();
+
+  txt(c.name, 24, 298, 18, P.ink, 1, "left", -0.2, 700);
+  txt(c.hexText, 24, 319, 12.5, P.muted);
+  const chipX = C.w - 22 - c.chipW;
+  fillRR(chipX, 283, c.chipW, 38, 19, P.chip, 1);
+  fillRR(chipX + 15, 296, 12, 12, 4, c.rgb, 1);
+  txt(c.chip, chipX + 34, 306.6, 13, P.onchip, 1, "left", 0, 600);
+  ctx.restore();
+}
+function drawHeader(P) {
+  GA = 1;
+  const pulse = 1 + 0.18 * (0.5 + 0.5 * Math.sin(S.time * 5.2)) * S.gLook.x;
+  fillRR(27 - 4.5 * pulse, 29.5 - 4.5 * pulse, 9 * pulse, 9 * pulse, 2.7 * pulse, [S.live[0].x, S.live[1].x, S.live[2].x], 1);
+  txt("Spectra", 37, 34.5, 16, P.ink, 1, "left", -0.3, 700);
+  const sub = S.stage === "summary" ? "RESULTS" : "ROUND " + Math.max(1, S.round) + " / " + RUN_LENGTH;
+  txt(sub, 22, 51, 9.5, P.muted, 1, "left", 0.8, 600);
+}
+function drawButton(P) {
+  const v = S.btnVis.x; if (v <= 0.004) return;
+  GA = v;
+  const b = L.button, w = Math.max(b.h, S.btnW.x), sc = S.btnScale.x;
+  ctx.save();
+  ctx.translate(b.cx, b.cy + (1 - v) * 8); ctx.scale(sc, sc); ctx.translate(-w / 2, -b.h / 2);
+  rr(0, 0, w, b.h, b.h / 2); ctx.fillStyle = col(P.chip); ctx.fill(); ctx.clip();
+  const sw = S.btnSwap.x, base = b.h / 2 + 5;
+  if (sw < 0.999 && S.btnPrev) txt(S.btnPrev, w / 2, base - 7 * sw, 14, P.onchip, 1 - sw, "center", 0, 600);
+  txt(S.btnLabel, w / 2, base + 7 * (1 - sw), 14, P.onchip, sw, "center", 0, 600);
+  ctx.restore();
+}
+function drawSummary(P) {
+  const g = S.gSummary.x; if (g <= 0.004 || !S.run || S.run.scores.length < RUN_LENGTH) return;
+  GA = g;
+  const Z = L.sum, rx = L.rx, rw = L.rw;
+  ctx.save(); ctx.translate(0, (1 - g) * 10);
+  txt("THREE COLOURS", rx, Z.label, 9.5, P.muted, 1, "left", 0.8, 600);
+  txt(round(S.scoreShown.x * 100) + "%", rx, Z.score, 44, P.ink, 1, "left", -2, 700);
+  let verdict = VERDICTS[VERDICTS.length - 1][1];
+  for (const v of VERDICTS) if (avgOf(S.run.scores) >= v[0]) { verdict = v[1]; break; }
+  txt(verdict, rx + rw, Z.score, 10, P.muted, 1, "right", 0.8, 600);
+  rect(rx, Z.rule, rw, 1, P.ink, P.ringA * 1.4);
+  for (let i = 0; i < RUN_LENGTH; i++) {
+    const t = S.sumRow[i].x; if (t <= 0.004) continue;
+    GA = g * clamp(t, 0, 1);
+    const top = Z.rows + i * Z.rowH + (1 - t) * 10;
+    const c = COLOURS[S.run.picks[i]], rgb = c.slice(1);
+    fillRR(rx, top, 44, 44, 12, rgb, 1); ring(rx + 0.5, top + 0.5, 43, 43, 12, P.ink, P.ringA);
+    txt(c[0], rx + 56, top + 19, 14, P.ink, 1, "left", -0.2, 700);
+    txt(hex(rgb), rx + 56, top + 35, 11, P.muted);
+    const x = rx + rw - 40;
+    fillRR(x, top + 2, 40, 30, 9, S.run.guesses[i], 1); ring(x + 0.5, top + 2.5, 39, 29, 9, P.ink, P.ringA);
+    txt(round(S.run.scores[i] * 100) + "%", x + 20, top + 47, 11.5, P.ink, 1, "center", 0, 600);
+  }
+  ctx.restore();
+}
+function drawToast(P) {
+  const a = S.toast.x; if (a <= 0.004 || !S.toastText) return;
+  GA = a;
+  const f = frontCard(), top = f ? f.y.x + 18 : 90;
+  const w = tw(S.toastText, 11.5, 0, 600) + 26, y = top + (1 - a) * 6;
+  fillRR(W / 2 - w / 2, y, w, 28, 14, S.pal.chip, 1);
+  txt(S.toastText, W / 2, y + 18.5, 11.5, S.pal.onchip, 1, "center", 0, 600);
+}
+let bgNow = "";
+function draw() {
+  const P = S.pal;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  GA = 1;
+  ctx.fillStyle = col(P.ground); ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.setTransform(scale * dpr, 0, 0, scale * dpr, offX * dpr, offY * dpr);
+
+  drawLeft(P);
+  drawHeading(P, S.gIntro.x, "Ready", "Three colours, two seconds each.");
+  drawHeading(P, S.gLook.x, "Look", "Hold it in your eye.");
+  drawRails(P);
+  drawResult(P);
+  const sa = S.scrim.x;
+  if (sa > 0.004) { GA = sa; rect(-offX / scale, -offY / scale, canvas.width / dpr / scale + 2, canvas.height / dpr / scale + 2, P.ground, 0.93); }
+  for (const c of S.cards) drawCard(P, c);
+  drawSummary(P);
+  drawHeader(P);
+  drawButton(P);
+  drawToast(P);
+  GA = 1;
+  const bg = hex(P.ground);
+  if (bg !== bgNow) { bgNow = bg; document.documentElement.style.setProperty("--bg", bg); }
+}
+
+// =============================================================================
+// THE CURSOR — the Curve Lab tour cursor, here playing the game. One clock runs the
+// game and the cursor together, so when the tile sleeps, both stop where they are.
+// =============================================================================
+const STOP = Symbol("stop");
+let clock = 0;
+const timers = [], anims = [];
+function wait(run, sec) {
+  return new Promise((res, rej) => { if (!run.alive) return rej(STOP); timers.push({ t: clock + sec, res, rej, run }); });
+}
+function until(run, test, sec = 12) {
+  return new Promise((res, rej) => { if (!run.alive) return rej(STOP); timers.push({ t: clock + sec, test, res, rej, run }); });
+}
+function anim(run, sec, step) {
+  return new Promise((res, rej) => { if (!run.alive) return rej(STOP); anims.push({ t0: clock, dur: Math.max(sec, 1e-3), step, res, rej, run }); });
+}
+function tickTimers() {
+  for (let i = anims.length - 1; i >= 0; i--) {
+    const a = anims[i];
+    if (!a.run.alive) { anims.splice(i, 1); a.rej(STOP); continue; }
+    const p = Math.min(1, (clock - a.t0) / a.dur);
+    a.step(p);
+    if (p >= 1) { anims.splice(i, 1); a.res(); }
+  }
+  for (let i = timers.length - 1; i >= 0; i--) {
+    const w = timers[i];
+    if (!w.run.alive) { timers.splice(i, 1); w.rej(STOP); continue; }
+    if ((w.test && w.test()) || clock >= w.t) { timers.splice(i, 1); w.res(); }
+  }
+}
+const glideSec = (d) => clamp(440 + 185 * Math.log2(1 + d / 48), 520, 1350) / 1000;
+
+const LOGO = '<svg viewBox="0 0 1080 1080" aria-hidden="true"><defs><linearGradient id="tzg" x1="540" y1="193.81" x2="540" y2="932.28" gradientUnits="userSpaceOnUse"><stop offset=".39" stop-color="#fff"/><stop offset=".4" stop-color="#faf9fd"/><stop offset=".5" stop-color="#c3bcea"/><stop offset=".59" stop-color="#9387d9"/><stop offset=".68" stop-color="#6d5ccc"/><stop offset=".77" stop-color="#4f3ac1"/><stop offset=".86" stop-color="#3922ba"/><stop offset=".93" stop-color="#2c14b5"/><stop offset="1" stop-color="#280fb4"/></linearGradient></defs><circle fill="#010008" cx="540" cy="540" r="540"/><path fill="url(#tzg)" d="M410.74,658.22s162.29-48.52,309.91-40.22c-.76-81.38-4.62-158.07-7.74-191.11-.51-5.37-7.54-7.02-10.4-2.44-16.77,26.88-55.91,89.05-69.49,110.61-2.33,3.69-7.59,3.99-10.33.59l-80.01-103.79c-3.62-4.7-11.01-3.5-12.96,2.11l-43.78,119.94c-2.25,6.15-9.99,8.11-14.89,3.76l-104.34-90.05c-3.32-2.87-8.34.31-7.18,4.54l51.21,186.05Z"/></svg>';
+
+class Cursor {
+  constructor() {
+    const el = document.createElement("div"); el.className = "tcur"; el.setAttribute("aria-hidden", "true");
+    el.innerHTML = '<span class="ring"></span><svg class="arrow" viewBox="0 0 25 25"><path d="M5 3v17.2l4.6-4.3 3.2 7.1 3.1-1.4-3.2-6.9 6.3-.3z"/></svg><span class="bub"><em>' + LOGO + '</em><b><span class="tx"></span><i class="caret"></i></b></span>';
+    document.body.appendChild(el);
+    this.el = el; this.bub = el.querySelector(".bub"); this.tx = el.querySelector(".tx");
+    this.x = W * 0.76; this.y = H * 0.8; this.left = false; this.up = false; this.bw = 0; this.sid = 0; this.live = false;
+    this.place();
+  }
+  // board → frame pixels; keep the caption inside the frame (flip only when it has to)
+  place() {
+    const bx = offX + this.x * scale, by = offY + this.y * scale, fw = innerWidth, fh = innerHeight, w = this.bw || 140, h = 30;
+    this.el.style.transform = `translate3d(${bx.toFixed(2)}px,${by.toFixed(2)}px,0)`;
+    const right = bx + 20 + w;
+    if (!this.left && right > fw - 8) this.left = true; else if (this.left && right < fw - 60) this.left = false;
+    // a small tile: where neither side has room, the caption slides along to stay in the frame
+    const want = this.left ? bx - 14 - w : bx + 20, x = clamp(want, 6, Math.max(6, fw - w - 6));
+    this.bub.style.setProperty("--bx", (x - bx - 20).toFixed(1) + "px");
+    const below = by + 26 + h;
+    if (!this.up && below > fh - 8) this.up = true; else if (this.up && below < fh - 50) this.up = false;
+    this.el.classList.toggle("left", this.left); this.el.classList.toggle("up", this.up);
+  }
+  // moving the cursor is moving a pointer over the game
+  moveTo(x, y) { this.x = x; this.y = y; this.place(); if (this.live) inMove(x, y, "demo"); }
+  show(x, y) {
+    this.sid++; this.bw = 0; this.bub.classList.remove("on", "out", "typing"); this.bub.style.width = ""; this.tx.textContent = "";
+    this.x = clamp(x, 10, W - 10); this.y = clamp(y, 10, H - 10); this.left = this.up = false; this.live = true;
+    this.place(); this.el.classList.add("on"); inMove(this.x, this.y, "demo");
+  }
+  hide() {
+    this.sid++; this.live = false;
+    this.el.classList.remove("on", "press"); this.bub.classList.remove("on", "typing");
+    if (S.pointerId === "demo") inUp(this.x, this.y, "demo", true, true, false);
+    if (S.pointerId === null) { S.hover = ""; S.hoverRow = 0; }
+  }
+  // moving: the caption steps back
+  quiet() { if (this.bub.classList.contains("on")) { this.sid++; this.bub.classList.add("out"); this.bub.classList.remove("typing"); } }
+  // standing still: size the bubble, type the line, then give it a moment to be read
+  async say(text, run, hold = 0) {
+    const id = ++this.sid, b = this.bub;
+    if (b.classList.contains("on") && !b.classList.contains("out")) { b.classList.add("out"); await wait(run, 0.17); if (id !== this.sid) return; }
+    this.tx.textContent = text;
+    b.style.width = "auto"; const w = b.offsetWidth; b.style.width = w + "px"; this.bw = w; this.place();
+    this.tx.textContent = ""; b.classList.remove("out"); b.classList.add("on", "typing");
+    const chars = Array.from(text);
+    for (let i = 1; i <= chars.length; i++) {
+      const pc = chars[i - 2] || "";   // an uneven hand: a breath after spaces, a longer one after punctuation
+      await wait(run, /[,.:·…?]/.test(pc) ? 0.095 + Math.random() * 0.04 : /\s/.test(pc) ? 0.048 + Math.random() * 0.024 : 0.024 + Math.random() * 0.022);
+      if (id !== this.sid) return;
+      this.tx.textContent = chars.slice(0, i).join("");
+    }
+    b.classList.remove("typing");
+    await wait(run, 0.07 + chars.length * 0.003 + hold);
+  }
+  async glide(x1, y1, run, sec) {
+    x1 = clamp(x1, 6, W - 6); y1 = clamp(y1, 6, H - 6);
+    const x0 = this.x, y0 = this.y, dx = x1 - x0, dy = y1 - y0, d = Math.hypot(dx, dy);
+    if (d < 0.5) return;
+    this.quiet();
+    const T = sec || glideSec(d * scale), bend = Math.min(40, d * 0.1) * (dx >= 0 ? -1 : 1), nx = -dy / d, ny = dx / d;
+    await anim(run, T, (p) => { const t = minJerk(p), a = Math.sin(Math.PI * t) * bend; this.moveTo(x0 + dx * t + nx * a, y0 + dy * t + ny * a); });
+  }
+  async click(run) {
+    const el = this.el;
+    el.classList.add("press");
+    inDown(this.x, this.y, "demo");
+    await wait(run, 0.11);
+    inUp(this.x, this.y, "demo", false, true, true);
+    el.classList.remove("press", "clk"); void el.offsetWidth; el.classList.add("clk");
+    await wait(run, 0.08);
+  }
+  // press, drag (a little past the mark, then back onto it), let go
+  async drag(tx, ty, run, sec, over = 0) {
+    this.quiet();
+    this.el.classList.add("press");
+    if (!inDown(this.x, this.y, "demo")) { this.el.classList.remove("press"); return false; }
+    try {
+      await wait(run, 0.12);
+      const x0 = this.x, y0 = this.y;
+      if (over) {
+        const ox = tx + (tx - x0) * over;
+        await anim(run, sec * 0.74, (p) => { const t = minJerk(p); this.moveTo(x0 + (ox - x0) * t, y0 + (ty - y0) * t + Math.sin(Math.PI * t) * 1.6); });
+        const x1 = this.x;
+        await anim(run, sec * 0.36, (p) => { const t = minJerk(p); this.moveTo(x1 + (tx - x1) * t, ty); });
+      } else {
+        await anim(run, sec, (p) => { const t = minJerk(p); this.moveTo(x0 + (tx - x0) * t, y0 + (ty - y0) * t); });
+      }
+      await wait(run, 0.1);
+    } finally {
+      inUp(this.x, this.y, "demo", !run.alive, true, run.alive);
+      this.el.classList.remove("press");
+    }
+    return true;
+  }
+  toButton(run) { return this.glide(L.button.cx + rand(-14, 38), L.button.cy + rand(-3, 3), run); }
+}
+
+// ---- the demo: Turinoz plays a run, plays with his cards, reads his score, again ----------
+let cur = null, demoRun = null, sloppy = -1;
+function planFor(r) {
+  const t = rgb2hsb(S.target), e = (a, b) => (Math.random() < 0.5 ? -1 : 1) * rand(a, b);
+  const off = r === sloppy;
+  const v = [
+    clamp(round(t[0] + (off ? e(10, 16) : e(1.5, 6.5))), 0, 360),
+    clamp(round(t[1] + e(1.5, off ? 9 : 6)), 0, 100),
+    clamp(round(t[2] + e(1, off ? 7 : 4.5)), 0, 100),
+  ];
+  const talk = [null, null, null];
+  if (r === 0) { talk[0] = pick(SAY.hue); talk[2] = v[2] >= S.val[2] ? pick(SAY.brighter) : pick(SAY.darker); }
+  else if (r === 1) talk[1] = v[1] >= S.val[1] ? pick(SAY.richer) : pick(SAY.softer);
+  return { v, talk };
+}
+function resultLine() {
+  const p = round(S.score * 100), you = rgb2hsb(S.guess);
+  if (S.score >= 0.9) return pick([`${p}%. still got it`, `${p}. I'll take that`, `${p}%. clean`]);
+  if (Math.abs(S.dh || 0) > 8 && rgb2hsb(S.target)[1] > 25) return `${p}%. drifted to ${family(you[0])}`;
+  if (S.score >= 0.78) return pick([`${p}%. close`, `${p}%. almost had it`]);
+  return pick([`${p}%. that one was mean`, `${p}%… moving on`]);
+}
+function summaryLine() {
+  const p = round(avgOf(S.run.scores) * 100);
+  if (p >= 90) return `${p}% overall. good eye day`;
+  if (p >= 80) return `${p}% overall. respectable`;
+  return `${p}% overall. rematch`;
+}
+async function dragRail(run, i, v) {
+  const C = cur, cy = trackTop(i) + L.trackH / 2, capX = () => railX(i, S.disp[i].x);
+  await C.glide(capX(), cy + rand(-2, 2), run);
+  if (Math.abs(C.x - capX()) > 2) await C.glide(capX(), cy, run, 0.2);
+  const tx = railX(i, v), dist = Math.abs(tx - C.x);
+  await C.drag(tx, C.y, run, clamp(0.42 + dist / 320, 0.5, 1.05), dist > 26 ? 0.07 : 0);
+}
+async function playRound(run, r) {
+  const C = cur;
+  await until(run, () => S.stage === "look");
+  // step aside so the colour is in plain view
+  const aside = C.glide(W * 0.84, L.headTitle + 4, run, 0.75);
+  if (r === 0 || r === RUN_LENGTH - 1) { await aside; await C.say(pick(r === 0 ? SAY.look : SAY.last), run); } else await aside;
+  await until(run, () => S.stage === "mix");
+  await wait(run, 0.35);
+  const plan = planFor(r);
+  for (let i = 0; i < 3; i++) {
+    await dragRail(run, i, plan.v[i]);
+    if (plan.talk[i]) await C.say(plan.talk[i], run, 0.15); else await wait(run, 0.1);
+  }
+  await C.toButton(run); await C.click(run);                       // Lock it
+  await wait(run, 0.2);
+  await C.glide(W * 0.8, L.score - 26, run, 0.8);
+  await wait(run, 0.6);
+  await C.say(resultLine(), run, 0.5);
+  await C.toButton(run); await C.click(run);                       // Keep the colour
+  await wait(run, 0.9);
+  if (r < RUN_LENGTH - 1) { await C.toButton(run); await C.click(run); }   // Next colour
+}
+async function playCards(run) {
+  const C = cur;
+  await until(run, () => S.stage === "reveal");
+  await wait(run, 0.55);
+  // over the stack: it fans out
+  let f = frontCard();
+  await C.glide(f.x.x + CW * 0.5, f.y.x + CH * 0.66, run);
+  await wait(run, 0.3);
+  await C.say(pick(SAY.cards), run, 0.2);
+  // the card at the back comes to the front
+  if (S.cards.length > 1) {
+    const idx = Math.max(0, S.cards.length - CARDS.show), back = S.cards[idx];
+    await C.glide(back.x.x + CW * 0.5, back.y.x + CH - 13, run);
+    await wait(run, 0.25);
+    if (hitTest(C.x, C.y)[0] === "back") await C.click(run);
+    await wait(run, 0.7);
+    // flick the front one away: it goes to the back
+    f = frontCard();
+    await C.glide(f.x.x + CW * 0.42, f.y.x + CH * 0.62, run, 0.6);
+    await wait(run, 0.15);
+    await C.drag(C.x + 112, C.y + 8, run, 0.42);
+    await wait(run, 0.8);
+  }
+  // copy a hex
+  f = frontCard();
+  await C.glide(f.x.x + CW - 42 * CK, f.y.x + 42 * CK, run, 0.7);
+  await wait(run, 0.2);
+  if (hitTest(C.x, C.y)[0] === "copy") await C.click(run);
+  await wait(run, 1.1);
+}
+async function demo(run, opening) {
+  const C = cur;
+  if (S.stage !== "ready") resetToReady();
+  await wait(run, 0.45);
+  C.show(W * 0.76, H * 0.79);
+  await wait(run, 0.5);
+  await C.say(opening || pick(SAY.intro), run, 0.25);
+  for (;;) {
+    sloppy = Math.random() < 0.75 ? Math.floor(Math.random() * RUN_LENGTH) : -1;
+    await C.toButton(run); await C.click(run);                     // Start / Play again
+    for (let r = 0; r < RUN_LENGTH; r++) await playRound(run, r);
+    await playCards(run);
+    await C.toButton(run); await C.click(run);                     // See results
+    await wait(run, 0.5);
+    await C.glide(W * 0.72, L.sum.score - 22, run, 0.9);
+    await wait(run, 0.5);
+    await C.say(summaryLine(), run, 1.6);
+    await C.glide(W * 0.62, L.button.cy - 34, run, 0.8);
+    await C.say(pick(SAY.again), run, 0.3);
+  }
+}
+function startDemo(opening) {
+  stopDemo();
+  const run = demoRun = { alive: true };
+  demo(run, opening).catch((e) => { if (e !== STOP) console.error(e); });
+}
+function stopDemo() {
+  if (demoRun) { demoRun.alive = false; demoRun = null; }
+  if (cur) { cur.quiet(); if (S.pointerId === "demo") inUp(cur.x, cur.y, "demo", true, true, false); }
+}
+
+// ---- who's playing ----------------------------------------------------------------------
+const RM = matchMedia("(prefers-reduced-motion: reduce)");
+let MODE = "demo", lastInput = 0, handRun = null;
+function tellParent(msg) { if (parent !== window) try { parent.postMessage(Object.assign({ spectra: 1 }, msg), "*"); } catch (_) {} }
+// reduced motion: no tour; a finished round stands still instead
+function stillFrame() {
+  stopDemo(); if (cur) cur.hide();
+  resetToReady();
+  newRound(); toMix();
+  const t = rgb2hsb(S.target); S.val = [round(clamp(t[0] + 4, 0, 360)), round(clamp(t[1] - 3, 0, 100)), round(clamp(t[2] + 2, 0, 100))];
+  toResult(); S.btnVis.t = 1;
+  for (let i = 0; i < 300; i++) advance(1 / 60);
+}
+function setMode(mode, tell) {
+  if (mode === MODE && !tell) return;
+  MODE = mode; lastInput = clock;
+  document.body.classList.toggle("play", mode === "play");
+  canvas.style.cursor = "";
+  if (handRun) { handRun.alive = false; handRun = null; }
+  if (mode === "play") {
+    stopDemo();
+    resetToReady();
+    if (cur && cur.live && !RM.matches) {          // he hands it over, then leaves
+      cur.live = false;                             // from here on, only your pointer plays
+      const run = handRun = { alive: true };
+      (async () => { await cur.glide(W * 0.78, H * 0.62, run, 0.6); await cur.say(pick(SAY.yours), run, 0.6); cur.hide(); })().catch(() => {});
+    } else if (cur) cur.hide();
+  } else {
+    release(); S.hover = ""; S.hoverRow = 0;
+    if (RM.matches) stillFrame(); else startDemo(pick(SAY.back));
+  }
+  if (tell) tellParent({ mode });
+}
+
+// real pointers count only while the visitor is playing
+function toLocal(e) {
+  const r = canvas.getBoundingClientRect();
+  return [(e.clientX - r.left - offX) / scale, (e.clientY - r.top - offY) / scale];
+}
+function pointerStyle() {
+  const h = S.hover;
+  canvas.style.cursor = S.grab || S.dragging ? "grabbing" : h === "rail" || h === "card" ? "grab" : h === "action" || h === "copy" || h === "back" ? "pointer" : "";
+}
+canvas.addEventListener("pointerdown", (e) => {
+  if (MODE !== "play" || S.pointerId === "demo") return;
+  lastInput = clock;
+  if (handRun) { handRun.alive = false; handRun = null; cur.hide(); }
+  const [x, y] = toLocal(e);
+  if (!inDown(x, y, e.pointerId)) return;
+  try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
+  pointerStyle(); e.preventDefault();
+});
+canvas.addEventListener("pointermove", (e) => {
+  if (MODE !== "play" || S.pointerId === "demo") return;
+  if (S.pointerId === null && e.pointerType !== "mouse") return;
+  lastInput = clock;
+  const [x, y] = toLocal(e);
+  inMove(x, y, e.pointerId); pointerStyle();
+});
+function up(e, cancelled) {
+  if (MODE !== "play" || S.pointerId !== e.pointerId) return;
+  const [x, y] = toLocal(e);
+  inUp(x, y, e.pointerId, cancelled, false, e.pointerType === "mouse");
+  pointerStyle();
+}
+canvas.addEventListener("pointerup", (e) => up(e, false));
+canvas.addEventListener("pointercancel", (e) => up(e, true));
+canvas.addEventListener("pointerleave", (e) => { if (MODE === "play" && S.pointerId === null) { S.hover = ""; S.hoverRow = 0; pointerStyle(); } });
+
+addEventListener("message", (e) => {
+  if (e.source !== parent || !e.data || !e.data.spectra) return;
+  if (e.data.mode === "play" || e.data.mode === "demo") setMode(e.data.mode);
+});
+
+// ---- theme: the page around it decides; on its own, the system does ----------------------
+const mqDark = matchMedia("(prefers-color-scheme: dark)");
+function wantedTheme() {
+  let t = "";
+  try { if (parent !== window) t = parent.document.documentElement.dataset.theme || ""; } catch (_) {}
+  return t === "light" || t === "dark" ? t : mqDark.matches ? "dark" : "light";
+}
+function follow(instant) { const m = wantedTheme(); if (m !== S.theme || instant) setTheme(m, instant); }
+
+// ---- the clock: runs only while the tile is on screen and the page is in front -------------
+let seen = true, raf = 0, last = 0;
+const asleep = () => {
+  if (document.hidden || !seen) return true;
+  try { return parent !== window && parent.document.documentElement.classList.contains("study-open"); } catch (_) { return false; }
+};
+function frame(now) {
+  raf = 0;
+  if (asleep()) { last = 0; return; }
+  const dt = last ? Math.min((now - last) / 1000, 1 / 20) : 1 / 60;
+  last = now;
+  clock += dt;
+  tickTimers();
+  advance(dt);
+  draw();
+  if (MODE === "play" && clock - lastInput > IDLE_SECONDS && S.pointerId === null) setMode("demo", true);
+  raf = requestAnimationFrame(frame);
+}
+const wake = () => { if (!raf && !asleep()) raf = requestAnimationFrame(frame); };
+if ("IntersectionObserver" in window) new IntersectionObserver((es) => { seen = es[es.length - 1].isIntersecting; wake(); }).observe(canvas);
+document.addEventListener("visibilitychange", wake);
+setInterval(wake, 700);                 // picks up again after a study closes
+setInterval(() => follow(false), 1000);
+mqDark.addEventListener && mqDark.addEventListener("change", () => follow(false));
+addEventListener("resize", () => { resize(); if (cur) cur.place(); if (!raf) draw(); });
+
+// ---- boot ------------------------------------------------------------------------------
+updatePalette();
+resize();
+follow(true);
+updatePalette();
+setButton("Start", true);
+draw();
+const fontsIn = document.fonts && document.fonts.load ? Promise.all([document.fonts.load('600 14px "Inter"'), document.fonts.load('500 12px "Inter"')]) : Promise.resolve();
+Promise.race([fontsIn, new Promise((r) => setTimeout(r, 1500))]).catch(() => {}).then(() => {
+  setButton(S.btnLabel || "Start", true);            // measured again in the real font
+  cur = new Cursor();
+  const q = new URLSearchParams(location.search);
+  if (q.has("play")) setMode("play");
+  else if (RM.matches) stillFrame();
+  else startDemo();
+  tellParent({ ready: 1 });
+  draw(); wake();
+});
+})();
+</script>
+</body>
+</html>

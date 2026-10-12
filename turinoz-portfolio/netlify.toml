@@ -31,3 +31,22 @@
   for = "/rive/*.riv"
   [headers.values]
     Cache-Control = "no-cache"
+
+# Scoreline's demo (scoreline/app/) is a single-page app: a reload on one of its screens
+# (scoreline/app/match/1/facts) gets its index.html. Files that exist are served as they are.
+[[redirects]]
+  from = "/scoreline/app/*"
+  to = "/scoreline/app/index.html"
+  status = 200
+
+# Its built scripts and styles carry a hash in their names, so they can be cached for a year.
+[[headers]]
+  for = "/scoreline/app/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# The demo's player photos (same rule as the app's own _headers): cached for an hour.
+[[headers]]
+  for = "/scoreline/app/img/players/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"

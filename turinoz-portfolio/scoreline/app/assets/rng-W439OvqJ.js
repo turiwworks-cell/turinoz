@@ -1,0 +1,1 @@
+var e=20260921,t=2147483647,n=(e,t)=>(e%t+t)%t;function r(e){let r=n(Math.floor(e)*16807+12345,2147483646)+1;for(let e=0;e<4;e++)r=r*48271%t;return()=>(r=r*48271%t,(r-1)/2147483646)}function i(t,r){let i=n(Math.floor(t)-e,2147483646);return i===0?r:n(r+i*48271%2147483646,2147483646)}export{r as n,i as r,e as t};
