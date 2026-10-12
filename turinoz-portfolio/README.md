@@ -172,8 +172,16 @@ python -m http.server 8000
 
 ## smtp.dev case study (`smtp/`)
 
-- Dark on purpose: the page takes on the film's light, the way the Sitemate page takes on
-  Storm blue. Same fonts as the portfolio (Archivo, Inter, JetBrains Mono, from `../fonts/`).
+- Night and day: dark takes on the film's light; the light mode uses smtp.dev's own light
+  palette. The sun/moon button in the header is the same choice as the home page (`tz-theme`);
+  with nothing saved the page follows the system. Players, stills and the delivery terminal
+  stay dark in both. Same fonts as the portfolio (Archivo, Inter, JetBrains Mono, from `../fonts/`).
+- **Header and hero**: the header shows smtp.dev's static logo (from their brand sheet, the
+  `smtpLogo` symbol at the top of `index.html`). The hero is centered: a capsule that links to
+  smtp.dev (underlined name and an arrow, no glow), the title, one line about the film and the
+  facts in mono. The hero light sits high above the frame, with the
+  dust rising through it. "clarity." is smtp.dev's blue gradient at night and one solid blue
+  by day (`--grad`).
 - **The film**: a muted preview loops until someone presses play; then the full 1080p film
   (`assets/main-film-v1.mp4`, original sound untouched) takes over. Sound starts off; the
   sound button turns it on (in the preview it starts the film from the top). To start with
@@ -184,15 +192,16 @@ python -m http.server 8000
   one line. A beat's times, cursor position and line are the `data-` attributes on its `<li>`
   in `index.html` (`data-t0`, `data-t1`, `data-x`, `data-y` in % of the frame, `data-say`).
   The seek bar's beat names come from the same list.
-- **Refinement**: drag to compare an early styleframe with the final film (two pairs).
-- **Styleframes**: six of the 25, with what each one became. Drag, swipe or use the arrows.
+- **Styleframes**: six frames, numbered SF 01 to 06 in film order, each with one line. Drag, swipe or use the arrows.
 - **One language**: the three films to scale, each bar drawn from its own colors with a
   playhead in real time; the short cut player; the logo loop frame by frame
   (`assets/logo-frames.webp`, move across it to scrub).
 - Everything that moves sleeps off screen, in a hidden tab, while a film plays, when the nav's
   pause button is on, and for visitors who prefer reduced motion (stills instead of loops).
 - Removed in the redesign (no longer used by the page): the old hook/workflow/outro loops and
-  their posters, the six story stills, the 16:9 logo loop copy and the old main poster.
+  their posters, the six story stills, the 16:9 logo loop copy and the old main poster. Later
+  also the Refinement comparison (with its two final-film stills, `workflow-final.webp` and
+  `start-testing-final.webp`) and the closing quote under the credits.
 - Previewing locally needs a server that answers byte ranges, or the films can't seek
   (Python's `http.server` doesn't; `npx serve` or Netlify do).
 - After deploying, set `og:image` in `smtp/index.html` to the absolute URL of

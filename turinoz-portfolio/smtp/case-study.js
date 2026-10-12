@@ -3,8 +3,8 @@
    smtp.dev — product film case study (Turinoz)
    One file, no libraries. In order:
      helpers · color strips · reveal & nav · label cursor · players (film + short)
-     · beat by beat (with Turinoz's cursor) · refinement wipe · styleframes rail
-     · lengths + logo scrubber · delivery terminal · hero (count, dust) · pause all
+     · beat by beat (with Turinoz's cursor) · styleframes rail
+     · lengths + logo scrubber · delivery terminal · hero (title, dust) · day / night · pause all
    Everything that moves sleeps off screen, in a hidden tab, while a film plays
    (for the muted loops), when "Pause all motion" is on, and for visitors who
    prefer reduced motion.
@@ -35,6 +35,11 @@
   const films = [];                           // user-started films (only one plays at a time)
   const filmPlaying = () => films.some(p => p.film && !p.film.paused && !p.film.ended);
 
+  // colors the canvases take from the page (they change with day / night)
+  const tok = name => getComputedStyle(html).getPropertyValue(name).trim();
+  const INK = { dim: tok('--strip-dim') || 'rgba(8,9,12,.6)', dust: tok('--dust') || '#C9D8FF' };
+  const strips = new Set();
+
   /* ---------- the films' own colors ---------- */
   const COLORS = {};
   const raw = window.SMTP_COLORS || {};
@@ -45,6 +50,7 @@
     constructor(canvas, cols) {
       this.c = canvas; this.cols = cols || []; this.base = document.createElement('canvas'); this.p = null;
       if (!canvas) return;
+      strips.add(this);
       new ResizeObserver(() => this.resize()).observe(canvas);
       this.resize();
     }
@@ -68,7 +74,7 @@
       const c = this.c; if (!c) return;
       const x = c.getContext('2d'), w = c.width, h = c.height, xa = Math.round(a * w), xb = Math.round(b * w);
       x.clearRect(0, 0, w, h); x.drawImage(this.base, 0, 0);
-      x.fillStyle = 'rgba(8,9,12,.62)'; x.fillRect(0, 0, xa, h); x.fillRect(xb, 0, w - xb, h);
+      x.fillStyle = INK.dim; x.fillRect(0, 0, xa, h); x.fillRect(xb, 0, w - xb, h);
     }
     draw(p) {
       if (p == null && this.r) { this.range(this.r[0], this.r[1]); return; }
@@ -76,7 +82,7 @@
       const c = this.c; if (!c) return;
       const x = c.getContext('2d'), w = c.width, h = c.height;
       x.clearRect(0, 0, w, h); x.drawImage(this.base, 0, 0);
-      if (p != null) { const px = Math.round(clamp(p, 0, 1) * w); x.fillStyle = 'rgba(8,9,12,.58)'; x.fillRect(px, 0, w - px, h); }
+      if (p != null) { const px = Math.round(clamp(p, 0, 1) * w); x.fillStyle = INK.dim; x.fillRect(px, 0, w - px, h); }
     }
   }
 
@@ -447,78 +453,6 @@
   }
 
   /* ==========================================================================
-     REFINEMENT — drag to compare
-     ========================================================================== */
-  const wipe = $('#wipe');
-  if (wipe) {
-    const PAIRS = [
-      { early: 'assets/styleframe-10.webp', final: 'assets/workflow-final.webp', l: 'Exploration · SF 10', r: 'Final film · 0:15',
-        ea: 'Early styleframe: the domains screen as a floating glass panel with soft corners.', fa: 'Final film: the smtp.dev domains screen, flat and close to the real product.',
-        ce: 'Floating glass, soft corners, a lot of blur and a caption on top.', cf: 'The real layout: flat, direct, the way it looks after signup.' },
-      { early: 'assets/styleframe-15.webp', final: 'assets/start-testing-final.webp', l: 'Exploration · SF 15', r: 'Final film · 0:28',
-        ea: 'Early styleframe: That’s it, start testing, as a toast over a blurred screen.', fa: 'Final film: Start testing, alone in its own frame.',
-        ce: 'The last step tucked into a toast: That’s it, start testing.', cf: 'Given a frame of its own: That’s it. Then Start testing.' },
-    ];
-    const handle = $('.wipe-handle', wipe), imgF = $('.wipe-final', wipe), imgE = $('.wipe-early img', wipe);
-    const lblL = $('.wipe-l span', wipe), lblR = $('.wipe-r span', wipe), capE = $('.cap-early'), capF = $('.cap-final');
-    const seg = $('#refine .seg');
-    let x = 50, touched = false, hinted = false, down = false;
-    const set = v => { x = clamp(v, 0, 100); wipe.style.setProperty('--x', x.toFixed(2) + '%'); handle.setAttribute('aria-valuenow', String(Math.round(x))); };
-    const from = e => { const r = wipe.getBoundingClientRect(); return (e.clientX - r.left) / r.width * 100; };
-    wipe.addEventListener('pointerdown', e => {
-      if (e.button !== 0) return;
-      touched = true; down = true; wipe.classList.add('drag');
-      if (e.pointerType === 'mouse') { e.preventDefault(); wipe.setPointerCapture(e.pointerId); }
-      set(from(e));
-    });
-    wipe.addEventListener('pointermove', e => { if (down) set(from(e)); });
-    const up = () => { down = false; wipe.classList.remove('drag'); };
-    wipe.addEventListener('pointerup', up); wipe.addEventListener('pointercancel', up); wipe.addEventListener('lostpointercapture', up);
-    // touch: a sideways swipe drags, a vertical one scrolls (touch-action: pan-y)
-    handle.addEventListener('keydown', e => {
-      const d = e.key === 'ArrowRight' || e.key === 'ArrowUp' ? 5 : e.key === 'ArrowLeft' || e.key === 'ArrowDown' ? -5 : 0;
-      if (e.key === 'Home') { touched = true; set(0); e.preventDefault(); } else if (e.key === 'End') { touched = true; set(100); e.preventDefault(); }
-      if (d) { e.preventDefault(); touched = true; set(x + d * (e.shiftKey ? 2 : 1)); }
-    });
-    // a one-time hint that it moves
-    new IntersectionObserver((es, o) => {
-      if (!es[0].isIntersecting || hinted) return; hinted = true; o.disconnect();
-      if (reduce()) return;
-      const keys = [[0, 50], [.42, 30], [1.05, 70], [1.55, 50]], t0 = performance.now() + 500;
-      const ease = p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
-      const tick = now => {
-        if (touched) return;
-        const t = (now - t0) / 1000; if (t < 0) { requestAnimationFrame(tick); return; }
-        let k = 0; while (k < keys.length - 2 && t > keys[k + 1][0]) k++;
-        const [ta, va] = keys[k], [tb, vb] = keys[k + 1], p = clamp((t - ta) / (tb - ta), 0, 1);
-        set(va + (vb - va) * ease(p));
-        if (t < keys[keys.length - 1][0]) requestAnimationFrame(tick);
-      };
-      requestAnimationFrame(tick);
-    }, { threshold: .5 }).observe(wipe);
-    const show = i => {
-      const P = PAIRS[i]; seg.dataset.on = String(i);
-      if (!down) set(50);
-      $$('button', seg).forEach((b, j) => b.setAttribute('aria-selected', String(j === i)));
-      wipe.classList.add('swapping'); capE.style.opacity = capF.style.opacity = '0';
-      setTimeout(() => {
-        let n = 0; const done = () => { if (++n >= 2) { wipe.classList.remove('swapping'); } };
-        imgF.onload = done; imgE.onload = done; imgF.onerror = done; imgE.onerror = done;
-        imgF.src = P.final; imgE.src = P.early; imgF.alt = P.fa; imgE.alt = P.ea;
-        lblL.textContent = P.l; lblR.textContent = P.r; capE.textContent = P.ce; capF.textContent = P.cf;
-        capE.style.opacity = capF.style.opacity = '';
-        if (imgF.complete && imgE.complete) wipe.classList.remove('swapping');
-      }, 230);
-    };
-    $$('button', seg).forEach((b, i) => b.addEventListener('click', () => show(i)));
-    seg.addEventListener('keydown', e => {
-      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
-      const i = e.key === 'ArrowRight' ? 1 : 0; show(i); $$('button', seg)[i].focus();
-    });
-    set(50);
-  }
-
-  /* ==========================================================================
      STYLEFRAMES — a rail you can drag (mouse), swipe (touch) or step through
      ========================================================================== */
   const rail = $('#sfRail');
@@ -631,21 +565,9 @@
   }
 
   /* ==========================================================================
-     HERO — the title counts to 53; a little dust drifts in the light, like the film
+     HERO — the title rises in once the fonts are in; a little dust drifts in the light, like the film
      ========================================================================== */
-  const h1 = $('.h1'), count = $('.h1 .count');
-  const heroIn = () => {
-    h1 && h1.classList.add('in');
-    if (!count || reduce()) return;
-    const to = +count.dataset.to, t0 = performance.now() + 120, dur = 1300;
-    count.textContent = '00';
-    const step = now => {
-      const p = clamp((now - t0) / dur, 0, 1), e = 1 - Math.pow(1 - p, 3);
-      count.textContent = String(Math.round(to * e)).padStart(2, '0');
-      if (p < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  };
+  const heroIn = () => $$('.h1').forEach(h => h.classList.add('in'));
   (document.fonts && document.fonts.ready ? Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 900))]) : Promise.resolve()).then(() => requestAnimationFrame(heroIn));
 
   const dust = $('.dust');
@@ -666,7 +588,7 @@
         const tw = .55 + .45 * Math.sin(now / 1400 + p.ph);
         const fall = Math.min(1, (H - p.y) / (H * .5));          // fade out lower down
         ctx.globalAlpha = p.a * tw * fall;
-        ctx.fillStyle = '#C9D8FF';
+        ctx.fillStyle = INK.dust;
         ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283); ctx.fill();
       }
       ctx.globalAlpha = 1;
@@ -677,22 +599,32 @@
       draw(now);
       if (D.may()) raf = requestAnimationFrame(tick);
     };
-    const D = { may: () => visible && !reduce() && !paused() && !document.hidden, sync: () => { if (D.may() && !raf) raf = requestAnimationFrame(tick); } };
+    const D = { may: () => visible && !reduce() && !paused() && !document.hidden, sync: () => { if (D.may() && !raf) raf = requestAnimationFrame(tick); else if (!raf) draw(performance.now()); } };
     sleepers.add(D);
     new ResizeObserver(seed).observe(dust);
     new IntersectionObserver(es => { visible = es[0].isIntersecting; D.sync(); }).observe(dust);
   }
 
-  /* the nav badge: the smtp.dev logo loop itself */
-  const badge = $('video[data-badge]');
-  if (badge) {
-    const B = { sync: () => {
-      const on = !reduce() && !paused() && !document.hidden;
-      if (on) { if (badge.preload === 'none') badge.preload = 'auto'; if (badge.paused) { const p = badge.play(); p && p.catch && p.catch(() => {}); } }
-      else badge.pause();
-    } };
-    sleepers.add(B); setTimeout(() => B.sync(), 600);
-  }
+  /* ==========================================================================
+     DAY / NIGHT — the same choice as the portfolio's home page (tz-theme)
+     ========================================================================== */
+  const tm = $('#tm'), mqDark = matchMedia('(prefers-color-scheme: dark)');
+  const mode = () => html.dataset.theme || (mqDark.matches ? 'dark' : 'light');
+  const themed = () => {
+    const label = mode() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+    if (tm) { tm.setAttribute('aria-label', label); tm.title = label; }
+    INK.dim = tok('--strip-dim') || INK.dim; INK.dust = tok('--dust') || INK.dust;
+    strips.forEach(st => st.draw(st.p));
+    syncAll();
+  };
+  tm && tm.addEventListener('click', () => {
+    const next = mode() === 'dark' ? 'light' : 'dark';
+    html.dataset.theme = next;
+    try { localStorage.setItem('tz-theme', next); } catch (_) {}
+  });
+  mqDark.addEventListener && mqDark.addEventListener('change', themed);
+  new MutationObserver(themed).observe(html, { attributes: true, attributeFilter: ['data-theme'] });
+  themed();
 
   /* ==========================================================================
      PAUSE ALL MOTION · visibility · reduced motion
