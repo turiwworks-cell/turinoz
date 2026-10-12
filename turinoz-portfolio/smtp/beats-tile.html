@@ -82,7 +82,9 @@ h2{font:560 44px/1.03 var(--display);font-stretch:86%;letter-spacing:-.032em;mar
 h3{font:560 30px/1.15 var(--display);font-stretch:90%;letter-spacing:-.022em}
 .sub{font-size:15.5px;color:var(--muted);max-width:640px;margin-top:14px}
 .bt{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:56px;align-items:start}
-.bt-col{position:sticky;top:var(--st,140px);align-self:start}
+/* the stage holds still in the middle like the case study's sticky column; the script places it (sub-pixel, so nothing shakes) */
+.sec{will-change:transform}
+.bt-col{position:relative;align-self:start;will-change:transform}
 .bt-stage{position:relative;isolation:isolate}
 .bt-stage::before{content:"";position:absolute;z-index:-1;left:6%;right:6%;top:-8%;height:70%;border-radius:50%;filter:blur(60px);opacity:.55;
   background:rgb(var(--tone,21,80,181));transition:background-color .9s var(--ease),opacity .9s var(--ease)}
@@ -200,10 +202,11 @@ h3{font:560 30px/1.15 var(--display);font-stretch:90%;letter-spacing:-.022em}
 (() => {
 'use strict';
 /* ---------- settings ---------- */
-const GLIDE = 150;     // design px a second, on average, from one beat to the next
-const LINGER = .5;     // seconds each beat lingers: it slows right down but keeps moving
-const CREEP = 12;      // design px a second while it lingers
-const OPEN = 1.2;      // the section's title lingers a little longer at the start
+const FAST = 420;      // design px a second at full speed between two beats
+const RAMP = .3;       // the share of each move spent speeding up, and again slowing down
+const LINGER = .45;    // seconds each beat lingers at the slow speed
+const CREEP = 16;      // design px a second at the slow speed: slow, never zero
+const OPEN = 1;        // the section's title lingers a little longer at the start
 const FADE = .7;       // after the last beat it fades out and starts again from the title
 
 const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -235,7 +238,12 @@ function strip() {
 }
 
 /* ---------- size: one composition, scaled to the frame ---------- */
-let W = 1040, H = 650, tops = [], line = 0, path = [], total = 1;
+let W = 1040, H = 650, tops = [], line = 0, path = [], total = 1, colTop = 0, colMax = 0, st = 0;
+// a move: slow → fast → slow, with smooth ramps. B(u) is the distance covered by the speed-up part, as a share.
+const sm = x => x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x);
+const bump = u => sm(u / RAMP) * sm((1 - u) / RAMP);
+const BT = (() => { const n = 400, a = [0]; for (let i = 1; i <= n; i++) a.push(a[i - 1] + bump((i - .5) / n) / n); return a; })();
+const B = u => { const x = clamp(u, 0, 1) * 400, i = Math.floor(x); return i >= 400 ? BT[400] : BT[i] + (BT[i + 1] - BT[i]) * (x - i); };
 const off = el => { let y = 0; while (el && el !== sc) { y += el.offsetTop; el = el.offsetParent; } return y; };
 function fit() {
   const vw = innerWidth, vh = innerHeight; if (!vw || !vh) return;
@@ -245,12 +253,13 @@ function fit() {
   const s = document.documentElement.style;
   s.setProperty('--w', W + 'px'); s.setProperty('--h', H + 'px'); s.setProperty('--k', K.toFixed(5)); s.setProperty('--vh', (H / 100).toFixed(2) + 'px');
   // the stage sits in the middle of the frame once it sticks
-  const hs = stage.offsetHeight, st = Math.max(32, Math.round((H - hs) / 2));
-  col.style.setProperty('--st', st + 'px');
+  sec.style.transform = col.style.transform = '';
+  const hs = stage.offsetHeight; st = Math.max(32, Math.round((H - hs) / 2));
+  colTop = off(col); colMax = Math.max(0, col.parentNode.offsetHeight - col.offsetHeight);
   line = H * .52;
   tops = BEATS.map(b => off(b.el));
   // where it lingers: the title, then each beat with its middle level with the stage's
-  const max = sc.scrollHeight - H, mid = st + hs / 2, stops = [0];
+  const max = sec.offsetHeight - H, mid = st + hs / 2, stops = [0];
   BEATS.forEach(b => { const y = clamp(Math.round(off(b.el) + b.el.offsetHeight / 2 - mid), 0, max); if (y > stops[stops.length - 1] + 140) stops.push(y); });
   // the path: linger, glide, linger, glide … (a glide leaves and arrives at the lingering speed, so it never stops)
   path = []; let t = 0;
@@ -258,7 +267,7 @@ function fit() {
     const hold = i ? LINGER : OPEN, a = i ? y - CREEP * hold / 2 : 0;
     path.push({ t, d: hold, y0: a, y1: a + CREEP * hold, glide: false }); t += hold;
     const next = stops[i + 1]; if (next == null) return;
-    const b = next - CREEP * LINGER / 2, from = a + CREEP * hold, d = Math.max(1.2, (b - from) / GLIDE);
+    const b = next - CREEP * LINGER / 2, from = a + CREEP * hold, d = Math.max(.6, (b - from) / (CREEP + (FAST - CREEP) * BT[400]));
     path.push({ t, d, y0: from, y1: b, glide: true }); t += d;
   });
   total = t;
@@ -268,8 +277,9 @@ function yAt(t) {
   const s = path.find(p => t < p.t + p.d) || path[path.length - 1];
   const u = clamp((t - s.t) / s.d, 0, 1), D = s.y1 - s.y0;
   if (!s.glide) return s.y0 + D * u;
-  const m = CREEP * s.d;          // Hermite: leaves and arrives at CREEP
-  return s.y0 + (u * u * u - 2 * u * u + u) * m + (-2 * u * u * u + 3 * u * u) * D + (u * u * u - u * u) * m;
+  // the slow speed all the way, plus the fast part on top: it leaves and arrives at CREEP, never at zero
+  const k = (D - CREEP * s.d) / BT[400];
+  return s.y0 + CREEP * s.d * u + k * B(u);
 }
 
 /* ---------- the beat beside the line, as in the case study ---------- */
@@ -319,8 +329,9 @@ function tick(now) {
     if (clock > total) { o = 1 - (clock - total) / FADE; y = path[path.length - 1].y1 + CREEP * (clock - total); }
     else if (laps && clock < FADE) o = clock / FADE;
   }
-  // whole pixels scroll; the fraction left over moves the section, so the slow part stays smooth
-  sc.scrollTop = Math.floor(y); sec.style.transform = `translateY(${-(y - sc.scrollTop).toFixed(2)}px)`;
+  // the section moves by transform (sub-pixel, no scroll snapping); the stage stays put in the middle once it reaches it
+  sec.style.transform = `translate3d(0,${(-y).toFixed(2)}px,0)`;
+  col.style.transform = `translate3d(0,${clamp(y + st - colTop, 0, colMax).toFixed(2)}px,0)`;
   sc.style.opacity = o.toFixed(3);
   const k = beatAt(y); if (k !== active) setBeat(k);
   const b = BEATS[active];
