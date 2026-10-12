@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>smtp.dev · Beat by beat, playing</title>
+<!--
+  The smtp.dev tile on the home page: the case study's "Beat by beat" section, scrolling by itself.
+  It scrolls down on its own, slows almost to a stop at each beat (it never stops completely), and
+  starts again from the title after the last beat. The film beside the notes plays each beat, the same
+  way the case study does. Nothing to click: the tile around it opens the case study.
+  Drawn at one size and scaled to the frame. Light or dark like the page around it.
+  The beat notes are copied from smtp/index.html; change them in both places.
+-->
+<script>
+/* day / night: the page around it, else this device's choice, else the system */
+(function(){var r=document.documentElement,t=null;try{if(parent!==window)t=parent.document.documentElement.dataset.theme}catch(_){}
+if(!t){try{t=localStorage.getItem('tz-theme')}catch(_){}}if(t==='light'||t==='dark')r.dataset.theme=t})();
+</script>
+<style>
+@font-face{font-family:"Archivo";src:url(../fonts/archivo.woff2) format("woff2");font-weight:100 900;font-stretch:62% 125%;font-style:normal;font-display:swap}
+@font-face{font-family:"Inter";src:url(../fonts/inter.woff2) format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+@font-face{font-family:"JB Mono";src:url(../fonts/jetbrains-mono.woff2) format("woff2");font-weight:100 800;font-style:normal;font-display:swap}
+/* the case study's own palette (smtp/case-study.css): night by default, smtp.dev's light palette by day */
+:root{
+  --bg:#08090C; --line:rgba(255,255,255,.075); --line-2:rgba(255,255,255,.05); --line-3:rgba(255,255,255,.15);
+  --ink:#ECEEF2; --ink-2:#AEB4BF; --muted:#7C838F; --faint:#4D535E;
+  --blue:#3F7CFF; --blue-ink:#8DB0FF; --blue-soft:rgba(63,124,255,.14);
+  --red:#E5484D; --red-ink:#FF8E92; --red-soft:rgba(229,72,77,.14);
+  --on-ink:#0A0B0E; --fill:rgba(255,255,255,.06); --shadow:rgba(0,0,0,.9); --strip-dim:rgba(8,9,12,.6);
+  --display:"Archivo","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --ui:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JB Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --ease:cubic-bezier(.2,.8,.2,1);
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:light){
+  :root:not([data-theme="dark"]){
+    --bg:#F3F4FA; --line:rgba(15,17,26,.09); --line-2:rgba(15,17,26,.06); --line-3:rgba(15,17,26,.16);
+    --ink:#0F111A; --ink-2:#404147; --muted:#6B6E78; --faint:#A3A6AF;
+    --blue:#378FE3; --blue-ink:#1257CD; --blue-soft:rgba(55,143,227,.16);
+    --red-ink:#C2373C; --red-soft:rgba(229,72,77,.1);
+    --on-ink:#FFFFFF; --fill:rgba(15,17,26,.05); --shadow:rgba(15,17,26,.22); --strip-dim:rgba(243,244,250,.62);
+    color-scheme:light;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#F3F4FA; --line:rgba(15,17,26,.09); --line-2:rgba(15,17,26,.06); --line-3:rgba(15,17,26,.16);
+  --ink:#0F111A; --ink-2:#404147; --muted:#6B6E78; --faint:#A3A6AF;
+  --blue:#378FE3; --blue-ink:#1257CD; --blue-soft:rgba(55,143,227,.16);
+  --red-ink:#C2373C; --red-soft:rgba(229,72,77,.1);
+  --on-ink:#FFFFFF; --fill:rgba(15,17,26,.05); --shadow:rgba(15,17,26,.22); --strip-dim:rgba(243,244,250,.62);
+  color-scheme:light;
+}
+/* the film stays night in both modes */
+.bt-frame{--ink:#ECEEF2;--ink-2:#AEB4BF;--muted:#7C838F;--line:rgba(255,255,255,.075)}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--bg)}
+/* a picture of the section: nothing to click, select or scroll */
+body{color:var(--ink);font:400 15.5px/1.6 var(--ui);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-feature-settings:"cv11","ss01";
+  pointer-events:none;user-select:none;-webkit-user-select:none;cursor:default}
+h2,h3,p{margin:0}
+img,video,canvas{display:block}
+.mono{font-family:var(--mono);font-feature-settings:normal;font-variant-numeric:tabular-nums}
+code{font:500 .86em/1 var(--mono);padding:3px 6px 2px;border-radius:6px;background:var(--fill);box-shadow:inset 0 0 0 1px var(--line-2);color:var(--ink);white-space:nowrap}
+
+/* the composition: drawn at one size (--w × --h), scaled to the frame; the section scrolls inside it */
+#cv{position:absolute;left:50%;top:50%;width:var(--w,1040px);height:var(--h,650px);transform:translate(-50%,-50%) scale(var(--k,1));transform-origin:50% 50%;
+  opacity:0;transition:opacity .8s var(--ease)}
+#cv.on{opacity:1}
+#sc{position:absolute;inset:0;overflow:hidden;
+  -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 6%,#000 94%,transparent);mask-image:linear-gradient(180deg,transparent 0,#000 6%,#000 94%,transparent)}
+
+/* the section, as in the case study (smtp/case-study.css, "beats"), at its desktop layout */
+.wrap{padding:0 52px}
+.sec{position:relative;padding:60px 0 0}
+.shead{margin-bottom:36px}
+.kicker{display:flex;align-items:center;gap:10px;font:500 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.kicker i{width:6px;height:6px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 3px var(--blue-soft)}
+h2{font:560 44px/1.03 var(--display);font-stretch:86%;letter-spacing:-.032em;margin-top:16px}
+h3{font:560 30px/1.15 var(--display);font-stretch:90%;letter-spacing:-.022em}
+.sub{font-size:15.5px;color:var(--muted);max-width:640px;margin-top:14px}
+.bt{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:56px;align-items:start}
+.bt-col{position:sticky;top:var(--st,140px);align-self:start}
+.bt-stage{position:relative;isolation:isolate}
+.bt-stage::before{content:"";position:absolute;z-index:-1;left:6%;right:6%;top:-8%;height:70%;border-radius:50%;filter:blur(60px);opacity:.55;
+  background:rgb(var(--tone,21,80,181));transition:background-color .9s var(--ease),opacity .9s var(--ease)}
+.bt-stage[data-tone="red"]{--tone:170,24,40}
+.bt-stage[data-tone="grey"]{--tone:60,64,72}
+.bt-stage[data-tone="grey"]::before{opacity:.35}
+.bt-frame{position:relative;aspect-ratio:16/9;border-radius:16px;overflow:hidden;background:#0D0C0F;box-shadow:inset 0 0 0 1px var(--line),0 40px 80px -40px var(--shadow)}
+.bt-frame::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);z-index:6}
+.bt-still,.bt-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.bt-still{z-index:2;transition:opacity .45s var(--ease)}
+.bt-frame.live .bt-still{opacity:0}
+.bt-video{z-index:1}
+.bt-tc{position:absolute;z-index:5;right:12px;top:12px;height:24px;display:inline-flex;align-items:center;padding:0 9px;border-radius:999px;font-size:11px;color:var(--ink-2);
+  background:rgba(9,10,13,.6);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
+.bt-mini{position:relative;height:12px;margin-top:16px}
+.bt-mini canvas{position:absolute;inset:0;width:100%;height:100%;border-radius:4px}
+.bt-range{position:absolute;top:-4px;bottom:-4px;left:calc(var(--a,0)*100%);width:calc((var(--b,0) - var(--a,0))*100%);border-radius:6px;
+  box-shadow:inset 0 0 0 1.5px var(--ink),0 0 18px rgba(255,255,255,.18);transition:left .7s var(--ease),width .7s var(--ease)}
+.bt-head{position:absolute;top:-6px;bottom:-6px;left:calc(var(--p,0)*100%);width:2px;margin-left:-1px;border-radius:2px;background:var(--ink)}
+.bt-read{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:16px;min-height:30px}
+.bt-name{font:560 22px/1.2 var(--display);font-stretch:90%;letter-spacing:-.02em}
+.bt-name.swap,.bt-span.swap{animation:swapIn .45s var(--ease) both}
+@keyframes swapIn{from{transform:translateY(7px);opacity:0}}
+.bt-span{font-size:12px;color:var(--muted)}
+.bt-list{list-style:none;margin:0;padding:0 0 calc(var(--vh,6.5px)*30)}
+.beat{min-height:calc(var(--vh,6.5px)*66);display:flex;flex-direction:column;justify-content:center;gap:14px;padding:24px 0;opacity:.24;transition:opacity .6s var(--ease)}
+.beat.on{opacity:1}
+.beat:first-child{min-height:calc(var(--vh,6.5px)*56);justify-content:flex-start;padding-top:12px}
+.beat-n{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted)}
+.beat-n b{display:inline-grid;place-items:center;height:22px;padding:0 8px;border-radius:999px;font-weight:500;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line-3)}
+.beat.on .beat-n b{background:var(--ink);color:var(--on-ink);box-shadow:none}
+.beat p{font-size:16px;line-height:1.65;color:var(--ink-2);max-width:46ch}
+.beat p em{font-style:normal;color:var(--ink)}
+.tag{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;height:26px;padding:0 11px 0 10px;border-radius:999px;font:500 10.5px/1 var(--mono);
+  letter-spacing:.06em;text-transform:uppercase;color:var(--muted);box-shadow:inset 0 0 0 1px var(--line)}
+.tag::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--faint)}
+.tag--red{color:var(--red-ink)}.tag--red::before{background:var(--red);box-shadow:0 0 0 3px var(--red-soft)}
+.tag--blue{color:var(--blue-ink)}.tag--blue::before{background:var(--blue);box-shadow:0 0 0 3px var(--blue-soft)}
+@media (prefers-reduced-motion:reduce){ .beat,.bt-range,.bt-stage::before{transition:none} }
+</style>
+<script src="film-data.js"></script>
+</head>
+<body>
+<div id="cv"><div id="sc">
+<section class="sec">
+  <div class="wrap">
+    <div class="shead">
+      <div class="kicker"><i></i>01 — Beat by beat</div><h2>Every beat has a job.</h2>
+      <p class="sub">Seven beats in 53 seconds, each with the reason it’s there.</p>
+    </div>
+    <div class="bt">
+      <div class="bt-col">
+        <div class="bt-stage" id="stage" data-tone="blue">
+          <div class="bt-frame">
+            <img class="bt-still" src="assets/beat-01.webp" alt="" width="1280" height="720">
+            <video class="bt-video" muted playsinline disablepictureinpicture disableremoteplayback preload="none" tabindex="-1">
+              <source src="../media/smtp-film-preview.av1.mp4" type='video/mp4; codecs="av01.0.05M.10"'>
+              <source src="../media/smtp-film-preview.mp4" type='video/mp4; codecs="avc1.64001F"'>
+            </video>
+            <span class="bt-tc mono">0:00.0</span>
+          </div>
+          <div class="bt-mini"><canvas></canvas><span class="bt-range"></span><span class="bt-head"></span></div>
+          <div class="bt-read"><b class="bt-name">Terminal</b><span class="bt-span mono">0:00 – 0:02</span></div>
+        </div>
+      </div>
+      <ol class="bt-list">
+        <li class="beat" data-t0="0" data-t1="1.7" data-loop="1.45" data-x="55" data-y="56" data-tone="blue" data-name="Terminal" data-say="a prompt, not a pitch" data-still="assets/beat-01.webp">
+          <span class="beat-n mono"><b>01</b>0:00</span>
+          <h3>Start where they work.</h3>
+          <p>The film opens on a prompt, <code>&gt;&gt; Email testing</code>, set in mono. Developers spend their day in lines like that, so there’s nothing to sell yet and nothing to explain.</p>
+          <span class="tag">Mono · the developer’s voice</span>
+        </li>
+        <li class="beat" data-t0="1.7" data-t1="3.45" data-x="58" data-y="72" data-tone="red" data-name="Pressure" data-say="real replies. devs know these" data-still="assets/beat-02.webp">
+          <span class="beat-n mono"><b>02</b>0:02</span>
+          <h3>Let the errors talk.</h3>
+          <p>Terminal windows stack up with real SMTP errors, then a DNS lookup that fails. Anyone who has tested email has seen them. The red light arrives with them, and red stays reserved for friction from here on.</p>
+          <span class="tag tag--red">Red · friction only</span>
+        </li>
+        <li class="beat" data-t0="3.45" data-t1="8.7" data-x="72" data-y="58" data-tone="grey" data-name="Stakes" data-say="the comment talks back" data-still="assets/beat-03.webp">
+          <span class="beat-n mono"><b>03</b>0:03</span>
+          <h3>One human line.</h3>
+          <p>A code comment answers back: <code>// Yeah, it’s a pain.</code> Then the stakes, in plain words: you need to test one signup email, and the setup clock keeps counting up until it turns red.</p>
+          <span class="tag">Comment syntax · a human aside</span>
+        </li>
+        <li class="beat" data-t0="8.7" data-t1="12.2" data-x="53" data-y="58" data-tone="blue" data-name="Turn" data-say="the mark walks in mid-sentence" data-still="assets/beat-04.webp">
+          <span class="beat-n mono"><b>04</b>0:09</span>
+          <h3>Make the turn visible.</h3>
+          <p>The frame opens, red gives way to blue, and the smtp.dev mark lands in the middle of the sentence: <em>but you ✓ can just.</em> Then the mark opens into the app itself.</p>
+          <span class="tag tag--blue">Blue · the product arrives</span>
+        </li>
+        <li class="beat" data-t0="12.2" data-t1="29" data-x="56" data-y="62" data-tone="blue" data-name="Four steps" data-say="the title becomes the dialog" data-still="assets/beat-05.webp">
+          <span class="beat-n mono"><b>05</b>0:12</span>
+          <h3>Let the interface explain.</h3>
+          <p>I rebuilt smtp.dev’s UI in Illustrator, piece by piece, and animated it in After Effects: add a domain, update MX records, create an account, then <em>That’s it. Start testing.</em> No captions on top. A title like <em>Update MX records</em> arrives on its own, then becomes the dialog it names.</p>
+          <span class="tag">Four steps · told by the UI</span>
+        </li>
+        <li class="beat" data-t0="29" data-t1="42.6" data-x="70" data-y="56" data-tone="blue" data-name="Promise" data-say="one claim per cut" data-still="assets/beat-06.webp">
+          <span class="beat-n mono"><b>06</b>0:29</span>
+          <h3>Short claims, fast lines.</h3>
+          <p><em>Works with any client. Unlimited domains. Unlimited accounts. Not SendGrid. Not SES. Just testing.</em> One claim per cut, carried by speed lines, with one more visit to the terminal to say plainly what’s open and what’s blocked.</p>
+          <span class="tag">Speed lines · one claim per cut</span>
+        </li>
+        <li class="beat" data-t0="42.6" data-t1="52.5" data-x="37" data-y="57" data-tone="blue" data-name="Mark" data-say="same check. full circle" data-still="assets/beat-07.webp">
+          <span class="beat-n mono"><b>07</b>0:43</span>
+          <h3>End on the mark.</h3>
+          <p>The line <em>Simple. Clear. No surprises.</em> fades out and the check comes back as the logo. The wordmark types itself in, the way the film began, and the tagline follows: <em>Email testing that just works.</em></p>
+          <span class="tag tag--blue">The check closes the loop</span>
+        </li>
+      </ol>
+    </div>
+  </div>
+</section>
+</div></div>
+<script>
+(() => {
+'use strict';
+/* ---------- settings ---------- */
+const GLIDE = 150;     // design px a second, on average, from one beat to the next
+const LINGER = .5;     // seconds each beat lingers: it slows right down but keeps moving
+const CREEP = 12;      // design px a second while it lingers
+const OPEN = 1.2;      // the section's title lingers a little longer at the start
+const FADE = .7;       // after the last beat it fades out and starts again from the title
+
+const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const RM = matchMedia('(prefers-reduced-motion: reduce)');
+const DUR = 52.57;
+const cv = $('#cv'), sc = $('#sc'), sec = $('.sec'), stage = $('#stage'), col = $('.bt-col'), frame = $('.bt-frame'), video = $('.bt-video'), still = $('.bt-still'),
+  tc = $('.bt-tc'), mini = $('.bt-mini'), nameEl = $('.bt-name'), spanEl = $('.bt-span'), canvas = $('.bt-mini canvas');
+const BEATS = $$('.beat').map(el => ({ el, t0: +el.dataset.t0, t1: +el.dataset.t1, loop: +(el.dataset.loop || el.dataset.t1), name: el.dataset.name, tone: el.dataset.tone, still: el.dataset.still }));
+const fmt = t => Math.floor(t / 60) + ':' + String(Math.floor(t % 60)).padStart(2, '0');
+const fmtR = t => fmt(Math.round(t));
+const fmt1 = t => { t = Math.max(0, t || 0); const s = t % 60; return Math.floor(t / 60) + ':' + (s < 10 ? '0' : '') + s.toFixed(1); };
+
+/* ---------- the film's colors under the stage (smtp/film-data.js) ---------- */
+const COLS = []; { const s = (window.SMTP_COLORS || {}).main || ''; for (let i = 0; i + 6 <= s.length; i += 6) COLS.push('#' + s.slice(i, i + 6)); }
+let range = [0, 1], K = 1;
+function strip() {
+  const d = Math.min(2, devicePixelRatio || 1) * K, w = Math.max(1, Math.round(canvas.offsetWidth * d)), h = Math.max(1, Math.round(canvas.offsetHeight * d));
+  canvas.width = w; canvas.height = h;
+  const x = canvas.getContext('2d'), n = COLS.length;
+  if (n) for (let i = 0; i < n; i++) { const x0 = Math.floor(i / n * w), x1 = Math.ceil((i + 1) / n * w); x.fillStyle = COLS[i]; x.fillRect(x0, 0, x1 - x0, h); }
+  else { x.fillStyle = '#1b2233'; x.fillRect(0, 0, w, h); }
+  const g = x.createLinearGradient(0, 0, 0, h);
+  g.addColorStop(0, 'rgba(255,255,255,.12)'); g.addColorStop(.45, 'rgba(255,255,255,0)'); g.addColorStop(1, 'rgba(0,0,0,.22)');
+  x.fillStyle = g; x.fillRect(0, 0, w, h);
+  const xa = Math.round(range[0] * w), xb = Math.round(range[1] * w);
+  x.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--strip-dim').trim() || 'rgba(8,9,12,.6)';
+  x.fillRect(0, 0, xa, h); x.fillRect(xb, 0, w - xb, h);
+}
+
+/* ---------- size: one composition, scaled to the frame ---------- */
+let W = 1040, H = 650, tops = [], line = 0, path = [], total = 1;
+const off = el => { let y = 0; while (el && el !== sc) { y += el.offsetTop; el = el.offsetParent; } return y; };
+function fit() {
+  const vw = innerWidth, vh = innerHeight; if (!vw || !vh) return;
+  W = vw < 480 ? 820 : 1040;
+  H = Math.round(W / clamp(vw / vh, 1.3, 2));
+  K = Math.min(vw / W, vh / H);
+  const s = document.documentElement.style;
+  s.setProperty('--w', W + 'px'); s.setProperty('--h', H + 'px'); s.setProperty('--k', K.toFixed(5)); s.setProperty('--vh', (H / 100).toFixed(2) + 'px');
+  // the stage sits in the middle of the frame once it sticks
+  const hs = stage.offsetHeight, st = Math.max(32, Math.round((H - hs) / 2));
+  col.style.setProperty('--st', st + 'px');
+  line = H * .52;
+  tops = BEATS.map(b => off(b.el));
+  // where it lingers: the title, then each beat with its middle level with the stage's
+  const max = sc.scrollHeight - H, mid = st + hs / 2, stops = [0];
+  BEATS.forEach(b => { const y = clamp(Math.round(off(b.el) + b.el.offsetHeight / 2 - mid), 0, max); if (y > stops[stops.length - 1] + 140) stops.push(y); });
+  // the path: linger, glide, linger, glide … (a glide leaves and arrives at the lingering speed, so it never stops)
+  path = []; let t = 0;
+  stops.forEach((y, i) => {
+    const hold = i ? LINGER : OPEN, a = i ? y - CREEP * hold / 2 : 0;
+    path.push({ t, d: hold, y0: a, y1: a + CREEP * hold, glide: false }); t += hold;
+    const next = stops[i + 1]; if (next == null) return;
+    const b = next - CREEP * LINGER / 2, from = a + CREEP * hold, d = Math.max(1.2, (b - from) / GLIDE);
+    path.push({ t, d, y0: from, y1: b, glide: true }); t += d;
+  });
+  total = t;
+  strip();
+}
+function yAt(t) {
+  const s = path.find(p => t < p.t + p.d) || path[path.length - 1];
+  const u = clamp((t - s.t) / s.d, 0, 1), D = s.y1 - s.y0;
+  if (!s.glide) return s.y0 + D * u;
+  const m = CREEP * s.d;          // Hermite: leaves and arrives at CREEP
+  return s.y0 + (u * u * u - 2 * u * u + u) * m + (-2 * u * u * u + 3 * u * u) * D + (u * u * u - u * u) * m;
+}
+
+/* ---------- the beat beside the line, as in the case study ---------- */
+let active = -1, seeking = false;
+function beatAt(y) { let k = 0; tops.forEach((t, i) => { if (t - y < line) k = i; }); return k; }
+function setBeat(k) {
+  const b = BEATS[k], first = active === -1; active = k;
+  BEATS.forEach((x, i) => x.el.classList.toggle('on', i === k));
+  stage.dataset.tone = b.tone;
+  mini.style.setProperty('--a', (b.t0 / DUR).toFixed(4)); mini.style.setProperty('--b', (b.t1 / DUR).toFixed(4)); mini.style.setProperty('--p', (b.t0 / DUR).toFixed(4));
+  range = [b.t0 / DUR, b.t1 / DUR]; strip();
+  nameEl.textContent = b.name; spanEl.textContent = `${fmtR(b.t0)} – ${fmtR(b.t1)}`;
+  if (!first) [nameEl, spanEl].forEach(el => { el.classList.remove('swap'); void el.offsetWidth; el.classList.add('swap'); });
+  frame.classList.remove('live');
+  if (still.getAttribute('src') !== b.still) still.src = b.still;
+  tc.textContent = fmt1(b.t0);
+  film();
+}
+// the film plays the beat on a loop while the tile is awake; the still stands in while it seeks
+function film() {
+  const b = BEATS[active]; if (!b) return;
+  if (asleep() || RM.matches) { video.pause(); frame.classList.remove('live'); return; }
+  if (video.preload === 'none') video.preload = 'auto';
+  const go = () => {
+    if (video.currentTime < b.t0 - .05 || video.currentTime > b.loop) { seeking = true; video.currentTime = b.t0; }
+    const p = video.play(); if (p && p.catch) p.catch(() => {});
+  };
+  if (video.readyState >= 1) go(); else video.addEventListener('loadedmetadata', go, { once: true });
+}
+video.addEventListener('seeked', () => { seeking = false; });
+
+/* ---------- the clock: runs only while the tile is on screen and the page is in front ---------- */
+let seen = true, raf = 0, last = 0, clock = 0, laps = 0;
+const asleep = () => { if (document.hidden || !seen) return true; try { return parent !== window && parent.document.documentElement.classList.contains('study-open'); } catch (_) { return false; } };
+function tick(now) {
+  raf = 0;
+  if (asleep()) { last = 0; film(); return; }
+  if (last) clock += Math.min(.1, (now - last) / 1000);
+  last = now;
+  let y, o = 1;
+  if (RM.matches) {                  // reduced motion: no scrolling, each beat simply takes its turn
+    const stops = path.filter((p, i) => !p.glide);
+    y = stops[Math.floor(clock / 3.2) % stops.length].y0;
+  } else {
+    if (clock >= total + FADE) { clock -= total + FADE; laps++; }
+    y = yAt(Math.min(clock, total));
+    if (clock > total) { o = 1 - (clock - total) / FADE; y = path[path.length - 1].y1 + CREEP * (clock - total); }
+    else if (laps && clock < FADE) o = clock / FADE;
+  }
+  // whole pixels scroll; the fraction left over moves the section, so the slow part stays smooth
+  sc.scrollTop = Math.floor(y); sec.style.transform = `translateY(${-(y - sc.scrollTop).toFixed(2)}px)`;
+  sc.style.opacity = o.toFixed(3);
+  const k = beatAt(y); if (k !== active) setBeat(k);
+  const b = BEATS[active];
+  if (b && !video.paused) {
+    if (video.currentTime >= b.loop - .03 || video.currentTime < b.t0 - .4) { seeking = true; video.currentTime = b.t0; }
+    if (!seeking && video.currentTime >= b.t0 - .05) frame.classList.add('live');
+    tc.textContent = fmt1(video.currentTime);
+    mini.style.setProperty('--p', (video.currentTime / DUR).toFixed(4));
+  } else if (b && video.paused) film();
+  raf = requestAnimationFrame(tick);
+}
+const wake = () => { if (!raf && !asleep()) raf = requestAnimationFrame(tick); };
+if ('IntersectionObserver' in window) new IntersectionObserver(es => { seen = es[es.length - 1].isIntersecting; wake(); }, { rootMargin: '60px' }).observe(cv);
+document.addEventListener('visibilitychange', wake);
+setInterval(wake, 700);              // picks up again after a study closes
+
+/* ---------- day / night follows the page around it ---------- */
+function follow() {
+  try {
+    const t = parent !== window && parent.document.documentElement.dataset.theme, r = document.documentElement;
+    if (t === 'light' || t === 'dark') { if (r.dataset.theme !== t) { r.dataset.theme = t; strip(); } }
+    else if (parent !== window && r.dataset.theme) { delete r.dataset.theme; strip(); }
+  } catch (_) {}
+}
+setInterval(follow, 1000);
+addEventListener('message', e => { if (e.source === parent && e.data && e.data.tzTheme) follow(); });
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', strip);
+addEventListener('resize', () => { fit(); });
+
+fit(); setBeat(0);
+(document.fonts && document.fonts.ready || Promise.resolve()).then(() => { fit(); cv.classList.add('on'); wake(); });
+})();
+</script>
+</body>
+</html>
