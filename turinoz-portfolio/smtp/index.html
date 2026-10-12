@@ -67,9 +67,6 @@ try { const t = localStorage.getItem('tz-theme'); if (t === 'light' || t === 'da
       <button class="tm" id="tm" type="button" aria-label="Switch to light mode" title="Switch to light mode">
         <svg class="moon" aria-hidden="true"><use href="#icMoon"/></svg><svg class="sun" aria-hidden="true"><use href="#icSun"/></svg>
       </button>
-      <button class="pp" id="pp" type="button" aria-pressed="false" aria-label="Pause all motion" title="Pause all motion">
-        <svg class="i-pause" aria-hidden="true"><use href="#icPause"/></svg><svg class="i-play" aria-hidden="true"><use href="#icPlay"/></svg>
-      </button>
     </div>
   </div>
   <div class="progress" aria-hidden="true"><u></u></div>
@@ -149,11 +146,6 @@ try { const t = localStorage.getItem('tz-theme'); if (t === 'light' || t === 'da
               <source src="../media/smtp-film-preview.av1.mp4" type='video/mp4; codecs="av01.0.05M.10"'>
               <source src="../media/smtp-film-preview.mp4" type='video/mp4; codecs="avc1.64001F"'>
             </video>
-            <div class="tcur" aria-hidden="true">
-              <span class="ring"></span>
-              <svg class="arrow" viewBox="0 0 25 25"><path d="M5 3v17.2l4.6-4.3 3.2 7.1 3.1-1.4-3.2-6.9 6.3-.3z"/></svg>
-              <span class="bub"><em><svg viewBox="0 0 1080 1080"><use href="#tzLogo"/></svg></em><b><span class="tx"></span><i class="caret"></i></b></span>
-            </div>
             <span class="bt-tc mono" aria-hidden="true">0:00.0</span>
           </div>
           <div class="bt-mini" aria-hidden="true"><canvas></canvas><span class="bt-range"></span><span class="bt-head"></span></div>
@@ -238,7 +230,7 @@ try { const t = localStorage.getItem('tz-theme'); if (t === 'light' || t === 'da
     <div class="lengths rv" id="lengths">
       <a class="len" href="#film" data-colors="main" data-dur="52.57" data-cursor="Watch it"><span class="len-n">Main film</span><span class="len-bar" style="--w:100%"><canvas></canvas><i></i></span><span class="len-d mono">0:53</span></a>
       <a class="len" href="#shortCard" data-colors="short" data-dur="35.17" data-cursor="Watch it"><span class="len-n">Short cut</span><span class="len-bar" style="--w:66.9%"><canvas></canvas><i></i></span><span class="len-d mono">0:35</span></a>
-      <a class="len" href="#logoCard" data-colors="logo" data-dur="2.93" data-cursor="Scrub it"><span class="len-n">Logo loop</span><span class="len-bar" style="--w:5.6%"><canvas></canvas><i></i></span><span class="len-d mono">0:03</span></a>
+      <a class="len" href="#logoCard" data-colors="logo" data-dur="2.93" data-cursor="See it"><span class="len-n">Logo loop</span><span class="len-bar" style="--w:5.6%"><canvas></canvas><i></i></span><span class="len-d mono">0:03</span></a>
     </div>
     <div class="sys">
       <figure class="card short rv" id="shortCard">
@@ -269,18 +261,18 @@ try { const t = localStorage.getItem('tz-theme'); if (t === 'light' || t === 'da
         </figcaption>
       </figure>
       <figure class="card logo rv" id="logoCard" style="--rd:.08s">
-        <div class="lg-stage" tabindex="0" role="slider" aria-label="The logo loop, frame by frame. Move across it or use the arrow keys to scrub." aria-valuemin="0" aria-valuemax="85" aria-valuenow="0" data-cursor="Scrub">
+        <div class="lg-stage" role="img" aria-label="The smtp.dev logo loop, playing">
           <video class="lg-video" muted loop playsinline disablepictureinpicture disableremoteplayback preload="none" poster="assets/logo-poster.webp" aria-hidden="true" tabindex="-1"><source src="assets/logo-loop-v1.av1.mp4" type='video/mp4; codecs="av01.0.08M.10"'><source src="assets/logo-loop-v1.mp4" type='video/mp4; codecs="avc1.640028"'></video>
           <span class="lg-f mono" aria-hidden="true">f <b>00</b> / 85</span>
           <span class="lg-mode mono" aria-hidden="true"><i></i><span>Playing</span></span>
           <span class="lg-rail" aria-hidden="true"><u></u></span>
         </div>
-        <div class="lg-keys" role="group" aria-label="Key poses">
-          <button type="button" data-f="0"><span style="--f:0"></span>Check</button>
-          <button type="button" data-f="18"><span style="--f:18"></span>Fold</button>
-          <button type="button" data-f="44"><span style="--f:44"></span>Inbox</button>
-          <button type="button" data-f="62"><span style="--f:62"></span>Fold</button>
-          <button type="button" data-f="76"><span style="--f:76"></span>Check</button>
+        <div class="lg-keys" aria-label="Key poses">
+          <div class="lg-key" data-f="0"><span style="--f:0"></span>Check</div>
+          <div class="lg-key" data-f="18"><span style="--f:18"></span>Fold</div>
+          <div class="lg-key" data-f="44"><span style="--f:44"></span>Inbox</div>
+          <div class="lg-key" data-f="62"><span style="--f:62"></span>Fold</div>
+          <div class="lg-key" data-f="76"><span style="--f:76"></span>Check</div>
         </div>
         <figcaption class="card-txt">
           <div><div class="kicker">Logo loop · 86 frames</div><h3>The mark, frame by frame.</h3>
@@ -314,7 +306,7 @@ try { const t = localStorage.getItem('tz-theme'); if (t === 'light' || t === 'da
       <div class="cr rv" style="--rd:.08s">
         <dl class="cr-list">
           <div><dt>Concept, design &amp; animation</dt><dd>Turinoz</dd></div>
-          <div><dt>Product UI</dt><dd>smtp.dev, rebuilt by Turinoz for the film</dd></div>
+          <div><dt>Product UI</dt><dd>smtp.dev</dd></div>
           <div><dt>Logo &amp; brand assets</dt><dd><a href="https://larkef.com/" target="_blank" rel="noopener">Jord Riekwel, Larkef<svg aria-hidden="true"><use href="#icArrowOut"/></svg></a></dd></div>
           <div><dt>Music &amp; sound</dt><dd>External collaborator</dd></div>
           <div><dt>Tools</dt><dd>Illustrator, After Effects</dd></div>
