@@ -90,7 +90,7 @@ python -m http.server 8000
   its own (`smtp/beats-tile.html`, like the Curve Lab tile): the stage stays still where the first
   screen puts it, the notes scroll past, each move between beats follows Turinoz's own ease
   (`cubic-bezier(.71, 0, .14, 1)`, 2.2 s) on top of a slow speed, so it slows right down at each beat
-  (0.1 s at 16 px/s) and never stops; the title screen holds 1 s; after beat 07 it fades and starts
+  (0.1 s at 16 px/s) and never stops; the title screen holds 0.6 s; beat 01 plays from 0.5 s, past the fade-up from black; after beat 07 it fades and starts
   again. The film beside the notes plays each beat, as in the case study. The numbers are `T` near the
   top of that file. Drawn at one size and scaled to the frame; light or dark like the home page; it
   sleeps off screen, behind a study or in a hidden tab; with reduced motion the beats just take
