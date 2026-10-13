@@ -666,6 +666,13 @@ html.theming *,html.theming *::before,html.theming *::after{transition:none!impo
   .in-right{grid-area:r;align-self:end}
   .reel{font-size:clamp(26px,4.4vw,40px);height:calc(3 * .98em + 10px)}
 }
+@media (max-width:900px) and (min-aspect-ratio:1/1) and (max-height:500px){
+  .inside-grid{padding-block:10px 8px;row-gap:8px}
+  .in-left{gap:8px}
+  .reel{font-size:26px;height:calc(2 * .98em + 6px)}
+  .in-panel{gap:8px}
+  .in-spec div{padding:6px 0}
+}
 /* 3. the preset tiles keep a sensible size when the column gets wide */
 @media (max-width:900px){.tiles{max-width:340px}}
 </style>
