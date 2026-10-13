@@ -650,6 +650,31 @@ h2{font-size:clamp(36px,5.2vw,80px);line-height:.98;letter-spacing:-.05em}
 @keyframes vt-reveal{from{clip-path:circle(0px at var(--vt-x,50%) var(--vt-y,0px))}to{clip-path:circle(var(--vt-r,150vmax) at var(--vt-x,50%) var(--vt-y,0px))}}
 html.theming *,html.theming *::before,html.theming *::after{transition:none!important}
 
+/* 1. past 1440px the page stops growing, so the type and gaps stop growing with it */
+@media (min-width:1441px){
+  .hl{font-size:106px}
+  .hero-grid{column-gap:86px}
+  h2{font-size:75px}
+  .reel{font-size:49px}
+  .inside-grid{gap:52px}
+}
+/* 2. a short, wide window under 900px: title and numbers on the left, the graph on the right */
+@media (max-width:900px) and (min-aspect-ratio:1/1){
+  .inside-grid{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"l f" "r f";align-content:center;column-gap:32px;row-gap:16px}
+  .in-left{grid-area:l}
+  .in-fig{grid-area:f;width:min(46vw,calc(100svh - var(--top) - 96px));justify-self:end}
+  .in-right{grid-area:r;align-self:end}
+  .reel{font-size:clamp(26px,4.4vw,40px);height:calc(3 * .98em + 10px)}
+}
+@media (max-width:900px) and (min-aspect-ratio:1/1) and (max-height:500px){
+  .inside-grid{padding-block:10px 8px;row-gap:8px}
+  .in-left{gap:8px}
+  .reel{font-size:26px;height:calc(2 * .98em + 6px)}
+  .in-panel{gap:8px}
+  .in-spec div{padding:6px 0}
+}
+/* 3. the preset tiles keep a sensible size when the column gets wide */
+@media (max-width:900px){.tiles{max-width:340px}}
 </style>
 </head>
 <body>
