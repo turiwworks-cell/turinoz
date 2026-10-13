@@ -281,29 +281,18 @@ html.study-open,html.study-open body{overflow:hidden}
    four corners, and those fall outside the tile. Band and sizes: RIVE_DG in the main script. */
 .tile--wide{grid-column:span 2}
 .tile--wide .media{aspect-ratio:auto;flex:1 1 auto;min-height:0}      /* as tall as the square tiles beside it */
-/* ---------- smtp.dev product film tile (main tier): a muted preview of the film ----------
-   The bar is the film's own colors (one stripe per tenth of a second) with a playhead. */
-.media--film{background:#0D0C0F}
-.fm-chip{position:absolute;z-index:6;left:14px;top:14px;display:inline-flex;align-items:center;gap:7px;height:26px;padding:0 10px 0 9px;border-radius:999px;
-  font:500 12px/1 var(--ui);letter-spacing:-.005em;white-space:nowrap;color:var(--deep-ink);pointer-events:none;
-  background:rgba(9,10,9,.62);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-.fm-chip i{width:7px;height:7px;border-radius:50%;flex:none;background:#3F7CFF;box-shadow:0 0 0 3px rgba(63,124,255,.25)}
-.fm-chip b{font:460 11px/1 var(--mono);color:var(--deep-2);font-variant-numeric:tabular-nums;margin-left:1px}
-.fm-bar{position:absolute;z-index:6;left:16px;right:16px;bottom:16px;height:4px;border-radius:3px;pointer-events:none;
-  background:url(media/smtp-film-colors.png) 0 0/100% 100% no-repeat;image-rendering:pixelated;box-shadow:0 0 0 1px rgba(0,0,0,.25);
-  transition:height .35s var(--ease)}
-.fm-bar::before{content:"";position:absolute;top:0;bottom:0;right:0;left:calc(var(--p,0)*100%);border-radius:0 3px 3px 0;background:rgba(10,10,12,.55)}
-.fm-bar u{position:absolute;top:-4px;bottom:-4px;left:calc(var(--p,0)*100%);width:2px;margin-left:-1px;border-radius:2px;background:#fff;text-decoration:none;
-  box-shadow:0 0 8px rgba(255,255,255,.5)}
-.tile--film:hover .fm-bar,.tile--film:focus-visible .fm-bar{height:6px}
+/* ---------- smtp.dev tile (main tier): the case study's Beat by beat section, playing on its own ----------
+   The page inside (smtp/beats-tile.html) uses the case study's own ground, light or dark like this page. */
+.media--beats{background:#F3F4FA}
+.media--beats iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;pointer-events:none;background:transparent;color-scheme:normal}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .media--beats{background:#08090C} }
+:root[data-theme="dark"] .media--beats{background:#08090C}
 .tile--film:hover .cta svg,.tile--film:focus-visible .cta svg{transform:translateX(2px)}
 @media (max-width:1100px){ .tile--wide .media{flex:none;aspect-ratio:2/1} }
 @media (max-width:720px){
   .tile--wide{grid-column:auto}
   .tile.tile--wide .media{aspect-ratio:4/3}
   .tile.tile--film[data-kind] .media{aspect-ratio:16/9}
-  .fm-chip{left:10px;top:10px;height:24px;padding:0 9px 0 8px;font-size:11.5px}
-  .fm-bar{left:12px;right:12px;bottom:12px}
 }
 /* ---------- Curve Lab website tile: a section of the site, playing on its own ----------
    The page inside (curve-lab/also-inside.html) uses the site's own paper, light or dark like this page, so the frame matches it. */
@@ -740,18 +729,12 @@ html.study-open,html.study-open body{overflow:hidden}
               <span class="d">Website design for my own product.</span></div>
           </div>
           <!-- smtp.dev product film (the explainer), in the main tier.
-               A muted preview of the whole film loops (media/smtp-film-preview*.mp4, same loop rules as the
-               other client videos). The bar is the film's own colors (media/smtp-film-colors.png) with a
-               playhead that follows the video. The whole tile opens the case study (smtp/).
-               Script: "smtp.dev film tile". -->
+               The case study's Beat by beat section, playing on its own (smtp/beats-tile.html): it scrolls
+               itself, slows almost to a stop at each beat while the film plays it, and loops. Not interactive;
+               the whole tile opens the case study (smtp/). Light or dark like this page. -->
           <a class="tile tile--film" data-kind="study" href="smtp/" aria-label="smtp.dev product film: view the case study">
-            <div class="media media--video media--film">
-              <video data-loop data-film muted loop playsinline disablepictureinpicture disableremoteplayback preload="none" poster="media/smtp-film-poster.jpg" aria-label="The smtp.dev product film: red terminal errors give way to a calm, blue walk through the product">
-                <source src="media/smtp-film-preview.av1.mp4" type='video/mp4; codecs="av01.0.05M.10"'>
-                <source src="media/smtp-film-preview.mp4" type='video/mp4; codecs="avc1.64001F"'>
-              </video>
-              <span class="fm-chip" aria-hidden="true"><i></i><span>Product film</span><b>0:00</b></span>
-              <span class="fm-bar" aria-hidden="true"><u></u></span>
+            <div class="media media--beats">
+              <iframe src="smtp/beats-tile.html" title="The smtp.dev case study, its Beat by beat section playing" loading="lazy" tabindex="-1" aria-hidden="true"></iframe>
             </div>
             <div class="cap"><span class="t">smtp.dev product film</span>
               <span class="cta cta--solid">View case study<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6h8M6.8 2.8 10 6 6.8 9.2"/></svg></span>
@@ -2705,26 +2688,6 @@ const digitigrade = (() => {
   mqReduce.addEventListener && mqReduce.addEventListener('change', all);
 })();
 
-/* ================= smtp.dev film tile =================
-   The bar under the preview is the film's own colors; its playhead and the time in the chip
-   follow the video. It only ticks while the video plays (the loop rules above decide that). */
-(() => {
-  const v = $('video[data-film]');
-  if (!v) return;
-  const media = v.closest('.media'), time = $('.fm-chip b', media);
-  const fmt = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
-  let raf = 0;
-  const paint = () => {
-    const d = v.duration || 52.57;
-    media.style.setProperty('--p', Math.min(1, v.currentTime / d).toFixed(4));
-    time.textContent = fmt(v.currentTime);
-  };
-  const tick = () => { raf = 0; paint(); if (!v.paused) raf = requestAnimationFrame(tick); };
-  v.addEventListener('play', () => { if (!raf) raf = requestAnimationFrame(tick); });
-  v.addEventListener('seeked', paint);
-  v.addEventListener('loadedmetadata', paint);
-})();
-
 /* ================= Spectra tile =================
    The game runs in its own page (spectra/tile.html) and plays itself: Turinoz's cursor.
    "Play yourself" hands it over (the frame starts taking the pointer); "Watch demo" gives it
@@ -2920,7 +2883,7 @@ requestAnimationFrame(frame);
     const next = now() === 'dark' ? 'light' : 'dark';
     root.dataset.theme = next;
     try { localStorage.setItem('tz-theme', next); } catch (_) {}
-    document.querySelectorAll('#clTile iframe, #spTile iframe').forEach(f => { try { f.contentWindow.postMessage({ tzTheme: next }, '*'); } catch (_) {} });
+    document.querySelectorAll('#clTile iframe, #spTile iframe, .media--beats iframe').forEach(f => { try { f.contentWindow.postMessage({ tzTheme: next }, '*'); } catch (_) {} });
     show();
   });
   mq.addEventListener('change', show);

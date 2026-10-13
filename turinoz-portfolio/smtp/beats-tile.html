@@ -74,15 +74,15 @@ code{font:500 .86em/1 var(--mono);padding:3px 6px 2px;border-radius:6px;backgrou
 
 /* the section, as in the case study (smtp/case-study.css, "beats"), at its desktop layout */
 .wrap{padding:0 52px}
-.sec{position:relative;padding:60px 0 0}
-.shead{padding-top:6px;margin-bottom:20px}
+.sec{position:relative;padding:44px 0 0}
+.shead{margin-bottom:32px}
 .kicker{display:flex;align-items:center;gap:10px;font:500 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .kicker i{width:6px;height:6px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 3px var(--blue-soft)}
 h2{font:560 44px/1.03 var(--display);font-stretch:86%;letter-spacing:-.032em;margin-top:16px}
 h3{font:560 30px/1.15 var(--display);font-stretch:90%;letter-spacing:-.022em}
 .sub{font-size:15.5px;color:var(--muted);max-width:640px;margin-top:14px}
 .bt{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:56px;align-items:start}
-/* the stage holds still in the middle of the frame the whole time (the script keeps it there); the title sits above the beats */
+/* the stage holds still where the first screen puts it, the whole time (the script keeps it there) */
 .sec{will-change:transform}
 .bt-col{position:relative;align-self:start;will-change:transform}
 .bt-stage{position:relative;isolation:isolate}
@@ -131,6 +131,10 @@ h3{font:560 30px/1.15 var(--display);font-stretch:90%;letter-spacing:-.022em}
 <div id="cv"><div id="sc">
 <section class="sec">
   <div class="wrap">
+    <div class="shead">
+      <div class="kicker"><i></i>01 — Beat by beat</div><h2>Every beat has a job.</h2>
+      <p class="sub">Seven beats in 53 seconds, each with the reason it’s there.</p>
+    </div>
     <div class="bt">
       <div class="bt-col">
         <div class="bt-stage" id="stage" data-tone="blue">
@@ -145,11 +149,6 @@ h3{font:560 30px/1.15 var(--display);font-stretch:90%;letter-spacing:-.022em}
           <div class="bt-mini"><canvas></canvas><span class="bt-range"></span><span class="bt-head"></span></div>
           <div class="bt-read"><b class="bt-name">Terminal</b><span class="bt-span mono">0:00 – 0:02</span></div>
         </div>
-      </div>
-      <div class="bt-side">
-      <div class="shead">
-        <div class="kicker"><i></i>01 — Beat by beat</div><h2>Every beat has a job.</h2>
-        <p class="sub">Seven beats in 53 seconds, each with the reason it’s there.</p>
       </div>
       <ol class="bt-list">
         <li class="beat" data-t0="0" data-t1="1.7" data-loop="1.45" data-x="55" data-y="56" data-tone="blue" data-name="Terminal" data-say="a prompt, not a pitch" data-still="assets/beat-01.webp">
@@ -195,7 +194,6 @@ h3{font:560 30px/1.15 var(--display);font-stretch:90%;letter-spacing:-.022em}
           <span class="tag tag--blue">The check closes the loop</span>
         </li>
       </ol>
-      </div>
     </div>
   </div>
 </section>
@@ -207,11 +205,11 @@ h3{font:560 30px/1.15 var(--display);font-stretch:90%;letter-spacing:-.022em}
 // Timing. Each move between two beats follows CURVE (a cubic-bezier, like a CSS ease), on top of
 // the slow speed, so the scroll comes in fast, slows right down at the beat and never stops.
 const T = {
-  curve: [.65, 0, .35, 1],   // the move's ease
-  move: 1.3,                 // seconds from one beat to the next
-  hold: .5,                  // seconds at the slow speed at each beat
+  curve: [.71, 0, .14, 1],   // the move's ease (Turinoz's own, set in the preview's timing panel)
+  move: 2.2,                 // seconds from one beat to the next
+  hold: .1,                  // seconds at the slow speed at each beat
   slow: 16,                  // design px a second at the slow speed (never zero)
-  open: 2.2,                 // seconds the first screen (the title) holds before the first move
+  open: 1,                   // seconds the first screen (the title) holds before the first move
 };
 const FADE = .7;       // after the last beat it fades out and starts again from the title
 
@@ -262,15 +260,15 @@ let ease = bez(T.curve);
 const off = el => { let y = 0; while (el && el !== sc) { y += el.offsetTop; el = el.offsetParent; } return y; };
 function fit() {
   const vw = innerWidth, vh = innerHeight; if (!vw || !vh) return;
-  W = vw < 480 ? 820 : 1040;
+  W = 1040;
   H = Math.round(W / clamp(vw / vh, 1.3, 2));
   K = Math.min(vw / W, vh / H);
   const s = document.documentElement.style;
   s.setProperty('--w', W + 'px'); s.setProperty('--h', H + 'px'); s.setProperty('--k', K.toFixed(5)); s.setProperty('--vh', (H / 100).toFixed(2) + 'px');
   // the stage sits in the middle of the frame once it sticks
   sec.style.transform = col.style.transform = '';
-  const hs = stage.offsetHeight; st = Math.max(32, Math.round((H - hs) / 2));
-  colTop = off(col);
+  // the stage stays where the first screen has it, under the title
+  const hs = stage.offsetHeight; colTop = off(col); st = colTop;
   line = H * .52;
   tops = BEATS.map(b => off(b.el));
   // where it lingers: the title, then each beat with its middle level with the stage's
