@@ -763,7 +763,7 @@ html.study-open,html.study-open body{overflow:hidden}
         </div>
 
         <!-- 2. the experiments, smaller: live pieces and loops -->
-        <h2 class="tier-head tier-head--more">Experiments</h2>
+        <h2 class="tier-head tier-head--more" id="experiments">Experiments</h2>
         <div class="grid grid--more">
           <div class="tile" data-kind="live" data-hint="Drag it">
             <!-- the real Rive sphere (sphere/sphere.riv), loaded when the tile comes into view -->
@@ -791,7 +791,7 @@ html.study-open,html.study-open body{overflow:hidden}
               </div>
             </div>
             <div class="cap"><span class="t">Digitigrade</span>
-              <a class="cta cta--ghost" href="digitigrade/" target="_blank" rel="noopener">Open<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg></a>
+              <a class="cta cta--ghost" href="https://lab.turinoz.co/digitigrade/" target="_blank" rel="noopener">Open<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg></a>
               <span class="d">It walks on numerals and clicks them like keys. Point anywhere and it comes to you, or type a digit to send it there. Idea, design and motion by me.</span></div>
           </div>
           <!-- smtp.dev logo loop: client loop, muted, starts when the tile is on screen (files in media/).
@@ -1936,8 +1936,7 @@ R.score = {
 };
 
 /* ================= Rive runtime =================
-   One copy of the runtime (rive/vendor/), shared by the sphere, Eye & Planet and Digitigrade tiles
-   (and by the digitigrade/ page).
+   One copy of the runtime (rive/vendor/), shared by the sphere, Eye & Planet and Digitigrade tiles.
    It loads once, the first time either tile gets near the screen. Pages opened by
    double-clicking (file://) get rive/vendor/file-mode.js first, which carries the
    WebAssembly and the .riv files inline. */
@@ -2375,7 +2374,7 @@ const eyePlanet = $$('[data-rive-ep]').map(el => (() => {
 })());
 
 /* ================= live Rive Digitigrade =================
-   The real digitigrade.riv (the same piece as digitigrade/, which "Open" goes to). One Luau
+   The real digitigrade.riv (the same piece as lab.turinoz.co/digitigrade/, which "Open" goes to). One Luau
    script draws the walker, the numerals, the key clicks, and readouts in the artboard's four
    corners; the tile only shows the walker's band, so the corners stay outside it.
    As on its own page, the whole page is its touchpad: a mouse steers it from anywhere, a finger

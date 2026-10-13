@@ -1,3 +1,7 @@
 # Scoreline's demo (scoreline/app/) is a single-page app: a reload on one of its screens
 # (scoreline/app/match/1/facts) gets the app page (the target is the folder, not index.html: Cloudflare rejects a rule that ends in index.html). Files that exist are served as they are.
 /scoreline/app/*  /scoreline/app/  200
+
+# Digitigrade's page moved to the lab.
+/digitigrade  https://lab.turinoz.co/digitigrade/  301
+/digitigrade/*  https://lab.turinoz.co/digitigrade/  301

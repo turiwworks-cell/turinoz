@@ -1,0 +1,11 @@
+// Cloudflare Workers config for lab.turinoz.co: a static site, so there is no script, only assets.
+// "name" must be the same as the Worker's name in the Cloudflare dashboard (a second Worker,
+// next to "turinoz", connected to the same GitHub repo with root directory turinoz-lab).
+{
+  "name": "turinoz-lab",
+  "compatibility_date": "2026-10-11",
+  "assets": {
+    "directory": "./",
+    "not_found_handling": "404-page"
+  }
+}
