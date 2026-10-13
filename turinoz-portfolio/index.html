@@ -257,6 +257,9 @@ html.study-open,html.study-open body{overflow:hidden}
 /* ---------- live Rive Eye & Planet tile ----------
    Two square canvases (one per icon), each centred on its icon. They are opaque, so each one
    is clipped at the line halfway between the icons (clip-path, set from the script). */
+/* the Rive tiles draw with WebGL, and on some GPUs a WebGL canvas escapes the rounded
+   overflow clip (square corners). clip-path clips it everywhere. */
+.media[data-rive-sphere],.media[data-rive-ep],.media[data-rive-dg]{clip-path:inset(0 round var(--radius))}
 .media[data-rive-ep]{background:#000}       /* the icons' own artboard colour */
 .media[data-rive-ep] .ep-cv{position:absolute;inset:auto;display:block;opacity:0;transition:opacity .9s var(--ease);pointer-events:none}
 .media[data-rive-ep].is-ready .ep-cv{opacity:1}
@@ -781,7 +784,7 @@ html.study-open,html.study-open body{overflow:hidden}
               <canvas class="dg-cv"></canvas>
               <div class="dg-hit"></div>
               <span class="dg-state is-idle" aria-hidden="true"><i></i><span>On its own</span></span>
-              <button class="dg-snd" type="button" aria-pressed="true" aria-label="Sound"><svg viewBox="0 0 22 22" aria-hidden="true"><path d="M3 8.5h3.2L11 4.5v13l-4.8-4H3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><g class="wave" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M14.2 8.2a4 4 0 0 1 0 5.6"/><path d="M16.8 5.6a7.6 7.6 0 0 1 0 10.8"/></g><g class="x" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="m14.5 8.5 5 5M19.5 8.5l-5 5"/></g></svg><span>Sound <b>on</b></span></button>
+              <button class="dg-snd" type="button" aria-pressed="false" aria-label="Sound"><svg viewBox="0 0 22 22" aria-hidden="true"><path d="M3 8.5h3.2L11 4.5v13l-4.8-4H3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><g class="wave" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M14.2 8.2a4 4 0 0 1 0 5.6"/><path d="M16.8 5.6a7.6 7.6 0 0 1 0 10.8"/></g><g class="x" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="m14.5 8.5 5 5M19.5 8.5l-5 5"/></g></svg><span>Sound <b>off</b></span></button>
               <div class="dg-seg" data-mode="follow" role="radiogroup" aria-label="Mode">
                 <button type="button" role="radio" aria-checked="true" data-mode="follow"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="16" cy="11" r="3.2" fill="currentColor"/><path d="M2 11h8.5M7 7.5 10.5 11 7 14.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Follow</button>
                 <button type="button" role="radio" aria-checked="false" tabindex="-1" data-mode="avoid"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="5" cy="11" r="3.2" fill="currentColor"/><path d="M11 11h9M16.5 7.5 20 11l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Avoid</button>
@@ -789,7 +792,7 @@ html.study-open,html.study-open body{overflow:hidden}
             </div>
             <div class="cap"><span class="t">Digitigrade</span>
               <a class="cta cta--ghost" href="digitigrade/" target="_blank" rel="noopener">Open<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg></a>
-              <span class="d">It walks on numerals and clicks them like keys. Point anywhere and it comes to you. Idea, design and motion by me.</span></div>
+              <span class="d">It walks on numerals and clicks them like keys. Point anywhere and it comes to you, or type a digit to send it there. Idea, design and motion by me.</span></div>
           </div>
           <!-- smtp.dev logo loop: client loop, muted, starts when the tile is on screen (files in media/).
                The film it comes from is the wide smtp.dev tile in row 3. -->
@@ -812,7 +815,7 @@ html.study-open,html.study-open body{overflow:hidden}
             </div>
             <div class="cap"><span class="t">Planet</span>
               <a class="cta cta--ghost" href="https://lab.turinoz.co/eye-planet/" target="_blank" rel="noopener">Open<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg></a>
-              <span class="d">A planet that tilts toward your pointer. Drag it sideways and let go. Icon design by Lucas Fields.</span></div>
+              <span class="d">Its ring tilts toward your pointer. Tap it to spin it, or drag it sideways and let go. Icon by Lucas Fields, motion by me.</span></div>
           </div>
           <div class="tile" data-kind="live" data-hint="Press it">
             <!-- the real Rive eye (rive/eye_icon.riv), alone and centred; loaded when the tile comes into view. -->
@@ -823,7 +826,7 @@ html.study-open,html.study-open body{overflow:hidden}
             </div>
             <div class="cap"><span class="t">Eye</span>
               <a class="cta cta--ghost" href="https://lab.turinoz.co/eye-planet/" target="_blank" rel="noopener">Open<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg></a>
-              <span class="d">An icon that keeps an eye on your pointer. Press it. Icon design by Lucas Fields.</span></div>
+              <span class="d">It keeps an eye on your pointer and blinks when you click it. Icon by Lucas Fields, motion by me.</span></div>
           </div>
           <!-- Spectra: the game itself (spectra/tile.html), laid out for this tile and played by Turinoz's cursor.
                "Play yourself" hands it to the visitor. Script: "Spectra tile". "Open" goes into the study (#spectra). -->
@@ -1024,7 +1027,7 @@ html.study-open,html.study-open body{overflow:hidden}
 (() => {
   if (!window.AudioNode || !window.AudioDestinationNode) return;
   const masters = new Map(), connect = AudioNode.prototype.connect;
-  let muted = false;      // sound is on from the start
+  let muted = true;       // sound is off until the visitor turns it on
   AudioNode.prototype.connect = function (dest, ...rest) {
     if (!(dest instanceof AudioDestinationNode) || this.__dgMaster) return connect.call(this, dest, ...rest);
     const ctx = dest.context;
@@ -2400,7 +2403,7 @@ const digitigrade = (() => {
   const ART = RIVE_DG.art, MID = ART / 2;
   const SP = 75.6, WALK_Y = 390, NOD_Y = 250;   // read from the script: numerals 75.6 apart; where a walk "points"
   let r = null, vm = null, ready = false, running = false, visible = false, fallback = null, guard = 0;
-  let flee = false, sound = true;
+  let flee = false, sound = false;
 
   /* geometry: the square canvas is centred on the band, scaled so the band fills the tile's width */
   function place() {
@@ -2567,7 +2570,7 @@ const digitigrade = (() => {
     if (window.__dgMute) window.__dgMute(!v);
   }
   sndBtn.addEventListener('click', () => setSound(!sound));
-  setSound(true);
+  setSound(false);   // always starts muted; the switch turns it on
   // browsers hold audio until a tap, click or key; the first one lets it through
   const unlock = () => { if (sound && window.__dgMute) window.__dgMute(false); };
   ['pointerdown', 'keydown', 'touchend'].forEach(t => addEventListener(t, unlock, { passive: true }));
