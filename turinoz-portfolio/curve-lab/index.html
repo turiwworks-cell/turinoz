@@ -1102,7 +1102,8 @@ class Embed{
   graphPoint(u,v){
     const svg=this.$('#svg');if(!svg||!this.cl)return null;
     const vb=svg.viewBox&&svg.viewBox.baseVal,W=vb&&vb.width||svg.clientWidth,H=vb&&vb.height||svg.clientHeight,VR=this.cl.VR;
-    const X=32+u*(W-42),Y=12+(VR.max-v)/(VR.max-VR.min)*(H-28-12),r=svg.getBoundingClientRect();
+    // the tool exports its own mapping, so rulers or a zoomed view never throw the tour off
+    const cl=this.cl,X=cl.gx?cl.gx(u):32+u*(W-42),Y=cl.gy?cl.gy(v):12+(VR.max-v)/(VR.max-VR.min)*(H-28-12),r=svg.getBoundingClientRect();
     return[r.left+X*r.width/W,r.top+Y*r.height/H];
   }
   /* talk to the helper inside Inspect's demo page */
