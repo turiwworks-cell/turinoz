@@ -151,7 +151,7 @@ h3{font:560 30px/1.15 var(--display);font-stretch:90%;letter-spacing:-.022em}
         </div>
       </div>
       <ol class="bt-list">
-        <li class="beat" data-t0="0" data-from=".8" data-t1="1.7" data-loop="1.45" data-x="55" data-y="56" data-tone="blue" data-name="Terminal" data-say="a prompt, not a pitch" data-still="assets/beat-01.webp">
+        <li class="beat" data-t0="0" data-freeze="1.4" data-t1="1.7" data-loop="1.45" data-x="55" data-y="56" data-tone="blue" data-name="Terminal" data-say="a prompt, not a pitch" data-still="assets/beat-01.webp">
           <span class="beat-n mono"><b>01</b>0:00</span>
           <h3>Start where they work.</h3>
           <p>The film opens on a prompt, <code>&gt;&gt; Email testing</code>, set in mono. Developers spend their day in lines like that, so there’s nothing to sell yet and nothing to explain.</p>
@@ -181,7 +181,7 @@ h3{font:560 30px/1.15 var(--display);font-stretch:90%;letter-spacing:-.022em}
           <p>I rebuilt smtp.dev’s UI in Illustrator, piece by piece, and animated it in After Effects: add a domain, update MX records, create an account, then <em>That’s it. Start testing.</em> No captions on top. A title like <em>Update MX records</em> arrives on its own, then becomes the dialog it names.</p>
           <span class="tag">Four steps · told by the UI</span>
         </li>
-        <li class="beat" data-t0="29" data-t1="42.6" data-x="70" data-y="56" data-tone="blue" data-name="Promise" data-say="one claim per cut" data-still="assets/beat-06.webp">
+        <li class="beat" data-t0="29" data-from="29.45" data-t1="42.6" data-x="70" data-y="56" data-tone="blue" data-name="Promise" data-say="one claim per cut" data-still="assets/beat-06.webp">
           <span class="beat-n mono"><b>06</b>0:29</span>
           <h3>Short claims, fast lines.</h3>
           <p><em>Works with any client. Unlimited domains. Unlimited accounts. Not SendGrid. Not SES. Just testing.</em> One claim per cut, carried by speed lines, with one more visit to the terminal to say plainly what’s open and what’s blocked.</p>
@@ -220,8 +220,9 @@ const RM = matchMedia('(prefers-reduced-motion: reduce)');
 const DUR = 52.57;
 const cv = $('#cv'), sc = $('#sc'), sec = $('.sec'), stage = $('#stage'), col = $('.bt-col'), frame = $('.bt-frame'), video = $('.bt-video'), still = $('.bt-still'),
   tc = $('.bt-tc'), mini = $('.bt-mini'), nameEl = $('.bt-name'), spanEl = $('.bt-span'), canvas = $('.bt-mini canvas');
-// from: where the tile plays the beat from (beat 01 starts once the prompt is fully lit; beat 04 once "but you can just" is on screen)
-const BEATS = $$('.beat').map(el => ({ el, t0: +el.dataset.t0, from: +(el.dataset.from || el.dataset.t0), t1: +el.dataset.t1, loop: +(el.dataset.loop || el.dataset.t1), name: el.dataset.name, tone: el.dataset.tone, still: el.dataset.still }));
+// from: where the tile plays the beat from (beat 04 once "but you can just" is on screen, beat 06 once "Works with any client" is).
+// freeze: the beat shows that one frame and doesn't play (beat 01: the lit prompt near its end); its playhead still runs.
+const BEATS = $$('.beat').map(el => ({ el, t0: +el.dataset.t0, from: +(el.dataset.from || el.dataset.t0), freeze: el.dataset.freeze ? +el.dataset.freeze : null, t1: +el.dataset.t1, loop: +(el.dataset.loop || el.dataset.t1), name: el.dataset.name, tone: el.dataset.tone, still: el.dataset.still }));
 const fmt = t => Math.floor(t / 60) + ':' + String(Math.floor(t % 60)).padStart(2, '0');
 const fmtR = t => fmt(Math.round(t));
 const fmt1 = t => { t = Math.max(0, t || 0); const s = t % 60; return Math.floor(t / 60) + ':' + (s < 10 ? '0' : '') + s.toFixed(1); };
@@ -304,10 +305,10 @@ function yAt(t) {
 }
 
 /* ---------- the beat beside the line, as in the case study ---------- */
-let active = -1, seeking = false;
+let active = -1, seeking = false, beatClock = 0;
 function beatAt(y) { let k = 0; tops.forEach((t, i) => { if (t - y < line) k = i; }); return k; }
 function setBeat(k) {
-  const b = BEATS[k], first = active === -1; active = k;
+  const b = BEATS[k], first = active === -1; active = k; beatClock = 0;
   BEATS.forEach((x, i) => x.el.classList.toggle('on', i === k));
   stage.dataset.tone = b.tone;
   mini.style.setProperty('--a', (b.t0 / DUR).toFixed(4)); mini.style.setProperty('--b', (b.t1 / DUR).toFixed(4)); mini.style.setProperty('--p', (b.t0 / DUR).toFixed(4));
@@ -324,6 +325,11 @@ function film() {
   const b = BEATS[active]; if (!b) return;
   if (asleep() || RM.matches) { video.pause(); frame.classList.remove('live'); return; }
   if (video.preload === 'none') video.preload = 'auto';
+  if (b.freeze != null) {            // one still frame: seek once, stay paused
+    const hold = () => { video.pause(); if (Math.abs(video.currentTime - b.freeze) > .02) { seeking = true; video.currentTime = b.freeze; } };
+    if (video.readyState >= 1) hold(); else video.addEventListener('loadedmetadata', hold, { once: true });
+    return;
+  }
   const go = () => {
     if (video.currentTime < b.from - .05 || video.currentTime > b.loop) { seeking = true; video.currentTime = b.from; }
     const p = video.play(); if (p && p.catch) p.catch(() => {});
@@ -338,7 +344,8 @@ const asleep = () => { if (document.hidden || !seen) return true; try { return p
 function tick(now) {
   raf = 0;
   if (asleep()) { last = 0; film(); return; }
-  if (last) clock += Math.min(.1, (now - last) / 1000);
+  const dt = last ? Math.min(.1, (now - last) / 1000) : 0;
+  clock += dt;
   last = now;
   let y, o = 1;
   if (RM.matches) {                  // reduced motion: no scrolling, each beat simply takes its turn
@@ -359,7 +366,14 @@ function tick(now) {
   sc.style.opacity = o.toFixed(3);
   const k = beatAt(y); if (k !== active) setBeat(k);
   const b = BEATS[active];
-  if (b && !video.paused) {
+  if (b && b.freeze != null) {         // the frame holds; the timecode and playhead run through the beat as if it played
+    if (!video.paused || (Math.abs(video.currentTime - b.freeze) > .02 && !video.seeking)) film();
+    if (!seeking && !video.seeking && Math.abs(video.currentTime - b.freeze) <= .02) frame.classList.add('live');
+    beatClock += dt;
+    const ft = b.t0 + beatClock % (b.t1 - b.t0);
+    tc.textContent = fmt1(ft);
+    mini.style.setProperty('--p', (ft / DUR).toFixed(4));
+  } else if (b && !video.paused) {
     if (video.currentTime >= b.loop - .03 || video.currentTime < b.from - .4) { seeking = true; video.currentTime = b.from; }
     if (!seeking && video.currentTime >= b.from - .05) frame.classList.add('live');
     tc.textContent = fmt1(video.currentTime);
