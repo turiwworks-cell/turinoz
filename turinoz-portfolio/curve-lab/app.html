@@ -6455,6 +6455,14 @@ html[data-cl-theme="light"] .pop.float {
 .cvpop .cl-tool-row input[type="text"] {
   display: none;
 }
+.clbuf {
+  fill: none;
+  stroke: var(--cl-guide, #3fc8ff);
+  stroke-opacity: 0.6;
+  stroke-width: 1.2;
+  stroke-dasharray: 4 3;
+  pointer-events: none;
+}
 .clw-grid {
   fill: none;
   stroke: var(--cl-guide, #3fc8ff);
@@ -6641,6 +6649,10 @@ html[data-cl-theme="light"] .pop.float {
             <dd data-curve>Add a key halfway between the selected keys</dd>
             <dt data-curve>⌘R · ⌘;</dt>
             <dd data-curve>Rulers · guides (drag one out of a ruler)</dd>
+            <dt data-curve>⇧F</dt>
+            <dd data-curve>Frame the selected keys</dd>
+            <dt data-curve>⇧B · B</dt>
+            <dd data-curve>Keep the curve as B (dashed) · swap with B to compare</dd>
             <dt data-curve>W</dt>
             <dd data-curve>Warp: bend the curve with a lattice · [ ] cells · Enter keeps · Esc cancels</dd>
             <dt data-curve>⌘⇧;</dt>
@@ -9454,7 +9466,7 @@ const t0=performance.now();
       (lt = { kind: "k", j }),
       Ct(e, t, A(a.keys[j].u), B(a.keys[j].v), (n, s, i) => {
         let o = v(qt(clSnapY(s, i)), ne.min, ne.max);
-        (i.shiftKey && (o = En(o)), setKeyFrame(j, et(clSnapX(n, i)) * a.frames), (a.keys[j].v = J(o)), R(), ce("in0"));
+        (i.shiftKey && (o = En(o)), setKeyFrame(j, et(clSnapX(n, i, j)) * a.frames), (a.keys[j].v = J(o)), R(), ce("in0"));
       }));
   }
   function Qo(e, j = 1) {
@@ -9463,7 +9475,7 @@ const t0=performance.now();
       (a.selK = j),
       (lt = { kind: "k", j }),
       Ct(e, e.currentTarget, A(a.keys[j].u), 0, (t, _y, ev) => {
-        (setKeyFrame(j, et(clSnapX(t, ev)) * a.frames), R(), ce("in0"));
+        (setKeyFrame(j, et(clSnapX(t, ev, j)) * a.frames), R(), ce("in0"));
       }));
   }
   function selectKey(index, extend = false) {
@@ -9795,6 +9807,9 @@ const t0=performance.now();
           run: () => clDeleteKeys(sel.length ? sel : [key]),
         },
         { label: broken ? "Join handles" : "Break handles", key: Qs ? "⌘ drag" : "Ctrl+drag", run: () => clToggleBreak(key) },
+        { label: "Handles: auto", run: () => clSetHandles(sel.length ? sel : [key], "auto") },
+        { label: "Handles: linear", run: () => clSetHandles(sel.length ? sel : [key], "linear") },
+        { label: "Handles: ease", run: () => clSetHandles(sel.length ? sel : [key], "ease") },
         "-",
       );
     } else if (u != null)
@@ -9828,7 +9843,12 @@ const t0=performance.now();
         run: () => ms(a.view === "speed" ? "value" : "speed"),
       },
       { label: "Fit graph", key: "F", run: () => re("exact") },
+      { label: "Frame selected", key: "\u21E7F", run: clFrameSelected },
       { label: "Warp with a lattice", key: "W", run: () => clSetWarp(!0) },
+      "-",
+      { label: "Keep as curve B", key: "\u21E7B", run: clKeepB },
+      { label: "Swap with curve B", key: "B", disabled: !clBuf, run: clSwapB },
+      { label: "Clear curve B", disabled: !clBuf, run: clClearB },
       "-",
       {
         label: "Copy as CSS",
@@ -13020,7 +13040,8 @@ const t0=performance.now();
 
   // ----- snapping: the visible grid lines and the guides, within 6 px. Ctrl / ⌘ held skips it, and so does a fine ⌥ drag -----
   const clSnapOn = (ev) => !!clTools && clTools.snap && !(ev && (ev.ctrlKey || ev.metaKey || ev.altKey));
-  function clSnapX(x, ev) {
+  // skip: the key being dragged, so it never sticks to where it just was
+  function clSnapX(x, ev, skip = -1) {
     if (!clSnapOn(ev)) return x;
     const t = a.frames,
       s = Ko((A(1) - A(0)) / t);
@@ -13032,6 +13053,10 @@ const t0=performance.now();
     };
     near(A((Math.round((et(x) * t) / s) * s) / t));
     clTools.guides && clTools.g.t.forEach((u) => near(A(u)));
+    // keys and the playhead pull harder than the grid, as in After Effects
+    d = Math.min(d, 6) + 2;
+    a.keys.forEach((key, j) => j !== skip && near(A(key.u)));
+    near(A(Jt()));
     return best;
   }
   function clSnapY(y, ev, speed) {
@@ -13206,6 +13231,7 @@ const t0=performance.now();
     }
     clRulerLayer.innerHTML = r;
     clDrawWarp();
+    clDrawBuf();
   }
   function clGuideAt(axis, x, y) {
     return axis === "t" ? et(x) : axis === "s" ? vi(y) : qt(y);
@@ -13594,6 +13620,8 @@ const t0=performance.now();
         clSetZoomTool(!1);
         return;
       }
+      if (!mod && !e.altKey && lo === "f" && e.shiftKey) return (stop(), clFrameSelected());
+      if (!mod && !e.altKey && lo === "b") return (stop(), e.repeat || (e.shiftKey ? clKeepB() : clSwapB()));
       if (!mod) return;
       if (lo === "r" && !e.shiftKey && !e.altKey) return (stop(), clToggleRulers());
       if ((key === ";" || key === ":") && !e.altKey) {
@@ -13616,6 +13644,94 @@ const t0=performance.now();
     !0,
   );
   addEventListener("blur", () => P.classList.remove("zoom-out"));
+
+  // ---------- key handles in one step: auto, linear or ease, for the selected keys ----------
+  function clSetHandles(list, kind) {
+    const keys = [...new Set(list)].filter((k) => k > 0 && k < a.c.length);
+    if (!te() || a.mode !== "bezier" || !keys.length) return F("Select a key in the graph first");
+    for (const k of keys) {
+      const L = a.c[k - 1],
+        Rr = a.c[k],
+        gl = se(k - 1),
+        gr = se(k);
+      if (kind === "linear") {
+        ((L[2] = 0.667), (L[3] = 0.667), (Rr[0] = 0.333), (Rr[1] = 0.333));
+        a.keys[k].brk = !0;
+      } else if (kind === "ease") {
+        ((L[2] = 0.667), (L[3] = 1), (Rr[0] = 0.333), (Rr[1] = 0));
+        delete a.keys[k].brk;
+      } else {
+        // auto: the handles line up with the neighbours on both sides, so the curve runs through the key smoothly
+        const slope = (gr.vb - gl.va) / Math.max(1e-6, gr.ub - gl.ua);
+        ((L[2] = 0.667), (Rr[0] = 0.333));
+        L[3] = Math.abs(gl.dv) > 1e-9 ? J(v(1 - (slope * gl.du) / 3 / gl.dv, -Q, Q)) : 1;
+        Rr[1] = Math.abs(gr.dv) > 1e-9 ? J(v((slope * gr.du) / 3 / gr.dv, -Q, Q)) : 0;
+        delete a.keys[k].brk;
+      }
+    }
+    (R(), ee(), I(), U());
+    F(`${keys.length > 1 ? keys.length + " keys" : "Key " + (keys[0] + 1)}: ${kind} handles`);
+  }
+
+  // ---------- frame selected (⇧F): zoom to the selected keys and their handles ----------
+  function clFrameSelected() {
+    const keys = [...selectedKeys].filter((k) => k >= 0 && k < a.keys.length);
+    if (!keys.length || a.mode !== "bezier") return re("exact");
+    const us = [],
+      vs = [];
+    for (const k of keys) {
+      us.push(a.keys[k].u);
+      vs.push(a.keys[k].v);
+      for (const [s, hh] of [
+        [k - 1, 1],
+        [k, 0],
+      ]) {
+        if (s < 0 || s >= a.c.length) continue;
+        const g = se(s),
+          c = a.c[s];
+        (us.push(g.ua + c[hh * 2] * g.du), vs.push(g.va + c[hh * 2 + 1] * g.dv));
+      }
+    }
+    let u0 = Math.min(...us),
+      u1 = Math.max(...us),
+      v0 = Math.min(...vs),
+      v1 = Math.max(...vs);
+    const pu = Math.max(0.04, (u1 - u0) * 0.15),
+      pv = Math.max(0.08, (v1 - v0) * 0.2);
+    a.view === "speed" && ms("value");
+    clZoomTo(u0 - pu, u1 + pu, v0 - pv, v1 + pv);
+  }
+
+  // ---------- curve B: keep one version, compare it as a ghost, swap back and forth ----------
+  let clBuf = null;
+  const clBufPath = $("path", { class: "clbuf" }, C.curves);
+  C.curves.insertBefore(clBufPath, C.curves.firstChild);
+  const clSamples = () => Array.from({ length: 241 }, (_, i) => Ze(i / 240));
+  function clDrawBuf() {
+    const on = clBuf && a.view !== "speed" && !N();
+    clBufPath.style.display = on ? "" : "none";
+    if (!on) return;
+    let d = "";
+    clBuf.samples.forEach((val, i) => (d += (i ? "L" : "M") + h(A(i / 240)) + "," + h(B(val))));
+    clBufPath.setAttribute("d", d);
+  }
+  function clKeepB() {
+    if (N()) return;
+    clBuf = { state: Ke(), samples: clSamples() };
+    (ye(), F("Kept as curve B", "B swaps · the dashed line is B"));
+  }
+  function clSwapB() {
+    if (N()) return;
+    if (!clBuf) return F("No curve B yet", "⇧B keeps the curve as it is now");
+    const now = { state: Ke(), samples: clSamples() };
+    (rt(clBuf.state), ee(), I(), U());
+    clBuf = now;
+    F("Swapped with curve B");
+  }
+  function clClearB() {
+    clBuf = null;
+    (ye(), F("Curve B cleared"));
+  }
 
   // ---------- Warp (W): a lattice over the curve, as in Houdini. Drag its points and every key and handle inside bends with it ----------
   const clWarp = { on: !1, n: 2, base: null, pts: null, saved: "", last: "" };
