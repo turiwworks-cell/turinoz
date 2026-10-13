@@ -67,8 +67,8 @@ code{font:500 .86em/1 var(--mono);padding:3px 6px 2px;border-radius:6px;backgrou
 
 /* the composition: drawn at one size (--w × --h), scaled to the frame; the section scrolls inside it */
 #cv{position:absolute;left:50%;top:50%;width:var(--w,1040px);height:var(--h,650px);transform:translate(-50%,-50%) scale(var(--k,1));transform-origin:50% 50%;
-  opacity:0;transition:opacity .8s var(--ease)}
-#cv.on{opacity:1}
+  opacity:0}
+#cv.on{opacity:1}   /* the section itself fades in (the script), so the title is whole before its still time */
 #sc{position:absolute;inset:0;overflow:hidden;
   -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 6%,#000 94%,transparent);mask-image:linear-gradient(180deg,transparent 0,#000 6%,#000 94%,transparent)}
 
@@ -209,9 +209,10 @@ const T = {
   move: 2.2,                 // seconds from one beat to the next
   hold: .1,                  // seconds at the slow speed at each beat
   slow: 16,                  // design px a second at the slow speed (never zero)
-  open: .6,                  // seconds the first screen (the title) holds before the first move
+  open: .5,                  // seconds the first screen (the title) stays completely still before the first move
 };
 const FADE = .7;       // after the last beat it fades out and starts again from the title
+const FADE_IN = .4;    // … which fades back in, standing still, before its own still time
 
 const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
@@ -285,10 +286,11 @@ function plan() {
   const v = Math.max(0, T.slow), hold = Math.max(.05, T.hold), mv = Math.max(.2, T.move);
   path = []; let t = 0;
   STOPS.forEach((y, i) => {
-    const h = i ? hold : Math.max(.05, T.open), a = i ? y - v * h / 2 : 0;
-    path.push({ t, d: h, y0: a, y1: a + v * h, glide: false }); t += h;
+    // the first screen stands completely still; every beat after it keeps creeping at the slow speed
+    const h = i ? hold : Math.max(0, T.open), a = i ? y - v * h / 2 : 0, b = i ? a + v * h : 0;
+    if (h > 0) { path.push({ t, d: h, y0: a, y1: b, glide: false }); t += h; }
     const next = STOPS[i + 1]; if (next == null) return;
-    path.push({ t, d: mv, y0: a + v * h, y1: next - v * hold / 2, glide: true }); t += mv;
+    path.push({ t, d: mv, y0: b, y1: next - v * hold / 2, glide: true }); t += mv;
   });
   total = t;
 }
@@ -331,7 +333,7 @@ function film() {
 video.addEventListener('seeked', () => { seeking = false; });
 
 /* ---------- the clock: runs only while the tile is on screen and the page is in front ---------- */
-let seen = true, raf = 0, last = 0, clock = 0, laps = 0;
+let seen = true, raf = 0, last = 0, clock = 0, laps = 0, ready = false;
 const asleep = () => { if (document.hidden || !seen) return true; try { return parent !== window && parent.document.documentElement.classList.contains('study-open'); } catch (_) { return false; } };
 function tick(now) {
   raf = 0;
@@ -341,12 +343,15 @@ function tick(now) {
   let y, o = 1;
   if (RM.matches) {                  // reduced motion: no scrolling, each beat simply takes its turn
     const stops = path.filter((p, i) => !p.glide);
-    y = stops[Math.floor(clock / 3.2) % stops.length].y0;
+    y = stops.length ? stops[Math.floor(Math.max(0, clock) / 3.2) % stops.length].y0 : 0;
   } else {
-    if (clock >= total + FADE) { clock -= total + FADE; laps++; }
-    y = yAt(Math.min(clock, total));
-    if (clock > total) { o = 1 - (clock - total) / FADE; y = path[path.length - 1].y1 + T.slow * (clock - total); }
-    else if (laps && clock < FADE) o = clock / FADE;
+    // a new lap fades the title screen in first; its still time starts once it is fully there
+    if (clock >= total + FADE) { clock -= total + FADE + FADE_IN; laps++; }
+    if (clock < 0) { y = 0; o = 1 + clock / FADE_IN; }
+    else {
+      y = yAt(Math.min(clock, total));
+      if (clock > total) { o = 1 - (clock - total) / FADE; y = path[path.length - 1].y1 + T.slow * (clock - total); }
+    }
   }
   // the section moves by transform (sub-pixel, no scroll snapping); the stage stays put in the middle once it reaches it
   sec.style.transform = `translate3d(0,${(-y).toFixed(2)}px,0)`;
@@ -362,7 +367,7 @@ function tick(now) {
   } else if (b && video.paused) film();
   raf = requestAnimationFrame(tick);
 }
-const wake = () => { if (!raf && !asleep()) raf = requestAnimationFrame(tick); };
+const wake = () => { if (ready && !raf && !asleep()) raf = requestAnimationFrame(tick); };
 if ('IntersectionObserver' in window) new IntersectionObserver(es => { seen = es[es.length - 1].isIntersecting; wake(); }, { rootMargin: '60px' }).observe(cv);
 document.addEventListener('visibilitychange', wake);
 setInterval(wake, 700);              // picks up again after a study closes
@@ -383,14 +388,15 @@ addEventListener('message', e => {
   if (e.data.beatsTiming) {
     Object.assign(T, e.data.beatsTiming); ease = bez(T.curve);
     const old = total; plan(); clock = clock % (old + FADE) / (old + FADE) * (total + FADE);
-    if (e.data.restart) { clock = 0; laps = 0; }
+    if (e.data.restart) { clock = -FADE_IN; laps = 0; }
   }
 });
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', strip);
 addEventListener('resize', () => { fit(); });
 
 fit(); setBeat(0);
-(document.fonts && document.fonts.ready || Promise.resolve()).then(() => { fit(); cv.classList.add('on'); wake(); });
+// the clock starts once the fonts are in: the title screen fades in standing still, like every later lap
+(document.fonts && document.fonts.ready || Promise.resolve()).then(() => { fit(); clock = -FADE_IN; sc.style.opacity = '0'; cv.classList.add('on'); ready = true; wake(); });
 })();
 </script>
 </body>
