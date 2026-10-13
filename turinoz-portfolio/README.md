@@ -33,9 +33,7 @@ media/                  client videos
   smtp-logo-loop.mp4          H.264 fallback (Safari / older devices)
   smtp-logo-loop-poster.jpg
   smtp-film-preview.av1.mp4   the whole smtp.dev film, muted, 1280 × 720, 30 fps, AV1 10-bit (~1.3 MB)
-  smtp-film-preview.mp4       the same in H.264 (~2.5 MB). Shared by the film tile and the case study
-  smtp-film-poster.jpg        its poster (the red errors at 0:03)
-  smtp-film-colors.png        the film's own colors, one pixel per tenth of a second (the tile's bar)
+  smtp-film-preview.mp4       the same in H.264 (~2.5 MB). Used by the case study's Beat by beat and the home tile
 smtp/                   smtp.dev product film case study
   index.html            the page
   case-study.css        its styles (dark, in the film's own light)
@@ -88,14 +86,16 @@ python -m http.server 8000
 
 ## The tiles that changed
 
-- **smtp.dev product film** (main tier) is the
-  explainer. A muted preview of the whole film loops in it, with the same rules as the other
-  client videos (nothing downloads until it is near the screen; it plays only while visible;
-  it pauses behind a study or in a hidden tab; reduced motion shows the poster and plays on
-  hover). The thin bar inside is the film's own colors with a playhead that follows the video,
-  and the chip shows the time. The frame is as tall as a one-column tile, so the row keeps its
-  height next to Digitigrade; below 1100 px it is 16:9. The whole tile opens `smtp/`.
-  Script: "smtp.dev film tile" (right after the client loops in the main script).
+- **smtp.dev product film** (main tier) shows the case study's Beat by beat section playing on
+  its own (`smtp/beats-tile.html`, like the Curve Lab tile): the stage stays still where the first
+  screen puts it, the notes scroll past, each move between beats follows Turinoz's own ease
+  (`cubic-bezier(.71, 0, .14, 1)`, 2.2 s) on top of a slow speed, so it slows right down at each beat
+  (0.1 s at 16 px/s) and never stops; the title screen fades in and then stands completely still for 1 s; beat 01 holds one frame (1.4 s, the lit prompt) while its playhead runs, beat 04 plays from 9 s ("but you can just" on screen) and beat 06 from 29.45 s ("Works with any client"); after beat 07 it fades and starts
+  again. The film beside the notes plays each beat, as in the case study. The numbers are `T` near the
+  top of that file. Drawn at one size and scaled to the frame; light or dark like the home page; it
+  sleeps off screen, behind a study or in a hidden tab; with reduced motion the beats just take
+  turns. Not interactive: the whole tile opens `smtp/`. The beat notes are a copy of the case
+  study's, so a change there goes in both files.
 - **smtp.dev logo loop** stays where it was (row 2, first column) and is a Shot again, not a
   link to the case study. Its caption links to the film.
 - **Eye** moved down to row 4, in the place of "Agent, spin". **Numerals** and **Agent, spin**
