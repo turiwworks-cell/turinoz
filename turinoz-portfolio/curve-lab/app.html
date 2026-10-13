@@ -7383,8 +7383,8 @@ html[data-cl-theme="light"] .pop.float {
 <script>
 (() => {
   "use strict";
-  // Set to true in the Curve-only build: no Inspect workspace, no page loading.
-  const CL_CURVE_ONLY = false;
+  // Curve only (no Inspect, no page loading) in the Curve-only build and when embedded with curve-lab.js.
+  const CL_CURVE_ONLY = !!window.__clEmbed;
   CL_CURVE_ONLY && (document.documentElement.dataset.clOnly = "curve");
   const wo =
       '(()=>{try{const r=window.requestAnimationFrame.bind(window),l=window.cancelAnimationFrame.bind(window),a=new Map;let n=!1,i=1e9;window.requestAnimationFrame=function(e){if(!n)return r(e);const t=++i;return a.set(t,e),t},window.cancelAnimationFrame=function(e){a.delete(e)||l(e)},Object.defineProperty(window,"__clFreeze",{value(e){if(e=!!e,e!==n&&(n=e,!e)){const t=[...a.values()];a.clear(),t.forEach(s=>r(s))}}})}catch{}try{const r={},l=(n,i)=>{const e=3*n[0],t=3*(n[2]-n[0])-e,s=1-e-t,c=3*n[1],d=3*(n[3]-n[1])-c,m=1-c-d;let o=i;for(let u=0;u<10;u++){const f=((s*o+t)*o+e)*o-i,w=(3*s*o+2*t)*o+e;if(Math.abs(f)<1e-7||Math.abs(w)<1e-7)break;o-=f/w}if(o<0||o>1||Math.abs(((s*o+t)*o+e)*o-i)>1e-5){let u=0,f=1;o=i;for(let w=0;w<40;w++)((s*o+t)*o+e)*o<i?u=o:f=o,o=(u+f)/2}return((m*o+d)*o+c)*o},a=(n,i)=>{const e=i*(n.length-1),t=Math.min(n.length-2,Math.floor(e));return n[t]+(n[t+1]-n[t])*(e-t)};Object.defineProperty(window,"__CLO",{value:r}),Object.defineProperty(window,"__clE",{value(n,i,e,t,s){const c=r[n];c&&(e=c.a,t=c.b);let d=t>e?(i-e)/(t-e):i>=t?1:0;return d=d<0?0:d>1?1:d,c&&c.c?l(c.c,d):c&&c.lin?a(c.lin,d):typeof s=="function"?s(d):d}})}catch{}const y=[];function h(r){if(!r||typeof r.loadAnimation!="function"||r.__easeStudyHooked)return;const l=r.loadAnimation;r.loadAnimation=function(a){const n=!a?.__easePreview&&a?.animationData?JSON.parse(JSON.stringify(a.animationData)):null,i=l.apply(this,arguments),e=a?.container||a?.wrapper;if(n&&e){const t={container:e,instance:i,data:n,index:y.length,key:n.nm||"lottie-"+y.length,destroyed:!1},s=i.destroy;i.destroy=function(){return t.destroyed=!0,s.apply(this,arguments)},y.push(t),window.dispatchEvent(new Event("ease-lottie-created"))}return i};try{Object.defineProperty(r,"__easeStudyHooked",{value:!0})}catch{}}for(const r of["lottie","bodymovin"]){let l=window[r];try{Object.defineProperty(window,r,{configurable:!0,enumerable:!0,get(){return l},set(a){l=a,h(a)}})}catch{}h(l)}window.__easeLottieCaptured=y})();',
@@ -17375,6 +17375,35 @@ end`),
     }),
     clFaviconPulse(),
     clRequestPersist());
+  // Embedded (curve-lab.js): tell the page around it about every change to the curve, live while dragging.
+  if (window.__clEmbed) {
+    let sent = "";
+    const send = () => {
+      const now = Ke();
+      if (now !== sent) {
+        sent = now;
+        const n = 240,
+          samples = [];
+        for (let i = 0; i <= n; i++) samples.push(Math.round(Ze(i / n) * 1e5) / 1e5);
+        try {
+          parent.postMessage(
+            {
+              curveLab: "change",
+              samples,
+              duration: Math.round(xe()),
+              frames: a.frames,
+              fps: a.fps,
+              mode: a.mode,
+              bezier: a.mode === "bezier" && a.c.length === 1 ? a.c[0].slice() : null,
+            },
+            "*",
+          );
+        } catch {}
+      }
+      requestAnimationFrame(send);
+    };
+    send();
+  }
 })();
 </script>
 </body>
