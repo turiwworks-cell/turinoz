@@ -301,7 +301,7 @@ button{font:inherit;color:inherit}
               <button type="button" role="radio" aria-checked="true" data-mode="follow"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="16" cy="11" r="3.2" fill="currentColor"/><path d="M2 11h8.5M7 7.5 10.5 11 7 14.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Follow</button>
               <button type="button" role="radio" aria-checked="false" data-mode="flee"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="5" cy="11" r="3.2" fill="currentColor"/><path d="M11 11h9M16.5 7.5 20 11l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Avoid</button>
             </div>
-            <button class="snd" id="snd" type="button" aria-pressed="true" aria-label="Sound"><svg viewBox="0 0 22 22" aria-hidden="true"><path d="M3 8.5h3.2L11 4.5v13l-4.8-4H3z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><g class="wave" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M14.2 8.2a4 4 0 0 1 0 5.6"/><path d="M16.8 5.6a7.6 7.6 0 0 1 0 10.8"/></g><g class="x" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="m14.5 8.5 5 5M19.5 8.5l-5 5"/></g></svg><span>Sound <b>on</b></span></button>
+            <button class="snd" id="snd" type="button" aria-pressed="false" aria-label="Sound"><svg viewBox="0 0 22 22" aria-hidden="true"><path d="M3 8.5h3.2L11 4.5v13l-4.8-4H3z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><g class="wave" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M14.2 8.2a4 4 0 0 1 0 5.6"/><path d="M16.8 5.6a7.6 7.6 0 0 1 0 10.8"/></g><g class="x" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="m14.5 8.5 5 5M19.5 8.5l-5 5"/></g></svg><span>Sound <b>off</b></span></button>
           </div>
         </div>
 
@@ -324,7 +324,7 @@ button{font:inherit;color:inherit}
 (() => {
   if (!window.AudioNode || !window.AudioDestinationNode) return;
   const masters = new Map(), connect = AudioNode.prototype.connect;
-  let muted = false;      // sound is on from the start
+  let muted = true;       // sound is off until the visitor turns it on
   AudioNode.prototype.connect = function (dest, ...rest) {
     if (!(dest instanceof AudioDestinationNode) || this.__dgMaster) return connect.call(this, dest, ...rest);
     const ctx = dest.context;
@@ -365,7 +365,7 @@ button{font:inherit;color:inherit}
   const ptr = { x: 0, y: 0, t: -1e9, on: false, type: 'mouse', skipUp: false };
   const queue = [];
   let walk = null, held = null, heldUntil = 0, lastD = null, lastDT = -1e9;
-  let flee = false, sound = true;
+  let flee = false, sound = false;
 
   function bytes(b64) {
     const bin = atob(b64), u = new Uint8Array(bin.length);
