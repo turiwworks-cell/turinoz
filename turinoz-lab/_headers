@@ -1,0 +1,21 @@
+# Response headers for the lab (Cloudflare Workers static assets).
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+# The Rive runtime and the fonts never change name, so cache them for a year.
+# (If you replace one of them, give the new file a new name.)
+/rive/vendor/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/eye-planet/vendor/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/*/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# The .riv files revalidate on every visit, so a redeploy shows up right away.
+/*.riv
+  Cache-Control: no-cache

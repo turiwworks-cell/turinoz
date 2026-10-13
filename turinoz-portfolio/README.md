@@ -15,16 +15,15 @@ rive/                   Rive files for the live tiles
   sphere.riv            Interactive Sphere tile
   eye_icon.riv          Eye tile and Planet tile (same files as lab.turinoz.co/eye-planet/)
   planet_icon.riv
-  digitigrade.riv       Digitigrade tile (the same file the digitigrade/ page carries inline)
-  vendor/               the Rive runtime (rive.js + .wasm), shared by all three tiles and by
-                        digitigrade/; file-mode.js is only fetched when the page is opened by
-                        double-click
+  digitigrade.riv       Digitigrade tile (the same file lab.turinoz.co/digitigrade/ carries inline)
+  vendor/               the Rive runtime (rive.js + .wasm), shared by all three tiles;
+                        file-mode.js is only fetched when the page is opened by double-click
 curve-lab/              the Curve Lab website and what its tile shows
   index.html            the website, with the tool built in (works from any folder, even by double-click)
   app.html              the tool on its own; the website's "Open" buttons go here
   also-inside.html      one section of the website, playing by itself, for the Curve Lab tile
-digitigrade/            Digitigrade's own page ("Open" on its tile); its fonts are inside,
-                        the Rive runtime is ../rive/vendor/
+digitigrade/            moved to the lab (../turinoz-lab/digitigrade/, lab.turinoz.co/digitigrade/);
+                        _redirects sends the old address there
 spectra/
   tile.html             the Spectra game, laid out for its tile and played by Turinoz's cursor
                         (uses ../fonts/; nothing else)
@@ -132,10 +131,10 @@ python -m http.server 8000
 - Three controls in the tile: the status chip top-left ("Following you" / "Avoiding you"
   while you steer it, "On its own" after 2 s without a move), Sound top-centre, and
   Follow / Avoid at the bottom (Avoid is the file's own `countMeOut` switch).
-- Sound starts on. Once the cursor has been off the page for 5 seconds it switches itself off
-  (and stays off until switched back on). It is silent while the tile is off screen, behind a
+- Sound starts off, every visit; the Sound switch turns it on. Once the cursor has been off the
+  page for 5 seconds it switches itself off again (and stays off until switched back on). It is silent while the tile is off screen, behind a
   study, or in a hidden tab.
-- "Open" goes to `digitigrade/`, in a new tab, like Eye and Planet.
+- "Open" goes to https://lab.turinoz.co/digitigrade/, in a new tab, like Eye and Planet.
 - If the browser has no hardware WebGL2, the old JS leg drawing takes over.
 - Spectra moved to the slot in row 4 where the old Digitigrade stand-in was, one column wide
   (see "Spectra tile" below).
