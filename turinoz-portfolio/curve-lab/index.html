@@ -675,6 +675,31 @@ html.theming *,html.theming *::before,html.theming *::after{transition:none!impo
 }
 /* 3. the preset tiles keep a sensible size when the column gets wide */
 @media (max-width:900px){.tiles{max-width:340px}}
+/* ---------- two modes: the text under each demo ----------
+   Both columns share one set of rows, so every line sits level with its neighbour.
+   Name and promise on one line, the list numbered; a line changes on click or focus, in place. */
+.feats button::after{display:none}
+.feats button{transition:color .2s var(--ui)}
+.feats button::before{transition:background-color .2s var(--ui),box-shadow .2s var(--ui)}
+@media (min-width:981px){
+  .modes{grid-template-rows:repeat(5,auto);row-gap:0}
+  .mode{grid-row:span 5;grid-template-rows:subgrid;row-gap:0}
+}
+.mode{gap:0;grid-template-columns:auto minmax(0,1fr);column-gap:20px}
+.mode>*{grid-column:1/-1}
+.mode .mini{grid-row:1}
+.mode-top{grid-row:2;margin-top:20px}
+.mode h3{grid-row:3;grid-column:1;font-size:clamp(34px,3vw,44px);margin-top:10px;align-self:end}
+.mode .sub{grid-row:3;grid-column:2;align-self:end;font-size:clamp(16px,1.25vw,18px);color:var(--ink-2);padding-bottom:.28em;margin-top:10px}
+.mode p:not(.sub){grid-row:4;margin-top:10px;font-size:14.5px;line-height:1.55}
+.feats{grid-row:5;margin-top:12px;counter-reset:ft}
+.feats li{counter-increment:ft}
+.feats li,.feats li:last-child{border:0}
+.feats button{padding:6px 0 6px 14px;font-size:14px;gap:12px;box-shadow:inset 1px 0 0 var(--rule-2);transition:color .2s var(--ui),box-shadow .2s var(--ui)}
+.feats button::before{content:counter(ft,decimal-leading-zero);width:auto;height:auto;transform:none;box-shadow:none;font:500 11px/1.45 var(--mono);color:var(--ink-4);letter-spacing:.04em}
+.feats button.on{box-shadow:inset 2px 0 0 var(--now)}
+.feats button.on::before{background:none;box-shadow:none;color:var(--now)}
+@media (max-width:560px){.mode h3,.mode .sub{grid-column:1/-1}.mode .sub{grid-row:auto;padding:0}}
 </style>
 </head>
 <body>
@@ -1878,7 +1903,7 @@ if(RM.matches)qa('.cta-mark svg').forEach(s=>{try{s.pauseAnimations();s.setCurre
 qa('.feats').forEach(ul=>{
   const target=$('#'+ul.dataset.for),bs=qa('button',ul);
   const set=i=>{if(target.dataset.s===String(i))return;bs.forEach((b,j)=>{b.classList.toggle('on',j===i);b.setAttribute('aria-pressed',String(j===i))});target.dataset.s=i;target.dispatchEvent(new CustomEvent('state'))};
-  bs.forEach((b,i)=>{b.setAttribute('aria-pressed',String(i===0));b.addEventListener('click',()=>set(i));b.addEventListener('pointerenter',e=>{if(e.pointerType==='mouse')set(i)});b.addEventListener('focus',()=>set(i))});
+  bs.forEach((b,i)=>{b.setAttribute('aria-pressed',String(i===0));b.addEventListener('click',()=>set(i));b.addEventListener('focus',()=>set(i))});
 });
 const segOn=(seg,b)=>qa('button',seg).forEach(x=>x.classList.toggle('on',x===b));
 
