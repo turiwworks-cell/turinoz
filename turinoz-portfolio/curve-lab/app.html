@@ -6420,6 +6420,134 @@ html[data-cl-theme="light"] .pop.float {
   animation-fill-mode: backwards;
 }
 </style>
+<style id="curve-tools">
+/* graph tools: zoom tool, rulers, guides (graph and Path) */
+.app.zooming .plot svg,
+.app.zooming .plot svg *,
+.app.zooming .ogrid.focus .ocell.on,
+.app.zooming .ogrid.focus .ocell.on * {
+  cursor: zoom-in !important;
+}
+.app.zooming.zoom-out .plot svg,
+.app.zooming.zoom-out .plot svg *,
+.app.zooming.zoom-out .ogrid.focus .ocell.on,
+.app.zooming.zoom-out .ogrid.focus .ocell.on * {
+  cursor: zoom-out !important;
+}
+.app.zooming .plot svg :is(.clr-bg, .clg-h),
+.app.zooming .ocell.on :is(.pbar, .pbar *, .clpt .clr-bg, .clpt .clg-h) {
+  cursor: default !important;
+}
+.clzoom {
+  fill: color-mix(in srgb, var(--acc) 10%, transparent);
+  stroke: var(--acc);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+  pointer-events: none;
+}
+.clzoom-box {
+  position: absolute;
+  z-index: 5;
+  border: 1px dashed var(--acc);
+  background: color-mix(in srgb, var(--acc) 10%, transparent);
+  pointer-events: none;
+}
+.clg {
+  stroke: var(--cl-guide, #3fc8ff);
+  stroke-opacity: var(--cl-guide-o, 0.85);
+  stroke-width: 1;
+  pointer-events: none;
+}
+.clg-h {
+  stroke: transparent;
+  stroke-width: 9;
+  pointer-events: stroke;
+}
+.clg-h.t {
+  cursor: ew-resize;
+}
+.clg-h.y {
+  cursor: ns-resize;
+}
+.locked .clg-h {
+  cursor: default;
+}
+.clr-bg,
+.clr-corner {
+  fill: var(--panel);
+}
+.clrulers .clr-bg {
+  cursor: copy;
+}
+.clr-t {
+  stroke: var(--cl-ruler, #8f8c84);
+  stroke-opacity: var(--cl-ruler-o, 1);
+  stroke-width: 1;
+}
+.clr-edge {
+  stroke: var(--cl-ruler, #8f8c84);
+  stroke-opacity: calc(var(--cl-ruler-o, 1) * 0.4);
+  stroke-width: 1;
+}
+.clr-l {
+  fill: var(--cl-ruler, #8f8c84);
+  fill-opacity: var(--cl-ruler-o, 1);
+  font: 9px var(--mono);
+  pointer-events: none;
+}
+.clpt,
+.app[data-ws="curve"] .ogrid.focus .ocell.on svg.clpt {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  overflow: visible;
+  pointer-events: none;
+}
+.clpt .clr-bg {
+  pointer-events: auto;
+  cursor: copy;
+}
+.clpt .clg-h {
+  pointer-events: stroke;
+}
+.plot.guiding,
+.plot.guiding * {
+  cursor: grabbing !important;
+}
+.app[data-ws="curve"] .plot.rulers .ptools {
+  top: 28px;
+}
+.app[data-ws="curve"] .plot.rulers .ro {
+  top: 30px;
+  left: 58px;
+}
+.cl-tools-blk {
+  display: grid;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+.cl-tools-sw {
+  display: grid;
+  gap: 6px;
+  justify-items: start;
+}
+.cl-tools-sw .swrow {
+  height: 26px;
+}
+.cvpop .cl-tools-blk {
+  margin-top: 10px;
+}
+.cvpop .cl-tool-row {
+  grid-template-columns: 50px 22px minmax(0, 1fr) 50px;
+  gap: 8px;
+}
+.cvpop .cl-tool-row input[type="text"] {
+  display: none;
+}
+</style>
 </head>
 <body>
 <div class="app" id="app" data-ws="curve">
@@ -6550,7 +6678,7 @@ html[data-cl-theme="light"] .pop.float {
             <dt data-curve>Right-click</dt>
             <dd data-curve>Key and curve menu: delete, break handles, ease, reset</dd>
             <dt data-curve>⌘ drag handle</dt>
-            <dd data-curve>Break the handles of that key</dd>
+            <dd data-curve>Break the handles of that key (⌘ at the start of the drag)</dd>
             <dt data-curve>H · V</dt>
             <dd data-curve>Hand tool · back to selection</dd>
             <dt data-curve>P</dt>
@@ -6570,7 +6698,15 @@ html[data-cl-theme="light"] .pop.float {
             <dt>F</dt>
             <dd>Fit graph (or double-click empty space)</dd>
             <dt>⌘ scroll</dt>
-            <dd>Zoom · scroll pans</dd>
+            <dd>Zoom at the cursor (⇧ time only · ⌥ values only) · scroll pans, ⇧ scroll pans time</dd>
+            <dt data-curve>Z</dt>
+            <dd data-curve>Zoom tool: drag a box, click zooms in, ⌥ click out · hold Z to use it once</dd>
+            <dt data-curve>⇧I</dt>
+            <dd data-curve>Add a key halfway between the selected keys</dd>
+            <dt data-curve>⌘R · ⌘;</dt>
+            <dd data-curve>Rulers · guides (drag one out of a ruler)</dd>
+            <dt data-curve>⌘⇧;</dt>
+            <dd data-curve>Snap on / off · hold ⌘ while dragging to skip it</dd>
             <dt>F9 · M R</dt>
             <dd>Easy ease · mirror / reverse</dd>
             <dt>L</dt>
@@ -8505,6 +8641,12 @@ const t0=performance.now();
     n.length >= 4 ? ns(n, e) : F("No curve on the clipboard. Copy four numbers first.");
   }
   const clTimeViewport = { min: 0, max: 1 };
+  // graph tools (zoom tool, snap, rulers, guides) live further down; their state is declared here so drawing can read it early
+  var clTools = null,
+    clZoomTool = !1,
+    clZoomHeld = 0,
+    clZoomUsed = !1,
+    clUserZoom = !1;
   const ne = { min: -0.15, max: 1.15 },
     X = { min: -0.24, max: 3 },
     pe = { ...ne },
@@ -8572,9 +8714,12 @@ const t0=performance.now();
     if (e === "exact") {
       clTimeViewport.min = 0;
       clTimeViewport.max = 1;
+      clUserZoom = !1;
       (Object.assign(pe, hi(t)), Object.assign(me, bi(t)), ye());
       return;
     }
+    // after a zoom by hand the view stays put until Fit
+    if (clUserZoom) return ye();
     const n = (s) => (e === "show" ? -0.04 : 0.01) * s;
     if (a.view === "speed") {
       const s = n(me.max - me.min);
@@ -8691,11 +8836,11 @@ const t0=performance.now();
   function Vt() {
     ((k.W = Math.max(160, $n.clientWidth || 320)),
       (k.H = Math.max(120, $n.clientHeight || 210)),
-      (k.l = 32),
+      (k.l = clTools?.rulers ? 46 : 32),
       (k.r = 10),
       (k.RH = 20),
       (k.rT = k.H - k.RH),
-      (k.yT = 12),
+      (k.yT = clTools?.rulers ? 30 : 12),
       (k.yB = k.rT - 8),
       ge.setAttribute("viewBox", `0 0 ${k.W} ${k.H}`),
       ye());
@@ -8769,6 +8914,7 @@ const t0=performance.now();
       K(Bo, { x: k.l - 2, y: k.yT - 4, width: k.W - k.l - k.r + 4, height: k.yB - k.yT + 8 }),
       K(clHandleBox, { x: k.l - 7, y: k.yT - 7, width: k.W - k.l - k.r + 14, height: k.yB - k.yT + 14 }),
       K(clRulerBox, { x: k.l - 7, y: k.rT, width: k.W - k.l - k.r + 14, height: k.RH }));
+    clTools && clDrawGraphTools();
   }
   function xi(e) {
     if (a.mode === "hold" && !e) {
@@ -9250,14 +9396,17 @@ const t0=performance.now();
     const n = se(t.i),
       s = a.c[t.i],
       startX = A(n.ua + s[t.h * 2] * n.du),
-      startY = B(n.va + s[t.h * 2 + 1] * n.dv);
+      startY = B(n.va + s[t.h * 2 + 1] * n.dv),
+      brk = e.metaKey || e.ctrlKey; // ⌘ / Ctrl as the drag starts breaks the handles; pressed later it only skips snapping
     Ct(e, t.hit, startX, startY, (i, o, r) => {
       const c = se(t.i),
         d = a.c[t.i];
-      let u = (v(et(startX + (i - startX) * 0.88), c.ua, c.ub) - c.ua) / c.du,
+      let u = (v(et(clSnapX(startX + (i - startX) * 0.88, r)), c.ua, c.ub) - c.ua) / c.du,
         g =
-          Math.abs(c.dv) > 1e-9 ? (v(qt(startY + (o - startY) * 0.88), ne.min, ne.max) - c.va) / c.dv : d[t.h * 2 + 1];
-      ((r.metaKey || r.ctrlKey) && clBreakOnDrag(t.i + t.h),
+          Math.abs(c.dv) > 1e-9
+            ? (v(qt(clSnapY(startY + (o - startY) * 0.88, r)), ne.min, ne.max) - c.va) / c.dv
+            : d[t.h * 2 + 1];
+      (brk && clBreakOnDrag(t.i + t.h),
         r.shiftKey && ((u = En(u)), (g = En(g))),
         (d[t.h * 2] = J(v(u, 0, 1))),
         (d[t.h * 2 + 1] = J(v(g, -Q, Q))),
@@ -9274,14 +9423,15 @@ const t0=performance.now();
       r = t.h ? i.iIn : i.iOut,
       c = A(n ? (t.h ? s.ub - r * s.du : s.ua + r * s.du) : t.h ? s.ub : s.ua),
       d = Number.isFinite(o) ? Me(v(o, X.min, X.max)) : k.yT,
-      midBase = !n && a.c.length === 2 && t.i + t.h === 1 ? peakSnapshot() : null;
+      midBase = !n && a.c.length === 2 && t.i + t.h === 1 ? peakSnapshot() : null,
+      brk = e.metaKey || e.ctrlKey;
     Ct(e, n ? t.hit : t.keyHit, c, d, (u, g, p) => {
       ((g = d + (g - d) * 0.72), (u = c + (u - c) * 0.84));
       if (midBase) retimePeak(et(u), midBase);
       const m = se(t.i),
         b = be(t.i);
       if (midBase && Math.abs(g - d) < 3) return;
-      let y = v(vi(g), X.min, X.max),
+      let y = v(vi(clSnapY(g, p, !0)), X.min, X.max),
         x = t.h ? b.iIn : b.iOut;
       if ((n && (x = t.h ? (m.ub - et(u)) / m.du : (et(u) - m.ua) / m.du), (x = v(x, It, 1)), p.shiftKey))
         ((y = Math.round(y * 4) / 4), n && (x = v(En(x), It, 1)));
@@ -9300,7 +9450,7 @@ const t0=performance.now();
             }
           }
       }
-      ((p.metaKey || p.ctrlKey) && clBreakOnDrag(t.i + t.h), t.h ? yn(t.i, y, x) : hn(t.i, y, x), ce(bn(t.i, t.h)));
+      (brk && clBreakOnDrag(t.i + t.h), t.h ? yn(t.i, y, x) : hn(t.i, y, x), ce(bn(t.i, t.h)));
     });
   }
   function Xo() {
@@ -9365,8 +9515,8 @@ const t0=performance.now();
       (a.selK = j),
       (lt = { kind: "k", j }),
       Ct(e, t, A(a.keys[j].u), B(a.keys[j].v), (n, s, i) => {
-        let o = v(qt(s), ne.min, ne.max);
-        (i.shiftKey && (o = En(o)), setKeyFrame(j, et(n) * a.frames), (a.keys[j].v = J(o)), R(), ce("in0"));
+        let o = v(qt(clSnapY(s, i)), ne.min, ne.max);
+        (i.shiftKey && (o = En(o)), setKeyFrame(j, et(clSnapX(n, i)) * a.frames), (a.keys[j].v = J(o)), R(), ce("in0"));
       }));
   }
   function Qo(e, j = 1) {
@@ -9374,8 +9524,8 @@ const t0=performance.now();
       ((a.selKey = !0),
       (a.selK = j),
       (lt = { kind: "k", j }),
-      Ct(e, e.currentTarget, A(a.keys[j].u), 0, (t) => {
-        (setKeyFrame(j, et(t) * a.frames), R(), ce("in0"));
+      Ct(e, e.currentTarget, A(a.keys[j].u), 0, (t, _y, ev) => {
+        (setKeyFrame(j, et(clSnapX(t, ev)) * a.frames), R(), ce("in0"));
       }));
   }
   function selectKey(index, extend = false) {
@@ -10470,6 +10620,7 @@ const t0=performance.now();
     clPanDrag = null;
   function clUpdatePanCursor() {
     clPanPinned && clPen && ((clPen = !1), clSyncPen());
+    clPanPinned && clZoomTool && clSetZoomTool(!1, !0);
     $n.classList.toggle("pan-ready", P.dataset.ws === "curve" && (clSpaceHeld || clPanPinned));
     $n.classList.toggle("panning", !!clPanDrag);
     f("ogrid").classList.toggle("pan-ready", P.dataset.ws === "curve" && (clSpaceHeld || clPanPinned));
@@ -10574,6 +10725,7 @@ const t0=performance.now();
     if (on === clPen) return clSyncPen();
     clPen = on;
     on && clPanPinned && ((clPanPinned = !1), clUpdatePanCursor());
+    on && clZoomTool && clSetZoomTool(!1, !0);
     clSyncPen();
     quiet || (on ? F("Pen", "click to add a point · drag to shape it · V or Esc to stop") : F("Selection"));
   }
@@ -10807,16 +10959,21 @@ const t0=performance.now();
     "wheel",
     (e) => {
       const t = e.ctrlKey || e.metaKey || e.altKey;
-      if (!t && ea()) return;
+      if (!t && !e.shiftKey && ea()) return;
       e.preventDefault();
-      const { r: n, ky: s } = Ln(),
+      const { r: n, kx: kx, ky: s } = Ln(),
         i = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 400 : 1;
       if (t) {
         const o = (e.clientY - n.top) * s,
-          r = e.deltaY * i,
-          c = e.ctrlKey && !e.metaKey && Math.abs(r) < 50 && e.deltaMode === 0;
-        os(Math.exp(v(r, -100, 100) * (c ? 0.01 : 0.0022)), a.view === "speed" ? vi(o) : qt(o));
-      } else zo((Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : 0) * i * s);
+          x = (e.clientX - n.left) * kx,
+          r = (e.deltaY || e.deltaX) * i,
+          c = e.ctrlKey && !e.metaKey && Math.abs(r) < 50 && e.deltaMode === 0,
+          z = Math.exp(v(r, -100, 100) * (c ? 0.01 : 0.0022));
+        // ⌥ wheel zooms the values only, as before. ⌘ / Ctrl wheel and pinch zoom both axes right at the cursor; add ⇧ for time only.
+        if (e.altKey && !(e.ctrlKey || e.metaKey)) os(z, a.view === "speed" ? vi(o) : qt(o));
+        else clZoomAt(z, e.shiftKey ? 1 : z, x, o);
+      } else if (e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) clPanTime((e.deltaX || e.deltaY) * i * kx);
+      else zo(e.deltaY * i * s);
     },
     { passive: !1 },
   ),
@@ -11677,7 +11834,7 @@ const t0=performance.now();
     });
   }
   function ms(e) {
-    e !== a.view && ((a.view = e), clSyncAppearanceRows(), _("viewSeg", e), Vt(), ee(), re("show"), oe());
+    e !== a.view && ((a.view = e), (clUserZoom = !1), clSyncAppearanceRows(), _("viewSeg", e), Vt(), ee(), re("show"), oe());
   }
   function Ri(e) {
     if (te()) {
@@ -12203,9 +12360,11 @@ const t0=performance.now();
     return !0;
   }
   const clPathScale = () => 1 / Math.max(0.05, T.svg[3].getScreenCTM()?.a || 1);
-  function clSnapPt(p) {
+  // ⌘ / Ctrl held while dragging skips snapping, as on the graph
+  function clSnapPt(p, ev) {
     const c = clPrefs.canvas;
-    return c.snap ? { x: Math.round(p.x / c.gap) * c.gap, y: Math.round(p.y / c.gap) * c.gap } : p;
+    if (!c.snap || (ev && (ev.ctrlKey || ev.metaKey))) return p;
+    return clSnapGuides(p, { x: Math.round(p.x / c.gap) * c.gap, y: Math.round(p.y / c.gap) * c.gap });
   }
   function clDrawCanvas(on, scale) {
     const c = clPrefs.canvas,
@@ -12226,6 +12385,7 @@ const t0=performance.now();
       on = focused && clPrefs.showPath,
       scale = focused ? clPathScale() : 1;
     clDrawCanvas(focused, scale);
+    clDrawPathTools();
     g.style.display = on ? "" : "none";
     T.pathHit.style.display = on ? "" : "none";
     if (!on) return;
@@ -12336,7 +12496,7 @@ const t0=performance.now();
           let nx = orig.x + dx,
             ny = orig.y + dy;
           if (m.shiftKey) Math.abs(dx) > Math.abs(dy) ? (ny = orig.y) : (nx = orig.x);
-          const sn = clSnapPt({ x: nx, y: ny });
+          const sn = clSnapPt({ x: nx, y: ny }, m);
           ((dx = sn.x - orig.x), (dy = sn.y - orig.y));
           for (const [n, o] of origs) {
             Object.assign(clPrefs.path[n], {
@@ -12358,7 +12518,7 @@ const t0=performance.now();
               len = Math.hypot(hx - p.x, hy - p.y);
             ((hx = p.x + Math.cos(ang) * len), (hy = p.y + Math.sin(ang) * len));
           } else {
-            const sn = clSnapPt({ x: hx, y: hy });
+            const sn = clSnapPt({ x: hx, y: hy }, m);
             ((hx = sn.x), (hy = sn.y));
           }
           ((p[key[0]] = hx), (p[key[1]] = hy));
@@ -12409,7 +12569,7 @@ const t0=performance.now();
           (clApplyPath(!0), F("Point added on the path"));
           return;
         }
-        const pt = clSnapPt(start),
+        const pt = clSnapPt(start, event),
           lastP = path[path.length - 1],
           d = Math.hypot(pt.x - lastP.x, pt.y - lastP.y),
           lin = Math.hypot(lastP.x - lastP.ix, lastP.y - lastP.iy),
@@ -12847,6 +13007,676 @@ const t0=performance.now();
     if (e.defaultPrevented || !e.target.closest?.(".ocell.on") || e.target.closest?.(".pe-hit")) return;
     clStageFit();
   });
+
+  // ---------- graph tools: zoom tool, snap, rulers and guides (graph and Path) ----------
+  // Settings live in their own key, so the backup in Appearance carries them too.
+  const clToolsKey = "turinoz-curve-lab-tools-v1",
+    CL_RT = 18, // graph rulers: top height and left width, px
+    CL_RL = 14;
+  const CL_ICONS = {
+    zoom: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="7" cy="7" r="4.3"/><path d="m10.2 10.2 3.6 3.6"/></svg>',
+    snap: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M3.5 2.5h3v6a1.5 1.5 0 0 0 3 0v-6h3v6a4.5 4.5 0 0 1-9 0z"/><path d="M3.5 5.3h3M9.5 5.3h3"/></svg>',
+    ruler: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 2.5h11v4h-7v7h-4z"/><path d="M5 2.5v2M7.5 2.5v1.4M10 2.5v2M2.5 9h2M2.5 11.3h1.4"/></svg>',
+  };
+  const clToolsLook = () => ({ rulerColor: "#8f8c84", rulerOpacity: 100, guideColor: "#3fc8ff", guideOpacity: 85 });
+  const clToolsDefault = () => ({ snap: !0, rulers: !1, guides: !0, lock: !1, ...clToolsLook(), g: { t: [], v: [], s: [] }, p: { x: [], y: [] } });
+  function clLoadTools() {
+    const t = clToolsDefault();
+    try {
+      const s = JSON.parse(localStorage.getItem(clToolsKey) || "null");
+      if (s && typeof s === "object") {
+        for (const key of ["snap", "rulers", "guides", "lock"]) typeof s[key] == "boolean" && (t[key] = s[key]);
+        for (const key of ["rulerColor", "guideColor"]) /^#[0-9a-f]{6}$/i.test(s[key] || "") && (t[key] = s[key].toLowerCase());
+        for (const key of ["rulerOpacity", "guideOpacity"]) Number.isFinite(s[key]) && (t[key] = v(Math.round(s[key]), 0, 100));
+        const list = (l, lim) => (Array.isArray(l) ? l.filter(Number.isFinite).map((x) => v(x, -lim, lim)).slice(0, 40) : []);
+        s.g && ((t.g.t = list(s.g.t, 50)), (t.g.v = list(s.g.v, 50)), (t.g.s = list(s.g.s, 200)));
+        s.p && ((t.p.x = list(s.p.x, 4000)), (t.p.y = list(s.p.y, 4000)));
+      }
+    } catch {}
+    return t;
+  }
+  function clSaveTools() {
+    try {
+      localStorage.setItem(clToolsKey, JSON.stringify(clTools));
+    } catch {}
+  }
+  function clApplyTools() {
+    P.style.setProperty("--cl-ruler", clTools.rulerColor);
+    P.style.setProperty("--cl-ruler-o", String(clTools.rulerOpacity / 100));
+    P.style.setProperty("--cl-guide", clTools.guideColor);
+    P.style.setProperty("--cl-guide-o", String(clTools.guideOpacity / 100));
+    $n.classList.toggle("rulers", clTools.rulers);
+    const pressed = (id, on) => {
+      const b = f(id);
+      b && (b.classList.toggle("on", on), b.setAttribute("aria-pressed", String(on)));
+    };
+    pressed("snapBtn", clTools.snap);
+    pressed("rulerBtn", clTools.rulers);
+    pressed("pathRuler", clTools.rulers);
+    pressed("pathSnap", clPrefs.canvas.snap);
+    clSyncToolRows();
+    Vt();
+    clDrawPathTools();
+  }
+  function clSetTool(key, val, msg) {
+    clTools[key] = val;
+    (clSaveTools(), clApplyTools());
+    msg && F(msg);
+  }
+  const clToggleSnap = () => clSetTool("snap", !clTools.snap, clTools.snap ? "Snap off" : "Snap to grid lines and guides · hold " + (Qs ? "⌘" : "Ctrl") + " while dragging to skip it");
+  // one click after a zoom drag must not reach the graph or the sample (a click on a sample unfocuses it)
+  function clEatClick() {
+    const stop = (ev) => (ev.stopPropagation(), ev.preventDefault());
+    addEventListener("click", stop, { capture: !0, once: !0 });
+    setTimeout(() => removeEventListener("click", stop, { capture: !0 }), 0);
+  }
+  const clToggleRulers = () => clSetTool("rulers", !clTools.rulers, clTools.rulers ? "Rulers off" : "Rulers on · drag from a ruler to add a guide");
+  const clToggleGuides = () => clSetTool("guides", !clTools.guides, clTools.guides ? "Guides hidden" : "Guides shown");
+  const clToggleLock = () => clSetTool("lock", !clTools.lock, clTools.lock ? "Guides unlocked" : "Guides locked");
+  function clClearGuides(area) {
+    area === "path" ? ((clTools.p.x = []), (clTools.p.y = [])) : (clTools.g = { t: [], v: [], s: [] });
+    (clSaveTools(), ye(), clDrawPathTools(), F("Guides cleared"));
+  }
+
+  // ----- snapping: the visible grid lines and the guides, within 6 px. Ctrl / ⌘ held skips it, and so does a fine ⌥ drag -----
+  const clSnapOn = (ev) => !!clTools && clTools.snap && !(ev && (ev.ctrlKey || ev.metaKey || ev.altKey));
+  function clSnapX(x, ev) {
+    if (!clSnapOn(ev)) return x;
+    const t = a.frames,
+      s = Ko((A(1) - A(0)) / t);
+    let best = x,
+      d = 6;
+    const near = (gx) => {
+      const dd = Math.abs(gx - x);
+      dd < d && ((d = dd), (best = gx));
+    };
+    near(A((Math.round((et(x) * t) / s) * s) / t));
+    clTools.guides && clTools.g.t.forEach((u) => near(A(u)));
+    return best;
+  }
+  function clSnapY(y, ev, speed) {
+    if (!clSnapOn(ev)) return y;
+    const S = speed ? X : ne,
+      toY = speed ? Me : B,
+      from = speed ? vi : qt,
+      step = ki(S.max - S.min, 5);
+    let best = y,
+      d = 6;
+    const near = (gy) => {
+      const dd = Math.abs(gy - y);
+      dd < d && ((d = dd), (best = gy));
+    };
+    near(toY(Math.round(from(y) / step) * step));
+    clTools.guides && (speed ? clTools.g.s : clTools.g.v).forEach((g) => near(toY(g)));
+    return best;
+  }
+
+  // ----- zoom: both axes around a point, or to an exact box -----
+  function clZoomAt(fx, fy, x, y) {
+    const sp = a.view === "speed",
+      S = sp ? X : ne,
+      G = sp ? me : pe,
+      u = et(x),
+      val = sp ? vi(y) : qt(y);
+    if (fx !== 1) {
+      const w = clTimeViewport.max - clTimeViewport.min,
+        nw = v(w * fx, Math.max(1 / Math.max(1, a.frames), 0.002), 6),
+        r = nw / w;
+      clTimeViewport.min = u - (u - clTimeViewport.min) * r;
+      clTimeViewport.max = clTimeViewport.min + nw;
+    }
+    if (fy !== 1) {
+      const w = S.max - S.min,
+        nw = v(w * fy, 0.01, sp ? 80 : 24),
+        r = nw / w;
+      S.min = G.min = val - (val - S.min) * r;
+      S.max = G.max = S.min + nw;
+    }
+    clUserZoom = !0;
+    ye();
+  }
+  function clZoomTo(u0, u1, y0, y1) {
+    const sp = a.view === "speed",
+      S = sp ? X : ne,
+      G = sp ? me : pe;
+    if (u1 - u0 > 1e-6) {
+      const w = v(u1 - u0, Math.max(1 / Math.max(1, a.frames), 0.002), 6),
+        c = (u0 + u1) / 2;
+      ((clTimeViewport.min = c - w / 2), (clTimeViewport.max = c + w / 2));
+    }
+    if (y1 - y0 > 1e-6) {
+      const w = v(y1 - y0, 0.01, sp ? 80 : 24),
+        c = (y0 + y1) / 2;
+      ((S.min = G.min = c - w / 2), (S.max = G.max = c + w / 2));
+    }
+    clUserZoom = !0;
+    ye();
+  }
+  function clPanTime(px) {
+    const w = clTimeViewport.max - clTimeViewport.min,
+      d = (px / Math.max(1, k.W - k.l - k.r)) * w;
+    ((clTimeViewport.min += d), (clTimeViewport.max += d), ye());
+  }
+
+  // ----- the Zoom tool (Z): drag a box to zoom to it, click zooms in, ⌥ click zooms out -----
+  function clSetZoomTool(on, quiet) {
+    on = !!on && !N() && P.dataset.ws === "curve";
+    if (on && clPen) clSetPen(!1, !0);
+    if (on && clPanPinned) ((clPanPinned = !1), clUpdatePanCursor());
+    const was = clZoomTool;
+    clZoomTool = on;
+    clZoomHeld = 0;
+    P.classList.toggle("zooming", on);
+    on || P.classList.remove("zoom-out");
+    for (const id of ["zoomToolBtn", "pathZoom"]) {
+      const b = f(id);
+      b && (b.classList.toggle("on", on), b.setAttribute("aria-pressed", String(on)));
+    }
+    on !== was && !quiet && F(on ? "Zoom" : "Selection", on ? "drag a box to zoom to it · click zooms in · " + (Qs ? "⌥" : "Alt+") + "click zooms out · V or Esc to stop" : void 0);
+  }
+  const clZoomBox = $("rect", { class: "clzoom", style: "display:none" }, ge);
+  function clZoomDrag(ev, x0, y0) {
+    const { r, kx, ky } = Ln(),
+      out = ev.altKey;
+    let x1 = x0,
+      y1 = y0,
+      moved = !1;
+    const move = (m) => {
+      if (m.pointerId !== ev.pointerId) return;
+      ((x1 = (m.clientX - r.left) * kx), (y1 = (m.clientY - r.top) * ky));
+      moved = moved || Math.hypot(x1 - x0, y1 - y0) > 4;
+      if (!moved) return;
+      K(clZoomBox, { x: h(Math.min(x0, x1)), y: h(Math.min(y0, y1)), width: h(Math.abs(x1 - x0)), height: h(Math.abs(y1 - y0)) });
+      clZoomBox.style.display = "";
+    };
+    const up = (m) => {
+      if (m.pointerId !== ev.pointerId) return;
+      (removeEventListener("pointermove", move), removeEventListener("pointerup", up), removeEventListener("pointercancel", up));
+      clZoomBox.style.display = "none";
+      clZoomUsed = !0;
+      if (m.type === "pointercancel") return;
+      clEatClick();
+      if (moved) {
+        const sp = a.view === "speed",
+          from = sp ? vi : qt,
+          wide = Math.abs(x1 - x0) > 5,
+          tall = Math.abs(y1 - y0) > 5;
+        clZoomTo(
+          wide ? et(Math.min(x0, x1)) : 0,
+          wide ? et(Math.max(x0, x1)) : 0,
+          tall ? from(Math.max(y0, y1)) : 0,
+          tall ? from(Math.min(y0, y1)) : 0,
+        );
+      } else {
+        const z = out || m.altKey ? 2 : 0.5;
+        clZoomAt(z, z, x0, y0);
+      }
+    };
+    (addEventListener("pointermove", move), addEventListener("pointerup", up), addEventListener("pointercancel", up));
+  }
+
+  // ----- rulers and guides on the graph -----
+  const clGuideLayer = $("g", { class: "clguides", "clip-path": "url(#plotClip)" }, ge),
+    clRulerLayer = $("g", { class: "clrulers" }, ge);
+  ge.insertBefore(clGuideLayer, C.curves);
+  ge.insertBefore(clRulerLayer, C.ph);
+  const clGuideList = (axis) => (axis === "t" ? clTools.g.t : axis === "s" ? clTools.g.s : clTools.g.v);
+  function clDrawGraphTools() {
+    if (!clTools) return;
+    const sp = a.view === "speed";
+    let g = "";
+    if (clTools.guides) {
+      const top = k.yT - 6,
+        bot = k.yB + 6;
+      clTools.g.t.forEach((u, i) => {
+        const x = h(A(u));
+        g += `<line class="clg" x1="${x}" y1="${top}" x2="${x}" y2="${bot}"/><line class="clg-h t" data-a="t" data-i="${i}" x1="${x}" y1="${top}" x2="${x}" y2="${bot}"/>`;
+      });
+      (sp ? clTools.g.s : clTools.g.v).forEach((val, i) => {
+        const y = h(sp ? Me(val) : B(val));
+        g += `<line class="clg" x1="${k.l}" y1="${y}" x2="${k.W - k.r}" y2="${y}"/><line class="clg-h y" data-a="${sp ? "s" : "v"}" data-i="${i}" x1="${k.l}" y1="${y}" x2="${k.W - k.r}" y2="${y}"/>`;
+      });
+    }
+    clGuideLayer.innerHTML = g;
+    clGuideLayer.classList.toggle("locked", clTools.lock);
+    let r = "";
+    if (clTools.rulers) {
+      const t = a.frames,
+        n = (A(1) - A(0)) / t,
+        s = Ko(n),
+        o = [1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 25, 30, 50, 60, 100, 200, 250, 500, 1e3, 2e3].find((c) => s % c === 0 && c * n >= 5) || s,
+        ms = we() !== "f";
+      r += `<rect class="clr-bg" x="0" y="0" width="${k.W}" height="${CL_RT}"/><rect class="clr-bg" x="0" y="${CL_RT}" width="${CL_RL}" height="${h(k.rT - CL_RT)}"/>`;
+      r += `<line class="clr-edge" x1="0" y1="${CL_RT - 0.5}" x2="${k.W}" y2="${CL_RT - 0.5}"/><line class="clr-edge" x1="${CL_RL - 0.5}" y1="${CL_RT}" x2="${CL_RL - 0.5}" y2="${k.rT}"/>`;
+      for (let c = Math.ceil((clTimeViewport.min * t) / o) * o; c <= clTimeViewport.max * t + 1e-9; c += o) {
+        const x = A(c / t);
+        if (x < CL_RL || x > k.W) continue;
+        const major = c % s === 0;
+        r += `<line class="clr-t" x1="${h(x)}" y1="${CL_RT - (major ? 7 : 4)}" x2="${h(x)}" y2="${CL_RT - 1}"/>`;
+        major && (r += `<text class="clr-l" x="${h(x + 3)}" y="10">${ms ? Math.round((c / a.fps) * 1e3) : c}</text>`);
+      }
+      const S = sp ? X : ne,
+        toY = sp ? Me : B,
+        step = ki(S.max - S.min, 5) / 5;
+      for (let i = Math.ceil(S.min / step); i * step <= S.max + 1e-9; i++) {
+        const y = toY(i * step);
+        if (y < CL_RT || y > k.rT) continue;
+        r += `<line class="clr-t" x1="${CL_RL - (i % 5 ? 4 : 7)}" y1="${h(y)}" x2="${CL_RL - 1}" y2="${h(y)}"/>`;
+      }
+    }
+    clRulerLayer.innerHTML = r;
+  }
+  function clGuideAt(axis, x, y) {
+    return axis === "t" ? et(x) : axis === "s" ? vi(y) : qt(y);
+  }
+  // drag a guide (i >= 0) or pull a new one out of a ruler (i < 0); dropping it back on the ruler removes it
+  function clDragGuide(ev, axis, i) {
+    ev.preventDefault();
+    ev.stopPropagation();
+    const { r, kx, ky } = Ln(),
+      list = clGuideList(axis),
+      pos = (m) => [(m.clientX - r.left) * kx, (m.clientY - r.top) * ky];
+    if (i < 0) {
+      const [x, y] = pos(ev);
+      list.push(J(clGuideAt(axis, x, y)));
+      i = list.length - 1;
+      clTools.guides || (clTools.guides = !0);
+    }
+    $n.classList.add("guiding");
+    const move = (m) => {
+      if (m.pointerId !== ev.pointerId) return;
+      let [x, y] = pos(m);
+      // Shift lands the guide on the nearest grid line
+      if (m.shiftKey) axis === "t" ? (x = clSnapX(x, null)) : (y = clSnapY(y, null, axis === "s"));
+      list[i] = J(clGuideAt(axis, x, y));
+      ye();
+    };
+    const up = (m) => {
+      if (m.pointerId !== ev.pointerId) return;
+      (removeEventListener("pointermove", move), removeEventListener("pointerup", up), removeEventListener("pointercancel", up));
+      $n.classList.remove("guiding");
+      const [x, y] = pos(m),
+        gone = axis === "t" ? y < (clTools.rulers ? CL_RT : k.yT - 6) || y > k.rT : x < (clTools.rulers ? CL_RL : k.l - 4) || x > k.W || y < 0 || y > k.rT;
+      gone && list.splice(i, 1);
+      (clSaveTools(), ye());
+    };
+    (addEventListener("pointermove", move), addEventListener("pointerup", up), addEventListener("pointercancel", up));
+  }
+  $n.addEventListener(
+    "pointerdown",
+    (ev) => {
+      if (!clTools || ev.button !== 0 || P.dataset.ws !== "curve" || N() || clSpaceHeld || clPanPinned) return;
+      if (!(ev.target === ge || ge.contains(ev.target))) return;
+      const { r, kx, ky } = Ln(),
+        x = (ev.clientX - r.left) * kx,
+        y = (ev.clientY - r.top) * ky,
+        hit = ev.target.closest?.(".clg-h");
+      if (hit) {
+        if (clTools.lock) return;
+        clLastArea = "graph";
+        return clDragGuide(ev, hit.dataset.a, +hit.dataset.i);
+      }
+      if (clTools.rulers && y < k.rT) {
+        if (y < CL_RT && x > CL_RL) return ((clLastArea = "graph"), clDragGuide(ev, "t", -1));
+        if (x < CL_RL && y >= CL_RT) return ((clLastArea = "graph"), clDragGuide(ev, a.view === "speed" ? "s" : "v", -1));
+      }
+      if (clZoomTool && y < k.rT) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        clLastArea = "graph";
+        clZoomDrag(ev, x, y);
+      }
+    },
+    !0,
+  );
+  // the Zoom tool owns double-clicks too, and a guide has its own menu
+  $n.addEventListener("dblclick", (ev) => clZoomTool && ge.contains(ev.target) && (ev.preventDefault(), ev.stopPropagation()), !0);
+  $n.addEventListener(
+    "contextmenu",
+    (ev) => {
+      const hit = ev.target.closest?.(".clg-h");
+      if (!hit || P.dataset.ws !== "curve") return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      const axis = hit.dataset.a,
+        i = +hit.dataset.i;
+      clOpenMenu(ev.clientX, ev.clientY, [
+        { head: axis === "t" ? "Time guide" : axis === "s" ? "Speed guide" : "Value guide" },
+        { label: "Delete guide", danger: 1, run: () => (clGuideList(axis).splice(i, 1), clSaveTools(), ye()) },
+        { label: "Clear all guides", run: () => clClearGuides("graph") },
+        "-",
+        { label: clTools.lock ? "Unlock guides" : "Lock guides", run: clToggleLock },
+        { label: "Hide guides", key: Wn + ";", run: clToggleGuides },
+      ]);
+    },
+    !0,
+  );
+
+  // ----- rulers and guides on the Path, in the canvas's own units -----
+  const clPathTools = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  clPathTools.setAttribute("class", "clpt");
+  T.cells[3].append(clPathTools);
+  const CL_PR = 16; // Path ruler thickness, px
+  function clPathMap() {
+    const svg = T.svg[3],
+      m = svg.getScreenCTM(),
+      cr = T.cells[3].getBoundingClientRect();
+    if (!m || !cr.width) return null;
+    return {
+      w: cr.width,
+      h: cr.height,
+      k: m.a || 1,
+      x: (ux) => m.a * ux + m.e - cr.left,
+      y: (uy) => m.d * uy + m.f - cr.top,
+      ux: (px) => (px + cr.left - m.e) / (m.a || 1),
+      uy: (py) => (py + cr.top - m.f) / (m.d || 1),
+      cr,
+    };
+  }
+  function clDrawPathTools() {
+    if (!clTools || !clPathTools) return;
+    const on = a.preview === 3 && !N() && T.cells[3].classList.contains("on"),
+      mp = on && clPathMap();
+    clPathTools.style.display = mp ? "" : "none";
+    if (!mp) return;
+    clPathTools.setAttribute("viewBox", `0 0 ${h(mp.w)} ${h(mp.h)}`);
+    let s = "";
+    if (clTools.guides) {
+      clTools.p.x.forEach((gx, i) => {
+        const x = h(mp.x(gx));
+        s += `<line class="clg" x1="${x}" y1="0" x2="${x}" y2="${h(mp.h)}"/><line class="clg-h t" data-a="x" data-i="${i}" x1="${x}" y1="0" x2="${x}" y2="${h(mp.h)}"/>`;
+      });
+      clTools.p.y.forEach((gy, i) => {
+        const y = h(mp.y(gy));
+        s += `<line class="clg" x1="0" y1="${y}" x2="${h(mp.w)}" y2="${y}"/><line class="clg-h y" data-a="y" data-i="${i}" x1="0" y1="${y}" x2="${h(mp.w)}" y2="${y}"/>`;
+      });
+    }
+    if (clTools.rulers) {
+      // a major tick about every 50 px, five minor ticks between
+      const major = [1, 2, 5, 10, 20, 25, 50, 100, 200, 500, 1e3].find((u) => u * mp.k >= 50) || 1e3,
+        minor = major / 5;
+      s += `<rect class="clr-bg hit-x" x="0" y="0" width="${h(mp.w)}" height="${CL_PR}"/><rect class="clr-bg hit-y" x="0" y="${CL_PR}" width="${CL_PR}" height="${h(mp.h - CL_PR)}"/>`;
+      s += `<line class="clr-edge" x1="0" y1="${CL_PR - 0.5}" x2="${h(mp.w)}" y2="${CL_PR - 0.5}"/><line class="clr-edge" x1="${CL_PR - 0.5}" y1="${CL_PR}" x2="${CL_PR - 0.5}" y2="${h(mp.h)}"/>`;
+      for (let i = Math.ceil(mp.ux(CL_PR) / minor); mp.x(i * minor) <= mp.w; i++) {
+        const x = h(mp.x(i * minor)),
+          big = Math.abs((i * minor) / major - Math.round((i * minor) / major)) < 1e-6;
+        s += `<line class="clr-t" x1="${x}" y1="${CL_PR - (big ? 7 : 4)}" x2="${x}" y2="${CL_PR - 1}"/>`;
+        big && (s += `<text class="clr-l" x="${h(+x + 3)}" y="9">${Math.round(i * minor * 100) / 100}</text>`);
+      }
+      for (let i = Math.ceil(mp.uy(CL_PR) / minor); mp.y(i * minor) <= mp.h; i++) {
+        const y = h(mp.y(i * minor)),
+          big = Math.abs((i * minor) / major - Math.round((i * minor) / major)) < 1e-6;
+        s += `<line class="clr-t" x1="${CL_PR - (big ? 7 : 4)}" y1="${y}" x2="${CL_PR - 1}" y2="${y}"/>`;
+        big && (s += `<text class="clr-l" transform="translate(9 ${h(+y + 3)}) rotate(-90)" text-anchor="end">${Math.round(i * minor * 100) / 100}</text>`);
+      }
+      s += `<rect class="clr-corner" x="0" y="0" width="${CL_PR}" height="${CL_PR}"/>`;
+    }
+    clPathTools.innerHTML = s;
+    clPathTools.classList.toggle("locked", clTools.lock);
+  }
+  function clDragPathGuide(ev, axis, i) {
+    ev.preventDefault();
+    ev.stopPropagation();
+    clLastArea = "path";
+    const list = axis === "x" ? clTools.p.x : clTools.p.y,
+      at = (m) => {
+        const mp = clPathMap();
+        return mp ? [m.clientX - mp.cr.left, m.clientY - mp.cr.top, mp] : [0, 0, null];
+      };
+    if (i < 0) {
+      const [x, y, mp] = at(ev);
+      if (!mp) return;
+      list.push(Math.round((axis === "x" ? mp.ux(x) : mp.uy(y)) * 100) / 100);
+      i = list.length - 1;
+      clTools.guides || (clTools.guides = !0);
+    }
+    const move = (m) => {
+      if (m.pointerId !== ev.pointerId) return;
+      const [x, y, mp] = at(m);
+      if (!mp) return;
+      let val = axis === "x" ? mp.ux(x) : mp.uy(y);
+      // Shift lands it on the dot grid
+      m.shiftKey && (val = Math.round(val / clPrefs.canvas.gap) * clPrefs.canvas.gap);
+      list[i] = Math.round(val * 100) / 100;
+      clDrawPathTools();
+    };
+    const up = (m) => {
+      if (m.pointerId !== ev.pointerId) return;
+      (removeEventListener("pointermove", move), removeEventListener("pointerup", up), removeEventListener("pointercancel", up));
+      const [x, y, mp] = at(m),
+        edge = clTools.rulers ? CL_PR : 0;
+      mp && (axis === "x" ? y < edge || y > mp.h || x < 0 || x > mp.w : x < edge || x > mp.w || y < 0 || y > mp.h) && list.splice(i, 1);
+      (clSaveTools(), clDrawPathTools());
+    };
+    (addEventListener("pointermove", move), addEventListener("pointerup", up), addEventListener("pointercancel", up));
+  }
+  clPathTools.addEventListener("pointerdown", (ev) => {
+    if (ev.button !== 0 || clSpaceHeld || clPanPinned) return;
+    const t = ev.target;
+    if (t.classList.contains("clg-h")) return clTools.lock ? void 0 : clDragPathGuide(ev, t.dataset.a, +t.dataset.i);
+    if (t.classList.contains("hit-x")) return clDragPathGuide(ev, "x", -1);
+    if (t.classList.contains("hit-y")) return clDragPathGuide(ev, "y", -1);
+  });
+  clPathTools.addEventListener("contextmenu", (ev) => {
+    const t = ev.target;
+    if (!t.classList.contains("clg-h")) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+    const list = t.dataset.a === "x" ? clTools.p.x : clTools.p.y,
+      i = +t.dataset.i;
+    clOpenMenu(ev.clientX, ev.clientY, [
+      { head: "Guide" },
+      { label: "Delete guide", danger: 1, run: () => (list.splice(i, 1), clSaveTools(), clDrawPathTools()) },
+      { label: "Clear all guides", run: () => clClearGuides("path") },
+      "-",
+      { label: clTools.lock ? "Unlock guides" : "Lock guides", run: clToggleLock },
+    ]);
+  });
+  "ResizeObserver" in window && new ResizeObserver(() => clDrawPathTools()).observe(T.cells[3]);
+  // guides pull points in, like the dot grid does, and win over it
+  function clSnapGuides(p, snapped = p) {
+    if (!clTools || !clTools.guides) return snapped;
+    const tol = 6 * clPathScale(),
+      q = { ...snapped };
+    let dx = tol,
+      dy = tol;
+    clTools.p.x.forEach((gx) => Math.abs(gx - p.x) < dx && ((dx = Math.abs(gx - p.x)), (q.x = gx)));
+    clTools.p.y.forEach((gy) => Math.abs(gy - p.y) < dy && ((dy = Math.abs(gy - p.y)), (q.y = gy)));
+    return q;
+  }
+
+  // ----- the Zoom tool on the Path and the other focused samples -----
+  const clZoomDiv = document.createElement("div");
+  clZoomDiv.className = "clzoom-box";
+  clZoomDiv.hidden = !0;
+  og.addEventListener(
+    "pointerdown",
+    (ev) => {
+      if (!clZoomTool || !clTools || ev.button !== 0 || clSpaceHeld || clPanPinned || N()) return;
+      const cell = ev.target.closest?.(".ocell.on");
+      if (!cell || a.preview < 0 || ev.target.closest?.(".pbar, .clpt .clr-bg, .clpt .clg-h")) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      clLastArea = a.preview === 3 ? "path" : clLastArea;
+      const i = a.preview,
+        svg = T.svg[i],
+        p0 = clStageRaw(svg, ev),
+        out = ev.altKey,
+        or = cell.getBoundingClientRect(),
+        x0 = ev.clientX,
+        y0 = ev.clientY;
+      let moved = !1,
+        x1 = x0,
+        y1 = y0;
+      cell.append(clZoomDiv);
+      const move = (m) => {
+        if (m.pointerId !== ev.pointerId) return;
+        ((x1 = m.clientX), (y1 = m.clientY));
+        moved = moved || Math.hypot(x1 - x0, y1 - y0) > 4;
+        if (!moved) return;
+        Object.assign(clZoomDiv.style, {
+          left: Math.min(x0, x1) - or.left + "px",
+          top: Math.min(y0, y1) - or.top + "px",
+          width: Math.abs(x1 - x0) + "px",
+          height: Math.abs(y1 - y0) + "px",
+        });
+        clZoomDiv.hidden = !1;
+      };
+      const up = (m) => {
+        if (m.pointerId !== ev.pointerId) return;
+        (removeEventListener("pointermove", move), removeEventListener("pointerup", up), removeEventListener("pointercancel", up));
+        clZoomDiv.hidden = !0;
+        clZoomUsed = !0;
+        if (m.type === "pointercancel") return;
+        clEatClick();
+        if (!moved) return clStageZoom(i, out || m.altKey ? 2 : 0.5, p0);
+        const p1 = clStageRaw(svg, m),
+          base = clStageBase(i),
+          asp = base.w / base.h,
+          rw = Math.abs(p1.x - p0.x),
+          rh = Math.abs(p1.y - p0.y),
+          w = v(Math.max(rw, rh * asp), base.w / 20, base.w * 4),
+          hh = w / asp,
+          cx = (p0.x + p1.x) / 2,
+          cy = (p0.y + p1.y) / 2;
+        clStageViews.set(i, { x: cx - w / 2, y: cy - hh / 2, w, h: hh });
+        clApplyStageView(i);
+      };
+      (addEventListener("pointermove", move), addEventListener("pointerup", up), addEventListener("pointercancel", up));
+    },
+    !0,
+  );
+  og.addEventListener("dblclick", (ev) => clZoomTool && (ev.preventDefault(), ev.stopImmediatePropagation()), !0);
+
+  // ----- settings rows: Lines popover (graph) and Canvas popover (Path) share the same values -----
+  const clToolRow = (id, name, colorKey, opKey) =>
+    `<div class="op-row cl-tool-row" style="--line-color: var(--cl-${colorKey === "rulerColor" ? "ruler" : "guide"})"><span class="op-name">${name}</span><span class="hexf"><input class="cl-color" id="${id}Color" type="color" aria-label="${name} color" /><input type="text" id="${id}Hex" class="mono" maxlength="7" spellcheck="false" aria-label="${name} color hex" /></span><input class="cl-opacity" id="${id}Opacity" type="range" min="0" max="100" step="1" aria-label="${name} opacity" /><label class="cl-ap-percent mono"><input id="${id}Percent" type="number" min="0" max="100" step="1" aria-label="${name} opacity percent" /><span>%</span></label></div>`;
+  const clToolSwitch = (id, text) => `<label class="swrow"><input type="checkbox" id="${id}" /><span class="box"></span>${text}</label>`;
+  function clToolBlock(pre) {
+    return `<div class="cl-tools-blk"><div class="op-head"><span>Rulers and guides</span><span class="spacer"></span><button class="mini" id="${pre}ToolsReset" type="button" title="Reset ruler and guide colors and opacity">Reset</button></div>
+      ${clToolRow(pre + "Ruler", "Rulers", "rulerColor", "rulerOpacity")}${clToolRow(pre + "Guide", "Guides", "guideColor", "guideOpacity")}
+      <div class="cl-tools-sw">${clToolSwitch(pre + "RulersOn", "Show rulers")}${clToolSwitch(pre + "GuidesOn", "Show guides")}${clToolSwitch(pre + "LockOn", "Lock guides")}${pre === "g" ? clToolSwitch("gSnapOn", "Snap to grid lines and guides") : ""}<button class="mini" id="${pre}ClearGuides" type="button">Clear guides</button></div></div>`;
+  }
+  f("opPanel").insertAdjacentHTML("beforeend", clToolBlock("g"));
+  f("cvPop").insertAdjacentHTML("beforeend", clToolBlock("p"));
+  const clToolPairs = [
+    ["Ruler", "rulerColor", "rulerOpacity"],
+    ["Guide", "guideColor", "guideOpacity"],
+  ];
+  function clSyncToolRows() {
+    for (const pre of ["g", "p"]) {
+      if (!f(pre + "RulerColor")) continue;
+      for (const [nm, ck, ok] of clToolPairs) {
+        f(pre + nm + "Color").value = clTools[ck];
+        f(pre + nm + "Hex") !== document.activeElement && (f(pre + nm + "Hex").value = clTools[ck].toUpperCase());
+        f(pre + nm + "Opacity").value = String(clTools[ok]);
+        f(pre + nm + "Opacity").style.setProperty("--cl-slider-fill", clTools[ok] + "%");
+        f(pre + nm + "Percent") !== document.activeElement && (f(pre + nm + "Percent").value = String(clTools[ok]));
+      }
+      f(pre + "RulersOn").checked = clTools.rulers;
+      f(pre + "GuidesOn").checked = clTools.guides;
+      f(pre + "LockOn").checked = clTools.lock;
+      pre === "g" && (f("gSnapOn").checked = clTools.snap);
+    }
+  }
+  for (const pre of ["g", "p"]) {
+    for (const [nm, ck, ok] of clToolPairs) {
+      f(pre + nm + "Color").addEventListener("input", (e) => clSetTool(ck, e.target.value.toLowerCase()));
+      f(pre + nm + "Hex").addEventListener("change", (e) => {
+        const t = e.target.value.trim().replace(/^#?/, "#");
+        /^#[0-9a-f]{6}$/i.test(t) ? clSetTool(ck, t.toLowerCase()) : clSyncToolRows();
+      });
+      f(pre + nm + "Hex").addEventListener("keydown", (e) => (e.stopPropagation(), e.key === "Enter" && e.target.blur()));
+      f(pre + nm + "Opacity").addEventListener("input", (e) => clSetTool(ok, +e.target.value));
+      f(pre + nm + "Opacity").addEventListener("dblclick", () => clSetTool(ok, clToolsLook()[ok]));
+      f(pre + nm + "Percent").addEventListener("change", (e) => clSetTool(ok, v(Math.round(+e.target.value || 0), 0, 100)));
+    }
+    f(pre + "RulersOn").addEventListener("change", (e) => clSetTool("rulers", e.target.checked));
+    f(pre + "GuidesOn").addEventListener("change", (e) => clSetTool("guides", e.target.checked));
+    f(pre + "LockOn").addEventListener("change", (e) => clSetTool("lock", e.target.checked));
+    f(pre + "ClearGuides").addEventListener("click", () => clClearGuides(pre === "g" ? "graph" : "path"));
+    f(pre + "ToolsReset").addEventListener("click", () => (Object.assign(clTools, clToolsLook()), clSaveTools(), clApplyTools()));
+  }
+  f("gSnapOn").addEventListener("change", (e) => clSetTool("snap", e.target.checked));
+
+  // ----- toolbar buttons -----
+  f("opBtn").insertAdjacentHTML(
+    "beforebegin",
+    `<button class="ib sm" id="zoomToolBtn" type="button" data-curve aria-label="Zoom tool" aria-pressed="false" title="Zoom (Z) · drag a box to zoom to it · ${Qs ? "⌥" : "Alt+"}click zooms out · double-click fits">${CL_ICONS.zoom}</button><button class="ib sm" id="snapBtn" type="button" data-curve aria-label="Snap" aria-pressed="false" title="Snap to grid lines and guides (${Wn}⇧;) · hold ${Qs ? "⌘" : "Ctrl"} while dragging to skip it">${CL_ICONS.snap}</button><button class="ib sm" id="rulerBtn" type="button" data-curve aria-label="Rulers" aria-pressed="false" title="Rulers (${Wn}R) · drag from a ruler to add a guide">${CL_ICONS.ruler}</button>`,
+  );
+  f("zoomToolBtn").addEventListener("click", () => clSetZoomTool(!clZoomTool));
+  f("zoomToolBtn").addEventListener("dblclick", () => (clSetZoomTool(!1, !0), re("exact")));
+  f("snapBtn").addEventListener("click", clToggleSnap);
+  f("rulerBtn").addEventListener("click", clToggleRulers);
+  {
+    f("pathCanvas").insertAdjacentHTML(
+      "beforebegin",
+      `<button class="ib sm" id="pathZoom" type="button" title="Zoom (Z) · drag a box, click zooms in, ${Qs ? "⌥" : "Alt+"}click zooms out" aria-label="Zoom tool" aria-pressed="false">${CL_ICONS.zoom}</button><button class="ib sm" id="pathSnap" type="button" title="Snap points to the dot grid and guides (${Wn}⇧;) · hold ${Qs ? "⌘" : "Ctrl"} while dragging to skip it" aria-label="Snap" aria-pressed="false">${CL_ICONS.snap}</button><button class="ib sm" id="pathRuler" type="button" title="Rulers (${Wn}R) · drag from a ruler to add a guide" aria-label="Rulers" aria-pressed="false">${CL_ICONS.ruler}</button>`,
+    );
+    f("pathZoom").addEventListener("click", () => clSetZoomTool(!clZoomTool));
+    f("pathZoom").addEventListener("dblclick", () => (clSetZoomTool(!1, !0), clStageFit()));
+    f("pathSnap").addEventListener("click", () => {
+      clPrefs.canvas.snap = !clPrefs.canvas.snap;
+      (clSavePrefs(), clApplyTools(), f("cvSnap") && (f("cvSnap").checked = clPrefs.canvas.snap));
+      F(clPrefs.canvas.snap ? "Snap to the dot grid" : "Snap off");
+    });
+    f("cvSnap")?.addEventListener("change", () => clApplyTools());
+    f("pathRuler").addEventListener("click", clToggleRulers);
+  }
+
+  // ----- keys: Z zoom tool (tap to keep it, hold to use it once), ⌘R rulers, ⌘; guides, ⌘⇧; snap, as in Adobe apps -----
+  addEventListener(
+    "keydown",
+    (e) => {
+      if (P.dataset.ws !== "curve" || N() || e.defaultPrevented) return;
+      if (e.target?.closest?.('input, textarea, select, [contenteditable="true"], [contenteditable=""]')) return;
+      if (!clTools || !f("srcModal").hidden) return;
+      const key = clKey(e),
+        lo = key.length === 1 ? key.toLowerCase() : key,
+        mod = (e.metaKey || e.ctrlKey) && !clAltGr(e),
+        stop = () => (e.preventDefault(), e.stopImmediatePropagation());
+      if (key === "Alt" && clZoomTool) P.classList.add("zoom-out");
+      // an open menu or popover takes Esc first
+      if (key === "Escape" && document.querySelector(".ctxm, .pop.show, .oppanel:not([hidden])")) return;
+      if (!mod && !e.altKey && lo === "z") {
+        stop();
+        if (e.repeat) return;
+        if (!clZoomTool) {
+          clSetZoomTool(!0);
+          clZoomHeld = performance.now();
+          clZoomUsed = !1;
+        } else clSetZoomTool(!1);
+        return;
+      }
+      if (clZoomTool && !mod && (lo === "v" || key === "Escape")) {
+        stop();
+        clSetZoomTool(!1);
+        return;
+      }
+      if (!mod) return;
+      if (lo === "r" && !e.shiftKey && !e.altKey) return (stop(), clToggleRulers());
+      if ((key === ";" || key === ":") && !e.altKey) {
+        stop();
+        if (!e.shiftKey) return clToggleGuides();
+        return a.preview === 3 && clLastArea === "path" ? f("pathSnap").click() : clToggleSnap();
+      }
+    },
+    !0,
+  );
+  addEventListener(
+    "keyup",
+    (e) => {
+      const key = clKey(e);
+      if (key === "Alt") P.classList.remove("zoom-out");
+      // Z held down and used: let go and the previous tool is back, as in Adobe apps
+      if (key.toLowerCase() === "z" && clZoomTool && clZoomHeld && (clZoomUsed || performance.now() - clZoomHeld > 450)) clSetZoomTool(!1, !0);
+      clZoomHeld = 0;
+    },
+    !0,
+  );
+  addEventListener("blur", () => P.classList.remove("zoom-out"));
+  clTools = clLoadTools();
+  clApplyTools();
   const qi = [];
   function ha(e) {
     const t = Ze(e),
@@ -16379,6 +17209,8 @@ end`),
       seg: se,
       VR: ne,
       SR: X,
+      gx: A,
+      gy: B,
       select: We,
       deselect: Zt,
       loadDemo: () => f("openDemo").click(),
