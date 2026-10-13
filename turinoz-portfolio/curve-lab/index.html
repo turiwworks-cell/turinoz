@@ -1997,7 +1997,7 @@ const segOn=(seg,b)=>qa('button',seg).forEach(x=>x.classList.toggle('on',x===b))
   for(let j=0;j<=12;j++)mk('line',{class:'gl'+(j===2||j===10?' b':''),x1:0,y1:j*36+.5,x2:432,y2:j*36+.5},g);
   mk('text',{class:'ax',x:30,y:75.5,'text-anchor':'end'},g).textContent='1';
   mk('text',{class:'ax',x:30,y:363.5,'text-anchor':'end'},g).textContent='0';
-  const ghostG=mk('g',{},svg),guide=mk('line',{class:'guide'},mk('g',{'clip-path':'url(#inPhClip)'},svg)),hdG=mk('g',{},svg),path=mk('path',{class:'crv'},svg),oldPath=mk('path',{class:'crv'},svg),keyG=mk('g',{},svg);
+  const ghostG=mk('g',{},svg),guide=mk('line',{class:'guide'},mk('g',{'clip-path':'url(#inPhClip)'},svg)),hdG=mk('g',{},svg),path=mk('path',{class:'crv'},svg),keyG=mk('g',{},svg);
   const clip=mk('clipPath',{id:'inPhClip'},mk('defs',{},svg));mk('rect',{x:36,y:0,width:361,height:432},clip);   /* the outer edges of the 0 and 1 key lines (x 36.5 and 396.5, 1px wide) */
   const phG=mk('g',{'clip-path':'url(#inPhClip)'},svg),ph=mk('line',{class:'ph',y1:12,y2:420},phG),cap=mk('rect',{class:'ph-cap',width:9,height:6,rx:2,y:6},phG),dot=mk('circle',{class:'vdot',r:5.5},phG);
   svg.insertBefore(phG,keyG);   /* the playhead runs over the key lines but under the keys */
@@ -2053,22 +2053,15 @@ const segOn=(seg,b)=>qa('button',seg).forEach(x=>x.classList.toggle('on',x===b))
     let idx=Math.min(N-1,Math.floor(pos)),frac=pos-idx,s=0;
     if(idx<N-1&&frac>HOLD)s=(frac-HOLD)/(1-HOLD);
     const A=STEPS[idx],B=s>0?STEPS[idx+1]:null,sx=-BAND+s*(1+BAND+OUT);
-    const wipe=true;
-    const fa=A.f(),fb=B?B.f():null,spd=!!(s<.5?A:B).speed;
-    /* the curve: with the wipe, the playhead writes the new curve up to itself and the old one
-       carries on after it, two strokes that meet at the playhead, never one bent line between them */
-    const cut=B&&wipe?clamp(sx,0,1):-1,f=wipe?(B?u=>u<=cut?fb(u):fa(u):fa):mix(fa,fb,sx);
-    const line=(fn,a,b)=>{if(b-a<1e-6)return'';let d='';const n=Math.max(1,Math.ceil((b-a)*S));for(let i=0;i<=n;i++){const u=a+(b-a)*i/n;d+=(i?'L':'M')+X(u).toFixed(1)+' '+Y(fn(u)).toFixed(1)}return d};
-    if(cut>=0){
-      path.setAttribute('d',line(fb,0,cut));path.classList.toggle('speed',!!B.speed);
-      oldPath.setAttribute('d',line(fa,cut,1));oldPath.classList.toggle('speed',!!A.speed);
-    }else{
-      path.setAttribute('d',line(f,0,1));path.classList.toggle('speed',spd);oldPath.setAttribute('d','');
-    }
+    const fa=A.f(),fb=B?B.f():null,f=mix(fa,fb,sx),spd=!!(s<.5?A:B).speed;
+    /* the curve */
+    let d='';
+    for(let i=0;i<=S;i++){const u=i/S;d+=(i?'L':'M')+X(u).toFixed(1)+' '+Y(f(u)).toFixed(1)}
+    path.setAttribute('d',d);path.classList.toggle('speed',spd);
     /* keys and handles never pop: each one fades with the curve under it.
        Where the playhead's band passes a key, the old one fades out and the new one fades in.
        A key both curves share (the ends) simply stays. */
-    const wAt=u=>B?(wipe?sm(clamp((sx-u)/.05+1,0,1)):sm(clamp((sx+BAND-u)/BAND,0,1))):0;
+    const wAt=u=>B?sm(clamp((sx+BAND-u)/BAND,0,1)):0;
     const km=new Map(),hm=new Map();
     const add=(m,k,item,o)=>{if(o<=.002)return;const e=m.get(k);if(e)e.o=Math.min(1,e.o+o);else m.set(k,{item,o})};
     const take=(st,old)=>{
