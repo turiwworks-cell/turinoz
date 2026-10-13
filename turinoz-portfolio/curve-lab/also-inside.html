@@ -311,8 +311,9 @@ for(let j=0;j<=12;j++)mk('line',{class:'gl'+(j===2||j===10?' b':''),x1:0,y1:j*36
 mk('text',{class:'ax',x:30,y:75.5,'text-anchor':'end'},g).textContent='1';
 mk('text',{class:'ax',x:30,y:363.5,'text-anchor':'end'},g).textContent='0';
 const ghostG=mk('g',{},svg),guide=mk('line',{class:'guide'},mk('g',{'clip-path':'url(#inPhClip)'},svg)),hdG=mk('g',{},svg),path=mk('path',{class:'crv'},svg),keyG=mk('g',{},svg);
-const clip=mk('clipPath',{id:'inPhClip'},mk('defs',{},svg));mk('rect',{x:36,y:0,width:360,height:432},clip);
+const clip=mk('clipPath',{id:'inPhClip'},mk('defs',{},svg));mk('rect',{x:36,y:0,width:361,height:432},clip);   /* the outer edges of the 0 and 1 key lines (x 36.5 and 396.5, 1px wide) */
 const phG=mk('g',{'clip-path':'url(#inPhClip)'},svg),ph=mk('line',{class:'ph',y1:12,y2:420},phG),cap=mk('rect',{class:'ph-cap',width:9,height:6,rx:2,y:6},phG),dot=mk('circle',{class:'vdot',r:5.5},phG);
+svg.insertBefore(phG,keyG);   /* the playhead runs over the key lines but under the keys */
 const pool=(G,make)=>{const a=[];return n=>{while(a.length<n)a.push(make(G));a.forEach((e,i)=>e.style.display=i<n?'':'none');return a}};
 const keysP=pool(keyG,G=>mk('rect',{class:'kd',width:9,height:9},G));
 const hdP=pool(hdG,G=>{const gg=mk('g',{},G);mk('line',{class:'hl-l'},gg);mk('circle',{class:'hk',r:4.5},gg);return gg});
