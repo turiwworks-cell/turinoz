@@ -75,14 +75,14 @@ code{font:500 .86em/1 var(--mono);padding:3px 6px 2px;border-radius:6px;backgrou
 /* the section, as in the case study (smtp/case-study.css, "beats"), at its desktop layout */
 .wrap{padding:0 52px}
 .sec{position:relative;padding:60px 0 0}
-.shead{margin-bottom:36px}
+.shead{padding-top:6px;margin-bottom:20px}
 .kicker{display:flex;align-items:center;gap:10px;font:500 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .kicker i{width:6px;height:6px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 3px var(--blue-soft)}
 h2{font:560 44px/1.03 var(--display);font-stretch:86%;letter-spacing:-.032em;margin-top:16px}
 h3{font:560 30px/1.15 var(--display);font-stretch:90%;letter-spacing:-.022em}
 .sub{font-size:15.5px;color:var(--muted);max-width:640px;margin-top:14px}
 .bt{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:56px;align-items:start}
-/* the stage holds still in the middle like the case study's sticky column; the script places it (sub-pixel, so nothing shakes) */
+/* the stage holds still in the middle of the frame the whole time (the script keeps it there); the title sits above the beats */
 .sec{will-change:transform}
 .bt-col{position:relative;align-self:start;will-change:transform}
 .bt-stage{position:relative;isolation:isolate}
@@ -131,10 +131,6 @@ h3{font:560 30px/1.15 var(--display);font-stretch:90%;letter-spacing:-.022em}
 <div id="cv"><div id="sc">
 <section class="sec">
   <div class="wrap">
-    <div class="shead">
-      <div class="kicker"><i></i>01 — Beat by beat</div><h2>Every beat has a job.</h2>
-      <p class="sub">Seven beats in 53 seconds, each with the reason it’s there.</p>
-    </div>
     <div class="bt">
       <div class="bt-col">
         <div class="bt-stage" id="stage" data-tone="blue">
@@ -149,6 +145,11 @@ h3{font:560 30px/1.15 var(--display);font-stretch:90%;letter-spacing:-.022em}
           <div class="bt-mini"><canvas></canvas><span class="bt-range"></span><span class="bt-head"></span></div>
           <div class="bt-read"><b class="bt-name">Terminal</b><span class="bt-span mono">0:00 – 0:02</span></div>
         </div>
+      </div>
+      <div class="bt-side">
+      <div class="shead">
+        <div class="kicker"><i></i>01 — Beat by beat</div><h2>Every beat has a job.</h2>
+        <p class="sub">Seven beats in 53 seconds, each with the reason it’s there.</p>
       </div>
       <ol class="bt-list">
         <li class="beat" data-t0="0" data-t1="1.7" data-loop="1.45" data-x="55" data-y="56" data-tone="blue" data-name="Terminal" data-say="a prompt, not a pitch" data-still="assets/beat-01.webp">
@@ -194,6 +195,7 @@ h3{font:560 30px/1.15 var(--display);font-stretch:90%;letter-spacing:-.022em}
           <span class="tag tag--blue">The check closes the loop</span>
         </li>
       </ol>
+      </div>
     </div>
   </div>
 </section>
@@ -202,11 +204,15 @@ h3{font:560 30px/1.15 var(--display);font-stretch:90%;letter-spacing:-.022em}
 (() => {
 'use strict';
 /* ---------- settings ---------- */
-const FAST = 420;      // design px a second at full speed between two beats
-const RAMP = .3;       // the share of each move spent speeding up, and again slowing down
-const LINGER = .45;    // seconds each beat lingers at the slow speed
-const CREEP = 16;      // design px a second at the slow speed: slow, never zero
-const OPEN = 1;        // the section's title lingers a little longer at the start
+// Timing. Each move between two beats follows CURVE (a cubic-bezier, like a CSS ease), on top of
+// the slow speed, so the scroll comes in fast, slows right down at the beat and never stops.
+const T = {
+  curve: [.65, 0, .35, 1],   // the move's ease
+  move: 1.3,                 // seconds from one beat to the next
+  hold: .5,                  // seconds at the slow speed at each beat
+  slow: 16,                  // design px a second at the slow speed (never zero)
+  open: 2.2,                 // seconds the first screen (the title) holds before the first move
+};
 const FADE = .7;       // after the last beat it fades out and starts again from the title
 
 const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -240,10 +246,19 @@ function strip() {
 /* ---------- size: one composition, scaled to the frame ---------- */
 let W = 1040, H = 650, tops = [], line = 0, path = [], total = 1, colTop = 0, colMax = 0, st = 0;
 // a move: slow → fast → slow, with smooth ramps. B(u) is the distance covered by the speed-up part, as a share.
-const sm = x => x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x);
-const bump = u => sm(u / RAMP) * sm((1 - u) / RAMP);
-const BT = (() => { const n = 400, a = [0]; for (let i = 1; i <= n; i++) a.push(a[i - 1] + bump((i - .5) / n) / n); return a; })();
-const B = u => { const x = clamp(u, 0, 1) * 400, i = Math.floor(x); return i >= 400 ? BT[400] : BT[i] + (BT[i + 1] - BT[i]) * (x - i); };
+function bez(c) {                   // cubic-bezier(x1, y1, x2, y2) as a function of time
+  const [x1, y1, x2, y2] = c, cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx, cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+  const X = t => ((ax * t + bx) * t + cx) * t, Y = t => ((ay * t + by) * t + cy) * t, DX = t => (3 * ax * t + 2 * bx) * t + cx;
+  return u => {
+    if (u <= 0) return 0; if (u >= 1) return 1;
+    let t = u;
+    for (let i = 0; i < 8; i++) { const e = X(t) - u; if (Math.abs(e) < 1e-6) return Y(t); const d = DX(t); if (Math.abs(d) < 1e-6) break; t -= e / d; }
+    let lo = 0, hi = 1; t = u;
+    for (let i = 0; i < 40; i++) { const x = X(t); if (Math.abs(x - u) < 1e-6) break; if (x < u) lo = t; else hi = t; t = (lo + hi) / 2; }
+    return Y(t);
+  };
+}
+let ease = bez(T.curve);
 const off = el => { let y = 0; while (el && el !== sc) { y += el.offsetTop; el = el.offsetParent; } return y; };
 function fit() {
   const vw = innerWidth, vh = innerHeight; if (!vw || !vh) return;
@@ -255,31 +270,36 @@ function fit() {
   // the stage sits in the middle of the frame once it sticks
   sec.style.transform = col.style.transform = '';
   const hs = stage.offsetHeight; st = Math.max(32, Math.round((H - hs) / 2));
-  colTop = off(col); colMax = Math.max(0, col.parentNode.offsetHeight - col.offsetHeight);
+  colTop = off(col);
   line = H * .52;
   tops = BEATS.map(b => off(b.el));
   // where it lingers: the title, then each beat with its middle level with the stage's
   const max = sec.offsetHeight - H, mid = st + hs / 2, stops = [0];
   BEATS.forEach(b => { const y = clamp(Math.round(off(b.el) + b.el.offsetHeight / 2 - mid), 0, max); if (y > stops[stops.length - 1] + 140) stops.push(y); });
-  // the path: linger, glide, linger, glide … (a glide leaves and arrives at the lingering speed, so it never stops)
+  STOPS = stops;
+  plan();
+  strip();
+}
+// the path: hold, move, hold, move … (a move leaves and arrives at the slow speed, so it never stops)
+let STOPS = [0];
+function plan() {
+  const v = Math.max(0, T.slow), hold = Math.max(.05, T.hold), mv = Math.max(.2, T.move);
   path = []; let t = 0;
-  stops.forEach((y, i) => {
-    const hold = i ? LINGER : OPEN, a = i ? y - CREEP * hold / 2 : 0;
-    path.push({ t, d: hold, y0: a, y1: a + CREEP * hold, glide: false }); t += hold;
-    const next = stops[i + 1]; if (next == null) return;
-    const b = next - CREEP * LINGER / 2, from = a + CREEP * hold, d = Math.max(.6, (b - from) / (CREEP + (FAST - CREEP) * BT[400]));
-    path.push({ t, d, y0: from, y1: b, glide: true }); t += d;
+  STOPS.forEach((y, i) => {
+    const h = i ? hold : Math.max(.05, T.open), a = i ? y - v * h / 2 : 0;
+    path.push({ t, d: h, y0: a, y1: a + v * h, glide: false }); t += h;
+    const next = STOPS[i + 1]; if (next == null) return;
+    path.push({ t, d: mv, y0: a + v * h, y1: next - v * hold / 2, glide: true }); t += mv;
   });
   total = t;
-  strip();
 }
 function yAt(t) {
   const s = path.find(p => t < p.t + p.d) || path[path.length - 1];
   const u = clamp((t - s.t) / s.d, 0, 1), D = s.y1 - s.y0;
   if (!s.glide) return s.y0 + D * u;
-  // the slow speed all the way, plus the fast part on top: it leaves and arrives at CREEP, never at zero
-  const k = (D - CREEP * s.d) / BT[400];
-  return s.y0 + CREEP * s.d * u + k * B(u);
+  // the slow speed all the way, plus the eased part on top: it leaves and arrives at the slow speed, never at zero
+  const c = T.slow * s.d;
+  return s.y0 + c * u + (D - c) * ease(u);
 }
 
 /* ---------- the beat beside the line, as in the case study ---------- */
@@ -326,12 +346,12 @@ function tick(now) {
   } else {
     if (clock >= total + FADE) { clock -= total + FADE; laps++; }
     y = yAt(Math.min(clock, total));
-    if (clock > total) { o = 1 - (clock - total) / FADE; y = path[path.length - 1].y1 + CREEP * (clock - total); }
+    if (clock > total) { o = 1 - (clock - total) / FADE; y = path[path.length - 1].y1 + T.slow * (clock - total); }
     else if (laps && clock < FADE) o = clock / FADE;
   }
   // the section moves by transform (sub-pixel, no scroll snapping); the stage stays put in the middle once it reaches it
   sec.style.transform = `translate3d(0,${(-y).toFixed(2)}px,0)`;
-  col.style.transform = `translate3d(0,${clamp(y + st - colTop, 0, colMax).toFixed(2)}px,0)`;
+  col.style.transform = `translate3d(0,${(y + st - colTop).toFixed(2)}px,0)`;
   sc.style.opacity = o.toFixed(3);
   const k = beatAt(y); if (k !== active) setBeat(k);
   const b = BEATS[active];
@@ -357,7 +377,16 @@ function follow() {
   } catch (_) {}
 }
 setInterval(follow, 1000);
-addEventListener('message', e => { if (e.source === parent && e.data && e.data.tzTheme) follow(); });
+addEventListener('message', e => {
+  if (e.source !== parent || !e.data) return;
+  if (e.data.tzTheme) follow();
+  // the timing panel in the preview sends new timing; the home page never does
+  if (e.data.beatsTiming) {
+    Object.assign(T, e.data.beatsTiming); ease = bez(T.curve);
+    const old = total; plan(); clock = clock % (old + FADE) / (old + FADE) * (total + FADE);
+    if (e.data.restart) { clock = 0; laps = 0; }
+  }
+});
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', strip);
 addEventListener('resize', () => { fit(); });
 
