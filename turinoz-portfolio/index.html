@@ -2886,6 +2886,12 @@ requestAnimationFrame(frame);
     document.querySelectorAll('#clTile iframe, #spTile iframe, .media--beats iframe').forEach(f => { try { f.contentWindow.postMessage({ tzTheme: next }, '*'); } catch (_) {} });
     show();
   });
+  // lab.turinoz.co can't read this choice (another site), so an Open link there carries it along
+  document.addEventListener('click', e => {
+    const a = e.target.closest && e.target.closest('a[href^="https://lab.turinoz.co/"]');
+    if (!a || !root.dataset.theme) return;
+    const u = new URL(a.href); u.searchParams.set('theme', root.dataset.theme); a.href = u.href;
+  }, true);
   mq.addEventListener('change', show);
   show();
 })();
