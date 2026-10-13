@@ -7493,6 +7493,24 @@ const t0=performance.now();
     Wn = Qs ? "\u2318" : "Ctrl+",
     P = f("app"),
     N = () => P.dataset.ws === "inspect";
+  // Shortcuts follow the physical key, so they work on any keyboard layout (Persian, Arabic, Russian...).
+  // Printable ASCII and named keys pass through unchanged; only other characters fall back to e.code.
+  const clCodeChars = { Backquote: "`~", Minus: "-_", Equal: "=+", BracketLeft: "[{", BracketRight: "]}", Backslash: "\\|",
+    Semicolon: ";:", Quote: "'\"", Comma: ",<", Period: ".>", Slash: "/?", Space: "  " };
+  const clAltGr = (e) => !Qs && !!e.getModifierState?.("AltGraph");
+  function clKey(e) {
+    const k = typeof e.key === "string" ? e.key : "";
+    if (k.length > 1 && /^[A-Z][A-Za-z0-9]+$/.test(k) && k !== "Dead" && k !== "Unidentified" && k !== "Process") return k;
+    if (k.length === 1 && k >= " " && k <= "~") return k;
+    if (clAltGr(e)) return k;
+    const c = e.code || "",
+      sh = !!e.shiftKey;
+    let m = /^Key([A-Z])$/.exec(c);
+    if (m) return sh ? m[1] : m[1].toLowerCase();
+    if ((m = /^(?:Digit|Numpad)([0-9])$/.exec(c))) return m[1];
+    const p = clCodeChars[c];
+    return p ? p[sh ? 1 : 0] : k;
+  }
   function ke(e) {
     const t = e[0],
       n = e[1],
@@ -9494,6 +9512,22 @@ const t0=performance.now();
       );
     return j;
   }
+  // Shift+I: a key exactly halfway in time between two keys. The motion is unchanged.
+  // Two neighbouring selected keys pick the span; otherwise the active segment.
+  function clMiddleSeg() {
+    const sk = [...selectedKeys].sort((x, y) => x - y);
+    return sk.length === 2 && sk[1] === sk[0] + 1 ? sk[0] : v(a.sel.seg | 0, 0, a.c.length - 1);
+  }
+  function clAddMiddleKey() {
+    const i = clMiddleSeg(),
+      f0 = keyFrame(i),
+      f1 = keyFrame(i + 1);
+    if (f1 - f0 < 2) {
+      F("No free frame between these keys");
+      return -1;
+    }
+    return clAddKey(Math.round((f0 + f1) / 2));
+  }
   function clDeleteKey(j) {
     if (!te() || a.mode !== "bezier" || j <= 0 || j >= a.c.length) return false;
     const err = deleteKey(j);
@@ -9682,6 +9716,7 @@ const t0=performance.now();
       );
     else if (bez) {
       items.push({ label: "Add key at playhead", key: "I", disabled: full, run: () => clAddKey(Math.round(Jt() * a.frames)) });
+      items.push({ label: "Add key in the middle", key: "\u21E7I", disabled: full, run: () => clAddMiddleKey() });
       sel.length &&
         items.push({
           label: sel.length > 1 ? `Delete ${sel.length} keys` : "Delete selected key",
@@ -10584,9 +10619,9 @@ const t0=performance.now();
       if (P.dataset.ws !== "curve" || N() || e.defaultPrevented) return;
       if (e.target?.closest?.('input, textarea, select, [contenteditable="true"], [contenteditable=""]')) return;
       if (!f("srcModal").hidden) return;
-      const key = e.key,
+      const key = clKey(e),
         lo = key.length === 1 ? key.toLowerCase() : key,
-        mod = e.metaKey || e.ctrlKey,
+        mod = (e.metaKey || e.ctrlKey) && !clAltGr(e),
         stop = () => (e.preventDefault(), e.stopImmediatePropagation());
       if (!mod && !e.altKey && lo === "p") {
         stop();
@@ -11902,7 +11937,7 @@ const t0=performance.now();
     { x: 16, y: 88, ix: 16, iy: 88, ox: 50, oy: 88 },
     { x: 104, y: 32, ix: 70, iy: 32, ox: 104, oy: 32 },
   ];
-  const clCanvasDefault = () => ({ dots: !0, opacity: 30, size: 1, gap: 6, snap: !1 });
+  const clCanvasDefault = () => ({ dots: !0, opacity: 4, size: 1, gap: 6, snap: !1 });
   const clPrefs = { onion: !0, hero: 9, path: clPathDefault(), fresh: !0, showPath: !0, stagger: { 6: 0.5, 7: 0.6, 8: 0.7 }, canvas: clCanvasDefault() };
   try {
     const stored = JSON.parse(localStorage.getItem(clPrefsKey) || "null");
@@ -11914,7 +11949,7 @@ const t0=performance.now();
         const c = stored.canvas;
         typeof c.dots == "boolean" && (clPrefs.canvas.dots = c.dots);
         typeof c.snap == "boolean" && (clPrefs.canvas.snap = c.snap);
-        Number.isFinite(c.opacity) && (clPrefs.canvas.opacity = v(Math.round(c.opacity), 0, 100));
+        Number.isFinite(c.opacity) && c.opacity !== 30 && (clPrefs.canvas.opacity = v(Math.round(c.opacity), 0, 100));
         Number.isFinite(c.size) && (clPrefs.canvas.size = v(c.size, 0.5, 3));
         Number.isFinite(c.gap) && (clPrefs.canvas.gap = v(Math.round(c.gap), 2, 24));
       }
@@ -15852,8 +15887,8 @@ end`),
       F("Curve reset", `timing and colors kept \u00B7 ${Wn}Z undoes`));
   }
   function Ys(e, t) {
-    const n = e.metaKey || e.ctrlKey,
-      s = e.key,
+    const n = (e.metaKey || e.ctrlKey) && !clAltGr(e),
+      s = clKey(e),
       i = () => {
         t || e.preventDefault();
       };
@@ -15911,7 +15946,7 @@ end`),
       Et(a.mode === "bezier" ? Ie(a.c[a.sel.seg]) : us("css"));
       return;
     }
-    if (n || (e.altKey && !s.startsWith("Arrow"))) return;
+    if (n || (e.altKey && !clAltGr(e) && !s.startsWith("Arrow"))) return;
     if (s === " ") {
       if (!t && P.dataset.ws === "curve") {
         clArmSpace(e);
@@ -16003,6 +16038,10 @@ end`),
       N() ? l.sel?.editable && Bn(l.cmp === "edited" ? "original" : "edited") : clSetOnion(!clPrefs.onion);
       return;
     }
+    if (s === "I" && e.shiftKey && a.mode === "bezier" && te()) {
+      (i(), clAddMiddleKey());
+      return;
+    }
     if (o === "i" && a.mode === "bezier" && te()) {
       (i(), clAddKey(Math.round(Jt() * a.frames)));
       return;
@@ -16063,7 +16102,7 @@ end`),
   }
   (document.addEventListener("keydown", (e) => Ys(e, !1)),
     document.addEventListener("keyup", (e) => {
-      if (e.key === " ") {
+      if (clKey(e) === " ") {
         if (clReleaseSpace(e)) return;
         if (!zt(e.target) && !e.target?.closest?.("#appearancePop")) e.preventDefault();
       }
