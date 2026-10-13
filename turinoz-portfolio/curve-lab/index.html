@@ -499,6 +499,7 @@ h2{font-size:clamp(36px,5.2vw,80px);line-height:.98;letter-spacing:-.05em}
 /* the graph is the hero's pad again: the same square, the same grid */
 .in-fig{position:relative;margin:0;display:grid;gap:12px;width:min(440px,34vw,calc(100svh - var(--top) - 150px))}
 .in-fhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font:500 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.in-ffoot{display:flex;justify-content:flex-end;font:500 10.5px/1 var(--mono);letter-spacing:.1em;color:var(--ink-3)}
 .in-read{letter-spacing:.02em;text-transform:none;font-variant-numeric:tabular-nums;white-space:nowrap}
 .in-read b{font-weight:500;color:var(--ink)}
 .in-svg{width:100%;height:auto;aspect-ratio:1;overflow:visible}
@@ -507,10 +508,6 @@ h2{font-size:clamp(36px,5.2vw,80px);line-height:.98;letter-spacing:-.05em}
 .in-svg .ghost{fill:none;stroke:var(--ink-4);stroke-width:1.2;stroke-dasharray:3 4}
 .in-svg .kd{fill:var(--ink)}
 .in-svg .hk{fill:var(--paper);stroke:var(--ink);stroke-width:1.3}
-.in-track{position:relative;height:24px;margin:0 calc(100%/12)}
-.in-track::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--rule-2)}
-.in-track::after{content:"";position:absolute;left:var(--a,0);top:50%;width:calc(var(--b,100%) - var(--a,0px));height:9px;margin-top:-4px;box-shadow:inset 1px 0 0 var(--rule-2),inset -1px 0 0 var(--rule-2)}
-.in-track i{position:absolute;left:0;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--ink);will-change:transform}
 /* the right column: what each one gives you, as plain numbers */
 .in-right{position:relative;min-width:0;align-self:stretch}
 .in-panel{position:absolute;left:0;right:0;bottom:0;display:grid;gap:14px;will-change:opacity}
@@ -687,7 +684,7 @@ html.theming *,html.theming *::before,html.theming *::after{transition:none!impo
       <p class="eyebrow rv">Turinoz Curve Lab</p>
       <h1 class="hl" id="h-hero">I lost my graph editor. <span class="soft">So I made one.</span></h1>
       <div class="hero-row">
-        <p class="lead rv" style="--d:.2s">After years in <b>After Effects</b>, I wanted that same familiar control over motion <b>on the web</b>. Curve Lab takes inspiration from AE’s graph editor, with its own design and extra tools like springs to explore motion beyond traditional curves.</p>
+        <p class="lead rv" style="--d:.2s">After years in <b>After Effects</b>, I wanted that same familiar control over motion <b>on the web</b>. Curve Lab is inspired by AE’s graph editor, with its own design and a few extra tools like springs.</p>
         <div class="hero-cta rv" style="--d:.3s">
           <a class="cta" href="#" data-open aria-label="Open Curve Lab, free, no login"><span class="cta-mark" aria-hidden="true"><svg viewBox="0 0 28 28"><path class="c" d="M3 25C18.4 25 9.6 3 25 3"/><circle class="k" cx="3" cy="25" r="2"/><circle class="k" cx="25" cy="3" r="2"/><circle class="d" r="2.7"><animateMotion dur="2s" repeatCount="indefinite" path="M3 25C18.4 25 9.6 3 25 3" keyPoints="0;1;0" keyTimes="0;0.5;1" calcMode="spline" keySplines="0.7 0 0.3 1;0.7 0 0.3 1"/></circle></svg></span><span class="cta-t"><b>Open Curve Lab</b><small>Free · No login</small></span><span class="cta-go" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 11.5l7-7M5.5 4.5h6v6"/></svg><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 11.5l7-7M5.5 4.5h6v6"/></svg></span></a>
           <ul class="facts" aria-label="What it is"><li>One light HTML file</li><li>Nothing to install</li><li>Runs in your browser</li></ul>
@@ -712,7 +709,7 @@ html.theming *,html.theming *::before,html.theming *::after{transition:none!impo
     <p class="instr"><span class="it" id="curveInstr" aria-hidden="true"></span><span class="sr" id="curveInstrSr" aria-live="polite"></span></p>
     <div class="embed" id="curveEmbed">
       <div class="ebox" data-w="1180" data-h="630"><div class="eload">Loading Curve Lab</div></div>
-      <p class="small-note">It’s made for a mouse and a bigger screen. On a phone, open it on your laptop instead.</p>
+      <p class="small-note">It’s made for a mouse and a bigger screen. On a phone? Save it for your laptop.</p>
     </div>
   </div>
 </section>
@@ -722,7 +719,7 @@ html.theming *,html.theming *::before,html.theming *::after{transition:none!impo
     <div class="sh">
       <p class="eyebrow rv"><b>01</b><i></i>Two modes</p>
       <h2 class="rv" id="h-modes">Find the feel. Then retime a real page.</h2>
-      <p class="lead rv" style="--d:.15s">Both speak the language you know from After Effects: keys, handles, value and speed graphs, keyframe velocity. Curve is the one you’ll keep open every day. Inspect, still in beta, works on a real page.</p>
+      <p class="lead rv" style="--d:.15s">Both speak the language you know from After Effects: keys, handles, value and speed graphs, keyframe velocity. Curve is the everyday one. Inspect, still in beta, works on a real page.</p>
     </div>
     <div class="modes">
       <article class="mode rv" id="modeCurve">
@@ -743,7 +740,7 @@ html.theming *,html.theming *::before,html.theming *::after{transition:none!impo
         </div>
         <div class="mode-top">Mode 01</div>
         <h3>Curve</h3>
-        <p class="sub">A small, compact tool for finding your numbers.</p>
+        <p class="sub">A compact tool for finding your numbers.</p>
         <p>It never fills the screen. Graph, nine test objects and presets sit together like a little machine on your desk: shape the curve, watch it play at ¼×, ½× or 1×, copy the numbers, get back to work.</p>
         <ul class="feats" data-for="mc"><li><button type="button" class="on">Value and speed graphs with AE-style handles</button></li><li><button type="button">Frames or milliseconds, at 24 to 60 fps</button></li><li><button type="button">Copy as CSS, Framer Motion, SwiftUI or Rive values</button></li></ul>
       </article>
@@ -782,7 +779,7 @@ html.theming *,html.theming *::before,html.theming *::after{transition:none!impo
         <h3>Inspect</h3>
         <p class="sub">For real work on a real website.</p>
         <p>Open an HTML page and Curve Lab lists what moves. Click one thing, it plays on its own, and you retime it while you watch. When it feels right, export an edited copy.</p>
-        <ul class="feats" data-for="mi"><li><button type="button" class="on">Finds CSS keyframes and transitions, Web Animations, SVG and Lottie</button></li><li><button type="button">Solo one motion, dim or hide the rest, flip back to the original</button></li><li><button type="button">Exports a new file, your original stays untouched</button></li></ul>
+        <ul class="feats" data-for="mi"><li><button type="button" class="on">Finds CSS keyframes and transitions, Web Animations, SVG and Lottie</button></li><li><button type="button">Solo one motion, dim or hide the rest, flip back to the original</button></li><li><button type="button">Exports an edited copy</button></li></ul>
       </article>
     </div>
   </div>
@@ -806,9 +803,9 @@ html.theming *,html.theming *::before,html.theming *::after{transition:none!impo
           </ol>
         </div>
         <figure class="in-fig" aria-hidden="true">
-          <div class="in-fhead"><span id="inKind">Value graph</span><span class="in-read" id="inRead"></span></div>
+          <div class="in-fhead"><span id="inKind">Value graph</span></div>
           <svg class="in-svg" id="inSvg" viewBox="0 0 432 432"></svg>
-          <div class="in-track"><i id="inObj"></i></div>
+          <div class="in-ffoot"><span class="in-read" id="inRead"></span></div>
         </figure>
         <div class="in-right" id="inRight">
           <div class="in-panel" data-i="0">
@@ -869,7 +866,7 @@ html.theming *,html.theming *::before,html.theming *::after{transition:none!impo
       <p class="instr"><span class="it" id="instr" aria-hidden="true"></span><span class="sr" id="instrSr" aria-live="polite"></span></p>
       <div class="embed" id="inspectEmbed">
         <div class="ebox" data-w="1320" data-h="820"><div class="eload">Loading Inspect</div></div>
-        <p class="small-note">It’s made for a mouse and a bigger screen. On a phone, open it on your laptop instead.</p>
+        <p class="small-note">It’s made for a mouse and a bigger screen. On a phone? Save it for your laptop.</p>
       </div>
     </div>
   </div>
@@ -904,7 +901,7 @@ html.theming *,html.theming *::before,html.theming *::after{transition:none!impo
     <div class="tt">
       <p class="eyebrow rv"><b>04</b><i></i>How it was made</p>
       <h2 class="rv" id="h-made">Made with <span class="claude">Claude</span>. Designed and directed by me.</h2>
-      <p class="lead rv" style="--d:.15s">Curve Lab was built with Claude, the AI, over a lot of back and forth. The design and the direction were mine: I tried every version on real motion, said what felt wrong, and kept going until it felt like the graph editor I missed.</p>
+      <p class="lead rv" style="--d:.15s">Built with Claude, over a lot of back and forth. I tried every version on real motion, said what felt wrong, and kept going until it felt like the graph editor I missed.</p>
     </div>
     <div class="made-cta rv" style="--d:.2s">
       <p>One light HTML file. No install, no account, nothing to set up. Open it and start.</p>
@@ -1973,8 +1970,8 @@ const segOn=(seg,b)=>qa('button',seg).forEach(x=>x.classList.toggle('on',x===b))
    ====================================================================== */
 (function inside(){
   const sec=$('#inside');if(!sec)return;
-  const track=sec.querySelector('.inside-track'),stage=sec.querySelector('.inside-stage'),svg=$('#inSvg'),reel=qa('#reel li'),reelBox=$('#reel'),panels=qa('.in-panel'),noEl=$('#inNo'),obj=$('#inObj'),read=$('#inRead'),kind=$('#inKind'),right=$('#inRight');
-  const N=8,HOLD=.3,BAND=.12,S=240,TAU=260;
+  const track=sec.querySelector('.inside-track'),stage=sec.querySelector('.inside-stage'),svg=$('#inSvg'),reel=qa('#reel li'),reelBox=$('#reel'),panels=qa('.in-panel'),noEl=$('#inNo'),read=$('#inRead'),kind=$('#inKind'),right=$('#inRight');
+  const N=8,HOLD=.3,BAND=.12,S=240,TAU=260,OUT=10/360;   /* OUT: how far past the last key line the playhead travels before it is gone */
   /* the pad's grid: 0 and 1 on the bold lines, a cell of room above and below for bounce */
   const X=u=>36+u*360,Y=v=>360-clamp(v,-.3,1.3)*288;
   const g=mk('g',{},svg);
@@ -1982,8 +1979,10 @@ const segOn=(seg,b)=>qa('button',seg).forEach(x=>x.classList.toggle('on',x===b))
   for(let j=0;j<=12;j++)mk('line',{class:'gl'+(j===2||j===10?' b':''),x1:0,y1:j*36+.5,x2:432,y2:j*36+.5},g);
   mk('text',{class:'ax',x:30,y:75.5,'text-anchor':'end'},g).textContent='1';
   mk('text',{class:'ax',x:30,y:363.5,'text-anchor':'end'},g).textContent='0';
-  const ghostG=mk('g',{},svg),guide=mk('line',{class:'guide'},svg),hdG=mk('g',{},svg),path=mk('path',{class:'crv'},svg),keyG=mk('g',{},svg);
-  const phG=mk('g',{opacity:0},svg),ph=mk('line',{class:'ph',y1:12,y2:420},phG),cap=mk('rect',{class:'ph-cap',width:9,height:6,rx:2,y:6},phG),dot=mk('circle',{class:'vdot',r:5.5},phG);
+  const ghostG=mk('g',{},svg),guide=mk('line',{class:'guide'},mk('g',{'clip-path':'url(#inPhClip)'},svg)),hdG=mk('g',{},svg),path=mk('path',{class:'crv'},svg),keyG=mk('g',{},svg);
+  const clip=mk('clipPath',{id:'inPhClip'},mk('defs',{},svg));mk('rect',{x:36,y:0,width:361,height:432},clip);   /* the outer edges of the 0 and 1 key lines (x 36.5 and 396.5, 1px wide) */
+  const phG=mk('g',{'clip-path':'url(#inPhClip)'},svg),ph=mk('line',{class:'ph',y1:12,y2:420},phG),cap=mk('rect',{class:'ph-cap',width:9,height:6,rx:2,y:6},phG),dot=mk('circle',{class:'vdot',r:5.5},phG);
+  svg.insertBefore(phG,keyG);   /* the playhead runs over the key lines but under the keys */
   const pool=(G,make)=>{const a=[];return n=>{while(a.length<n)a.push(make(G));a.forEach((e,i)=>e.style.display=i<n?'':'none');return a}};
   const keysP=pool(keyG,G=>mk('rect',{class:'kd',width:9,height:9},G));
   const hdP=pool(hdG,G=>{const gg=mk('g',{},G);mk('line',{class:'hl-l'},gg);mk('circle',{class:'hk',r:4.5},gg);return gg});
@@ -2013,13 +2012,12 @@ const segOn=(seg,b)=>qa('button',seg).forEach(x=>x.classList.toggle('on',x===b))
   ];
 
   /* scroll → which feature, and how far the playhead has written the next one */
-  let segPx=1,tw=300,rh=120,curPanel=-1,lastPos=-1,dirty=true;
+  let segPx=1,rh=120,curPanel=-1,lastPos=-1,dirty=true;
   function measure(){
     const cs=getComputedStyle(track),sg=parseFloat(cs.getPropertyValue('--seg'))||78,eh=parseFloat(cs.getPropertyValue('--endhold'))||34;
     segPx=Math.max(1,(track.offsetHeight-stage.offsetHeight)/(N-1+eh/sg));
     right.style.setProperty('--rh',Math.max(...panels.map(p=>p.scrollHeight))+'px');
-    tw=obj.parentNode.clientWidth;rh=reelBox.clientHeight;
-    obj.parentNode.style.setProperty('--a',(.25/1.5*tw).toFixed(1)+'px');obj.parentNode.style.setProperty('--b',(1.25/1.5*tw).toFixed(1)+'px');
+    rh=reelBox.clientHeight;
     dirty=true;kick();
   }
   addEventListener('resize',measure);if('ResizeObserver'in window)new ResizeObserver(measure).observe(stage);
@@ -2036,7 +2034,7 @@ const segOn=(seg,b)=>qa('button',seg).forEach(x=>x.classList.toggle('on',x===b))
     if(!dirty&&Math.abs(pos-lastPos)<1e-4)return;dirty=false;lastPos=pos;
     let idx=Math.min(N-1,Math.floor(pos)),frac=pos-idx,s=0;
     if(idx<N-1&&frac>HOLD)s=(frac-HOLD)/(1-HOLD);
-    const A=STEPS[idx],B=s>0?STEPS[idx+1]:null,sx=-BAND+s*(1+BAND);
+    const A=STEPS[idx],B=s>0?STEPS[idx+1]:null,sx=-BAND+s*(1+BAND+OUT);
     const fa=A.f(),fb=B?B.f():null,f=mix(fa,fb,sx),spd=!!(s<.5?A:B).speed;
     /* the curve */
     let d='';
@@ -2061,13 +2059,12 @@ const segOn=(seg,b)=>qa('button',seg).forEach(x=>x.classList.toggle('on',x===b))
     ghostP(gs.length).forEach((e,i)=>{if(i>=gs.length)return;const[fn,o]=gs[i];let gd='';for(let j=0;j<=120;j++){const u=j/120;gd+=(j?'L':'M')+X(u).toFixed(1)+' '+Y(fn(u)).toFixed(1)}e.setAttribute('d',gd);e.style.opacity=o.toFixed(3)});
     /* the playhead: time in a straight line, moved by scroll alone.
        It shows up while the next curve is written and steps away after. */
-    const px=B?clamp(sx,0,1):1,op=B?clamp(Math.min(sx,1-sx)/.05,0,1):0;
-    const v=f(px),x=X(px),y=Y(v),ov=spd?EASE.f(px):v;
-    phG.setAttribute('opacity',op.toFixed(3));guide.style.opacity=(op*.55).toFixed(3);
+    const hx=B?sx:1+OUT,px=clamp(hx,0,1);
+    const v=f(px),x=X(hx),y=Y(v);
+    guide.style.opacity=(.55*clamp((1+OUT-hx)/OUT,0,1)).toFixed(3);   /* the dashed guide goes with the dot */
     ph.setAttribute('x1',x);ph.setAttribute('x2',x);cap.setAttribute('x',x-4.5);
     dot.setAttribute('cx',x);dot.setAttribute('cy',y);
     guide.setAttribute('x1',36);guide.setAttribute('x2',x);guide.setAttribute('y1',y);guide.setAttribute('y2',y);
-    obj.style.transform=`translateX(${((clamp(ov,-.25,1.25)+.25)/1.5*tw).toFixed(1)}px)`;
     kind.textContent=spd?'Speed graph':'Value graph';
     read.innerHTML=spd?`t <b>${px.toFixed(2)}</b> · speed <b>${Math.round(Math.abs(EASE.f.speed(px))*100)} /s</b>`:`t <b>${px.toFixed(2)}</b> · v <b>${v.toFixed(2)}</b>`;
     /* the title reel moves on your curve; the numbers cross over halfway */

@@ -93,6 +93,7 @@ h3,p,ol,dl,dd{margin:0}
 .reel h3{font-size:1em;line-height:.98;letter-spacing:-.055em;font-weight:500;text-wrap:balance}
 .in-fig{position:relative;margin:0;display:grid;gap:12px;width:var(--fig)}
 .in-fhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font:500 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.in-ffoot{display:flex;justify-content:flex-end;font:500 10.5px/1 var(--mono);letter-spacing:.1em;color:var(--ink-3)}
 .in-read{letter-spacing:.02em;text-transform:none;font-variant-numeric:tabular-nums;white-space:nowrap}
 .in-read b{font-weight:500;color:var(--ink)}
 .in-svg{width:100%;height:auto;aspect-ratio:1;overflow:visible}
@@ -109,10 +110,6 @@ h3,p,ol,dl,dd{margin:0}
 .ph-cap{fill:var(--now)}
 .vdot{fill:var(--now);stroke:var(--paper);stroke-width:2}
 .guide{stroke:var(--now);stroke-width:1;stroke-dasharray:2 3;opacity:.55}
-.in-track{position:relative;height:24px;margin:0 calc(100%/12)}
-.in-track::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--rule-2)}
-.in-track::after{content:"";position:absolute;left:var(--a,0);top:50%;width:calc(var(--b,100%) - var(--a,0px));height:9px;margin-top:-4px;box-shadow:inset 1px 0 0 var(--rule-2),inset -1px 0 0 var(--rule-2)}
-.in-track i{position:absolute;left:0;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--ink);will-change:transform}
 .in-right{position:relative;min-width:0;align-self:stretch}
 .in-panel{position:absolute;left:0;right:0;bottom:0;display:grid;gap:14px;will-change:opacity}
 .in-lbl{font:500 10.5px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
@@ -185,9 +182,9 @@ h3,p,ol,dl,dd{margin:0}
       </ol>
     </div>
     <figure class="in-fig">
-      <div class="in-fhead"><span id="inKind">Value graph</span><span class="in-read" id="inRead"></span></div>
+      <div class="in-fhead"><span id="inKind">Value graph</span></div>
       <svg class="in-svg" id="inSvg" viewBox="0 0 432 432"></svg>
-      <div class="in-track"><i id="inObj"></i></div>
+      <div class="in-ffoot"><span class="in-read" id="inRead"></span></div>
     </figure>
     <div class="in-right" id="inRight">
           <div class="in-panel" data-i="0">
@@ -291,9 +288,10 @@ const HIST={list:[[0,0,1,1],[0,0,.58,1],[.87,0,.13,1],DEF],i:3};
    here time does, in a straight line: a feature rests, then the playhead
    writes the next curve over it. After the eighth it starts over.
    ====================================================================== */
+const OUT=10/360;                     /* how far past the last key line the playhead travels before it is gone */
 const N=8,HOLD=.36,BAND=.12,S=240;
 const SEG=2.8;                         /* seconds per feature: about 1 s to read, 1.8 s to write the next */
-const cv=$('#cv'),svg=$('#inSvg'),reel=qa('#reel li'),reelBox=$('#reel'),panels=qa('.in-panel'),noEl=$('#inNo'),obj=$('#inObj'),read=$('#inRead'),kind=$('#inKind'),cti=$('#cti');
+const cv=$('#cv'),svg=$('#inSvg'),reel=qa('#reel li'),reelBox=$('#reel'),panels=qa('.in-panel'),noEl=$('#inNo'),read=$('#inRead'),kind=$('#inKind'),cti=$('#cti');
 
 /* the frame: one composition, scaled to whatever box it sits in */
 const MODES={wide:{w:980,h:600,fig:340},narrow:{w:660,h:495,fig:290}};
@@ -312,8 +310,10 @@ for(let i=0;i<=12;i++)mk('line',{class:'gl'+(i===1||i===11?' b':''),x1:i*36+.5,y
 for(let j=0;j<=12;j++)mk('line',{class:'gl'+(j===2||j===10?' b':''),x1:0,y1:j*36+.5,x2:432,y2:j*36+.5},g);
 mk('text',{class:'ax',x:30,y:75.5,'text-anchor':'end'},g).textContent='1';
 mk('text',{class:'ax',x:30,y:363.5,'text-anchor':'end'},g).textContent='0';
-const ghostG=mk('g',{},svg),guide=mk('line',{class:'guide'},svg),hdG=mk('g',{},svg),path=mk('path',{class:'crv'},svg),keyG=mk('g',{},svg);
-const phG=mk('g',{opacity:0},svg),ph=mk('line',{class:'ph',y1:12,y2:420},phG),cap=mk('rect',{class:'ph-cap',width:9,height:6,rx:2,y:6},phG),dot=mk('circle',{class:'vdot',r:5.5},phG);
+const ghostG=mk('g',{},svg),guide=mk('line',{class:'guide'},mk('g',{'clip-path':'url(#inPhClip)'},svg)),hdG=mk('g',{},svg),path=mk('path',{class:'crv'},svg),keyG=mk('g',{},svg);
+const clip=mk('clipPath',{id:'inPhClip'},mk('defs',{},svg));mk('rect',{x:36,y:0,width:361,height:432},clip);   /* the outer edges of the 0 and 1 key lines (x 36.5 and 396.5, 1px wide) */
+const phG=mk('g',{'clip-path':'url(#inPhClip)'},svg),ph=mk('line',{class:'ph',y1:12,y2:420},phG),cap=mk('rect',{class:'ph-cap',width:9,height:6,rx:2,y:6},phG),dot=mk('circle',{class:'vdot',r:5.5},phG);
+svg.insertBefore(phG,keyG);   /* the playhead runs over the key lines but under the keys */
 const pool=(G,make)=>{const a=[];return n=>{while(a.length<n)a.push(make(G));a.forEach((e,i)=>e.style.display=i<n?'':'none');return a}};
 const keysP=pool(keyG,G=>mk('rect',{class:'kd',width:9,height:9},G));
 const hdP=pool(hdG,G=>{const gg=mk('g',{},G);mk('line',{class:'hl-l'},gg);mk('circle',{class:'hk',r:4.5},gg);return gg});
@@ -342,10 +342,9 @@ const STEPS=[
   {f:()=>EASE.f,keys:()=>ends,hs:easeHandles,ghosts:()=>HIST.list.filter((c,i)=>i!==HIST.i).map(c=>bez(c))}
 ];
 
-let tw=300,rh=120,curPanel=-1;
+let rh=120,curPanel=-1;
 function measure(){
-  tw=obj.parentNode.clientWidth;rh=reelBox.clientHeight;
-  obj.parentNode.style.setProperty('--a',(.25/1.5*tw).toFixed(1)+'px');obj.parentNode.style.setProperty('--b',(1.25/1.5*tw).toFixed(1)+'px');
+  rh=reelBox.clientHeight;
 }
 function mix(fa,fb,sx){return u=>{const va=fa(u);if(!fb)return va;const w=clamp((sx+BAND-u)/BAND,0,1);return w<=0?va:va+(fb(u)-va)*sm(w)}}
 /* signed distance from a to b around the loop of N */
@@ -354,7 +353,7 @@ const wrap=d=>((d+N/2)%N+N)%N-N/2;
 function draw(pos){
   const base=Math.floor(pos),idx=((base%N)+N)%N,frac=pos-base,nxt=(idx+1)%N;
   let s=0;if(frac>HOLD)s=(frac-HOLD)/(1-HOLD);
-  const A=STEPS[idx],B=s>0?STEPS[nxt]:null,sx=-BAND+s*(1+BAND);
+  const A=STEPS[idx],B=s>0?STEPS[nxt]:null,sx=-BAND+s*(1+BAND+OUT);
   const fa=A.f(),fb=B?B.f():null,f=mix(fa,fb,sx),spd=!!(s<.5?A:B).speed;
   /* the curve */
   let d='';
@@ -376,13 +375,12 @@ function draw(pos){
   const gs=[];(A.ghosts?A.ghosts():[]).forEach(fn=>gs.push([fn,1-s]));if(B&&B.ghosts)B.ghosts().forEach(fn=>gs.push([fn,s]));
   ghostP(gs.length).forEach((e,i)=>{if(i>=gs.length)return;const[fn,o]=gs[i];let gd='';for(let j=0;j<=120;j++){const u=j/120;gd+=(j?'L':'M')+X(u).toFixed(1)+' '+Y(fn(u)).toFixed(1)}e.setAttribute('d',gd);e.style.opacity=o.toFixed(3)});
   /* the playhead: time in a straight line */
-  const px=B?clamp(sx,0,1):1,op=B?clamp(Math.min(sx,1-sx)/.05,0,1):0;
-  const v=f(px),x=X(px),y=Y(v),ov=spd?EASE.f(px):v;
-  phG.setAttribute('opacity',op.toFixed(3));guide.style.opacity=(op*.55).toFixed(3);
+  const hx=B?sx:1+OUT,px=clamp(hx,0,1);
+  const v=f(px),x=X(hx),y=Y(v);
+  guide.style.opacity=(.55*clamp((1+OUT-hx)/OUT,0,1)).toFixed(3);   /* the dashed guide goes with the dot */
   ph.setAttribute('x1',x);ph.setAttribute('x2',x);cap.setAttribute('x',x-4.5);
   dot.setAttribute('cx',x);dot.setAttribute('cy',y);
   guide.setAttribute('x1',36);guide.setAttribute('x2',x);guide.setAttribute('y1',y);guide.setAttribute('y2',y);
-  obj.style.transform=`translateX(${((clamp(ov,-.25,1.25)+.25)/1.5*tw).toFixed(1)}px)`;
   kind.textContent=spd?'Speed graph':'Value graph';
   read.innerHTML=spd?`t <b>${px.toFixed(2)}</b> · speed <b>${Math.round(Math.abs(EASE.f.speed(px))*100)} /s</b>`:`t <b>${px.toFixed(2)}</b> · v <b>${v.toFixed(2)}</b>`;
   /* the title reel moves on the curve, around the loop; the numbers cross over halfway */
