@@ -185,9 +185,9 @@ h3{font:560 24px/1.15 var(--display);font-stretch:88%;letter-spacing:-.022em}
 .screen.ready .poster{opacity:0}
 .island{position:absolute;z-index:6;left:50%;top:calc(23px * var(--s));width:calc(124px * var(--s));height:calc(36px * var(--s));border-radius:999px;background:#000;transform:translateX(-50%);transition:width .55s cubic-bezier(.32,1.35,.5,1) .05s,box-shadow .4s var(--ease)}
 .isl{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 calc(13px * var(--s)) 0 calc(11px * var(--s));opacity:0;transition:opacity .2s var(--ease)}
-.isl svg{width:calc(15px * var(--s));height:calc(15px * var(--s));color:var(--lilac)}
+.isl svg{width:calc(15px * var(--s));height:calc(15px * var(--s));color:#C9BFF5}
 .isl b{font:600 calc(12px * var(--s))/1 -apple-system,BlinkMacSystemFont,"SF Pro Text",var(--ui);letter-spacing:-.01em;color:#fff}
-.dock.control .island{width:calc(166px * var(--s));transition-delay:0s;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.dock.control .island{width:calc(166px * var(--s));transition-delay:0s;box-shadow:inset 0 0 0 1px rgba(255,255,255,.26),0 0 calc(14px * var(--s)) rgba(165,143,230,.3)}
 .dock.control .isl{opacity:1;transition:opacity .3s var(--ease) .22s}
 /* the status bar as an iPhone draws it: level with the island, the time centred in the left ear, signal, wi-fi and battery in the right */
 .sbar{position:absolute;z-index:5;left:0;right:0;top:0;height:calc(58px * var(--s));color:#fff;pointer-events:none}
