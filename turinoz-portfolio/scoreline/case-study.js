@@ -929,7 +929,7 @@
       const s = spec[i]; m.hidden = !s; m.classList.remove('hit'); if (!s) return;
       m.dataset.at = s[0]; m.style.left = (s[0] / T * 100) + '%'; $('span', m).innerHTML = s[1];
     });
-    phaseNote.textContent = kind === 'goal' ? 'Six letters, 70 ms apart, each landing in 504 ms on Land.' : 'Eight letters, 60 ms apart, each slamming in from 1.4× in 700 ms. No flare, no glint.';
+    phaseNote.textContent = kind === 'goal' ? 'Six letters, 70 ms apart, each landing in 504 ms.' : 'RED CARD, 60 ms apart, each letter slamming in from 1.4× in 700 ms. No flare, no glint.';
     phaseEl.style.setProperty('--p', 0);
     return T;
   }
