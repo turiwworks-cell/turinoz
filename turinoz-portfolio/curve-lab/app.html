@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Curve Lab</title>
-<link rel="icon" type="image/svg+xml" id="clFavicon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cstyle%3E.b%7Bfill%3A%23121211%7D.f%7Bfill%3A%23F1F0EC%7D.s%7Bstroke%3A%23F1F0EC%7D%40media%20%28prefers-color-scheme%3Adark%29%7B.b%7Bfill%3A%23F1F0EB%7D.f%7Bfill%3A%23121211%7D.s%7Bstroke%3A%23121211%7D%7D%3C/style%3E%3Ccircle%20class%3D%22b%22%20cx%3D%2215%22%20cy%3D%2215%22%20r%3D%2214%22/%3E%3Cpath%20class%3D%22s%22%20d%3D%22M8%2021.5C16.5%2021.5%2013.5%208.5%2022%208.5%22%20fill%3D%22none%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22/%3E%3Ccircle%20class%3D%22f%22%20cx%3D%228%22%20cy%3D%2221.5%22%20r%3D%222.3%22/%3E%3Ccircle%20class%3D%22f%22%20cx%3D%2222%22%20cy%3D%228.5%22%20r%3D%222.3%22/%3E%3Ccircle%20class%3D%22b%22%20cx%3D%2224.2%22%20cy%3D%2224.2%22%20r%3D%227.8%22/%3E%3Ccircle%20cx%3D%2224.2%22%20cy%3D%2224.2%22%20r%3D%225.6%22%20fill%3D%22%2334c759%22/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" id="clFavicon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cmask%20id%3D%22m%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20fill%3D%22%23fff%22/%3E%3Ccircle%20cx%3D%2224.2%22%20cy%3D%2224.2%22%20r%3D%227.8%22/%3E%3C/mask%3E%3Cg%20mask%3D%22url%28%23m%29%22%3E%3Crect%20x%3D%224.56%22%20y%3D%224.56%22%20width%3D%2222.89%22%20height%3D%2222.89%22%20rx%3D%222.86%22%20transform%3D%22rotate%2845%2016%2016%29%22%20fill%3D%22%237389FF%22/%3E%3C/g%3E%3Ccircle%20cx%3D%2224.2%22%20cy%3D%2224.2%22%20r%3D%225.6%22%20fill%3D%22%2334c759%22/%3E%3C/svg%3E">
 <script>try{if(localStorage.getItem("turinoz-curve-lab-theme")==="light")document.documentElement.dataset.clTheme="light"}catch(e){}</script>
 <meta name="description" content="Inspect, isolate and re-time the motion of any HTML page with an After Effects–style curve editor.">
 <script type="text/plain" id="font-licenses">Copyright 2024 The Geist Project Authors (https://github.com/vercel/geist-font) Geist-Italic[wght].ttf: Copyright 2024 The Geist Project Authors (https://github.com/vercel/geist-font)
@@ -765,6 +765,11 @@ kbd {
 .brand span {
   color: var(--mute);
   font-size: 12.5px;
+}
+.brand .bm {
+  width: 11px;
+  height: 11px;
+  flex: none;
 }
 .file {
   display: flex;
@@ -6496,7 +6501,7 @@ html[data-cl-theme="light"] .pop.float {
 <body>
 <div class="app" id="app" data-ws="curve">
   <header class="top">
-    <div class="brand"><b>Turinoz</b><span>Curve Lab</span>
+    <div class="brand"><svg class="bm" viewBox="0 0 12 12" aria-hidden="true"><rect x="1.42" y="1.42" width="9.16" height="9.16" rx="1.14" transform="rotate(45 6 6)" fill="#7389FF"/></svg><b>Turinoz</b><span>Curve Lab</span>
     </div>
     <div class="seg" id="wsSeg" role="radiogroup" aria-label="Workspace">
       <i class="ind"></i
