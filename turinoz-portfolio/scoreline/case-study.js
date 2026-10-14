@@ -2,11 +2,11 @@
 /* ==========================================================================
    Scoreline — case study (Turinoz)
    One file, no libraries. In order:
-     helpers · reveal, counters & nav · label cursor · pause · THE PHONE (the real app,
+     helpers · reveal, counters & nav · label cursor · day / night · THE PHONE (the real app,
      driven through its own review bridge) · roles · tour · system · curves ·
      timing stage · touch · race · Rive · process · terminal
    The page moves on Scoreline's own curves. Everything that loops sleeps off screen,
-   in a hidden tab, when "Pause" is on, and for visitors who prefer reduced motion.
+   in a hidden tab, and for visitors who prefer reduced motion.
    ========================================================================== */
 (() => {
   /* ---------- helpers ---------- */
@@ -116,13 +116,24 @@
     addEventListener('blur', () => { LC.el = null; });
   }
 
-  /* ---------- pause the page's own motion ---------- */
-  const pp = $('#pp');
-  pp && pp.addEventListener('click', () => {
-    const on = !paused();
-    html.classList.toggle('paused', on); pp.setAttribute('aria-pressed', String(on));
-    say(on ? 'The page’s motion is paused. The demo keeps its own time.' : 'The page’s motion is playing.');
+  /* ---------- day / night: the same choice as the home page (tz-theme); night unless day was chosen ---------- */
+  const tm = $('#tm'), metaScheme = $('meta[name="color-scheme"]'), metaTheme = $('meta[name="theme-color"]');
+  const mode = () => html.dataset.theme === 'light' ? 'light' : 'dark';
+  const themed = () => {
+    const day = mode() === 'light', label = day ? 'Switch to night' : 'Switch to day';
+    if (tm) { tm.setAttribute('aria-label', label); tm.title = label; }
+    if (metaTheme) metaTheme.content = day ? '#F4F3EF' : '#000000';
+    html.style.colorScheme = day ? 'light' : 'dark';
+    if (metaScheme) metaScheme.content = day ? 'light' : 'dark';
+  };
+  tm && tm.addEventListener('click', () => {
+    const next = mode() === 'dark' ? 'light' : 'dark';
+    html.dataset.theme = next;
+    try { localStorage.setItem('tz-theme', next); } catch (_) {}
+    themed();
+    dispatchEvent(new Event('tz-theme'));
   });
+  themed();
 
   /* ==========================================================================
      THE PHONE — the real app (app/), one copy, the whole way down
@@ -216,12 +227,12 @@
     if (dock.dataset.state === 'away') openDemo();
     D.control = true; dock.classList.add('control'); frame.tabIndex = 0;
     hideCursor();
-    note('It’s yours. Scroll it, tap it, swipe back. Esc gives it back.');
+    note('Scroll, tap, swipe back. Esc gives it back.');
     try { frame.focus(); } catch (_) {}
   }
   function giveBack() {
     D.control = false; dock.classList.remove('control'); frame.tabIndex = -1;
-    note('Back on the tour. Take control again any time.');
+    note('It plays on its own again.');
     if (D.retour) D.retour();
   }
   veil.addEventListener('click', takeControl);
@@ -244,7 +255,7 @@
     try { const said = await D.app.scene(kind); note(said); say(said); } catch (_) { note('That didn’t work. Try again.'); }
   }
   $$('[data-scene]').forEach(b => b.addEventListener('click', () => scene(b.dataset.scene)));
-  $('#dockRestart').addEventListener('click', () => { if (!D.app) return; D.app.restart(); note('The evening starts again from the top.'); });
+  $('#dockRestart').addEventListener('click', () => { if (!D.app) return; D.app.restart(); note('The match night starts again.'); });
 
   /* moving the app between screens: its own router, no new history (the page's Back stays the page's) */
   function navigate(route) {
@@ -555,7 +566,7 @@
     const fire = () => { try { return !!m.wrap(() => e.trigger(m.kind)); } catch (_) { return false; } };
     let ok = fire(), again = false;
     if (!ok) { D.app.restart(); again = true; await new Promise(r => setTimeout(r, 150)); ok = fire(); }
-    const said = ok ? (again ? 'The evening starts again. ' : '') + m.say : 'Nothing to act on right now.';
+    const said = ok ? (again ? 'The match night starts again. ' : '') + m.say : 'Nothing to act on right now.';
     note(said); say(said);
   }
   let engineP = null;
@@ -651,11 +662,12 @@
     }
     // the curve, in the accent spectrum, drawn on as far as `prog`
     const g = x.createLinearGradient(X(0), 0, X(1), 0); SPEC3.forEach((c, i) => g.addColorStop(i / 3, c));
-    x.strokeStyle = opts.mini ? (opts.on ? '#F3F2EF' : 'rgba(243,242,239,.55)') : g; x.lineWidth = (opts.mini ? 1.6 : 2.6) * d; x.lineCap = 'round';
+    // the small ones sit in the list, so they take the page's ink (night or day)
+    x.strokeStyle = opts.mini ? getComputedStyle(canvas).color : g; x.globalAlpha = opts.mini && !opts.on ? .55 : 1; x.lineWidth = (opts.mini ? 1.6 : 2.6) * d; x.lineCap = 'round';
     const f = bezier(...v), N = 80;
     // trace the parametric curve so the drawing follows the real shape
     const P = t => { const mt = 1 - t; return [X(3 * mt * mt * t * v[0] + 3 * mt * t * t * v[2] + t * t * t), Y(3 * mt * mt * t * v[1] + 3 * mt * t * t * v[3] + t * t * t)]; };
-    x.beginPath(); for (let i = 0; i <= N * prog; i++) { const [px, py] = P(i / N); i ? x.lineTo(px, py) : x.moveTo(px, py); } x.stroke();
+    x.beginPath(); for (let i = 0; i <= N * prog; i++) { const [px, py] = P(i / N); i ? x.lineTo(px, py) : x.moveTo(px, py); } x.stroke(); x.globalAlpha = 1;
     if (opts.dot != null && !opts.mini) {
       const t = clamp(opts.dot, 0, 1), y = f(t), yd = bezier(...DEFAULT)(t);
       x.fillStyle = 'rgba(133,132,127,.9)'; x.beginPath(); x.arc(X(t), Y(yd), 3 * d, 0, 7); x.fill();
@@ -978,6 +990,7 @@
       if (reduce()) { anims.forEach(a => a.finish()); ph.style.left = '100%'; }
     }
     moRows.forEach(r => { plot($('canvas', r), parseV(r.dataset.v), { mini: true }); r.addEventListener('click', () => play(r)); });
+    addEventListener('tz-theme', () => moRows.forEach(r => plot($('canvas', r), parseV(r.dataset.v), { mini: true, on: r.getAttribute('aria-selected') === 'true' })));
     $('#moPlay').addEventListener('click', () => cur && play(cur));
     let moPlayed = false;
     onScreen($('#moStage'), v => { if (v && !moPlayed) { moPlayed = true; play(moRows[0]); } });

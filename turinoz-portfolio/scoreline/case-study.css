@@ -61,9 +61,10 @@ code{font:500 .86em/1 var(--mono);padding:3px 6px 2px;border-radius:6px;backgrou
 .rv.in{opacity:1;transform:none}
 
 /* ---------- nav ---------- */
-.nav{position:sticky;top:0;z-index:80;background:rgba(0,0,0,.62);-webkit-backdrop-filter:saturate(1.4) blur(18px);backdrop-filter:saturate(1.4) blur(18px);
-  border-bottom:1px solid transparent;transition:border-color .3s,background-color .3s}
-.nav.scrolled{border-bottom-color:var(--line);background:rgba(0,0,0,.78)}
+/* light glass: what passes under it shows a little, the header's own text stays clear */
+.nav{position:sticky;top:0;z-index:80;background:linear-gradient(180deg,rgba(0,0,0,.5),rgba(0,0,0,.36));-webkit-backdrop-filter:saturate(1.7) blur(14px);backdrop-filter:saturate(1.7) blur(14px);
+  border-bottom:1px solid transparent;box-shadow:inset 0 1px 0 rgba(255,255,255,.04);transition:border-color .3s,background-color .3s}
+.nav.scrolled{border-bottom-color:rgba(255,255,255,.07);background:linear-gradient(180deg,rgba(0,0,0,.56),rgba(0,0,0,.4))}
 .nav .wrap{height:64px;display:flex;align-items:center;gap:18px;max-width:none}
 .back{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;flex:none;box-shadow:inset 0 0 0 1px var(--line-3);color:var(--ink-2);transition:color .2s,box-shadow .2s}
 .back:hover{color:var(--ink);box-shadow:inset 0 0 0 1px rgba(255,255,255,.32)}
@@ -83,20 +84,16 @@ code{font:500 .86em/1 var(--mono);padding:3px 6px 2px;border-radius:6px;backgrou
 .links .pill{position:absolute;top:0;height:100%;border-radius:999px;background:rgba(255,255,255,.07);box-shadow:inset 0 0 0 1px var(--line);
   transition:left .55s var(--glide),width .55s var(--glide),opacity .3s;opacity:0;pointer-events:none}
 .navr{display:flex;align-items:center;gap:14px}
-.livelink{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 13px 0 11px;border-radius:999px;font-size:12.5px;font-weight:500;color:var(--ink);text-decoration:none;
-  background:rgba(52,227,154,.08);box-shadow:inset 0 0 0 1px rgba(52,227,154,.32);transition:box-shadow .25s,background-color .25s;white-space:nowrap}
-.livelink:hover{background:rgba(52,227,154,.14);box-shadow:inset 0 0 0 1px rgba(52,227,154,.55)}
 .dot{position:relative;width:7px;height:7px;border-radius:50%;background:var(--live);flex:none}
 .dot::after{content:"";position:absolute;inset:-3px;border-radius:50%;border:1.5px solid var(--live);opacity:0;animation:ping 1.8s var(--ease) infinite}
 @keyframes ping{0%{transform:scale(.6);opacity:.75}70%,100%{transform:scale(1.8);opacity:0}}
-.credit{font-size:12px;color:var(--muted);white-space:nowrap}
-.credit b{color:var(--ink-2);font-weight:500}
-.pp{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;flex:none;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px var(--line);transition:box-shadow .2s,transform .12s var(--ease)}
-.pp:hover{box-shadow:inset 0 0 0 1px var(--line-3)}
-.pp:active{transform:scale(.95)}
-.pp svg{width:12px;height:12px}
-.pp .i-play{display:none}
-.paused .pp .i-play{display:block}.paused .pp .i-pause{display:none}
+/* day / night: shows the mode it switches to, like the home page and smtp.dev */
+.tm{position:relative;width:32px;height:32px;border-radius:50%;flex:none;color:var(--ink-2);box-shadow:inset 0 0 0 1px var(--line-3);transition:color .2s,box-shadow .2s,transform .3s var(--glide)}
+.tm:hover{color:var(--ink);box-shadow:inset 0 0 0 1px rgba(255,255,255,.32)}
+.tm:active{transform:scale(.92)}
+.tm svg{position:absolute;left:50%;top:50%;width:15px;height:15px;margin:-7.5px 0 0 -7.5px;transition:opacity .3s var(--ease),transform .5s var(--glide)}
+.tm .moon{opacity:0;transform:rotate(90deg) scale(.5)}
+.links{margin-right:4px}
 .progress{position:absolute;left:0;right:0;bottom:-1px;height:2px;pointer-events:none}
 .progress u{position:absolute;left:0;top:0;bottom:0;width:100%;transform-origin:0 50%;transform:scaleX(var(--sp,0));text-decoration:none;background:var(--accent)}
 
@@ -244,16 +241,16 @@ h3{font:560 24px/1.15 var(--display);font-stretch:88%;letter-spacing:-.022em}
    ========================================================================== */
 .hero{position:relative;min-height:calc(100vh - 64px);min-height:calc(100svh - 64px);padding:clamp(48px,8vh,96px) 0 64px;isolation:isolate;overflow-x:clip;display:flex;flex-direction:column;justify-content:center}
 .aurora{position:absolute;z-index:-1;inset:-80px 0 auto;height:min(980px,120vh);pointer-events:none;overflow:hidden;opacity:.9}
-/* soft columns of the five spectra: shaped by a mask, not a blur, so they stay smooth at any pixel density */
+/* soft columns in the accent, white into violet: shaped by a mask, not a blur, so they stay smooth at any pixel density */
 .aurora{-webkit-mask:var(--grain);mask:var(--grain);-webkit-mask-size:180px;mask-size:180px}
 .aurora i{position:absolute;bottom:14%;width:clamp(220px,22vw,360px);margin-left:calc(clamp(220px,22vw,360px) * -.3);opacity:.32;transform-origin:50% 100%;animation:rise 9s var(--inout) infinite alternate;
   -webkit-mask:radial-gradient(closest-side,#000 0%,rgba(0,0,0,.82) 22%,rgba(0,0,0,.5) 46%,rgba(0,0,0,.22) 68%,rgba(0,0,0,.06) 86%,transparent 100%);
   mask:radial-gradient(closest-side,#000 0%,rgba(0,0,0,.82) 22%,rgba(0,0,0,.5) 46%,rgba(0,0,0,.22) 68%,rgba(0,0,0,.06) 86%,transparent 100%)}
-.aurora i:nth-child(1){left:52%;height:46%;background:linear-gradient(180deg,var(--sp2));animation-delay:-1.2s}
-.aurora i:nth-child(2){left:61%;height:58%;background:linear-gradient(180deg,var(--sp5));animation-delay:-3.4s}
-.aurora i:nth-child(3){left:70%;height:72%;background:linear-gradient(180deg,var(--sp1));animation-delay:-5.1s}
-.aurora i:nth-child(4){left:79%;height:52%;background:linear-gradient(180deg,var(--sp3));animation-delay:-2.2s}
-.aurora i:nth-child(5){left:88%;height:62%;background:linear-gradient(180deg,var(--sp4));animation-delay:-6.6s}
+.aurora i:nth-child(1){left:52%;height:46%;background:linear-gradient(180deg,#fff 0%,var(--violet) 70%);animation-delay:-1.2s}
+.aurora i:nth-child(2){left:61%;height:58%;background:linear-gradient(180deg,#fff 10%,var(--violet) 100%);animation-delay:-3.4s}
+.aurora i:nth-child(3){left:70%;height:72%;background:linear-gradient(180deg,#fff 0%,var(--violet) 55%);animation-delay:-5.1s}
+.aurora i:nth-child(4){left:79%;height:52%;background:linear-gradient(180deg,#fff 25%,var(--violet) 100%);animation-delay:-2.2s}
+.aurora i:nth-child(5){left:88%;height:62%;background:linear-gradient(180deg,#fff 0%,var(--violet) 65%);animation-delay:-6.6s}
 @keyframes rise{from{transform:scaleY(.86)}to{transform:scaleY(1.08)}}
 .aurora::after{content:"";position:absolute;inset:0;background:radial-gradient(60% 50% at 70% 40%,transparent 0%,rgba(0,0,0,.18) 40%,rgba(0,0,0,.55) 66%,rgba(0,0,0,.86) 82%,#000 92%)}
 .hero>.wrap{width:100%}
@@ -537,7 +534,7 @@ h3{font:560 24px/1.15 var(--display);font-stretch:88%;letter-spacing:-.022em}
 .mo-row[aria-selected="true"]{background:rgba(165,143,230,.1);color:var(--ink)}
 .mo-row .nm{font:500 13.5px/1 var(--ui);color:var(--ink);letter-spacing:-.005em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mo-row .cvm{display:flex;align-items:center;gap:7px;min-width:0}
-.mo-row .cvm canvas{width:20px;height:20px;flex:none}
+.mo-row .cvm canvas{width:20px;height:20px;flex:none;color:var(--ink)}
 /* side by side, the list runs the stage's full height: its rows share the room, so both end on one line */
 @media (min-width:1101px){
   .mo-list{align-self:stretch;display:flex;flex-direction:column}
@@ -868,19 +865,17 @@ h3{font:560 24px/1.15 var(--display);font-stretch:88%;letter-spacing:-.022em}
 .lcur.on span{opacity:1;transform:translate(16px,18px) scale(1)}
 @media (hover:none),(pointer:coarse){ .lcur{display:none} }
 
-/* ---------- paused (the nav button) ---------- */
-.paused .aurora i,.paused .dot::after,.paused .belt,.paused .scrollcue i::after,.paused .term-body .caret{animation-play-state:paused}
 
 /* ==========================================================================
    RESPONSIVE
    ========================================================================== */
 @media (max-width:1240px){
   .links a{padding:7px 9px}
-  .credit{display:none}
 }
 @media (max-width:1100px){
   :root{--pad:24px}
   .links{display:none}
+  .navr{margin-left:auto}
   .col{max-width:none}
   .dock{top:50%;right:50%;transform:translate(50%,-50%);z-index:90}
   .dock[data-state="away"]{transform:translate(50%,-40%) scale(.6)}
@@ -911,7 +906,6 @@ h3{font:560 24px/1.15 var(--display);font-stretch:88%;letter-spacing:-.022em}
   body{font-size:15px}
   .sec{padding-top:104px}
   .shead{flex-direction:column;align-items:flex-start;margin-bottom:30px}
-  .navr .livelink span.lbl{display:none}
   .brand>span:last-child{display:none}
   .facts{grid-template-columns:repeat(2,minmax(0,1fr))}
   .ledger,.origin{grid-template-columns:minmax(0,1fr)}
@@ -951,4 +945,67 @@ h3{font:560 24px/1.15 var(--display);font-stretch:88%;letter-spacing:-.022em}
   .rv,.h1 .ln>span{transition:none!important;opacity:1!important;transform:none!important}
   .aurora i,.dot::after,.belt,.scrollcue i::after{animation:none}
   .dock,.demo-pill{transition-duration:.01s!important}
+}
+
+/* ==========================================================================
+   DAY — the same page on paper, when day was chosen (tz-theme, shared with the
+   home page). The app has no light mode, so the phone and the stages that show
+   the app's own screens (curve plots, the motion box, the Rive stages, the
+   capsule track) stay night.
+   ========================================================================== */
+:root[data-theme="light"]{color-scheme:light;
+  --bg:#F4F3EF; --bg-2:#ECEBE6; --surface:#FFFFFF; --glass:#FFFFFF; --surf:#FFFFFF; --raise:#FFFFFF;
+  --line:rgba(12,12,12,.09); --line-2:rgba(12,12,12,.05); --line-3:rgba(12,12,12,.18);
+  --ink:#0C0C0C; --ink-2:#46453F; --muted:#7A7872; --faint:#CBC9C2; --live:#14B377; --live-soft:rgba(20,179,119,.16)}
+:root[data-theme="light"] .nav{background:linear-gradient(180deg,rgba(244,243,239,.6),rgba(244,243,239,.42));box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
+:root[data-theme="light"] .nav.scrolled{background:linear-gradient(180deg,rgba(244,243,239,.66),rgba(244,243,239,.48));border-bottom-color:rgba(12,12,12,.07)}
+:root[data-theme="light"] .back:hover,:root[data-theme="light"] .tm:hover{box-shadow:inset 0 0 0 1px rgba(12,12,12,.34)}
+:root[data-theme="light"] .tm .moon{opacity:1;transform:none}
+:root[data-theme="light"] .tm .sun{opacity:0;transform:rotate(-90deg) scale(.5)}
+:root[data-theme="light"] .links .pill{background:rgba(12,12,12,.05)}
+:root[data-theme="light"] code{background:rgba(12,12,12,.05)}
+:root[data-theme="light"] .tag--me{color:#5A49D6;box-shadow:inset 0 0 0 1px rgba(107,88,245,.34)}
+:root[data-theme="light"] .tag--live{color:#0E8A5B;box-shadow:inset 0 0 0 1px rgba(20,179,119,.4)}
+:root[data-theme="light"] .tag--red{color:#C93838;box-shadow:inset 0 0 0 1px rgba(255,90,90,.42)}
+:root[data-theme="light"] .btn{color:#F3F2EF;box-shadow:0 16px 34px -16px rgba(107,88,245,.75)}
+:root[data-theme="light"] .btn span{color:#9A9893}
+:root[data-theme="light"] .btn .dot{background:#34E39A}
+:root[data-theme="light"] .btn .dot::after{border-color:#34E39A}
+:root[data-theme="light"] .ghost:hover{box-shadow:inset 0 0 0 1px rgba(12,12,12,.34);background:rgba(12,12,12,.03)}
+:root[data-theme="light"] .chipbtn{background:rgba(255,255,255,.7)}
+:root[data-theme="light"] .dcard.on .dn b{color:#F3F2EF}
+:root[data-theme="light"] .chipbtn[aria-pressed="true"],:root[data-theme="light"] .dock-bar .give,:root[data-theme="light"] .dock-bar .give:hover{color:#F3F2EF;background:var(--ink)}
+:root[data-theme="light"] .dock-chip,:root[data-theme="light"] .dock-x{background:rgba(255,255,255,.82)}
+:root[data-theme="light"] .device{box-shadow:0 0 0 calc(.6px * var(--s)) rgba(0,0,0,.9),0 50px 90px -40px rgba(30,22,90,.45),0 18px 36px -22px rgba(0,0,0,.35)}
+:root[data-theme="light"] .glow{opacity:.62}
+:root[data-theme="light"] .aurora{opacity:.75}
+:root[data-theme="light"] .aurora::after{background:radial-gradient(60% 50% at 70% 40%,rgba(244,243,239,0) 0%,rgba(244,243,239,.18) 40%,rgba(244,243,239,.55) 66%,rgba(244,243,239,.86) 82%,#F4F3EF 92%)}
+:root[data-theme="light"] .demo-pill{background:rgba(255,255,255,.86);box-shadow:inset 0 0 0 1px var(--line-3),0 20px 50px -18px rgba(20,16,60,.28),0 12px 40px -20px rgba(107,88,245,.7)}
+:root[data-theme="light"] .demo-pill:hover{box-shadow:inset 0 0 0 1px rgba(12,12,12,.34),0 20px 50px -18px rgba(20,16,60,.28),0 12px 40px -20px rgba(107,88,245,.8)}
+:root[data-theme="light"] .dock-backdrop{background:rgba(236,235,230,.62)}
+:root[data-theme="light"] .lcur span{background:rgba(12,12,12,.92);color:#F3F2EF;box-shadow:0 10px 28px -10px rgba(0,0,0,.35)}
+:root[data-theme="light"] .step .who.me,:root[data-theme="light"] .decision .stamp{color:#5A49D6}
+:root[data-theme="light"] .cv-track,:root[data-theme="light"] .four span{background:rgba(12,12,12,.025)}
+:root[data-theme="light"] .cv-track i{box-shadow:0 4px 12px -4px rgba(12,12,12,.4)}
+:root[data-theme="light"] .cv-uses span{background:rgba(12,12,12,.045)}
+:root[data-theme="light"] .mo-th{background:rgba(12,12,12,.02)}
+:root[data-theme="light"] .mo-row:hover{background:rgba(12,12,12,.03)}
+:root[data-theme="light"] .mo-tl .row{background:rgba(12,12,12,.07)}
+:root[data-theme="light"] .phase .mk i{background:var(--surface)}
+:root[data-theme="light"] .phase .mk.hit i{box-shadow:0 0 0 4px rgba(12,12,12,.08)}
+:root[data-theme="light"] .try-row:hover{background:rgba(12,12,12,.015)}
+:root[data-theme="light"] .try-row .ic{background:var(--bg)}
+/* the night stages: the app's own tokens again inside them */
+:root[data-theme="light"] :is(.cv-plot,.mo-box,.rstage,.track){color-scheme:dark;color:var(--ink);
+  --line:rgba(255,255,255,.08); --line-2:rgba(255,255,255,.05); --line-3:rgba(255,255,255,.16);
+  --ink:#F3F2EF; --ink-2:#B8B6B0; --muted:#85847F; --faint:#43423F; --live:#34E39A; --live-soft:rgba(52,227,154,.16)}
+:root[data-theme="light"] .rstage .chipbtn,:root[data-theme="light"] .rstage .teams button{background:rgba(255,255,255,.04)}
+:root[data-theme="light"] .rstage .chipbtn[aria-pressed="true"]{color:#0A0A0A;background:var(--ink)}
+:root[data-theme="light"] .rstage .tag--me{color:#C9BFF5;box-shadow:inset 0 0 0 1px rgba(165,143,230,.35)}
+:root[data-theme="light"] .rstage .tag--live{color:#8CF0C4;box-shadow:inset 0 0 0 1px rgba(52,227,154,.32)}
+@media (max-width:1100px){
+  :root[data-theme="light"] .mo-row{background:rgba(255,255,255,.7)}
+  :root[data-theme="light"] .mo-row[aria-selected="true"]{background:var(--ink)}
+  :root[data-theme="light"] .mo-row[aria-selected="true"] .nm{color:#F3F2EF}
+  :root[data-theme="light"] .dshot{box-shadow:inset 0 0 0 1px var(--line),0 30px 70px -40px rgba(20,16,60,.45)}
 }
