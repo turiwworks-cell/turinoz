@@ -878,6 +878,8 @@
     };
 
     let X = {};
+    // sections recorded from the app: the film for each curve and speed (see -css and -slow)
+    const CLIPS = { cards: { src: 'assets/motion/cards', n: 5, alt: 'Scoreline turning Live on: the live strip opens and its five match cards rise, one after another.' } };
     function play(r) {
       cur = r;
       moRows.forEach(x => { const on = x === r; x.setAttribute('aria-selected', String(on)); plot($('canvas', x), parseV(x.dataset.v), { mini: true, on }); });
@@ -891,9 +893,29 @@
       };
       X = { roll: (b, at) => { const chs = $$('.ch', b); chs.forEach((c, i) => [...c.children].forEach(s => A(s, [{ transform: 'translateY(0)' }, { transform: 'translateY(-1.15em)' }], at + i * 11, 420, ROLL, false))); segs.push([at, 420 + 11 * (chs.length - 1)]); } };
       $('#moName').textContent = $('.nm', r).textContent;
-      moBox.innerHTML = '';
-      const sc = document.createElement('div'); sc.className = 'ms'; moBox.appendChild(sc);
-      SCENES[r.dataset.k](sc, A, D, X);
+      // a section recorded from the app itself plays its clip; the rest are rebuilt with the app's content
+      const clip = CLIPS[r.dataset.k];
+      let v = null;
+      if (clip) {
+        const name = clip.src + (plain ? '-css' : '') + (slow ? '-slow' : '');
+        v = $('video', moBox);
+        if (!v || v.dataset.src !== name) {
+          moBox.innerHTML = '';
+          v = document.createElement('video');
+          v.className = 'ms-clip'; v.muted = true; v.playsInline = true; v.preload = 'auto'; v.dataset.src = name;
+          v.setAttribute('aria-label', clip.alt);
+          v.innerHTML = `<source src="${name}.webm" type="video/webm"><source src="${name}.mp4" type="video/mp4">`;
+          moBox.appendChild(v);
+        }
+        X = {};
+        for (let i = 0; i < clip.n; i++) segs.push([D.delay + i * D.stag, D.dur]);
+        if (reduce()) { const end = () => { v.currentTime = Math.max(0, v.duration - .05); }; v.readyState ? end() : v.addEventListener('loadedmetadata', end, { once: true }); }
+        else { v.pause(); v.currentTime = 0; v.play().catch(() => {}); }
+      } else {
+        moBox.innerHTML = '';
+        const sc = document.createElement('div'); sc.className = 'ms'; moBox.appendChild(sc);
+        SCENES[r.dataset.k](sc, A, D, X);
+      }
       want = null;
       if (X.tap) X.tap.tabs.addEventListener('click', e => {
         const b = e.target.closest('button'); if (!b || b.classList.contains('on')) return;   // SL-11: the chosen tab doesn't roll again
@@ -905,7 +927,8 @@
       moTl.style.height = (lanes.length * 9) + 'px';
       moTl.innerHTML = lanes.map(([a, l], i) => `<span class="row" style="top:${i * 9}px"></span><span class="seg" style="top:${i * 9}px;left:${a / total * 100}%;width:${l / total * 100}%"></span>`).join('') + '<span class="ph"></span>';
       const ph = $('.ph', moTl), t0 = performance.now();
-      const tick = now => { const p = clamp((now - t0) / (total * k), 0, 1); ph.style.left = (p * 100) + '%'; if (p < 1) raf = requestAnimationFrame(tick); };
+      // on a clip the playhead follows the film (frame 0 is the moment the app starts the section)
+      const tick = now => { const p = clamp(v ? v.currentTime * 1000 / (total * k) : (now - t0) / (total * k), 0, 1); ph.style.left = (p * 100) + '%'; if (p < 1 && !(v && v.ended)) raf = requestAnimationFrame(tick); };
       raf = requestAnimationFrame(tick);
       const read = [`dur ${D.dur} ms`, `delay ${D.delay} ms`, `stagger ${D.stag} ms`, plain ? 'CSS ease · cubic-bezier(0.25, 0.1, 0.25, 1)' : `${r.dataset.c} · cubic-bezier(${fmtV(D.v)})`];
       if (r.dataset.k === 'list' || r.dataset.k === 'tabs') read.push('letters 420 ms · Roll · 11 ms apart');

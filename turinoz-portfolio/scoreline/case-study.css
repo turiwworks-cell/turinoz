@@ -535,6 +535,8 @@ h3{font:560 24px/1.15 var(--display);font-stretch:88%;letter-spacing:-.022em}
 .mo-ctl .chipbtn{height:30px}
 .mo-box{position:relative;height:300px;margin-top:14px;border-radius:16px;background:#000;box-shadow:inset 0 0 0 1px var(--line-2);overflow:hidden;
   container-type:inline-size;font-family:var(--app);color:var(--ink);font-feature-settings:normal}
+/* a section recorded from the app: the film sits in the box at its own size, black on black */
+.ms-clip{position:absolute;inset:1px;width:calc(100% - 2px);height:calc(100% - 2px);object-fit:contain;border-radius:15px}
 .mo-tl{position:relative;margin-top:14px}
 .mo-tl .row{position:absolute;left:0;right:0;height:5px;border-radius:3px;background:rgba(255,255,255,.04)}
 .mo-tl .seg{position:absolute;height:5px;border-radius:3px;background:var(--accent);opacity:.85}
