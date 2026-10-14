@@ -695,6 +695,234 @@
   }
 
   /* ==========================================================================
+     03 · THE SECTIONS — each part of the app, played with its real content (the demo
+     evening at 58’: France 2–1 Argentina) on its exact duration, delay, stagger, curve
+     ========================================================================== */
+  const moBox = $('#moBox');
+  if (moBox) {
+    const moRows = $$('.mo-row'), moTl = $('#moTl'), moRead = $('#moRead'), moEase = $('#moEase'), moSlow = $('#moSlow');
+    const LAND = [.12, 1, .3, 1], ROLL = [.7, 0, .2, 1], BASE = [.2, .8, .2, 1];
+    const TC = { eng: ['#ce1124', '#1d3e8a'], bra: ['#ffdf00', '#009c3b'], ger: ['#ffce00', '#dd0000'], ned: ['#f36c21', '#21468b'], bel: ['#ed2939', '#fdda24'],
+      aut: ['#c8102e', '#f4f4f4'], irl: ['#169b62', '#ff883e'], pol: ['#dc143c', '#f4f4f4'], nga: ['#008751', '#f4f4f4'], sen: ['#00853f', '#fdef42'],
+      civ: ['#f77f00', '#009e60'], mli: ['#14b53a', '#fcd116'], swe: ['#006aa7', '#fecc02'], den: ['#c8102e', '#f4f4f4'], esp: ['#aa151b', '#f1bf00'],
+      por: ['#da291c', '#046a38'], col: ['#fcd116', '#003893'], mex: ['#006847', '#ce1126'], ita: ['#0066b3', '#009246'], jpn: ['#1c3f94', '#bc002d'], mar: ['#c1272d', '#006233'] };
+    const fl = t => TC[t] ? `<i class="fl" style="--a:${TC[t][0]};--b:${TC[t][1]}"></i>` : `<i class="fl fl--${t}"></i>`;
+    const IMG = 'app/img/players/';
+    const head = (t, n) => `<img class="hd" src="${IMG}${t}/${n}-head@1x.webp" srcset="${IMG}${t}/${n}-head@2x.webp 2x" alt="" decoding="async">`;
+    const bust = (t, n, cls = '') => `<img class="${cls}" src="${IMG}${t}/${n}-bust@1x.webp" srcset="${IMG}${t}/${n}-bust@2x.webp 2x" alt="" decoding="async">`;
+    const rate = r => `<span class="rt${r >= 9 ? ' s' : r >= 7 ? '' : r >= 6.5 ? ' o' : ' r'}">${r >= 9 ? '★ ' : ''}${r}</span>`;
+
+    // the demo evening, as the app shows it at 58’
+    const LIVE = [['fra', 'arg', 2, 1, 58, '--sp2'], ['eng', 'bra', 0, 1, 63, '--sp5'], ['ger', 'ned', 1, 1, 76, '--sp1'], ['bel', 'aut', 0, 2, 47, '--sp3'], ['irl', 'pol', 2, 1, 66, '--sp4']];
+    const DAYS = {
+      Yesterday: [['swe', 'den', '2 – 2', 'FT'], ['esp', 'por', '1 – 0', 'FT'], ['col', 'mex', '0 – 3', 'FT']],
+      Ongoing: [['fra', 'arg', '2 – 1', '58’', 1], ['eng', 'bra', '0 – 1', '63’', 1], ['ger', 'ned', '1 – 1', '76’', 1], ['bel', 'aut', '0 – 2', '47’', 1], ['irl', 'pol', '2 – 1', '66’', 1], ['nga', 'sen', '–', '21:00'], ['civ', 'mli', '–', '23:30']],
+      Tomorrow: [['mar', 'col', '–', '18:00'], ['ita', 'jpn', '–', '20:45']]
+    };
+    // France’s pressure minute by minute (+) against Argentina’s (−), up to 58’
+    const WAVE = [0, .06, -.05, .1, .03, -.08, .12, .02, -.1, .14, .04, -.12, -.18, .04, .12, .1, .2, .08, .26, .18, .36, .52, .7, .86, .4, .08, -.06, -.02, .1, .04, -.06, .08, -.12, -.2, -.1, -.3, -.46, -.62, -.74, -.88, -.42, -.12, .06, .02, -.06, 0, .1, .04, .2, .42, .66, .86, 1, .62, .24, .04, -.08, -.14, -.06];
+    const PANES = {
+      Facts: `<div class="cap"><span>Momentum</span><b>58’</b></div><div class="ms-ontop" style="margin-top:12px">${fl('fra')}<div><b>France on top</b><small>89% of the pressure in the last 10 minutes</small></div></div>`,
+      Stats: `<div class="ms-pos"><div class="cap"><span>Possession</span><b>58’</b></div><div class="tw"><span>${fl('fra')}France</span><span>Argentina${fl('arg')}</span></div><div class="big"><span>58<small>%</small></span><span>42<small>%</small></span></div><div class="split"><i style="flex:58"></i><i style="flex:42"></i></div></div>`,
+      Lineup: `<div class="cap"><span>Formation</span><b>4-2-3-1</b></div><div class="ms-front">${[[20, 'Doué', 7.6], [7, 'Dembélé', 6.9], [10, 'Mbappé', 9.1], [11, 'Olise', 7.2]].map(([n, nm, r]) => `<figure>${head('fra', n)}<figcaption><i>${n}</i>${nm}</figcaption>${rate(r)}</figure>`).join('')}</div>`,
+      Table: `<div class="cap"><span>Nations Series</span><b>Playing now</b></div><div class="ms-tbl"><div class="th"><span>#</span><span>Team</span><span>P</span><span>W-D-L</span><span>GD</span><span>Pts</span></div>${[['fra', 'France', '1-1-0', '+1', 4], ['arg', 'Argentina', '1-0-1', '+1', 3], ['bra', 'Brazil', '1-0-1', '−1', 3], ['eng', 'England', '0-1-1', '−1', 1]].map(([t, nm, wdl, gd, pts], i) => `<div><span>${i + 1}</span><span class="tn">${fl(t)}${nm}</span><span>2</span><span>${wdl}</span><span>${gd}</span><b>${pts}</b></div>`).join('')}</div>`
+    };
+    const tabsHTML = (names, on, cls) => `<div class="${cls}" role="tablist">${names.map(n => `<button type="button" role="tab" aria-selected="${n === on}"${n === on ? ' class="on"' : ''}>${n}</button>`).join('')}<span class="ul" aria-hidden="true"></span></div>`;
+    const cardsHTML = () => '<div class="ms-cardrow">' + LIVE.map(([h, a, hs, as, m, g]) => `<div class="ms-card" style="--h:${Math.round(28 + m / 90 * 70)}%;--g:var(${g});--p:${(m / 90 * 100).toFixed(1)}%"><div class="tm"><span>${fl(h)}${h.toUpperCase()}<b>${hs}</b></span><span>${fl(a)}${a.toUpperCase()}<b>${as}</b></span></div><div><div class="mn">${m}’</div><div class="bar"><i></i></div></div></div>`).join('') + '</div>';
+    // a pressed label: every letter twice, stacked, so it can roll up and come back from below
+    const rollable = b => {
+      const txt = b.textContent; b.setAttribute('aria-label', txt); b.textContent = '';
+      const w = document.createElement('span'); w.className = 'rolltxt'; w.setAttribute('aria-hidden', 'true');
+      [...txt].forEach(ch => { const c = document.createElement('span'), t = ch === ' ' ? '&nbsp;' : ch; c.className = 'ch'; c.style.cssText = 'height:1.15em;overflow:hidden;vertical-align:top'; c.innerHTML = `<span style="display:block;line-height:1.15em">${t}</span><span style="display:block;line-height:1.15em">${t}</span>`; w.appendChild(c); });
+      b.appendChild(w);
+    };
+    const under = (tabs, b) => { const ul = $('.ul', tabs), inset = tabs.classList.contains('daytabs') ? 13 : 10; return { left: (b.offsetLeft + inset) + 'px', width: (b.offsetWidth - 2 * inset) + 'px' }; };
+
+    let cur = null, slow = false, plain = false, anims = [], raf = 0, day = 'Yesterday', mtab = 'Facts', want = null;
+    const SCENES = {
+      cards(sc, A, D) {
+        sc.className += ' ms-cards'; sc.innerHTML = `<div class="cap"><span>Live now</span><b>5 in play</b></div>` + cardsHTML();
+        const H = moBox.clientHeight;
+        $$('.ms-card', sc).forEach((c, i) => A(c, [{ transform: `translateY(${H}px)` }, { transform: 'none' }], D.delay + i * D.stag));
+      },
+      live(sc, A, D) {
+        sc.className += ' ms-cards';
+        sc.innerHTML = `<div class="cap"><span>Live now · 5 in play</span><span class="ms-pill off"><i></i>Live<b>5</b></span></div>` + cardsHTML()
+          + `<div><div class="cap" style="margin-bottom:6px"><span>★ Favourites</span><b>1</b></div><div class="ms-mrow">${fl('fra')}<span>FRA</span><span class="sc">2 – 1</span><span>ARG</span>${fl('arg')}<span class="st live">58’</span></div></div>`;
+        $$('.ms-card', sc).forEach((c, i) => A(c, [{ transform: 'none', opacity: 1 }, { transform: 'translateY(28px)', opacity: 0 }], D.delay + i * D.stag));
+      },
+      list(sc, A, D, X) {
+        const to = want && DAYS[want] ? want : 'Ongoing', from = to === day ? (to === 'Ongoing' ? 'Yesterday' : 'Ongoing') : day;
+        sc.className += ' ms-list';
+        sc.innerHTML = tabsHTML(Object.keys(DAYS), from, 'daytabs') + '<div class="ms-rows"></div>';
+        const tabs = $('.daytabs', sc), btns = $$('button', tabs), b = btns.find(x => x.textContent === to), ul = $('.ul', tabs);
+        btns.forEach(rollable);
+        X.place = () => Object.assign(ul.style, under(tabs, btns.find(x => x.classList.contains('on'))));
+        X.place(); ul.style.transition = 'none';
+        btns.forEach(x => { x.classList.toggle('on', x === b); x.setAttribute('aria-selected', String(x === b)); });
+        X.roll(b, 0);
+        A(ul, [{ left: ul.style.left, width: ul.style.width }, under(tabs, b)], 0, D.dur, D.v, false);
+        Object.assign(ul.style, under(tabs, b));
+        $('.ms-rows', sc).innerHTML = DAYS[to].map(([h, a, s, st, live]) => `<div class="ms-mrow">${fl(h)}<span>${h.toUpperCase()}</span><span class="sc">${s}</span><span>${a.toUpperCase()}</span>${fl(a)}<span class="st${live ? ' live' : ''}">${st}</span></div>`).join('');
+        $$('.ms-mrow', sc).forEach((r, i) => A(r, [{ transform: 'translate(18px,6px)', opacity: 0 }, { transform: 'none', opacity: 1 }], D.delay + i * D.stag));
+        day = to;
+        X.tap = { tabs, list: true };
+      },
+      screen(sc, A, D, X) {
+        sc.className += ' ms-screen';
+        sc.innerHTML = `<div class="cap"><span>World · Nations Series</span><b>Matchday 2 · <span style="color:#34e39a">58’</span></b></div>
+          <div class="ms-team">${fl('fra')}<div class="n">France<small>Mbappé 23’ 52’</small></div><span class="s">2</span></div>
+          <div class="ms-team lose">${fl('arg')}<div class="n">Argentina<small>Messi 39’</small></div><span class="s">1</span></div>
+          ${tabsHTML(['Facts', 'Stats', 'Lineup', 'Table'], 'Facts', 'ms-mtabs')}
+          <div class="ms-ontop">${fl('fra')}<div><b>France on top</b><small>89% of the pressure in the last 10 minutes</small></div></div>`;
+        const tabs = $('.ms-mtabs', sc), ul = $('.ul', tabs);
+        X.place = () => Object.assign(ul.style, under(tabs, $('button.on', tabs))); X.place();
+        [0, 1, 1, 3, 4].forEach((idx, i) => A(sc.children[i], [{ transform: 'translateY(12px)', opacity: 0 }, { transform: 'none', opacity: 1 }], D.delay + idx * D.stag));
+      },
+      tabs(sc, A, D, X) {
+        const names = Object.keys(PANES), to = want && PANES[want] ? want : 'Stats', from = to === mtab ? (to === 'Facts' ? 'Stats' : 'Facts') : mtab;
+        sc.className += ' ms-tabs';
+        sc.innerHTML = tabsHTML(names, from, 'ms-mtabs') + `<div class="ms-pane">${PANES[to]}</div>`;
+        const tabs = $('.ms-mtabs', sc), btns = $$('button', tabs), b = btns.find(x => x.textContent === to), ul = $('.ul', tabs);
+        btns.forEach(rollable);
+        X.place = () => Object.assign(ul.style, under(tabs, btns.find(x => x.classList.contains('on'))));
+        X.place();
+        btns.forEach(x => { x.classList.toggle('on', x === b); x.setAttribute('aria-selected', String(x === b)); });
+        X.roll(b, 0);
+        A(ul, [{ left: ul.style.left, width: ul.style.width }, under(tabs, b)], D.delay, D.dur, D.v);
+        Object.assign(ul.style, under(tabs, b));
+        A($('.ms-pane', sc), [{ transform: 'translateX(24px)', opacity: 0 }, { transform: 'none', opacity: 1 }], D.delay + D.stag);
+        mtab = to;
+        X.tap = { tabs };
+      },
+      momentum(sc, A, D) {
+        const W = 900, H = 100, y = v => (50 - v * 34).toFixed(1);
+        sc.className += ' ms-wave';
+        const line = WAVE.map((v, m) => `${m ? 'L' : 'M'}${m * 10} ${y(v)}`).join(' ');
+        const area = `${line} L${(WAVE.length - 1) * 10} 50 L0 50 Z`;
+        sc.innerHTML = `<div class="ms-ontop" style="margin-top:0">${fl('fra')}<div><b>France on top</b><small>89% of the pressure in the last 10 minutes</small></div></div>
+          <div class="ms-plot"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
+            <defs><linearGradient id="moWg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b82f6" stop-opacity=".45"/><stop offset=".5" stop-color="#3b82f6" stop-opacity=".04"/><stop offset="1" stop-color="#3b82f6" stop-opacity=".45"/></linearGradient></defs>
+            <line x1="0" x2="${W}" y1="50" y2="50" stroke="rgba(255,255,255,.14)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
+            <line x1="450" x2="450" y1="6" y2="94" stroke="rgba(255,255,255,.14)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
+            <g class="wv"><path d="${area}" fill="url(#moWg)"/><path d="${line}" fill="none" stroke="#5a9cf0" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></g>
+          </svg><span class="tg" style="top:10px">${fl('fra')}FRA</span><span class="tg" style="bottom:10px">${fl('arg')}ARG</span>
+          ${[23, 39, 52].map(m => `<span class="ball" style="left:${m / 90 * 100}%;top:${y(WAVE[m]) - (WAVE[m] > 0 ? 6 : -6)}%">⚽</span>`).join('')}
+          <span class="ball" style="left:${58 / 90 * 100}%;top:${y(WAVE[58])}%;width:8px;height:8px;margin:-4px 0 0 -4px;background:#34e39a"></span></div>
+          <div class="ms-axis"><span>0’</span><span>HT</span><span>90’</span></div>`;
+        A($('.wv', sc), [{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0% 0 0)' }], D.delay);
+        $$('.ball', sc).forEach((b, i) => A(b, [{ transform: 'translateY(6px) scale(.6)', opacity: 0 }, { transform: 'none', opacity: 1 }], D.delay + (i + 1) * D.stag));
+      },
+      events(sc, A, D) {
+        const EV = [['58’', 'arg', 'Shot off target', 'Álvarez gets on the end of a cross from Tagliafico but heads over.'],
+          ['57’', 'fra', 'Yellow card', 'Tchouaméni is booked for a late challenge on Molina.', 1],
+          ['56’', 'arg', 'Shot on target', 'Tagliafico lets fly from 25 yards. Maignan tips it over the bar.'],
+          ['55’', 'arg', 'Substitution', '<span style="color:#34e39a">▲</span> Nico Paz &nbsp;<span style="color:#ff5a5a">▼</span> De Paul'],
+          ['54’', 'arg', 'Corner', 'Corner to Argentina. E. Fernández whips it in and Olise heads it clear.'],
+          ['52’', 'fra', 'Goal', '<b>Mbappé</b> · Assist Doué · 2–1', 2]];
+        sc.innerHTML = EV.map(([m, t, k, x, f]) => `<div class="ms-ev${f === 2 ? ' goal' : ''}"><span class="m">${m}</span><div><span class="k">${f === 1 ? '<i class="yc"></i>' : fl(t)}${k}</span><div class="x">${x}</div></div></div>`).join('');
+        $$('.ms-ev', sc).forEach((r, i) => A(r, [{ transform: 'translateY(-12px)', opacity: 0 }, { transform: 'none', opacity: 1 }], D.delay + i * D.stag));
+      },
+      stats(sc, A, D) {
+        const ST = [['xG', '1.96', '1.14', 1.96 / 3.1], ['Shots', '7', '9', 7 / 16], ['On target', '4', '5', 4 / 9], ['Big chances', '3', '0', 1], ['Corners', '3', '2', 3 / 5], ['Passes', '368', '243', 368 / 611]];
+        sc.innerHTML = `<div class="cap"><span>Top stats</span><b>FRA · ARG</b></div>` + ST.map(([k, h, a]) => `<div class="ms-st"><div class="v"><span>${h}</span><small>${k}</small><span>${a}</span></div><div class="b"><u></u></div></div>`).join('');
+        $$('.ms-st u', sc).forEach((u, i) => A(u, [{ transform: 'scaleX(.5)' }, { transform: `scaleX(${ST[i][3].toFixed(3)})` }], D.delay + i * D.stag));
+      },
+      lineup(sc, A, D) {
+        const XI = [[[10, 'Mbappé', 9.1]], [[20, 'Doué', 7.6], [7, 'Dembélé', 6.9], [11, 'Olise', 7.2]], [[14, 'Rabiot', 6.9], [8, 'Tchouaméni', 6.4]],
+          [[19, 'T. Hernández', 7.0], [17, 'Saliba', 6.4], [4, 'Upamecano', 6.4], [5, 'Koundé', 6.3]], [[16, 'Maignan', 7.0]]];
+        sc.innerHTML = `<div class="ms-pitch">${XI.map(l => `<div class="ms-line">${l.map(([n, nm, r]) => `<figure class="ms-pl">${head('fra', n)}${rate(r.toFixed(1))}<figcaption><i>${n}</i>${nm}</figcaption></figure>`).join('')}</div>`).join('')}</div>`;
+        $$('.ms-line', sc).forEach((l, li) => $$('.ms-pl', l).forEach((p, j) => A(p, [{ transform: 'translateY(26px)', opacity: 0 }, { transform: 'none', opacity: 1 }], D.delay + (li + j * .25) * D.stag)));
+      },
+      squad(sc, A, D) {
+        const SUB = [[1, 'Brice Samba', 'Goalkeeper'], [2, 'Malo Gusto', 'Right-back'], [3, 'Lucas Digne', 'Left-back'], [6, 'Manu Koné', 'Central midfielder'], [9, 'Marcus Thuram', 'Centre-forward'], [12, 'Bradley Barcola', 'Left winger'], [13, 'N’Golo Kanté', 'Defensive midfielder']];
+        sc.innerHTML = `<div class="cap" style="margin-bottom:6px"><span>Substitutes</span><b>0 of 5 used</b></div>` + SUB.map(([n, nm, pos]) => `<div class="ms-sub"><span class="no">${n}</span>${head('fra', n)}<span>${nm} <small>${pos}</small></span><span class="u">Unused</span></div>`).join('');
+        $$('.ms-sub', sc).forEach((r, i) => A(r, [{ transform: 'translate(18px,6px)', opacity: 0 }, { transform: 'none', opacity: 1 }], D.delay + i * D.stag));
+      },
+      player(sc, A, D) {
+        sc.className += ' ms-player';
+        sc.innerHTML = `<div class="ms-bust"><span class="no" aria-hidden="true">10</span>${bust('arg', 10)}</div>
+          <div class="ms-info"><div class="nm"><small>Lionel</small><b>Messi<sup>10</sup></b><span>Forward · Argentina</span></div>
+          <div class="ms-facts"><div><small>Club</small><b>Inter Miami</b></div><div><small>Age</small><b>39</b></div><div><small>Height</small><b>170 cm</b></div><div><small>Shirt</small><b>#10</b></div></div></div>`;
+        A($('.ms-bust img', sc), [{ transform: 'scale(.9)', opacity: 0 }, { transform: 'scale(1)', opacity: 1 }], 0);
+        [$('.nm', sc), ...$$('.ms-facts div', sc)].forEach((el, i) => A(el, [{ transform: 'translateY(14px)', opacity: 0 }, { transform: 'none', opacity: 1 }], D.delay + i * D.stag));
+      },
+      toast(sc, A, D) {
+        sc.className += ' ms-toast';
+        sc.innerHTML = `<div class="ms ms-cards bg" aria-hidden="true"><div class="cap"><span>Live now</span><b>5 in play</b></div>${cardsHTML()}</div>
+          <div class="ms-tst">${fl('fra')}${head('fra', 10)}<div class="tx"><small>Goal · 52’</small><b>Mbappé</b><span>France 2–1 Argentina</span></div></div>`;
+        const t = $('.ms-tst', sc);
+        A(t, [{ transform: 'translateY(-140%)' }, { transform: 'none' }], 0);
+        [$('.fl', t), $('.hd', t), $('.tx', t)].forEach((el, i) => A(el, [{ transform: 'translateY(30px)', opacity: 0 }, { transform: 'none', opacity: 1 }], D.delay + i * D.stag));
+      },
+      goal(sc, A, D) {
+        sc.className += ' ms-goal';
+        const C = ['#a8c3ea', '#c9b8e0', '#e2b6d6', '#f2b3c9', '#f9d3cf', '#fff0e6'];
+        sc.innerHTML = `<div class="wall" aria-hidden="true"><i style="height:68%"></i><i style="height:94%"></i><i style="height:84%"></i><i style="height:56%"></i></div>
+          ${bust('fra', 10, 'pl')}
+          <div class="top">${fl('fra')}<div>France<br><small>Scores · 52’</small></div><span class="sc">2 · 1</span></div>
+          <div class="word" aria-label="GOAAAL">${[...'GOAAAL'].map((ch, i) => `<span style="color:${C[i]}">${ch}</span>`).join('')}</div>
+          <div class="cm"><small>Mbappé · Assist Doué</small><p>Doué gets to the byline and pulls it back. Mbappé arrives on cue and sweeps it first time into the corner.</p></div>`;
+        $$('.word span', sc).forEach((s, i) => A(s, [{ transform: 'scale(1.85)', opacity: 0, filter: 'blur(7px)' }, { transform: 'scale(1)', opacity: 1, filter: 'blur(0)' }], D.delay + i * 70, 504, LAND, i === 0));
+        A($('.wall', sc), [{ transform: 'translateY(40%)', opacity: 0 }, { transform: 'none', opacity: 1 }], D.delay + D.stag);
+        A($('.pl', sc), [{ transform: 'translateY(60px)', opacity: 0 }, { transform: 'none', opacity: 1 }], D.delay + D.stag);
+        A($('.cm', sc), [{ transform: 'translateY(16px)', opacity: 0 }, { transform: 'none', opacity: 1 }], D.delay + 2 * D.stag);
+      },
+      follow(sc, A, D) {
+        sc.className += ' ms-follow';
+        sc.innerHTML = `<div class="cap"><span>★ Following</span><b>Change</b></div><div class="ms-fol"><div class="top"><div class="nm"><small>Lionel</small><b>Messi</b><span>${fl('arg')}vs France</span><em>⚽ 39’ · First goal of the match</em></div>${bust('arg', 10)}</div>
+          <div class="tiles"><div><small>Rating</small><b class="rt">7.7</b></div><div><small>Touches</small><b>34</b></div><div><small>Passes</small><b>17/21</b></div><div><small>Shots</small><b>2</b></div></div>
+          <div class="now"><i></i>Dribbles past Upamecano<span>58:15</span></div></div>`;
+        $$('.tiles div', sc).forEach((el, i) => A(el, [{ opacity: .35, transform: 'translateY(5px)' }, { opacity: 1, transform: 'none' }], D.delay + i * D.stag));
+      }
+    };
+
+    let X = {};
+    function play(r) {
+      cur = r;
+      moRows.forEach(x => { const on = x === r; x.setAttribute('aria-selected', String(on)); plot($('canvas', x), parseV(x.dataset.v), { mini: true, on }); });
+      anims.forEach(a => a.cancel()); anims = []; cancelAnimationFrame(raf);
+      const k = slow ? 4 : 1, D = { dur: +r.dataset.dur, delay: +r.dataset.delay, stag: +r.dataset.stagger, v: parseV(r.dataset.v) };
+      const segs = [];
+      const A = (el, kf, at, len = D.dur, v = D.v, lane = true) => {
+        if (!el) return;
+        anims.push(el.animate(kf, { duration: Math.max(1, len * k), delay: at * k, easing: cb(plain ? DEFAULT : v), fill: 'both' }));
+        if (lane) segs.push([at, len]);
+      };
+      X = { roll: (b, at) => { const chs = $$('.ch', b); chs.forEach((c, i) => [...c.children].forEach(s => A(s, [{ transform: 'translateY(0)' }, { transform: 'translateY(-1.15em)' }], at + i * 11, 420, ROLL, false))); segs.push([at, 420 + 11 * (chs.length - 1)]); } };
+      $('#moName').textContent = $('.nm', r).textContent;
+      moBox.innerHTML = '';
+      const sc = document.createElement('div'); sc.className = 'ms'; moBox.appendChild(sc);
+      SCENES[r.dataset.k](sc, A, D, X);
+      want = null;
+      if (X.tap) X.tap.tabs.addEventListener('click', e => {
+        const b = e.target.closest('button'); if (!b || b.classList.contains('on')) return;   // SL-11: the chosen tab doesn't roll again
+        want = b.getAttribute('aria-label'); play(cur);
+      });
+      // the timeline: each part's own span, to scale, with a playhead
+      const total = Math.max(...segs.map(([a, l]) => a + l)) || 1, lanes = segs.slice(0, 7);
+      $('#moSay').textContent = `${r.dataset.d} · ${Math.round(total).toLocaleString('en-US')} ms in all`;
+      moTl.style.height = (lanes.length * 9) + 'px';
+      moTl.innerHTML = lanes.map(([a, l], i) => `<span class="row" style="top:${i * 9}px"></span><span class="seg" style="top:${i * 9}px;left:${a / total * 100}%;width:${l / total * 100}%"></span>`).join('') + '<span class="ph"></span>';
+      const ph = $('.ph', moTl), t0 = performance.now();
+      const tick = now => { const p = clamp((now - t0) / (total * k), 0, 1); ph.style.left = (p * 100) + '%'; if (p < 1) raf = requestAnimationFrame(tick); };
+      raf = requestAnimationFrame(tick);
+      const read = [`dur ${D.dur} ms`, `delay ${D.delay} ms`, `stagger ${D.stag} ms`, plain ? 'CSS ease · cubic-bezier(0.25, 0.1, 0.25, 1)' : `${r.dataset.c} · cubic-bezier(${fmtV(D.v)})`];
+      if (r.dataset.k === 'list' || r.dataset.k === 'tabs') read.push('letters 420 ms · Roll · 11 ms apart');
+      if (r.dataset.k === 'goal') read.push('letters 504 ms · Land · 70 ms apart');
+      moRead.innerHTML = read.map((t, i) => `<span class="tag${i === 3 && !plain ? ' tag--me' : ''}">${t}</span>`).join('');
+      if (reduce()) { anims.forEach(a => a.finish()); ph.style.left = '100%'; }
+    }
+    moRows.forEach(r => { plot($('canvas', r), parseV(r.dataset.v), { mini: true }); r.addEventListener('click', () => play(r)); });
+    $('#moPlay').addEventListener('click', () => cur && play(cur));
+    moSlow.addEventListener('click', () => { slow = !slow; moSlow.setAttribute('aria-pressed', String(slow)); cur && play(cur); });
+    moEase.addEventListener('click', () => { plain = !plain; moEase.setAttribute('aria-pressed', String(plain)); cur && play(cur); });
+    let moPlayed = false;
+    onScreen($('#moStage'), v => { if (v && !moPlayed) { moPlayed = true; play(moRows[0]); } });
+    addEventListener('resize', () => { anims.forEach(a => a.finish()); X.place && X.place(); });
+  }
+
+  /* ==========================================================================
      06 · RIVE — the two files, live, on the portfolio's shared runtime
      ========================================================================== */
   let riveP = null;
