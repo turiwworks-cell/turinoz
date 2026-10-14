@@ -855,7 +855,7 @@ h3{font:560 24px/1.15 var(--display);font-stretch:88%;letter-spacing:-.022em}
 .crx-k{font:500 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .crx-n{display:block;margin-top:18px;font:560 clamp(34px,3.6vw,52px)/1 var(--display);font-stretch:84%;letter-spacing:-.035em;color:var(--ink)}
 .crx p{margin-top:12px;font-size:14.5px;line-height:1.5;color:var(--ink-2)}
-.crx-meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;margin-top:28px}
+.crx-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin-top:28px}
 .crx-meta dt{font:500 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .crx-meta dd{margin-top:10px;font-size:14.5px;color:var(--ink)}
 @media (max-width:760px){
@@ -876,6 +876,8 @@ h3{font:560 24px/1.15 var(--display);font-stretch:88%;letter-spacing:-.022em}
 .foot a{text-decoration:none}
 .foot .tz{display:inline-flex;align-items:center;gap:9px;color:var(--ink)}
 .foot .tz svg{width:22px;height:22px;border-radius:50%}
+/* the name as a wordmark, as on the smtp.dev page */
+.foot .tz{font:500 12px/1 var(--ui);letter-spacing:.32em;text-transform:uppercase;transition:color .2s}
 .totop{display:inline-flex;align-items:center;gap:7px}
 .totop svg{width:11px;height:11px}
 
