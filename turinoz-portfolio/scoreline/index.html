@@ -224,8 +224,8 @@
 </section>
 
 <!-- ================= 03 MOTION =================
-     Three of the ten curves, then the app's twelve sections played with their real content
-     (players, events, stats) on their exact duration, delay, stagger and curve. -->
+     Three of the ten curves, then the app's sections played on their exact
+     duration, delay, stagger and curve. -->
 <section class="sec" id="motion">
   <div class="wrap">
     <div class="shead rv">
@@ -261,28 +261,25 @@
     </div>
 
     <div class="subhead subhead--tight rv">
-      <h3>Twelve sections, twelve rhythms.</h3>
+      <h3>Section by section.</h3>
       <p>Each part of the app has its own duration, delay and stagger. Pick one and it plays here with its exact numbers. Most share a curve; none share a rhythm.</p>
     </div>
     <div class="mo" id="mo">
       <div class="mo-list rv" role="listbox" aria-label="The app’s sections" id="moList">
         <div class="mo-th" aria-hidden="true"><span>Section</span><span>Dur</span><span>Delay</span><span>Stagger</span><span>Curve</span></div>
+        <button class="mo-row" type="button" role="option" aria-selected="false" data-k="player" data-dur="720" data-delay="120" data-stagger="50" data-v="0.32,0,0.1,1" data-c="Player" data-d="Face to bust, then the sheet"><span class="nm">Player</span><span>720</span><span>120</span><span>50</span><span class="cvm"><canvas></canvas><span>Player</span></span></button>
         <button class="mo-row" type="button" role="option" aria-selected="false" data-k="cards" data-dur="750" data-delay="100" data-stagger="60" data-v="0.16,1,0.3,1" data-c="Glide" data-d="Live cards rising in"><span class="nm">Cards</span><span>750</span><span>100</span><span>60</span><span class="cvm"><canvas></canvas><span>Glide</span></span></button>
-        <button class="mo-row" type="button" role="option" aria-selected="false" data-k="list" data-dur="500" data-delay="50" data-stagger="30" data-v="0.2,0.8,0.2,1" data-c="Base" data-d="A new day: its label rolls, then the rows"><span class="nm">List</span><span>500</span><span>50</span><span>30</span><span class="cvm"><canvas></canvas><span>Base</span></span></button>
+        <button class="mo-row" type="button" role="option" aria-selected="false" data-k="list" data-dur="500" data-delay="50" data-stagger="30" data-v="0.2,0.8,0.2,1" data-c="Base" data-d="Rows after a day change"><span class="nm">List</span><span>500</span><span>50</span><span>30</span><span class="cvm"><canvas></canvas><span>Base</span></span></button>
         <button class="mo-row" type="button" role="option" aria-selected="false" data-k="screen" data-dur="550" data-delay="0" data-stagger="50" data-v="0.16,1,0.3,1" data-c="Glide" data-d="Opening a match"><span class="nm">Screen</span><span>550</span><span>0</span><span>50</span><span class="cvm"><canvas></canvas><span>Glide</span></span></button>
-        <button class="mo-row" type="button" role="option" aria-selected="false" data-k="tabs" data-dur="450" data-delay="0" data-stagger="60" data-v="0.2,0.8,0.2,1" data-c="Base" data-d="The label rolls, the line follows, then the content"><span class="nm">Tabs</span><span>450</span><span>0</span><span>60</span><span class="cvm"><canvas></canvas><span>Base</span></span></button>
-        <button class="mo-row" type="button" role="option" aria-selected="false" data-k="momentum" data-dur="900" data-delay="100" data-stagger="60" data-v="0.16,1,0.3,1" data-c="Glide" data-d="The wave draws on"><span class="nm">Momentum</span><span>900</span><span>100</span><span>60</span><span class="cvm"><canvas></canvas><span>Glide</span></span></button>
+        <button class="mo-row" type="button" role="option" aria-selected="false" data-k="tabs" data-dur="450" data-delay="0" data-stagger="60" data-v="0.2,0.8,0.2,1" data-c="Base" data-d="The label rolls, the line follows"><span class="nm">Tabs</span><span>450</span><span>0</span><span>60</span><span class="cvm"><canvas></canvas><span>Base</span></span></button>
         <button class="mo-row" type="button" role="option" aria-selected="false" data-k="events" data-dur="500" data-delay="150" data-stagger="40" data-v="0.16,1,0.3,1" data-c="Glide" data-d="Rows from 12 px above"><span class="nm">Events</span><span>500</span><span>150</span><span>40</span><span class="cvm"><canvas></canvas><span>Glide</span></span></button>
         <button class="mo-row" type="button" role="option" aria-selected="false" data-k="stats" data-dur="900" data-delay="150" data-stagger="60" data-v="0.16,1,0.3,1" data-c="Glide" data-d="Bars open from the middle"><span class="nm">Stats</span><span>900</span><span>150</span><span>60</span><span class="cvm"><canvas></canvas><span>Glide</span></span></button>
         <button class="mo-row" type="button" role="option" aria-selected="false" data-k="lineup" data-dur="600" data-delay="100" data-stagger="140" data-v="0.16,1,0.3,1" data-c="Glide" data-d="Line by line, forwards first"><span class="nm">Lineup</span><span>600</span><span>100</span><span>140</span><span class="cvm"><canvas></canvas><span>Glide</span></span></button>
-        <button class="mo-row" type="button" role="option" aria-selected="false" data-k="squad" data-dur="500" data-delay="300" data-stagger="30" data-v="0.16,1,0.3,1" data-c="Glide" data-d="Substitutes, after the pitch"><span class="nm">Squad</span><span>500</span><span>300</span><span>30</span><span class="cvm"><canvas></canvas><span>Glide</span></span></button>
-        <button class="mo-row" type="button" role="option" aria-selected="false" data-k="player" data-dur="720" data-delay="120" data-stagger="50" data-v="0.32,0,0.1,1" data-c="Player" data-d="Face to bust, then the sheet"><span class="nm">Player</span><span>720</span><span>120</span><span>50</span><span class="cvm"><canvas></canvas><span>Player</span></span></button>
         <button class="mo-row" type="button" role="option" aria-selected="false" data-k="toast" data-dur="600" data-delay="450" data-stagger="200" data-v="0.16,1,0.3,1" data-c="Glide" data-d="Flag, then photo, then name"><span class="nm">Toast</span><span>600</span><span>450</span><span>200</span><span class="cvm"><canvas></canvas><span>Glide</span></span></button>
-        <button class="mo-row" type="button" role="option" aria-selected="false" data-k="follow" data-dur="500" data-delay="0" data-stagger="60" data-v="0.16,1,0.3,1" data-c="Glide" data-d="Your player’s stat tiles"><span class="nm">Follow</span><span>500</span><span>0</span><span>60</span><span class="cvm"><canvas></canvas><span>Glide</span></span></button>
       </div>
       <div class="mo-stage rv" style="--rd:.08s" id="moStage">
         <div class="mo-h">
-          <div class="mo-t"><b id="moName">Cards</b><small id="moSay">Live cards rising in</small></div>
+          <div class="mo-t"><b id="moName">Player</b><small id="moSay">Face to bust, then the sheet</small></div>
           <div class="mo-ctl"><button class="chipbtn" type="button" id="moPlay" aria-label="Play again"><svg aria-hidden="true"><use href="#icRestart"/></svg></button></div>
         </div>
         <div class="mo-box" id="moBox"></div>
