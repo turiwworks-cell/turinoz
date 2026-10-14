@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#000000">
+<title>Scoreline brand — Turinoz</title>
+<meta name="description" content="The Scoreline mark, lockups, icon, colours and type.">
+<link rel="icon" type="image/svg+xml" href="scoreline-icon.svg">
+<style>
+@font-face{font-family:"Archivo";src:url(../../fonts/archivo.woff2) format("woff2");font-weight:100 900;font-stretch:62% 125%;font-display:swap}
+@font-face{font-family:"Inter";src:url(../../fonts/inter.woff2) format("woff2");font-weight:100 900;font-display:swap}
+@font-face{font-family:"JB Mono";src:url(../../fonts/jetbrains-mono.woff2) format("woff2");font-weight:100 800;font-display:swap}
+:root{--bg:#000;--surface:#0d0d0d;--line:rgba(255,255,255,.08);--ink:#F3F2EF;--ink-2:#B8B6B0;--muted:#85847F;
+  --display:"Archivo","Helvetica Neue",Helvetica,Arial,sans-serif;--sans:"Inter",system-ui,sans-serif;--mono:"JB Mono",ui-monospace,Menlo,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1240px;margin:0 auto;padding:40px max(20px,env(safe-area-inset-right)) 80px max(20px,env(safe-area-inset-left))}
+.top{display:flex;justify-content:space-between;align-items:center;gap:16px}
+.top a{color:var(--ink-2);text-decoration:none;font-size:14px}
+.top a:hover{color:var(--ink)}
+.kicker{font:500 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+h1{font:560 clamp(36px,5vw,64px)/1.02 var(--display);font-stretch:84%;letter-spacing:-.035em;margin:56px 0 0}
+.sub{color:var(--ink-2);max-width:56ch;margin:14px 0 0}
+.sheet{margin-top:40px;border-radius:18px;overflow:hidden;box-shadow:0 0 0 1px var(--line)}
+.sheet img{display:block;width:100%;height:auto}
+.files{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:28px}
+.file{display:grid;gap:12px;padding:16px;border-radius:14px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);color:var(--ink);text-decoration:none}
+.file:hover{box-shadow:inset 0 0 0 1px rgba(255,255,255,.2)}
+.file .pv{height:96px;display:grid;place-items:center;border-radius:10px;background:#000}
+.file .pv.light{background:#F7F2EA}
+.file .pv img{max-height:56px;max-width:80%}
+.file .pv img.lk-d{width:72%;max-width:none;max-height:none}
+.file .pv img.lk-b{width:54%;max-width:none;max-height:none}
+.file b{font-weight:500}
+.file span{font:500 11px/1.3 var(--mono);color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><a href="../">← Scoreline case study</a><span class="kicker">Brand</span></div>
+  <h1>Scoreline</h1>
+  <p class="sub">The mark, the lockups, the icon, the colours and the type.</p>
+  <figure class="sheet" style="margin-inline:0"><img src="scoreline-branding.svg" alt="Scoreline brand sheet: the lockup on black, on the spectrum and on the pastel base; the mark alone; the app icon, a one-colour lockup and an avatar; the five spectra and the inks; Hanken Grotesk Medium." width="4800" height="4800"></figure>
+  <div class="files">
+    <a class="file" href="scoreline-mark.svg" download><div class="pv"><img src="scoreline-mark.svg" alt=""></div><b>Mark</b><span>scoreline-mark.svg</span></a>
+    <a class="file" href="scoreline-icon.svg" download><div class="pv light"><img src="scoreline-icon.svg" alt=""></div><b>App icon</b><span>scoreline-icon.svg</span></a>
+    <a class="file" href="scoreline-lockup-dark.svg" download><div class="pv"><img class="lk-d" src="scoreline-lockup-dark.svg" alt=""></div><b>Lockup, on black</b><span>scoreline-lockup-dark.svg</span></a>
+    <a class="file" href="scoreline-lockup-black.svg" download><div class="pv light"><img class="lk-b" src="scoreline-lockup-black.svg" alt=""></div><b>Lockup, one colour</b><span>scoreline-lockup-black.svg</span></a>
+    <a class="file" href="scoreline-branding.svg" download><div class="pv"><img src="scoreline-branding.svg" alt=""></div><b>Brand sheet</b><span>scoreline-branding.svg</span></a>
+  </div>
+</div>
+</body>
+</html>

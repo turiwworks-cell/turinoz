@@ -73,7 +73,7 @@ code{font:500 .86em/1 var(--mono);padding:3px 6px 2px;border-radius:6px;backgrou
 .brand>span:last-child{color:var(--muted);font-weight:400}
 .slmark{display:flex;align-items:flex-start;gap:0;height:22px;flex:none}
 .slmark i{display:block;width:6px}
-.slmark i:nth-child(1){height:16px;margin-top:6px;background:linear-gradient(180deg,var(--sp2))}
+.slmark i:nth-child(1){height:12px;margin-top:6px;background:linear-gradient(180deg,var(--sp2))}
 .slmark i:nth-child(2){height:22px;background:linear-gradient(180deg,var(--sp3))}
 .slmark i:nth-child(3){height:12px;margin-top:4px;background:linear-gradient(180deg,var(--sp5))}
 .brand .slmark{transform:scale(.82);transform-origin:50% 50%}
