@@ -526,6 +526,14 @@ h3{font:560 24px/1.15 var(--display);font-stretch:88%;letter-spacing:-.022em}
 .mo-row .nm{font:500 13.5px/1 var(--ui);color:var(--ink);letter-spacing:-.005em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mo-row .cvm{display:flex;align-items:center;gap:7px;min-width:0}
 .mo-row .cvm canvas{width:20px;height:20px;flex:none}
+/* side by side, the list runs the stage's full height: its rows share the room, so both end on one line */
+@media (min-width:1101px){
+  .mo-list{align-self:stretch;display:flex;flex-direction:column}
+  .mo-th{flex:none}
+  .mo-row{flex:1;height:auto;min-height:33px}
+  /* room for the busiest section (seven lanes, one line of numbers), so the stage keeps one height from section to section */
+  .mo-foot{min-height:99px}
+}
 .mo-stage{padding:18px;border-radius:var(--r);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line)}
 .mo-h{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .mo-t{min-width:0;display:flex;flex-direction:column;gap:5px}
