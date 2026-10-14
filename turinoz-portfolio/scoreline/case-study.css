@@ -210,7 +210,7 @@ h3{font:560 24px/1.15 var(--display);font-stretch:88%;letter-spacing:-.022em}
 .dock-backdrop.on{opacity:1;pointer-events:auto}
 
 /* Turinoz's cursor, over the phone */
-.tcur{position:absolute;left:0;top:0;z-index:8;pointer-events:none;opacity:0;transition:opacity .6s var(--ease),transform 1.05s cubic-bezier(.45,.05,.2,1);will-change:transform}
+.tcur{position:absolute;left:0;top:0;z-index:8;pointer-events:none;opacity:0;transition:opacity .45s var(--ease);will-change:transform}
 .tcur.on{opacity:1}
 .tcur .arrow{position:absolute;left:-5px;top:-3px;width:25px;height:25px;overflow:visible;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35)) drop-shadow(0 5px 9px rgba(0,0,0,.32));transform-origin:5px 3px;transition:transform .22s var(--ease)}
 .tcur .arrow path{fill:#fff;stroke:#111;stroke-width:1.25;stroke-linejoin:round}
@@ -218,18 +218,6 @@ h3{font:560 24px/1.15 var(--display);font-stretch:88%;letter-spacing:-.022em}
 .tcur .ring{position:absolute;left:-18px;top:-18px;width:36px;height:36px;border-radius:50%;border:1.5px solid #fff;opacity:0}
 .tcur.clk .ring{animation:ring .7s var(--ease)}
 @keyframes ring{0%{opacity:.85;transform:scale(.2)}100%{opacity:0;transform:scale(1.25)}}
-.tcur .bub{position:absolute;left:20px;top:26px;display:flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;border-radius:12px;background:#1C1C1E;color:#F2F0EB;
-  font:500 12.5px/1.25 var(--ui);letter-spacing:-.005em;white-space:nowrap;box-shadow:0 16px 34px -12px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.1);
-  opacity:0;transform-origin:0 0;transform:scale(.94);transition:opacity .35s var(--ease),transform .6s var(--ease)}
-.tcur.left .bub{left:auto;right:12px;transform-origin:100% 0}
-.tcur.up .bub{top:auto;bottom:14px;transform-origin:0 100%}
-.tcur.up.left .bub{transform-origin:100% 100%}
-.tcur .bub.on{opacity:1;transform:none}
-.tcur .bub em{flex:none;width:20px;height:20px;border-radius:50%;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.14)}
-.tcur .bub em svg{width:100%;height:100%}
-.tcur .bub b{display:flex;align-items:center;font-weight:500}
-.tcur .caret{width:1.5px;height:14px;margin-left:2px;border-radius:1px;background:currentColor;opacity:0}
-.tcur .bub.typing .caret{opacity:.75;animation:caret .9s steps(1) infinite}
 @keyframes caret{50%{opacity:0}}
 
 /* ==========================================================================
@@ -336,12 +324,13 @@ h3{font:560 24px/1.15 var(--display);font-stretch:88%;letter-spacing:-.022em}
 .decision p span{color:var(--muted)}
 
 /* ==========================================================================
-   03 — DECISIONS (beside the phone)
+   01 — TOUR (beside the phone): each stop is a stretch of scroll, and its text
+   holds still while the scroll plays it on the phone
    ========================================================================== */
-.dlist{padding:10px 0 20vh;counter-reset:d}
-.dcard{min-height:74vh;display:flex;flex-direction:column;justify-content:center;gap:16px;padding:28px 0;opacity:.22;transition:opacity .7s var(--ease)}
-.dcard.on{opacity:1}
-.dcard:first-child{min-height:60vh}
+.dlist{padding:0 0 8vh}
+.dcard{position:relative;height:calc(var(--len,180) * 1vh)}
+.dpin{position:sticky;top:64px;height:calc(100vh - 64px);display:flex;flex-direction:column;justify-content:center;gap:16px;opacity:.22;transition:opacity .7s var(--ease)}
+.dcard.on .dpin{opacity:1}
 .dn{display:flex;align-items:center;gap:10px;font:500 12px/1 var(--mono);color:var(--muted)}
 .dn b{display:inline-grid;place-items:center;height:22px;padding:0 8px;border-radius:999px;font-weight:500;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line-3)}
 .dcard.on .dn b{background:var(--ink);color:#0A0A0A;box-shadow:none}
@@ -691,7 +680,7 @@ h3{font:560 24px/1.15 var(--display);font-stretch:88%;letter-spacing:-.022em}
 @media (hover:none),(pointer:coarse){ .lcur{display:none} }
 
 /* ---------- paused (the nav button) ---------- */
-.paused .aurora i,.paused .dot::after,.paused .belt,.paused .scrollcue i::after,.paused .term-body .caret,.paused .tcur .caret{animation-play-state:paused}
+.paused .aurora i,.paused .dot::after,.paused .belt,.paused .scrollcue i::after,.paused .term-body .caret{animation-play-state:paused}
 
 /* ==========================================================================
    RESPONSIVE
@@ -709,7 +698,8 @@ h3{font:560 24px/1.15 var(--display);font-stretch:88%;letter-spacing:-.022em}
   .dshow{display:inline-flex}
   .dshot{display:block;max-width:300px;border-radius:24px;overflow:hidden;box-shadow:inset 0 0 0 1px var(--line),0 30px 70px -40px rgba(0,0,0,.9)}
   .dshot img{width:100%;height:auto}
-  .dcard{min-height:0;opacity:1;padding:44px 0;border-bottom:1px solid var(--line-2)}
+  .dcard{height:auto;border-bottom:1px solid var(--line-2)}
+  .dpin{position:static;height:auto;opacity:1;padding:44px 0}
   .dlist{padding-bottom:0}
   .hero{min-height:0}
   .aurora i{opacity:.26}
@@ -773,5 +763,4 @@ h3{font:560 24px/1.15 var(--display);font-stretch:88%;letter-spacing:-.022em}
   .rv,.h1 .ln>span{transition:none!important;opacity:1!important;transform:none!important}
   .aurora i,.dot::after,.belt,.scrollcue i::after{animation:none}
   .dock,.demo-pill{transition-duration:.01s!important}
-  .tcur{transition:opacity .3s}
 }

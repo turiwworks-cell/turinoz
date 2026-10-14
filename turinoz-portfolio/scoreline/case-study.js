@@ -161,6 +161,7 @@
     D.app.subscribe(() => { showRoute(); syncPause(); });
     showRoute(); syncPause();
     if (D.want) { const w = D.want; D.want = null; go(w.route, w); }
+    kickTour();
   }
   function syncPause() {
     const st = D.app && D.app.state(), p = !!(st && st.paused);
@@ -277,84 +278,16 @@
   }
   const appDoc = () => { try { return frame.contentDocument; } catch (_) { return null; } };
   const presentScreen = () => { const d = appDoc(); return d && [...d.querySelectorAll('[data-screen][data-present="true"]')].pop(); };
-  function find(spec) {
-    const d = appDoc(); if (!d || !spec) return null;
-    const scr = presentScreen() || d.body;
-    const [kind, arg] = [spec.split(':')[0], spec.slice(spec.indexOf(':') + 1)];
-    if (kind === 'label') return d.querySelector(`[aria-label^="${arg}"]`);
-    if (kind === 'h') return [...scr.querySelectorAll('h2,h3')].find(e => e.textContent.trim().toLowerCase() === arg.toLowerCase()) || null;
-    if (kind === 'live-card') return d.querySelector('button[aria-label$=", live"]');
-    if (kind === 'score') return [...scr.querySelectorAll('span')].find(e => !e.children.length && /^\d$/.test(e.textContent.trim()) && parseFloat(getComputedStyle(e).fontSize) > 40) || null;
-    if (kind === 'goal-row') { const a = [...scr.querySelectorAll('span')].find(e => !e.children.length && /^Assist/.test(e.textContent.trim())); return a ? (a.closest('[class*="_goal_"]') || a.parentElement) : null; }
-    return null;
-  }
-  function scrollApp(spec, top = 150) {
-    const scr = presentScreen(); if (!scr) return;
-    const el = spec === 'goal-row' ? find('goal-row') : find('h:' + spec);
-    if (!el) return;
-    const y = el.getBoundingClientRect().top - scr.getBoundingClientRect().top + scr.scrollTop - (spec === 'goal-row' ? scr.clientHeight * .38 : top);
-    scr.scrollTo({ top: Math.max(0, y), behavior: reduce() ? 'auto' : 'smooth' });
-  }
   function resetScroll() { const d = appDoc(); if (!d) return; $$('[data-screen]', d).forEach(s => { if (s.scrollTop) s.scrollTo({ top: 0, behavior: reduce() ? 'auto' : 'smooth' }); }); }
 
-  /* Turinoz's cursor over the phone: glides to the detail, taps, says one line */
-  const TC = { cur: $('.tcur', screenEl), bub: $('.tcur .bub', screenEl), tx: $('.tcur .tx', screenEl) };
-  function hideCursor() { TC.token = (TC.token || 0) + 1; TC.cur.classList.remove('on'); TC.bub.classList.remove('on', 'typing'); }
-  function pointAt(x, y, line) {
-    const tok = TC.token = (TC.token || 0) + 1, cur = TC.cur, fw = screenEl.clientWidth, fh = screenEl.clientHeight;
-    x = clamp(x, 12, fw - 12); y = clamp(y, 40, fh - 30);
-    TC.bub.classList.remove('on', 'typing'); TC.tx.textContent = line;
-    const bw = TC.bub.offsetWidth + 4; TC.tx.textContent = '';
-    const right = x + 20 + bw <= fw - 6, leftOk = x - 12 - bw >= 6, left = !right && leftOk;
-    cur.classList.toggle('left', left); cur.classList.toggle('up', y > fh * .78);
-    let nudge = 0; if (!right && !leftOk) nudge = (fw - 6 - bw) - (x + 20);
-    TC.bub.style.marginLeft = nudge ? nudge.toFixed(0) + 'px' : '';
-    if (!TC.placed) {                                // the first time, it comes in from the middle of the screen
-      TC.placed = true; cur.style.transition = 'none';
-      cur.style.transform = `translate3d(${(fw * .55).toFixed(1)}px,${(fh * .6).toFixed(1)}px,0)`;
-      void cur.offsetWidth; cur.style.transition = '';
-    }
-    cur.style.transform = `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0)`;
-    cur.classList.add('on');
-    (async () => {
-      await wait(reduce() ? 60 : 1000); if (tok !== TC.token) return;
-      cur.classList.add('press', 'clk'); await wait(160); cur.classList.remove('press');
-      await wait(120); if (tok !== TC.token) return;
-      TC.bub.classList.add('on', 'typing');
-      if (reduce()) TC.tx.textContent = line;
-      else for (let i = 1; i <= line.length; i++) { if (tok !== TC.token) return; TC.tx.textContent = line.slice(0, i); await wait(28 + (line[i - 1] === ' ' ? 30 : 0)); }
-      await wait(900); if (tok !== TC.token) return;
-      TC.bub.classList.remove('typing'); cur.classList.remove('clk');
-    })();
-  }
-  function pointSpec(spec, dx, dy, line) {
-    if (!line) { hideCursor(); return; }
-    const s = parseFloat(getComputedStyle(dock).getPropertyValue('--s')) || .86;
-    let x, y;
-    if (spec && spec.startsWith('pct:')) { const [px, py] = spec.slice(4).split(',').map(Number); x = px / 100 * screenEl.clientWidth; y = py / 100 * screenEl.clientHeight; }
-    else {
-      const el = find(spec); if (!el) { hideCursor(); return; }
-      const r = el.getBoundingClientRect();
-      x = (r.left + Math.min(r.width * .5, 60) + (dx || 0)) * s; y = (r.top + r.height * .5 + (dy || 0)) * s;
-    }
-    pointAt(x, y, line);
-  }
-
-  /* go: the screen for a decision, then where to look */
-  async function go(route, opt = {}) {
+  /* go: a screen for the phone, from the top */
+  function go(route, opt = {}) {
     start();
     if (!D.app) { D.want = { route, ...opt }; return; }
     if (D.control) return;                                     // never pull the screen away from someone using it
-    const tok = ++D.token;
     hideCursor();
-    const moved = navigate(route);
-    if (!moved) return;
-    await wait(route.startsWith('/match') || route.startsWith('/player') ? 650 : 380); if (tok !== D.token) return;
-    if (opt.scroll) { scrollApp(opt.scroll, 182); await wait(700); } else resetScroll();
-    if (tok !== D.token) return;
-    if (opt.scene) { await wait(250); if (tok === D.token) scene(opt.scene); return; }
-    await wait(120); if (tok !== D.token) return;
-    pointSpec(opt.point, opt.dx, opt.dy, opt.say || '');
+    if (navigate(route)) setTimeout(resetScroll, 380);
+    if (opt.scene) setTimeout(() => scene(opt.scene), 650);
   }
 
   // start the phone once the page has settled (on a phone, when it's first asked for)
@@ -403,46 +336,215 @@
   }
 
   /* ==========================================================================
-     01 · TOUR — the stop in the middle of the screen drives the phone
+     01 · TOUR — each stop holds still while the scroll plays it on the phone.
+     A stop is a function of its progress p (0–1): the screen it wants, the
+     state it wants (Live, who you follow, the line-up side, the scroll), and
+     where the cursor is. The app is nudged toward that state every frame, so
+     scrolling back undoes it and nothing depends on scroll speed.
      ========================================================================== */
-  const cards = $$('.dcard');
-  let activeCard = null;
-  const cardOpt = c => ({ route: c.dataset.route || '/', point: c.dataset.point, dx: +c.dataset.dx || 0, dy: +c.dataset.dy || 0, say: c.dataset.say || '', scroll: c.dataset.scroll, scene: null });
-  function activate(c) {
-    if (c === activeCard) return;
-    activeCard = c;
-    cards.forEach(x => x.classList.toggle('on', x === c));
-    if (!c || !mqWide.matches || dock.dataset.state !== 'docked') return;
-    const o = cardOpt(c);
-    // the goal card plays a goal the first time it comes up; after that, the buttons do
-    if (c.dataset.moment && !D.moment) { D.moment = true; o.scene = c.dataset.moment; }
-    go(o.route, o);
+  const tourEl = $('#tour'), cards = $$('.dcard', tourEl);
+  const NAV_H = 64;
+  const T = { i: -1, p: 0, prev: 0, busy: 0, hold: 0, run: false, seen: false, fired: new Set(), last: {} };
+  const ease = t => (t < .5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
+  const seg = (p, a, b) => clamp((p - a) / (b - a), 0, 1);
+
+  // what's on the phone
+  const pathNow = () => { const r = appRoute().split('?')[0].replace(/\/$/, ''); return r || '/'; };
+  const scr = () => presentScreen();
+  const inScr = sel => { const s = scr(); return s ? s.querySelector(sel) : null; };
+  const button = (root, re) => (root ? [...root.querySelectorAll('button')].find(b => re.test(b.textContent.trim())) || null : null);
+  const followSec = () => { const d = appDoc(); return d && d.querySelector('section[aria-label="Following"]'); };
+  const EL = {
+    live: () => { const d = appDoc(); return d && d.querySelector('button[aria-label^="Live"]'); },
+    change: () => button(followSec(), /^(Change|Done)$/),
+    chip: name => button(followSec(), new RegExp('^' + name)),
+    card: () => { const s = followSec(); return s && s.querySelector('button[aria-label$="the player you follow"]'); },
+    match: () => inScr('button[aria-label^="France "][aria-label*="Argentina"]:not([aria-label$=", live"])'),
+    tab: name => { const s = scr(); return s ? [...s.querySelectorAll('[role=tab]')].find(t => t.textContent.trim().startsWith(name)) || null : null; },
+    side: side => inScr(`button[role=radio][data-side="${side}"]`),
+    messi: () => inScr('button[aria-label="10 Messi"]'),
+    back: () => inScr('button[aria-label="Back"]'),
+    heading: name => { const s = scr(); return s ? [...s.querySelectorAll('h2,h3')].find(h => h.textContent.trim() === name) || null : null; },
+  };
+  const isLive = () => { const b = EL.live(); return !b || b.getAttribute('aria-pressed') !== 'false'; };
+  const following = () => { const b = EL.card(); return b ? b.getAttribute('aria-label') : ''; };
+  const picking = () => !!button(followSec(), /^Done$/);
+  const offsetIn = (el, s) => el.getBoundingClientRect().top - s.getBoundingClientRect().top + s.scrollTop;
+  const maxScroll = s => Math.max(0, s.scrollHeight - s.clientHeight);
+  // the list's top bar stays put over the scroll, so a spot sits just under it
+  const headH = s => { const t = [...s.children, ...[...s.children].flatMap(c => [...c.children])].find(e => getComputedStyle(e).position === 'sticky'); return t ? t.offsetHeight : 0; };
+
+  // where each screen scrolls to
+  const SPOT = {
+    following: () => { const s = scr(), h = EL.heading('Following'); return s && h ? Math.max(0, offsetIn(h, s) - headH(s) - 14) : 0; },
+    events: () => { const s = scr(), h = EL.heading('Events'); return s && h ? Math.min(maxScroll(s), offsetIn(h, s) + 240) : 0; },
+    end: () => { const s = scr(); return s ? maxScroll(s) : 0; },
+  };
+
+  // one action at a time: a tap needs a moment to land before the next look
+  const act = (fn, ms = 260) => { if (performance.now() < T.busy) return; T.busy = performance.now() + ms; try { fn(); } catch (_) {} };
+  const tapEl = el => { if (el) act(() => el.click()); };
+
+  /* the stops: path(p), the state at p, the cursor's waypoints, and when it taps */
+  const STOPS = {
+    live: {
+      want: p => ({ path: '/', screen: 'list', live: !(p >= .32 && p < .66), follow: 'Messi', scroll: 0 }),
+      cursor: [[0, 'rest'], [.24, EL.live], [1, EL.live]], show: p => p > 0, taps: [.32, .66],
+    },
+    follow: {
+      want: p => ({ path: '/', screen: 'list', live: true, follow: p >= .66 ? 'Mbappé' : 'Messi', picking: p >= .4 && p < .66,
+        scroll: s => ease(seg(p, 0, .2)) * SPOT.following(s) }),
+      cursor: [[0, 'rest'], [.2, 'rest'], [.36, EL.change], [.44, EL.change], [.6, () => EL.chip('Mbappé')], [.72, EL.card], [1, EL.card]],
+      show: p => p > 0, taps: [.4, .66],
+    },
+    match: {
+      want: p => (p < .16
+        ? { path: '/', screen: 'list', live: true, follow: 'Mbappé', scroll: () => SPOT.following() }
+        : { path: '/match/1/facts', screen: 'match', scroll: () => ease(seg(p, .22, .95)) * SPOT.events() }),
+      cursor: [[0, 'rest'], [.12, EL.match], [1, EL.match]], show: p => p > 0 && p < .26, taps: [.16],
+    },
+    stats: {
+      want: p => (p < .2
+        ? { path: '/match/1/facts', screen: 'match', scroll: () => (1 - ease(seg(p, 0, .14))) * SPOT.events() }
+        : { path: '/match/1/stats', screen: 'match', scroll: () => ease(seg(p, .26, .95)) * SPOT.end() }),
+      cursor: [[0, 'rest'], [.08, 'rest'], [.17, () => EL.tab('Stats')], [1, () => EL.tab('Stats')]], show: p => p > .04 && p < .3, taps: [.2],
+    },
+    lineup: {
+      want: p => (p < .18
+        ? { path: '/match/1/stats', screen: 'match', scroll: () => (1 - ease(seg(p, 0, .12))) * SPOT.end() }
+        : p < .6
+          ? { path: '/match/1/lineup', screen: 'match', side: p >= .35 ? 'away' : 'home', scroll: 0 }
+          : { path: '/player/arg/10', screen: 'player' }),
+      cursor: [[0, 'rest'], [.06, 'rest'], [.15, () => EL.tab('Lineup')], [.22, () => EL.tab('Lineup')], [.32, () => EL.side('away')],
+        [.42, () => EL.side('away')], [.56, EL.messi], [1, EL.messi]],
+      show: p => p > .02 && p < .7, taps: [.18, .35, .6],
+    },
+    goal: {
+      want: p => (p < .15 ? { path: '/player/arg/10', screen: 'player' } : { path: '/', screen: 'list', live: true, follow: 'Mbappé', scroll: 0 }),
+      cursor: [[0, 'rest'], [.12, EL.back], [1, EL.back]], show: p => p > 0 && p < .22, taps: [.15],
+      moments: [[.3, 'goalElsewhere'], [.62, 'redElsewhere']],
+    },
+  };
+
+  /* the cursor: placed by the scroll, no captions */
+  const TC = { cur: $('.tcur', screenEl), on: false };
+  const sNow = () => parseFloat(getComputedStyle(dock).getPropertyValue('--s')) || .86;
+  const rest = () => ({ x: screenEl.clientWidth * .62, y: screenEl.clientHeight * .74 });
+  function ptOf(target, key) {
+    if (target === 'rest') return rest();
+    const el = target && target();
+    if (el && el.getClientRects().length) {
+      const r = el.getBoundingClientRect(), s = sNow();
+      T.last[key] = { x: (r.left + Math.min(r.width * .5, 70)) * s, y: (r.top + r.height * .5) * s };
+    }
+    return T.last[key] || rest();
   }
+  function along(wps, p, stop) {
+    let k = 0; while (k < wps.length - 2 && p > wps[k + 1][0]) k++;
+    const [a, fa] = wps[k], [b, fb] = wps[k + 1] || wps[k];
+    const A = ptOf(fa, stop + k), B = ptOf(fb, stop + (k + 1));
+    const t = ease(seg(p, a, b || 1));
+    return { x: lerp(A.x, B.x, t), y: lerp(A.y, B.y, t) };
+  }
+  function placeCursor(x, y) {
+    const fw = screenEl.clientWidth, fh = screenEl.clientHeight;
+    TC.cur.style.transform = `translate3d(${clamp(x, 12, fw - 12).toFixed(1)}px,${clamp(y, 40, fh - 30).toFixed(1)}px,0)`;
+  }
+  function showCursor(v) { if (v !== TC.on) { TC.on = v; TC.cur.classList.toggle('on', v); } }
+  function hideCursor() { showCursor(false); }
+  function tapRing() {
+    const c = TC.cur; c.classList.remove('clk'); void c.offsetWidth; c.classList.add('press', 'clk');
+    setTimeout(() => c.classList.remove('press'), 160);
+  }
+
+  /* nudge the app toward the state a stop wants */
+  function reconcile(w) {
+    const path = pathNow();
+    // screens change through the app's router without new history, so the page's Back stays the page's
+    if (path !== w.path) return act(() => navigate(w.path), 420);
+    const s = scr(); if (!s || s.dataset.screen !== w.screen) return;
+    // the scroll first: it follows the page every frame, the taps can take a moment
+    if (w.scroll !== undefined && performance.now() >= T.busy) {
+      const y = Math.round(typeof w.scroll === 'function' ? w.scroll(s) : w.scroll);
+      if (Math.abs(s.scrollTop - y) > 1) s.scrollTo({ top: y, behavior: 'instant' });
+    }
+    if (w.screen === 'list') {
+      if (w.follow && !following().includes(w.follow)) {
+        if (!picking()) return tapEl(EL.change());
+        return tapEl(EL.chip(w.follow));
+      }
+      if (w.picking !== undefined && w.picking !== picking()) return tapEl(EL.change());
+      if (w.picking === undefined && picking()) return tapEl(EL.change());
+      if (w.live !== undefined && w.live !== isLive()) return tapEl(EL.live());
+    }
+    if (w.side) { const b = EL.side(w.side); if (b && b.getAttribute('aria-checked') !== 'true') return tapEl(b); }
+  }
+
+  // a goal and a red card in another match: the app's own engine, reached through its module
+  let engineP = null;
+  function engine() {
+    if (engineP) return engineP;
+    engineP = (async () => {
+      const w = frame.contentWindow, d = appDoc();
+      const url = d && [...d.querySelectorAll('link[rel=modulepreload]')].map(l => l.href).find(h => /followBridge-/.test(h));
+      if (!url) return null;
+      const m = await new w.Function('u', 'return import(u)')(url);
+      return typeof m.t === 'function' ? m.t() : null;
+    })().catch(() => null);
+    engineP.then(e => { if (!e) engineP = null; });
+    return engineP;
+  }
+  async function moment(kind) { const e = await engine(); try { return !!(e && e.trigger(kind)); } catch (_) { return false; } }
+
+  /* which stop, and how far into it */
+  function measure() {
+    const pinH = innerHeight - NAV_H;
+    let i = 0, p = 0;
+    cards.forEach((c, k) => {
+      const r = c.getBoundingClientRect();
+      if (r.top <= NAV_H + pinH * .5) { i = k; p = clamp((NAV_H - r.top) / Math.max(1, r.height - pinH), 0, 1); }
+    });
+    const pinned = cards[0].getBoundingClientRect().top <= NAV_H + 40;
+    return { i, p: pinned ? p : 0, pinned };
+  }
+  function tick() {
+    T.run = false;
+    const r = tourEl.getBoundingClientRect();
+    const live = mqWide.matches && dock.dataset.state === 'docked' && r.top < innerHeight && r.bottom > 0;
+    if (!live) { if (T.seen) { T.seen = false; hideCursor(); cards.forEach(c => c.classList.remove('on')); } return; }
+    T.seen = true;
+    const { i, p, pinned } = measure();
+    if (i !== T.i) { T.i = i; T.prev = p; cards.forEach((c, k) => c.classList.toggle('on', k === i)); }
+    const stop = STOPS[cards[i].dataset.stop];
+    const forward = p >= T.prev;
+    if (D.app && !D.control && performance.now() > T.hold && stop) {
+      const w = stop.want(p);
+      reconcile(w);
+      // the cursor taps whenever the scroll crosses one of its moments, either way
+      stop.taps.forEach(t => { if ((T.prev < t && p >= t) || (T.prev >= t && p < t)) tapRing(); });
+      (stop.moments || []).forEach(([t, kind]) => { if (forward && T.prev < t && p >= t && !T.fired.has(kind)) { T.fired.add(kind); moment(kind); } });
+      const on = pinned && stop.show(p);
+      if (on) { const pt = along(stop.cursor, p, cards[i].dataset.stop); placeCursor(pt.x, pt.y); }
+      showCursor(on);
+    }
+    T.prev = p;
+    T.run = true; requestAnimationFrame(tick);
+  }
+  const kickTour = () => { if (!T.run) { T.run = true; requestAnimationFrame(tick); } };
+  scrollers.push(kickTour);
+  addEventListener('resize', kickTour);
+
+  // above the tour the phone rests on Live; the scene buttons get the phone to themselves for a while
   scrollers.push(() => {
-    const sec = $('#tour'), r = sec.getBoundingClientRect();
-    if (r.bottom < 0 || r.top > innerHeight) return;
-    const mid = innerHeight * .5;
-    let best = null, bd = Infinity;
-    cards.forEach(c => { const b = c.getBoundingClientRect(), d = Math.abs((b.top + b.bottom) / 2 - mid); if (d < bd) { bd = d; best = c; } });
-    activate(best);
+    if (dock.dataset.state !== 'docked' || !D.app || D.control) return;
+    if (tourEl.getBoundingClientRect().top > innerHeight * .5 && T.i !== -1) { T.i = -1; cards.forEach(c => c.classList.remove('on')); go('/'); }
   });
-  // hero and roles: the phone rests on Live, then points at the switch once
-  let heroPointed = false;
-  scrollers.push(() => {
-    if (dock.dataset.state !== 'docked') return;
-    const d = $('#tour').getBoundingClientRect();
-    if (d.top > innerHeight * .5 && activeCard) { activeCard = null; cards.forEach(x => x.classList.remove('on')); go('/', {}); }
-  });
+  $$('[data-scene]').forEach(b => b.addEventListener('click', () => { T.hold = performance.now() + 9000; }));
   $$('[data-show]').forEach(b => b.addEventListener('click', () => {
-    const c = b.closest('.dcard'); openDemo(); const o = cardOpt(c); setTimeout(() => go(o.route, o), dock.dataset.state === 'open' ? 350 : 0);
+    const c = b.closest('.dcard'); openDemo(); setTimeout(() => go(c.dataset.route || '/'), dock.dataset.state === 'open' ? 350 : 0);
   }));
   const tryEl = $('#try');
-  onScreen(tryEl, v => { if (v && mqWide.matches && dock.dataset.state === 'docked') { activeCard = null; go('/', {}); } });
-  onScreen($('#top'), v => {
-    if (!v || heroPointed) return;
-    const tryPoint = () => { if (D.app && dock.dataset.state === 'docked' && !activeCard) { heroPointed = true; setTimeout(() => go('/', { point: 'label:Live', say: 'the real app, running' }), 900); } else if (!heroPointed) setTimeout(tryPoint, 600); };
-    tryPoint();
-  });
+  onScreen(tryEl, v => { if (v && mqWide.matches && dock.dataset.state === 'docked') { T.i = -1; go('/'); } });
 
   /* ==========================================================================
      04 · SYSTEM
