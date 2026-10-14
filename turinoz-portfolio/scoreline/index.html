@@ -369,11 +369,11 @@
     <div class="col">
       <div class="kicker rv"><i></i>05 — Process</div>
       <h2 class="rv">I directed. The AI built.</h2>
-      <p class="statement" id="statement" style="margin-top:34px">I’m a motion designer. Deciding how a thing looks, moves and behaves, and why, is the job. On Scoreline I did that job for a whole product and handed the typing to AI: <span class="hl">Claude and Codex wrote 39,650 lines across 125 commits,</span> and every one of them answered to a decision of mine.</p>
+      <p class="statement" id="statement" style="margin-top:34px"><span class="hl">Claude and Codex wrote 39,650 lines across 125 commits,</span> and every one of them answered to a decision of mine.</p>
     </div>
     <div class="proc">
       <div class="loop rv" id="loop">
-        <div class="loop-h"><h3>How one round went</h3><span class="loop-n mono"><b class="count" data-to="125">125</b>commits · 25+ AI sessions · 32 branches</span></div>
+        <div class="loop-h"><h3>How one round went</h3><span class="loop-n mono"><b>25+</b>AI sessions · 32 branches</span></div>
         <ol class="steps">
           <li class="step"><span class="who me">Me</span><h4>Decide</h4><p>The look, the timing, the rule. Written down so it can’t drift.</p></li>
           <li class="step"><span class="who">AI</span><h4>Build</h4><p>The code, and a test that fails if my number changes.</p></li>
@@ -381,39 +381,8 @@
           <li class="step"><span class="who me">Me → AI</span><h4>Ship or redo</h4><p>Back to build until I approve. Some things I reverted the next day.</p></li>
         </ol>
       </div>
-    <div class="origin">
-      <div class="era era--then rv">
-        <div class="kicker"><i></i>Then · Rive prototype</div>
-        <h3>The whole app on one canvas.</h3>
-        <p>One Rive file and one Luau script drawing everything: its own text, layout, scrolling, tweens and a match simulator. Every section exposed its timing as inputs in the editor, duration, delay, stagger and the four bezier handles, so I could tune the motion right there in Rive.</p>
-      </div>
-      <div class="era era--now rv" style="--rd:.08s">
-        <div class="kicker"><i class="live"></i>Now · Web app</div>
-        <h3>The same app, made of real parts.</h3>
-        <p>React and TypeScript, with real text, links, a keyboard and a screen reader. Rive stays only where it earns its place: the Live switch, and the word that announces a goal.</p>
-      </div>
-    </div>
-    <div class="decision rv">
-      <span class="stamp">2 October 2026<br>My call</span>
-      <p>Rebuild it as a web app, and keep Rive for the moments it’s best at. <span>Port, don’t redesign: every colour, size and timing comes over exactly, and a test fails if one ever drifts.</span></p>
-    </div>
-      <p class="sub rv proc-note">A working demo. Not finished, and honest about it: no real data provider, no accounts, and no testing on physical phones yet.</p>
-    </div>
-  </div>
-</section>
-
-<!-- ================= 09 TRY IT ================= -->
-<section class="sec" id="try" data-dock="phone">
-  <div class="wrap">
-    <div class="col">
-      <div class="kicker rv"><i class="live"></i>06 — Try it</div>
-      <h2 class="rv">It’s all live. Try it.</h2>
-      <p class="sub rv">The phone on this page is the real app, running its demo evening. Score a goal, show a red card, open a match, follow someone else.</p>
-      <div class="try" style="margin-top:34px">
-        <button class="try-row rv" type="button" data-take><span class="ic"><svg aria-hidden="true"><use href="#icHand"/></svg></span><span><b>Take control of the phone</b><span>Scroll it, tap it, swipe back. It’s yours until you give it back.</span></span><svg class="go" aria-hidden="true"><use href="#icArrowRight"/></svg></button>
-        <button class="try-row rv" type="button" data-scene="goal"><span class="ic">⚽</span><span><b>Score a goal</b><span>France scores in the featured match, and the scene plays.</span></span><svg class="go" aria-hidden="true"><use href="#icArrowRight"/></svg></button>
-        <a class="try-row rv" href="app/" target="_blank" rel="noopener"><span class="ic"><svg aria-hidden="true"><use href="#icArrowOut"/></svg></span><span><b>Open the app full screen</b><span>The same demo in its own tab. Make the window wide for two or three panes.</span></span><svg class="go" aria-hidden="true"><use href="#icArrowOut"/></svg></a>
-      </div>
+      <p class="sub rv proc-stack">Built with <b>React 19</b>, <b>TypeScript</b> and <b>Vite</b>. <b>Motion</b> for animation, <b>Zustand</b> for state, <b>Zod</b> for data, and the <b>Rive</b> runtime for the Live switch and the goal word.</p>
+      <p class="sub rv proc-note">Scoreline was an experiment: a way to test my own direction with AI as a new tool.</p>
     </div>
   </div>
 </section>
@@ -422,28 +391,25 @@
 <section class="sec" id="credits">
   <div class="wrap">
     <div class="shead rv">
-      <div><div class="kicker"><i></i>07 — Credits</div><h2 class="sr-only">Credits</h2></div>
+      <div><div class="kicker"><i></i>06 — Credits</div><h2 class="sr-only">Credits</h2></div>
     </div>
-    <div class="creds">
+    <div class="crx rv">
       <div>
-        <blockquote class="sign rv" style="margin-top:0">
-          <p>What I’d keep from this one: AI can write the code, fast and well. Deciding what it should feel like, and saying no until it does, is still the job. On Scoreline it was mine.</p>
-          <footer><span class="ava"><svg viewBox="0 0 1080 1080" aria-hidden="true"><use href="#tzLogo"/></svg></span><b>Turinoz</b><span>Motion designer</span></footer>
-        </blockquote>
+        <div class="crx-k">Design &amp; direction</div>
+        <b class="crx-n">Turinoz</b>
+        <p>Product and UX, visual design, motion design, Rive.</p>
       </div>
-      <dl class="cr-list rv" style="--rd:.06s">
-        <div><dt>Product &amp; UX</dt><dd>Turinoz</dd></div>
-        <div><dt>Visual design</dt><dd>Turinoz</dd></div>
-        <div><dt>Motion design</dt><dd>Turinoz<small>10 curves, 14 section timings</small></dd></div>
-        <div><dt>Rive</dt><dd>Turinoz<small>the Live switch and Moments, in the editor</small></dd></div>
-        <div><dt>Direction &amp; review</dt><dd>Turinoz<small>one full review, four polish sessions</small></dd></div>
-        <div><dt>Code &amp; tests</dt><dd>AI<small>Claude (Opus, Sonnet) and Codex</small></dd></div>
-        <div><dt>Stack</dt><dd>React 19, TypeScript, Vite<small>Motion, Zustand, Zod, Rive</small></dd></div>
-        <div><dt>Typeface</dt><dd>Hanken Grotesk<small>SIL Open Font License</small></dd></div>
-        <div><dt>Brand</dt><dd><a class="cr-link" href="brand/">Brand sheet<svg aria-hidden="true"><use href="#icArrowRight"/></svg></a><small>mark, lockups, icon, colours</small></dd></div>
-        <div><dt>Demo data</dt><dd>Simulated<small>an invented evening; no real results</small></dd></div>
-      </dl>
+      <div>
+        <div class="crx-k">Code &amp; tests</div>
+        <b class="crx-n">AI</b>
+        <p>Claude (Opus, Sonnet) and Codex.</p>
+      </div>
     </div>
+    <dl class="crx-meta rv" style="--rd:.06s">
+      <div><dt>Typeface</dt><dd>Hanken Grotesk</dd></div>
+      <div><dt>Brand</dt><dd><a class="cr-link" href="brand/">Brand sheet<svg aria-hidden="true"><use href="#icArrowRight"/></svg></a></dd></div>
+      <div><dt>Demo data</dt><dd>Simulated</dd></div>
+    </dl>
     <a class="next rv" href="../sitemate/" data-cursor="Next project">
       <span class="next-k mono">Next project</span>
       <span class="next-t">Storm motion system<svg aria-hidden="true"><use href="#icArrowRight"/></svg></span>
@@ -455,8 +421,8 @@
 
 <footer class="foot">
   <div class="wrap">
-    <span>Scoreline · <b>Design, motion and decisions by Turinoz</b> · code by AI · this page moves on Scoreline’s own curves</span>
-    <a class="tz" href="../"><svg viewBox="0 0 1080 1080" aria-hidden="true"><use href="#tzLogo"/></svg>Turinoz</a>
+    <span>Scoreline · <b>Direction by Turinoz</b></span>
+    <a class="tz" href="../">Turinoz</a>
     <a class="totop" href="#top">Back to top <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M6 10V2M2.5 5.5 6 2l3.5 3.5"/></svg></a>
   </div>
 </footer>
