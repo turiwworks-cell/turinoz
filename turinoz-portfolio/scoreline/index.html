@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="color-scheme" content="dark">
+<meta name="color-scheme" content="dark light">
 <meta name="theme-color" content="#000000">
 <title>Scoreline — Turinoz</title>
 <meta name="description" content="Scoreline, a live football app. Product, design, motion, Rive and every decision by Turinoz; the code written by AI over hundreds of round trips. With the real demo running on the page.">
@@ -15,6 +15,10 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Cdefs%3E%3ClinearGradient id='a' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%236aaef0'/%3E%3Cstop offset='.34' stop-color='%23c9b8e0'/%3E%3Cstop offset='.58' stop-color='%23f2b3c9'/%3E%3Cstop offset='1' stop-color='%23b0243c'/%3E%3C/linearGradient%3E%3ClinearGradient id='b' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%236b58f5'/%3E%3Cstop offset='.4' stop-color='%23a58fe6'/%3E%3Cstop offset='.76' stop-color='%23e7c1d6'/%3E%3Cstop offset='1' stop-color='%23fff0e6'/%3E%3C/linearGradient%3E%3ClinearGradient id='c' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23a8c3ea'/%3E%3Cstop offset='.38' stop-color='%23e2e2e4'/%3E%3Cstop offset='.68' stop-color='%23c9c92a'/%3E%3Cstop offset='1' stop-color='%23f0eed0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='180' height='180' rx='36' fill='%23000'/%3E%3Crect x='36' y='60' width='36' height='72' fill='url%28%23a%29'/%3E%3Crect x='72' y='24' width='36' height='132' fill='url%28%23b%29'/%3E%3Crect x='108' y='48' width='36' height='72' fill='url%28%23c%29'/%3E%3C/svg%3E">
 <link rel="preload" href="../fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
+<script>
+/* Day / night: the same choice as the portfolio's home page (tz-theme on this device). Night unless day was chosen. */
+try { const t = localStorage.getItem('tz-theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (_) {}
+</script>
 <link rel="stylesheet" href="case-study.css">
 <script src="case-study.js" defer></script>
 </head>
@@ -34,6 +38,8 @@
     <circle fill="#010008" cx="540" cy="540" r="530.68"/>
     <path fill="url(#tzLogoGrad)" d="M410.74,658.22s162.29-48.52,309.91-40.22c-.76-81.38-4.62-158.07-7.74-191.11-.51-5.37-7.54-7.02-10.4-2.44-16.77,26.88-55.91,89.05-69.49,110.61-2.33,3.69-7.59,3.99-10.33.59l-80.01-103.79c-3.62-4.7-11.01-3.5-12.96,2.11l-43.78,119.94c-2.25,6.15-9.99,8.11-14.89,3.76l-104.34-90.05c-3.32-2.87-8.34.31-7.18,4.54l51.21,186.05Z"/>
   </symbol>
+  <symbol id="icMoon" viewBox="0 0 24 24"><path d="M20 14.6A8.2 8.2 0 0 1 9.4 4a8.2 8.2 0 1 0 10.6 10.6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="icSun" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/></g></symbol>
   <symbol id="icArrowOut" viewBox="0 0 12 12"><path d="M3.5 8.5l5-5M4.5 3.5h4v4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="icArrowRight" viewBox="0 0 12 12"><path d="M2 6h8M6.8 2.8 10 6 6.8 9.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="icPlay" viewBox="0 0 16 16"><path d="M4.5 2.8v10.4c0 .6.6.9 1.1.6l8-5.2c.4-.3.4-.9 0-1.2l-8-5.2c-.5-.3-1.1 0-1.1.6z" fill="currentColor"/></symbol>
@@ -57,10 +63,8 @@
       <a href="#tour">Tour</a><a href="#system">System</a><a href="#motion">Motion</a><a href="#rive">Rive</a><a href="#process">Process</a>
     </nav>
     <div class="navr">
-      <button class="livelink" type="button" data-open-demo data-cursor="Open the phone"><span class="dot" aria-hidden="true"></span><span class="lbl">Live demo</span></button>
-      <span class="credit">Design <b>Turinoz</b> · Code <b>AI</b></span>
-      <button class="pp" id="pp" type="button" aria-pressed="false" aria-label="Pause the page's motion" title="Pause the page's motion">
-        <svg class="i-pause" aria-hidden="true"><use href="#icPause"/></svg><svg class="i-play" aria-hidden="true"><use href="#icPlay"/></svg>
+      <button class="tm" id="tm" type="button" aria-label="Switch to day" title="Switch to day">
+        <svg class="moon" aria-hidden="true"><use href="#icMoon"/></svg><svg class="sun" aria-hidden="true"><use href="#icSun"/></svg>
       </button>
     </div>
   </div>
@@ -75,7 +79,7 @@
 <div class="dock-backdrop" id="dockBackdrop" aria-hidden="true"></div>
 <aside class="dock" id="dock" data-state="away" aria-label="The Scoreline demo, running">
   <div class="dock-top">
-    <span class="dock-chip"><span class="dot" aria-hidden="true"></span><b>Live demo</b><span class="rt mono" id="dockRoute">Starting…</span></span>
+    <span class="dock-chip"><span class="dot" aria-hidden="true"></span><b>Demo</b><span class="rt mono" id="dockRoute">Starting…</span></span>
     <button class="dock-x" type="button" id="dockClose" aria-label="Put the phone away"><svg aria-hidden="true"><use href="#icX"/></svg></button>
   </div>
   <div class="device" id="device">
@@ -105,12 +109,12 @@
     <button class="chipbtn" type="button" data-scene="red"><span class="rc" aria-hidden="true"></span>Red card</button>
     <button class="chipbtn" type="button" data-moment="goalFav"><span class="gl" aria-hidden="true">⚽</span>Messi scores</button>
     <button class="chipbtn" type="button" data-moment="redFav"><span class="rc" aria-hidden="true"></span>Messi sent off</button>
-    <button class="chipbtn" type="button" id="dockRestart" aria-label="Restart the evening"><svg aria-hidden="true"><use href="#icRestart"/></svg></button>
+    <button class="chipbtn" type="button" id="dockRestart" aria-label="Start the match night again"><svg aria-hidden="true"><use href="#icRestart"/></svg></button>
     <button class="chipbtn take" type="button" data-take><svg aria-hidden="true"><use href="#icHand"/></svg>Take control</button>
     <button class="chipbtn give" type="button" id="dockGive"><svg aria-hidden="true"><use href="#icCheck"/></svg>Give it back</button>
     <a class="chipbtn" id="dockFull" href="app/" target="_blank" rel="noopener" aria-label="Open the app full screen, in a new tab"><svg aria-hidden="true"><use href="#icArrowOut"/></svg></a>
   </div>
-  <p class="dock-note" id="dockNote" aria-live="polite">The real app, not a video. Its evening runs on its own.</p>
+  <p class="dock-note" id="dockNote" aria-live="polite">The real app, playing a match night on its own.</p>
 </aside>
 <button class="demo-pill" id="demoPill" type="button" data-open-demo aria-label="Open the live demo">
   <span class="mini" aria-hidden="true"><span class="slmark"><i></i><i></i><i></i></span></span>
@@ -124,14 +128,14 @@
   <div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
   <div class="wrap">
     <div class="col">
-      <div class="kicker rv"><i class="live"></i>Scoreline · Live football app · 2026</div>
+      <div class="kicker rv"><i class="live"></i>Scoreline · 2026</div>
       <h1 class="h1" aria-label="Every decision, mine. Every line of code, AI’s.">
         <span class="ln" aria-hidden="true"><span class="mine">Every decision, mine.</span></span>
         <span class="ln" aria-hidden="true"><span class="ais">Every line of code, <b>AI’s.</b></span></span>
       </h1>
-      <p class="lede rv" style="--rd:.18s">Scoreline is a live football app for match nights: every live game at a glance, and a goal that arrives the way it does in the stadium. <em>I&nbsp;designed the layout, the colours and the motion.</em></p>
+      <p class="lede rv" style="--rd:.18s">Scoreline is a football app for match nights: every live game at a glance, and a goal that arrives the way it does in the stadium. <em>I&nbsp;designed the layout, the colours and the motion.</em></p>
       <div class="proof rv" style="--rd:.26s">
-        <button class="btn" type="button" data-open-demo data-cursor="It’s the real app"><span class="dot" aria-hidden="true"></span>Play the live demo<span>real app</span></button>
+        <button class="btn" type="button" data-open-demo data-cursor="Try it yourself"><span class="dot" aria-hidden="true"></span>Try the demo</button>
         <a class="ghost" href="app/" target="_blank" rel="noopener" data-cursor="Opens in a new tab">Full screen<svg aria-hidden="true"><use href="#icArrowOut"/></svg></a>
       </div>
     </div>
