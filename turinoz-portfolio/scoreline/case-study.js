@@ -494,7 +494,18 @@
     engineP.then(e => { if (!e) engineP = null; });
     return engineP;
   }
-  async function moment(kind) { const e = await engine(); try { return !!(e && e.trigger(kind)); } catch (_) { return false; } }
+  // the engine scores in the featured match only, so for one call its "featured" lookup answers with
+  // another live match: the goal or red card lands there, and the app shows it as a note, not a scene
+  async function moment(kind) {
+    const e = await engine(); if (!e) return false;
+    const AP = frame.contentWindow.Array.prototype, find = AP.find;
+    AP.find = function (fn, ...rest) {
+      AP.find = find;
+      const hit = find.call(this, fn, ...rest);
+      return hit && hit.feat ? find.call(this, m => m && m.status === 'live' && !m.feat) || hit : hit;
+    };
+    try { return !!e.trigger(kind === 'goalElsewhere' ? 'goalHome' : 'redAway'); } catch (_) { return false; } finally { AP.find = find; }
+  }
 
   /* which stop, and how far into it */
   function measure() {
