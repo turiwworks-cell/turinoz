@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Digitigrade by Turinoz: a four-legged walker that steps across the numerals 0–9, drawn live by one Luau script inside Rive.">
 <meta name="theme-color" content="#070708">
-<title>Digitigrade</title>
+<title>Digitigrade — interactive study · Turinoz / Lab</title>
 
 <meta name="rive-wasm" content="../rive/vendor/rive.wasm">
 <meta name="rive-wasm-fallback" content="../rive/vendor/rive_fallback.wasm">
@@ -226,11 +226,11 @@ button{font:inherit;color:inherit}
         <div>
           <h1 id="title">Digitigrade</h1>
           <p class="def"><span class="w">dig·i·ti·grade</span><span class="pos">adj.</span><span>walking on the digits</span></p>
-          <p class="lead">In zoology, it means walking on the toes. This one walks on numerals. Drawn live by one Luau script inside Rive, it plants a foot on a digit, presses it down, and clicks it like a key. Point anywhere on the page and it comes to you. Leave it alone and it finds its own way.</p>
+          <p class="lead">In zoology, it means walking on the toes. This one walks on numerals. It plants a foot on a digit, presses it down, and clicks it like a key. Point anywhere on the page and it comes to you. Leave it alone and it finds its own way. One Luau script inside Rive draws all of it, live.</p>
         </div>
         <figure class="weight">
           <div class="kb" aria-label="83.7 kilobytes"><b>83.7</b><span>KB</span></div>
-          <figcaption>One .riv · script, art and ten key sounds</figcaption>
+          <figcaption>One .riv · script, art and ten key clicks</figcaption>
           <div class="split" aria-hidden="true"><i class="s-art"></i><i class="s-keys"></i></div>
           <div class="split-l"><span>script &amp; art <b>44.8</b></span><span>keys <b>39.0</b></span></div>
         </figure>
@@ -258,7 +258,7 @@ button{font:inherit;color:inherit}
           <div class="controls">
             <div class="seg" role="radiogroup" aria-label="Mode">
               <button type="button" role="radio" aria-checked="true" data-mode="follow"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="16" cy="11" r="3.2" fill="currentColor"/><path d="M2 11h8.5M7 7.5 10.5 11 7 14.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Follow</button>
-              <button type="button" role="radio" aria-checked="false" data-mode="flee"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="5" cy="11" r="3.2" fill="currentColor"/><path d="M11 11h9M16.5 7.5 20 11l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Evade</button>
+              <button type="button" role="radio" aria-checked="false" data-mode="flee"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="5" cy="11" r="3.2" fill="currentColor"/><path d="M11 11h9M16.5 7.5 20 11l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Avoid</button>
             </div>
             <button class="snd" id="snd" type="button" aria-pressed="true" aria-label="Sound"><svg viewBox="0 0 22 22" aria-hidden="true"><path d="M3 8.5h3.2L11 4.5v13l-4.8-4H3z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><g class="wave" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M14.2 8.2a4 4 0 0 1 0 5.6"/><path d="M16.8 5.6a7.6 7.6 0 0 1 0 10.8"/></g><g class="x" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="m14.5 8.5 5 5M19.5 8.5l-5 5"/></g></svg><span>Sound <b>on</b></span></button>
           </div>
@@ -501,9 +501,9 @@ button{font:inherit;color:inherit}
     stepWalk(now);
     if (o.ready) {
       let st;
-      if (walk) st = (flee ? 'evading ' : 'walking to ') + walk.d;
+      if (walk) st = (flee ? 'avoiding ' : 'walking to ') + walk.d;
       else if (held !== null && now < heldUntil) st = (flee ? 'clear of ' : 'at ') + held;
-      else if (now - ptr.t < IDLE) st = flee ? 'evading' : 'following';
+      else if (now - ptr.t < IDLE) st = flee ? 'avoiding' : 'following';
       else st = 'on its own';
       put(chipT, 'chip', st);
       chip.toggleAttribute('data-dim', st === 'on its own');
