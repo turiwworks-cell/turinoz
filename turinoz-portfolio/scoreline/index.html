@@ -131,7 +131,7 @@
 </section>
 
 <!-- ================= 01 TOUR =================
-     Each stop holds still while the scroll plays it on the phone (case-study.js, 01 · TOUR). -->
+     The stop in the middle of the screen plays itself on the phone (case-study.js, 01 · TOUR). -->
 <section class="sec" id="tour" data-dock="phone">
   <div class="wrap">
     <div class="col">
@@ -139,59 +139,47 @@
       <h2 class="rv">A quick tour.</h2>
       <p class="sub rv">The phone is the real app. It follows along as you scroll, and you can take over any time.</p>
       <ol class="dlist" id="dlist">
-        <li class="dcard" data-stop="live" data-route="/" style="--len:175">
-          <div class="dpin">
-            <span class="dn"><b>01</b>Live</span>
-            <h3>It opens on what’s live.</h3>
-            <p>On a match night, that’s the first thing you want to know. Each card grows a little with every minute, so you can tell which games are nearly over.</p>
-            <div class="dshot"><img src="assets/home.webp" alt="The Scoreline list on Live: five live matches as tall cards of light." loading="lazy" width="780" height="1688"></div>
-            <div class="drow"><button class="chipbtn dshow" type="button" data-show>Show me in the demo</button></div>
-          </div>
+        <li class="dcard" data-stop="live" data-route="/">
+          <span class="dn"><b>01</b>Live</span>
+          <h3>It opens on what’s live.</h3>
+          <p>On a match night, that’s the first thing you want to know. Each card grows a little with every minute, so you can tell which games are nearly over.</p>
+          <div class="dshot"><img src="assets/home.webp" alt="The Scoreline list on Live: five live matches as tall cards of light." loading="lazy" width="780" height="1688"></div>
+          <div class="drow"><button class="chipbtn dshow" type="button" data-show>Show me in the demo</button></div>
         </li>
-        <li class="dcard" data-stop="follow" data-route="/" style="--len:200">
-          <div class="dpin">
-            <span class="dn"><b>02</b>Following</span>
-            <h3>Follow one player.</h3>
-            <p>Every touch, live. Pick a player and they get their own card at the top.</p>
-            <div class="dshot"><img src="assets/follow.webp" alt="The follow card: Messi, his rating, touches, passes and shots, and what he is doing now." loading="lazy" width="600" height="1298"></div>
-            <div class="drow"><button class="chipbtn dshow" type="button" data-show>Show me in the demo</button></div>
-          </div>
+        <li class="dcard" data-stop="follow" data-route="/">
+          <span class="dn"><b>02</b>Following</span>
+          <h3>Follow one player.</h3>
+          <p>Every touch, live. Pick a player and they get their own card at the top.</p>
+          <div class="dshot"><img src="assets/follow.webp" alt="The follow card: Messi, his rating, touches, passes and shots, and what he is doing now." loading="lazy" width="600" height="1298"></div>
+          <div class="drow"><button class="chipbtn dshow" type="button" data-show>Show me in the demo</button><button class="chipbtn" type="button" data-moment="goalFav"><span aria-hidden="true">⚽</span>Messi scores</button><button class="chipbtn" type="button" data-moment="redFav"><span class="rc" style="width:8px;height:11px;border-radius:2px;background:var(--red);transform:rotate(8deg)" aria-hidden="true"></span>Messi sent off</button></div>
         </li>
-        <li class="dcard" data-stop="match" data-route="/match/1/facts" style="--len:200">
-          <div class="dpin">
-            <span class="dn"><b>03</b>Match</span>
-            <h3>The match, as it happens.</h3>
-            <p>Facts first: the score and who’s on top. Then every event, minute by minute.</p>
-            <div class="dshot"><img src="assets/facts.webp" alt="The match screen: France 2, Argentina 1, the momentum wave and the first events." loading="lazy" width="600" height="1298"></div>
-            <div class="drow"><button class="chipbtn dshow" type="button" data-show>Show me in the demo</button></div>
-          </div>
+        <li class="dcard" data-stop="match" data-route="/match/1/facts">
+          <span class="dn"><b>03</b>Match</span>
+          <h3>The match, as it happens.</h3>
+          <p>Facts first: the score and who’s on top. Then every event, minute by minute.</p>
+          <div class="dshot"><img src="assets/facts.webp" alt="The match screen: France 2, Argentina 1, the momentum wave and the first events." loading="lazy" width="600" height="1298"></div>
+          <div class="drow"><button class="chipbtn dshow" type="button" data-show>Show me in the demo</button></div>
         </li>
-        <li class="dcard" data-stop="stats" data-route="/match/1/stats" style="--len:185">
-          <div class="dpin">
-            <span class="dn"><b>04</b>Stats</span>
-            <h3>Stats, live.</h3>
-            <p>Every shot, corner and foul on the pitch, counted as it happens.</p>
-            <div class="dshot"><img src="assets/stats.webp" alt="Stats: possession 58 to 42 and the top stats bars." loading="lazy" width="600" height="1298"></div>
-            <div class="drow"><button class="chipbtn dshow" type="button" data-show>Show me in the demo</button></div>
-          </div>
+        <li class="dcard" data-stop="stats" data-route="/match/1/stats">
+          <span class="dn"><b>04</b>Stats</span>
+          <h3>Stats, live.</h3>
+          <p>Every shot, corner and foul on the pitch, counted as it happens.</p>
+          <div class="dshot"><img src="assets/stats.webp" alt="Stats: possession 58 to 42 and the top stats bars." loading="lazy" width="600" height="1298"></div>
+          <div class="drow"><button class="chipbtn dshow" type="button" data-show>Show me in the demo</button></div>
         </li>
-        <li class="dcard" data-stop="lineup" data-route="/match/1/lineup" style="--len:205">
-          <div class="dpin">
-            <span class="dn"><b>05</b>Player</span>
-            <h3>From the line-up to the player.</h3>
-            <p>See who’s playing where, then tap anyone for their own stats in this match.</p>
-            <div class="dshot"><img src="assets/lineup.webp" alt="The line-up on a pitch, with photos, ratings and name plates." loading="lazy" width="600" height="1298"></div>
-            <div class="drow"><button class="chipbtn dshow" type="button" data-show>Show me in the demo</button></div>
-          </div>
+        <li class="dcard" data-stop="lineup" data-route="/match/1/lineup">
+          <span class="dn"><b>05</b>Player</span>
+          <h3>From the line-up to the player.</h3>
+          <p>See who’s playing where, then tap anyone for their own stats in this match.</p>
+          <div class="dshot"><img src="assets/lineup.webp" alt="The line-up on a pitch, with photos, ratings and name plates." loading="lazy" width="600" height="1298"></div>
+          <div class="drow"><button class="chipbtn dshow" type="button" data-show>Show me in the demo</button></div>
         </li>
-        <li class="dcard" data-stop="goal" data-route="/" style="--len:185">
-          <div class="dpin">
-            <span class="dn"><b>06</b>Goal</span>
-            <h3>Elsewhere, just a note.</h3>
-            <p>A goal or a red card in another match comes in quietly. Your match or your player gets the whole screen.</p>
-            <div class="dshot"><img src="assets/toast.webp" alt="A goal in England against Brazil arrives as a small notice at the top of the list." loading="lazy" width="600" height="1298"></div>
-            <div class="drow"><button class="chipbtn" type="button" data-scene="goal"><span aria-hidden="true">⚽</span>Score a goal</button><button class="chipbtn" type="button" data-scene="red"><span class="rc" style="width:8px;height:11px;border-radius:2px;background:var(--red);transform:rotate(8deg)" aria-hidden="true"></span>Show a red card</button></div>
-          </div>
+        <li class="dcard" data-stop="goal" data-route="/">
+          <span class="dn"><b>06</b>Goal</span>
+          <h3>Elsewhere, just a note.</h3>
+          <p>A goal or a red card in another match comes in quietly. Your match gets the whole screen.</p>
+          <div class="dshot"><img src="assets/toast.webp" alt="A goal in England against Brazil arrives as a small notice at the top of the list." loading="lazy" width="600" height="1298"></div>
+          <div class="drow"><button class="chipbtn" type="button" data-moment="goalElse"><span aria-hidden="true">⚽</span>Goal elsewhere</button><button class="chipbtn" type="button" data-moment="redElse"><span class="rc" style="width:8px;height:11px;border-radius:2px;background:var(--red);transform:rotate(8deg)" aria-hidden="true"></span>Red card elsewhere</button><button class="chipbtn" type="button" data-scene="goal"><span aria-hidden="true">⚽</span>Goal in your match</button><button class="chipbtn" type="button" data-scene="red"><span class="rc" style="width:8px;height:11px;border-radius:2px;background:var(--red);transform:rotate(8deg)" aria-hidden="true"></span>Red card in your match</button></div>
         </li>
       </ol>
     </div>

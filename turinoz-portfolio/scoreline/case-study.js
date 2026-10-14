@@ -131,7 +131,7 @@
   const dock = $('#dock'), screenEl = $('#screen'), frame = $('#app'), veil = $('#veil');
   const routeEl = $('#dockRoute'), noteEl = $('#dockNote'), backdrop = $('#dockBackdrop'), demoPill = $('#demoPill');
   const pauseBtn = $('#dockPause');
-  const D = { app: null, started: false, allow: false, open: false, control: false, want: null, token: 0, lastRoute: '', base: '', moment: false };
+  const D = { app: null, started: false, allow: false, open: false, control: false, want: null, token: 0, lastRoute: '', base: '', moment: false, run: 0, retour: null, loud: null };
   D.base = new URL(APP, location.href).pathname.replace(/\/$/, '');      // e.g. /scoreline/app
 
   // the app looks for this on its parent when its demo starts (src/review/protocol.ts)
@@ -228,6 +228,7 @@
   function giveBack() {
     D.control = false; dock.classList.remove('control'); frame.tabIndex = -1;
     note('Back on the tour. Take control again any time.');
+    if (D.retour) D.retour();
   }
   veil.addEventListener('click', takeControl);
   $$('[data-take]').forEach(b => b.addEventListener('click', takeControl));
@@ -244,7 +245,7 @@
     if (dock.dataset.state === 'away') openDemo();
     start();
     if (!D.app) { note('The demo is still starting…'); D.want = { route: '/', scene: kind }; return; }
-    hideCursor();
+    hideCursor(); if (D.loud) D.loud();
     note(kind === 'goal' ? 'Scoring…' : 'Showing a red card…');
     try { const said = await D.app.scene(kind); note(said); say(said); } catch (_) { note('That didn’t work. Try again.'); }
   }
@@ -285,7 +286,7 @@
     start();
     if (!D.app) { D.want = { route, ...opt }; return; }
     if (D.control) return;                                     // never pull the screen away from someone using it
-    hideCursor();
+    D.run++; hideCursor();
     if (navigate(route)) setTimeout(resetScroll, 380);
     if (opt.scene) setTimeout(() => scene(opt.scene), 650);
   }
@@ -336,151 +337,239 @@
   }
 
   /* ==========================================================================
-     01 · TOUR — each stop holds still while the scroll plays it on the phone.
-     A stop is a function of its progress p (0–1): the screen it wants, the
-     state it wants (Live, who you follow, the line-up side, the scroll), and
-     where the cursor is. The app is nudged toward that state every frame, so
-     scrolling back undoes it and nothing depends on scroll speed.
+     01 · TOUR — the stop in the middle of the screen plays itself on the phone:
+     a short run of cursor moves, taps and scrolls in the real app. A newer
+     stop, the phone leaving, or someone taking control stops the run. Goals
+     and red cards only happen from the buttons.
      ========================================================================== */
   const tourEl = $('#tour'), cards = $$('.dcard', tourEl);
-  const NAV_H = 64;
-  const T = { i: -1, p: 0, prev: 0, busy: 0, hold: 0, run: false, seen: false, fired: new Set(), last: {} };
+  const T = { card: null, ran: null };
   const ease = t => (t < .5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
-  const seg = (p, a, b) => clamp((p - a) / (b - a), 0, 1);
+  const CANCEL = Symbol('cancel');
 
   // what's on the phone
   const pathNow = () => { const r = appRoute().split('?')[0].replace(/\/$/, ''); return r || '/'; };
   const scr = () => presentScreen();
   const inScr = sel => { const s = scr(); return s ? s.querySelector(sel) : null; };
-  const button = (root, re) => (root ? [...root.querySelectorAll('button')].find(b => re.test(b.textContent.trim())) || null : null);
   const followSec = () => { const d = appDoc(); return d && d.querySelector('section[aria-label="Following"]'); };
   const EL = {
     live: () => { const d = appDoc(); return d && d.querySelector('button[aria-label^="Live"]'); },
-    change: () => button(followSec(), /^(Change|Done)$/),
-    chip: name => button(followSec(), new RegExp('^' + name)),
     card: () => { const s = followSec(); return s && s.querySelector('button[aria-label$="the player you follow"]'); },
     match: () => inScr('button[aria-label^="France "][aria-label*="Argentina"]:not([aria-label$=", live"])'),
     tab: name => { const s = scr(); return s ? [...s.querySelectorAll('[role=tab]')].find(t => t.textContent.trim().startsWith(name)) || null : null; },
     side: side => inScr(`button[role=radio][data-side="${side}"]`),
     messi: () => inScr('button[aria-label="10 Messi"]'),
-    back: () => inScr('button[aria-label="Back"]'),
     heading: name => { const s = scr(); return s ? [...s.querySelectorAll('h2,h3')].find(h => h.textContent.trim() === name) || null : null; },
   };
   const isLive = () => { const b = EL.live(); return !b || b.getAttribute('aria-pressed') !== 'false'; };
-  const following = () => { const b = EL.card(); return b ? b.getAttribute('aria-label') : ''; };
-  const picking = () => !!button(followSec(), /^Done$/);
   const offsetIn = (el, s) => el.getBoundingClientRect().top - s.getBoundingClientRect().top + s.scrollTop;
   const maxScroll = s => Math.max(0, s.scrollHeight - s.clientHeight);
-  // the list's top bar stays put over the scroll, so a spot sits just under it
-  const headH = s => { const t = [...s.children, ...[...s.children].flatMap(c => [...c.children])].find(e => getComputedStyle(e).position === 'sticky'); return t ? t.offsetHeight : 0; };
 
-  // where each screen scrolls to
-  const SPOT = {
-    following: () => { const s = scr(), h = EL.heading('Following'); return s && h ? Math.max(0, offsetIn(h, s) - headH(s) - 14) : 0; },
-    events: () => { const s = scr(), h = EL.heading('Events'); return s && h ? Math.min(maxScroll(s), offsetIn(h, s) + 240) : 0; },
-    end: () => { const s = scr(); return s ? maxScroll(s) : 0; },
-  };
+  /* a run: every wait checks it is still the current one */
+  const mine = tok => tok === D.run && !D.control && dock.dataset.state !== 'away';
+  const pause = async (tok, ms) => { await new Promise(r => setTimeout(r, ms)); if (!mine(tok)) throw CANCEL; };
+  const frames = (tok, ms, fn) => new Promise((res, rej) => {
+    if (reduce() || ms <= 0) { fn(1); res(); return; }
+    const t0 = performance.now();
+    const f = now => {
+      if (!mine(tok)) return rej(CANCEL);
+      const k = Math.min(1, (now - t0) / ms); fn(ease(k));
+      if (k < 1) requestAnimationFrame(f); else res();
+    };
+    requestAnimationFrame(f);
+  });
+  // a screen, through the app's router (no new history, so the page's Back stays the page's)
+  async function reach(tok, path, kind) {
+    if (pathNow() !== path) navigate(path);
+    for (let k = 0; k < 40; k++) {
+      const s = scr();
+      if (s && s.dataset.screen === kind && pathNow() === path) return s;
+      await pause(tok, 60);
+    }
+    throw CANCEL;
+  }
+  const glide = (tok, s, y, ms) => { const a = s.scrollTop, b = Math.round(clamp(y, 0, maxScroll(s))); return Math.abs(a - b) < 2 ? Promise.resolve() : frames(tok, ms, k => s.scrollTo({ top: lerp(a, b, k), behavior: 'instant' })); };
+  async function liveOn(tok) { if (!isLive()) { EL.live()?.click(); await pause(tok, 450); } }
 
-  // one action at a time: a tap needs a moment to land before the next look
-  const act = (fn, ms = 260) => { if (performance.now() < T.busy) return; T.busy = performance.now() + ms; try { fn(); } catch (_) {} };
-  const tapEl = el => { if (el) act(() => el.click()); };
-
-  /* the stops: path(p), the state at p, the cursor's waypoints, and when it taps */
-  const STOPS = {
-    live: {
-      want: p => ({ path: '/', screen: 'list', live: !(p >= .32 && p < .66), follow: 'Messi', scroll: 0 }),
-      cursor: [[0, 'rest'], [.24, EL.live], [1, EL.live]], show: p => p > 0, taps: [.32, .66],
-    },
-    follow: {
-      want: p => ({ path: '/', screen: 'list', live: true, follow: p >= .66 ? 'Mbappé' : 'Messi', picking: p >= .4 && p < .66,
-        scroll: s => ease(seg(p, 0, .2)) * SPOT.following(s) }),
-      cursor: [[0, 'rest'], [.2, 'rest'], [.36, EL.change], [.44, EL.change], [.6, () => EL.chip('Mbappé')], [.72, EL.card], [1, EL.card]],
-      show: p => p > 0, taps: [.4, .66],
-    },
-    match: {
-      want: p => (p < .16
-        ? { path: '/', screen: 'list', live: true, follow: 'Mbappé', scroll: () => SPOT.following() }
-        : { path: '/match/1/facts', screen: 'match', scroll: () => ease(seg(p, .22, .95)) * SPOT.events() }),
-      cursor: [[0, 'rest'], [.12, EL.match], [1, EL.match]], show: p => p > 0 && p < .26, taps: [.16],
-    },
-    stats: {
-      want: p => (p < .2
-        ? { path: '/match/1/facts', screen: 'match', scroll: () => (1 - ease(seg(p, 0, .14))) * SPOT.events() }
-        : { path: '/match/1/stats', screen: 'match', scroll: () => ease(seg(p, .26, .95)) * SPOT.end() }),
-      cursor: [[0, 'rest'], [.08, 'rest'], [.17, () => EL.tab('Stats')], [1, () => EL.tab('Stats')]], show: p => p > .04 && p < .3, taps: [.2],
-    },
-    lineup: {
-      want: p => (p < .18
-        ? { path: '/match/1/stats', screen: 'match', scroll: () => (1 - ease(seg(p, 0, .12))) * SPOT.end() }
-        : p < .6
-          ? { path: '/match/1/lineup', screen: 'match', side: p >= .35 ? 'away' : 'home', scroll: 0 }
-          : { path: '/player/arg/10', screen: 'player' }),
-      cursor: [[0, 'rest'], [.06, 'rest'], [.15, () => EL.tab('Lineup')], [.22, () => EL.tab('Lineup')], [.32, () => EL.side('away')],
-        [.42, () => EL.side('away')], [.56, EL.messi], [1, EL.messi]],
-      show: p => p > .02 && p < .7, taps: [.18, .35, .6],
-    },
-    goal: {
-      want: p => (p < .15 ? { path: '/player/arg/10', screen: 'player' } : { path: '/', screen: 'list', live: true, follow: 'Mbappé', scroll: 0 }),
-      cursor: [[0, 'rest'], [.12, EL.back], [1, EL.back]], show: p => p > 0 && p < .22, taps: [.15],
-      moments: [[.3, 'goalElsewhere'], [.62, 'redElsewhere']],
-    },
-  };
-
-  /* the cursor: placed by the scroll, no captions */
-  const TC = { cur: $('.tcur', screenEl), on: false };
+  /* the cursor: no captions, it just moves and taps */
+  const TC = { cur: $('.tcur', screenEl), on: false, x: 0, y: 0 };
   const sNow = () => parseFloat(getComputedStyle(dock).getPropertyValue('--s')) || .86;
   const rest = () => ({ x: screenEl.clientWidth * .62, y: screenEl.clientHeight * .74 });
-  function ptOf(target, key) {
-    if (target === 'rest') return rest();
-    const el = target && target();
-    if (el && el.getClientRects().length) {
-      const r = el.getBoundingClientRect(), s = sNow();
-      T.last[key] = { x: (r.left + Math.min(r.width * .5, 70)) * s, y: (r.top + r.height * .5) * s };
-    }
-    return T.last[key] || rest();
-  }
-  function along(wps, p, stop) {
-    let k = 0; while (k < wps.length - 2 && p > wps[k + 1][0]) k++;
-    const [a, fa] = wps[k], [b, fb] = wps[k + 1] || wps[k];
-    const A = ptOf(fa, stop + k), B = ptOf(fb, stop + (k + 1));
-    const t = ease(seg(p, a, b || 1));
-    return { x: lerp(A.x, B.x, t), y: lerp(A.y, B.y, t) };
-  }
+  const ptOf = el => { const r = el.getBoundingClientRect(), s = sNow(); return { x: (r.left + Math.min(r.width * .5, 70)) * s, y: (r.top + r.height * .5) * s }; };
   function placeCursor(x, y) {
+    TC.x = x; TC.y = y;
     const fw = screenEl.clientWidth, fh = screenEl.clientHeight;
     TC.cur.style.transform = `translate3d(${clamp(x, 12, fw - 12).toFixed(1)}px,${clamp(y, 40, fh - 30).toFixed(1)}px,0)`;
   }
-  function showCursor(v) { if (v !== TC.on) { TC.on = v; TC.cur.classList.toggle('on', v); } }
+  function showCursor(v) {
+    if (v === TC.on) return;
+    if (v) { const r = rest(); placeCursor(r.x, r.y); }
+    TC.on = v; TC.cur.classList.toggle('on', v);
+  }
   function hideCursor() { showCursor(false); }
+  async function moveTo(tok, find, ms = 800) {
+    const el = find(); if (!el || !el.getClientRects().length) throw CANCEL;
+    showCursor(true);
+    const A = { x: TC.x, y: TC.y }, B = ptOf(el);
+    await frames(tok, ms, k => placeCursor(lerp(A.x, B.x, k), lerp(A.y, B.y, k)));
+    return el;
+  }
   function tapRing() {
     const c = TC.cur; c.classList.remove('clk'); void c.offsetWidth; c.classList.add('press', 'clk');
     setTimeout(() => c.classList.remove('press'), 160);
   }
+  async function tap(tok, el, act) { tapRing(); await pause(tok, 140); (act || (() => el.click()))(); }
 
-  /* nudge the app toward the state a stop wants */
-  function reconcile(w) {
-    const path = pathNow();
-    // screens change through the app's router without new history, so the page's Back stays the page's
-    if (path !== w.path) return act(() => navigate(w.path), 420);
-    const s = scr(); if (!s || s.dataset.screen !== w.screen) return;
-    // the scroll first: it follows the page every frame, the taps can take a moment
-    if (w.scroll !== undefined && performance.now() >= T.busy) {
-      const y = Math.round(typeof w.scroll === 'function' ? w.scroll(s) : w.scroll);
-      if (Math.abs(s.scrollTop - y) > 1) s.scrollTo({ top: y, behavior: 'instant' });
-    }
-    if (w.screen === 'list') {
-      if (w.follow && !following().includes(w.follow)) {
-        if (!picking()) return tapEl(EL.change());
-        return tapEl(EL.chip(w.follow));
-      }
-      if (w.picking !== undefined && w.picking !== picking()) return tapEl(EL.change());
-      if (w.picking === undefined && picking()) return tapEl(EL.change());
-      if (w.live !== undefined && w.live !== isLive()) return tapEl(EL.live());
-    }
-    if (w.side) { const b = EL.side(w.side); if (b && b.getAttribute('aria-checked') !== 'true') return tapEl(b); }
+  /* the stops */
+  const STOPS = {
+    // Live switches off, then on again
+    async live(tok) {
+      const s = await reach(tok, '/', 'list'); await liveOn(tok); await glide(tok, s, 0, 500);
+      await pause(tok, 500);
+      const b = await moveTo(tok, EL.live, 900);
+      await pause(tok, 300); await tap(tok, b);
+      await pause(tok, 1700); await tap(tok, b);
+      await pause(tok, 1100);
+    },
+    // the card of the player you follow
+    async follow(tok) {
+      const s = await reach(tok, '/', 'list'); await liveOn(tok); await glide(tok, s, 0, 500);
+      await pause(tok, 400);
+      await moveTo(tok, EL.card, 900);
+      await pause(tok, 1600);
+    },
+    // into the match: Facts, then down into Events
+    async match(tok) {
+      let s = await reach(tok, '/', 'list'); await liveOn(tok);
+      const row = EL.match();
+      if (row) { const y = offsetIn(row, s), h = s.clientHeight; if (y < s.scrollTop + h * .25 || y > s.scrollTop + h * .8) await glide(tok, s, y - h * .55, 700); }
+      await pause(tok, 300);
+      await moveTo(tok, EL.match, 800);
+      await pause(tok, 200); await tap(tok, null, () => navigate('/match/1/facts'));
+      await pause(tok, 300); hideCursor();
+      s = await reach(tok, '/match/1/facts', 'match');
+      await pause(tok, 1100);
+      const ev = EL.heading('Events');
+      await glide(tok, s, ev ? offsetIn(ev, s) + 240 : maxScroll(s), 2800);
+    },
+    // Stats, and down through them
+    async stats(tok) {
+      let s = scr();
+      if (pathNow() !== '/match/1/stats') { s = await reach(tok, '/match/1/facts', 'match'); await glide(tok, s, 0, 600); }
+      else await glide(tok, s, 0, 600);
+      await pause(tok, 300);
+      const tab = await moveTo(tok, () => EL.tab('Stats'), 800);
+      await pause(tok, 200); await tap(tok, tab);
+      await pause(tok, 500); hideCursor();
+      await pause(tok, 600);
+      s = scr(); await glide(tok, s, maxScroll(s), 2800);
+    },
+    // Lineup, Argentina, then Messi's page
+    async lineup(tok) {
+      let s = scr();
+      if (!/^\/match\/1\//.test(pathNow())) s = await reach(tok, '/match/1/stats', 'match');
+      await glide(tok, s, 0, 600);
+      await pause(tok, 300);
+      const tab = await moveTo(tok, () => EL.tab('Lineup'), 800);
+      await pause(tok, 200); await tap(tok, tab);
+      await pause(tok, 500);
+      if (EL.side('away')?.getAttribute('aria-checked') === 'true') EL.side('home')?.click();
+      await pause(tok, 500);
+      const side = await moveTo(tok, () => EL.side('away'), 800);
+      await pause(tok, 200); await tap(tok, side);
+      await pause(tok, 1100);
+      await moveTo(tok, EL.messi, 800);
+      await pause(tok, 300); await tap(tok, null, () => navigate('/player/arg/10'));
+      await pause(tok, 500); hideCursor();
+    },
+    // nothing happens on its own here: the buttons do it
+    async goal(tok) {
+      const s = await reach(tok, '/', 'list'); await liveOn(tok); await glide(tok, s, 0, 500);
+    },
+  };
+
+  async function play(card) {
+    const tok = ++D.run;
+    hideCursor();
+    if (!D.app) return;
+    const run = STOPS[card.dataset.stop];
+    try { if (run) await run(tok); } catch (e) { if (e !== CANCEL) console.warn(e); }
+    if (tok === D.run) hideCursor();
   }
 
-  // a goal and a red card in another match: the app's own engine, reached through its module
+  /* which stop: the one across the middle of the screen */
+  function pick() {
+    const mid = innerHeight * .5;
+    const r = tourEl.getBoundingClientRect();
+    let c = null;
+    if (r.top < mid && r.bottom > mid) c = cards.find(x => { const b = x.getBoundingClientRect(); return b.top <= mid && b.bottom > mid; }) || T.card;
+    if (c !== T.card) { T.card = c; cards.forEach(x => x.classList.toggle('on', x === c)); }
+    const can = c && mqWide.matches && dock.dataset.state === 'docked' && D.app && !D.control;
+    if (!can) { if (T.ran) { T.ran = null; D.run++; hideCursor(); } return; }
+    if (c !== T.ran) { T.ran = c; play(c); }
+  }
+  const kickTour = () => pick();
+  scrollers.push(pick);
+  addEventListener('resize', pick);
+
+  // above the tour the phone rests on Live
+  let wasAbove = true;
+  scrollers.push(() => {
+    const above = tourEl.getBoundingClientRect().top > innerHeight * .5;
+    if (above && !wasAbove && dock.dataset.state === 'docked' && D.app && !D.control) go('/');
+    wasAbove = above;
+  });
+
+  /* the buttons: Messi's goal or red card as a note on the list, and a goal or a red card in another match */
+  // with reduced motion the app shows its scenes as notes. For a while after a Messi button, its scene
+  // decision (only that, so every other animation keeps its motion) is told reduced motion is on
+  const Q = { until: 0 };
+  const REDUCED = '(prefers-reduced-motion: reduce)';
+  const fromSceneDecision = () => (new Error().stack || '').split('\n').slice(1, 5).some(l => /(?:^|\s)(?:at\s+)?tn(?:\s+\(|@)/.test(l));
+  function quietly(fn) {
+    const w = frame.contentWindow;
+    if (w && !w.__tourQuiet) {
+      const mm = w.matchMedia; w.__tourQuiet = true;
+      w.matchMedia = function (q) {
+        if (q === REDUCED && performance.now() < Q.until && fromSceneDecision()) return { matches: true, media: q, onchange: null, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {}, dispatchEvent: () => false };
+        return mm.call(this, q);
+      };
+    }
+    Q.until = performance.now() + 12000;
+    return fn();
+  }
+  // the engine scores in the featured match only, so for one call its "featured" lookup answers with
+  // another live match: the goal or red card lands there, and the app shows it as a note
+  function elsewhere(fn) {
+    const AP = frame.contentWindow.Array.prototype, find = AP.find;
+    AP.find = function (f, ...rest) {
+      AP.find = find;
+      const hit = find.call(this, f, ...rest);
+      return hit && hit.feat ? find.call(this, m => m && m.status === 'live' && !m.feat) || hit : hit;
+    };
+    try { return fn(); } finally { AP.find = find; }
+  }
+  const MOMENTS = {
+    goalFav: { kind: 'goalFavorite', wrap: quietly, say: 'Messi scores: a note, and his card lights up.' },
+    redFav: { kind: 'redFavorite', wrap: quietly, say: 'Messi is sent off: a note on the list.' },
+    goalElse: { kind: 'goalHome', wrap: elsewhere, say: 'A goal in another match, as a note.' },
+    redElse: { kind: 'redAway', wrap: elsewhere, say: 'A red card in another match, as a note.' },
+  };
+  // a goal can't land on a player who's off, or in a match that's over: then the evening starts again first
+  async function moment(key) {
+    const m = MOMENTS[key]; if (!m) return;
+    if (dock.dataset.state === 'away') openDemo();
+    start();
+    if (!D.app) { note('The demo is still starting…'); return; }
+    D.run++; T.ran = T.card; hideCursor();
+    if (pathNow() !== '/') { navigate('/'); await new Promise(r => setTimeout(r, 450)); }
+    const e = await engine(); if (!e) { note('That didn’t work. Try again.'); return; }
+    const fire = () => { try { return !!m.wrap(() => e.trigger(m.kind)); } catch (_) { return false; } };
+    let ok = fire(), again = false;
+    if (!ok) { D.app.restart(); again = true; await new Promise(r => setTimeout(r, 150)); ok = fire(); }
+    const said = ok ? (again ? 'The evening starts again. ' : '') + m.say : 'Nothing to act on right now.';
+    note(said); say(said);
+  }
   let engineP = null;
   function engine() {
     if (engineP) return engineP;
@@ -488,74 +577,25 @@
       const w = frame.contentWindow, d = appDoc();
       const url = d && [...d.querySelectorAll('link[rel=modulepreload]')].map(l => l.href).find(h => /followBridge-/.test(h));
       if (!url) return null;
-      const m = await new w.Function('u', 'return import(u)')(url);
-      return typeof m.t === 'function' ? m.t() : null;
+      const mod = await new w.Function('u', 'return import(u)')(url);
+      return typeof mod.t === 'function' ? mod.t() : null;
     })().catch(() => null);
     engineP.then(e => { if (!e) engineP = null; });
     return engineP;
   }
-  // the engine scores in the featured match only, so for one call its "featured" lookup answers with
-  // another live match: the goal or red card lands there, and the app shows it as a note, not a scene
-  async function moment(kind) {
-    const e = await engine(); if (!e) return false;
-    const AP = frame.contentWindow.Array.prototype, find = AP.find;
-    AP.find = function (fn, ...rest) {
-      AP.find = find;
-      const hit = find.call(this, fn, ...rest);
-      return hit && hit.feat ? find.call(this, m => m && m.status === 'live' && !m.feat) || hit : hit;
-    };
-    try { return !!e.trigger(kind === 'goalElsewhere' ? 'goalHome' : 'redAway'); } catch (_) { return false; } finally { AP.find = find; }
-  }
+  $$('[data-moment]').forEach(b => b.addEventListener('click', () => moment(b.dataset.moment)));
+  $$('[data-scene]').forEach(b => b.addEventListener('click', () => { D.run++; T.ran = T.card; }));
+  D.loud = () => { Q.until = 0; };   // a goal in your match gets its scene again
 
-  /* which stop, and how far into it */
-  function measure() {
-    const pinH = innerHeight - NAV_H;
-    let i = 0, p = 0;
-    cards.forEach((c, k) => {
-      const r = c.getBoundingClientRect();
-      if (r.top <= NAV_H + pinH * .5) { i = k; p = clamp((NAV_H - r.top) / Math.max(1, r.height - pinH), 0, 1); }
-    });
-    const pinned = cards[0].getBoundingClientRect().top <= NAV_H + 40;
-    return { i, p: pinned ? p : 0, pinned };
-  }
-  function tick() {
-    T.run = false;
-    const r = tourEl.getBoundingClientRect();
-    const live = mqWide.matches && dock.dataset.state === 'docked' && r.top < innerHeight && r.bottom > 0;
-    if (!live) { if (T.seen) { T.seen = false; hideCursor(); cards.forEach(c => c.classList.remove('on')); } return; }
-    T.seen = true;
-    const { i, p, pinned } = measure();
-    if (i !== T.i) { T.i = i; T.prev = p; cards.forEach((c, k) => c.classList.toggle('on', k === i)); }
-    const stop = STOPS[cards[i].dataset.stop];
-    const forward = p >= T.prev;
-    if (D.app && !D.control && performance.now() > T.hold && stop) {
-      const w = stop.want(p);
-      reconcile(w);
-      // the cursor taps whenever the scroll crosses one of its moments, either way
-      stop.taps.forEach(t => { if ((T.prev < t && p >= t) || (T.prev >= t && p < t)) tapRing(); });
-      (stop.moments || []).forEach(([t, kind]) => { if (forward && T.prev < t && p >= t && !T.fired.has(kind)) { T.fired.add(kind); moment(kind); } });
-      const on = pinned && stop.show(p);
-      if (on) { const pt = along(stop.cursor, p, cards[i].dataset.stop); placeCursor(pt.x, pt.y); }
-      showCursor(on);
-    }
-    T.prev = p;
-    T.run = true; requestAnimationFrame(tick);
-  }
-  const kickTour = () => { if (!T.run) { T.run = true; requestAnimationFrame(tick); } };
-  scrollers.push(kickTour);
-  addEventListener('resize', kickTour);
-
-  // above the tour the phone rests on Live; the scene buttons get the phone to themselves for a while
-  scrollers.push(() => {
-    if (dock.dataset.state !== 'docked' || !D.app || D.control) return;
-    if (tourEl.getBoundingClientRect().top > innerHeight * .5 && T.i !== -1) { T.i = -1; cards.forEach(c => c.classList.remove('on')); go('/'); }
-  });
-  $$('[data-scene]').forEach(b => b.addEventListener('click', () => { T.hold = performance.now() + 9000; }));
+  // on a phone, "Show me" opens the demo and plays that stop in it
   $$('[data-show]').forEach(b => b.addEventListener('click', () => {
-    const c = b.closest('.dcard'); openDemo(); setTimeout(() => go(c.dataset.route || '/'), dock.dataset.state === 'open' ? 350 : 0);
+    const c = b.closest('.dcard'); openDemo();
+    const go2 = () => { if (D.app) play(c); else setTimeout(go2, 400); };
+    setTimeout(go2, dock.dataset.state === 'open' ? 350 : 0);
   }));
+  D.retour = () => { T.ran = null; pick(); };
   const tryEl = $('#try');
-  onScreen(tryEl, v => { if (v && mqWide.matches && dock.dataset.state === 'docked') { T.i = -1; go('/'); } });
+  onScreen(tryEl, v => { if (v && mqWide.matches && dock.dataset.state === 'docked') go('/'); });
 
   /* ==========================================================================
      04 · SYSTEM
