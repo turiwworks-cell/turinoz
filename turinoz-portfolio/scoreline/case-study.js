@@ -864,7 +864,7 @@
   const sizeCanvas = (c, r) => { const b = c.getBoundingClientRect(), d = dpr(); c.width = Math.max(1, Math.round(b.width * d)); c.height = Math.max(1, Math.round(b.height * d)); r && r.resizeDrawingSurfaceToCanvas(); };
   const argb = hex => (0xff000000 | parseInt(hex.slice(1), 16)) >>> 0;
 
-  /* the Live switch: islive and count, the measured capsule beside it */
+  /* the Live switch: islive, and count, which is the calendar's day (today's, to start); the measured capsule beside it */
   const LIVE_OPENING = [[0, 0], [17, -0.0263], [33, -0.0373], [83, -0.0537], [133, -0.0603], [183, -0.0614], [200, -0.049], [217, -0.0208], [233, 0.0293], [267, 0.2168], [283, 0.3575], [317, 0.6738], [333, 0.806], [350, 0.9079], [367, 0.9803], [383, 1.0307], [400, 1.0604], [417, 1.0757], [433, 1.0789], [450, 1.0757], [483, 1.0636], [567, 1.0175], [600, 1.0055], [633, 1]];
   const LIVE_CLOSING = [[0, 1], [50, 1.0077], [183, 1.0735], [217, 1.0789], [233, 1.0746], [250, 1.0636], [267, 1.0428], [283, 1.0132], [300, 0.9715], [333, 0.8454], [367, 0.6522], [400, 0.4134], [433, 0.1996], [467, 0.0538], [500, -0.0263], [517, -0.0471], [533, -0.0592], [583, -0.0592], [633, -0.0449], [717, -0.011], [783, 0]];
   const trackC = $('#rTrack'), trackLbl = $('#rTrackLbl');
@@ -901,17 +901,20 @@
   }
   drawTrack(null); addEventListener('resize', () => drawTrack(null));
 
-  const RL = { r: null, vm: null, live: true, count: 5, visible: false };
+  const RL = { r: null, vm: null, live: true, count: new Date().getDate(), visible: false };
   const liveToggle = $('#rLiveToggle'), countOut = $('#rCount'), liveState = $('#rLiveState');
   function liveWrite() {
     liveToggle.setAttribute('aria-pressed', String(RL.live)); liveToggle.lastChild.textContent = RL.live ? 'Live on' : 'Live off';
-    countOut.textContent = RL.count + ' live'; liveState.textContent = `islive = ${RL.live} · count = "${RL.count}"`;
+    countOut.textContent = 'day ' + RL.count; liveState.textContent = `islive = ${RL.live} · count = "${RL.count}"`;
     if (!RL.vm) return;
     try { RL.vm.boolean('islive').value = RL.live; RL.vm.string('count').value = String(RL.count); } catch (_) {}
   }
-  liveToggle.addEventListener('click', () => { RL.live = !RL.live; liveWrite(); trackLive = RL.live; runTrack(); });
-  $('#rCountUp').addEventListener('click', () => { RL.count = Math.min(99, RL.count + 1); liveWrite(); });
-  $('#rCountDown').addEventListener('click', () => { RL.count = Math.max(0, RL.count - 1); liveWrite(); });
+  const liveSet = v => { RL.live = v; liveWrite(); trackLive = v; runTrack(); };
+  liveToggle.addEventListener('click', () => liveSet(!RL.live));
+  // the calendar runs 1 to 31 and wraps round
+  $('#rCountUp').addEventListener('click', () => { RL.count = RL.count % 31 + 1; liveWrite(); });
+  $('#rCountDown').addEventListener('click', () => { RL.count = (RL.count + 29) % 31 + 1; liveWrite(); });
+  liveWrite();
 
   /* moments: kind, the team's two colours, play; phase comes back */
   const RW = { r: null, vm: null, colors: ['#0055a4', '#ef4135'], kind: 'goal', visible: false, t0: 0, raf: 0, played: false };
@@ -963,8 +966,12 @@
       sizeCanvas(lc); sizeCanvas(wc);
       RL.r = new rv.Rive({
         src: APP + 'rive/live-icon.riv', canvas: lc, artboard: 'aniamtion', stateMachine: 'State Machine 1', autoplay: true, autoBind: true,
-        layout: new rv.Layout({ fit: rv.Fit.Contain, alignment: rv.Alignment.Center }), shouldDisableRiveListeners: true,
-        onLoad: () => { RL.vm = RL.r.viewModelInstance; RL.r.resizeDrawingSurfaceToCanvas(); liveWrite(); if (!RL.visible) RL.r.pause(); },
+        layout: new rv.Layout({ fit: rv.Fit.Contain, alignment: rv.Alignment.Center }), shouldDisableRiveListeners: false,
+        onLoad: () => {
+          RL.vm = RL.r.viewModelInstance; RL.r.resizeDrawingSurfaceToCanvas(); liveWrite(); if (!RL.visible) RL.r.pause();
+          // a click on the icon flips islive inside the file, as in the editor: the button and the curve follow it
+          try { const il = RL.vm.boolean('islive'); il.on(() => { if (il.value !== RL.live) liveSet(il.value); }); } catch (_) {}
+        },
         onLoadError: () => $('#rLiveStage').classList.add('failed'),
       });
       RW.r = new rv.Rive({
