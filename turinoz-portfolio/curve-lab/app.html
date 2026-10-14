@@ -8677,11 +8677,12 @@ html[data-cl-theme="light"] .pop.float {
         </button>
       </div>
       <label class="cl-ap-interface" for="clUiColor"
-        ><span>Interface color</span><span class="hexf"><input type="text" id="clUiHex" class="mono" maxlength="7" spellcheck="false" aria-label="Interface color hex" value="#B69CFF"
-        /><input class="cl-color" id="clUiColor" type="color" value="#b69cff" aria-label="Interface color"
+        ><span>Interface color</span><span class="hexf"><input type="text" id="clUiHex" class="mono" maxlength="7" spellcheck="false" aria-label="Interface color hex" value="#7389FF"
+        /><input class="cl-color" id="clUiColor" type="color" value="#7389ff" aria-label="Interface color"
       /></span></label>
       <div class="cl-ap-palette" role="group" aria-label="Interface colors">
-        <button type="button" data-ui-color="#95cf2a" style="--swatch: #95cf2a" aria-label="Lime interface" title="Lime"></button
+        <button type="button" data-ui-color="#7389ff" style="--swatch: #7389ff" aria-label="Curve Lab interface" title="Curve Lab"></button
+        ><button type="button" data-ui-color="#95cf2a" style="--swatch: #95cf2a" aria-label="Lime interface" title="Lime"></button
         ><button type="button" data-ui-color="#ededea" style="--swatch: #ededea" aria-label="Neutral interface" title="Neutral"></button
         ><button type="button" data-ui-color="#7cc4ff" style="--swatch: #7cc4ff" aria-label="Blue interface" title="Blue"></button
         ><button type="button" data-ui-color="#a7c8a3" style="--swatch: #a7c8a3" aria-label="Sage interface" title="Sage"></button
@@ -12084,7 +12085,7 @@ const t0=performance.now();
     re("exact");
   }); // Display preferences do not modify curve data or the curve undo history.
   const clAppearanceDefaults = {
-    uiColor: "#b69cff",
+    uiColor: "#7389ff",
     valueColor: "#f1f1ec",
     speedColor: "#ff9a4d",
     valueOpacity: 100,
@@ -12487,7 +12488,7 @@ const t0=performance.now();
       if (window.top !== window) return;
       const link = f("clFavicon");
       if (!link) return;
-      let acc = (P.style.getPropertyValue("--acc") || getComputedStyle(P).getPropertyValue("--acc")).trim();
+      let acc = String(clAppearance.uiColor || "").trim();
       /^#[0-9a-f]{6}$/i.test(acc) || (acc = "#7389ff");
       const rgb = clRgb(acc),
         neutral = Math.max(...rgb) - Math.min(...rgb) < 14,
@@ -22566,6 +22567,7 @@ gsap.to(".el", { duration: ${durSec}, ease: "curve", y: 0 });`;
 
           // Theme & Appearance
           { cat: "Theme", lbl: clTheme === "light" ? "Switch to Dark Theme" : "Switch to Light Theme", sub: "Theme", run: () => f("themeBtn")?.click() },
+          { cat: "Theme", lbl: "Interface Color: Curve Lab (#7389FF)", sub: "Color", run: () => clSetAppearance("uiColor", "#7389ff") },
           { cat: "Theme", lbl: "Interface Color: Violet (#B69CFF)", sub: "Color", run: () => clSetAppearance("uiColor", "#b69cff") },
           { cat: "Theme", lbl: "Interface Color: Lime (#95CF2A)", sub: "Color", run: () => clSetAppearance("uiColor", "#95cf2a") },
           { cat: "Theme", lbl: "Interface Color: Neutral (#EDEDEA)", sub: "Color", run: () => clSetAppearance("uiColor", "#ededea") },
