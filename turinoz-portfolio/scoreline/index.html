@@ -232,65 +232,70 @@
   </div>
 </section>
 
-<!-- ================= 03 MOTION ================= -->
+<!-- ================= 03 MOTION =================
+     Three of the ten curves, then the app's sections played on their exact
+     duration, delay, stagger and curve. -->
 <section class="sec" id="motion">
   <div class="wrap">
     <div class="shead rv">
       <div><div class="kicker"><i></i>03 — Motion</div><h2>Every curve, set by hand.</h2>
-        <p class="sub">Ten curves run the whole app. I set them in the Rive prototype, where every section had its own duration, delay, stagger and four bezier handles to tune. The web app carries them over number for number. Here are three, each against the browser’s default in grey.</p></div>
-    </div>
-    <div class="law rv">
-      <svg viewBox="0 0 86 56" aria-hidden="true"><path d="M4 52 C 18 52, 22 4, 82 4" fill="none" stroke="url(#lawg)" stroke-width="2.5" stroke-linecap="round"/><defs><linearGradient id="lawg" x1="0" x2="1"><stop offset="0" stop-color="#6b58f5"/><stop offset=".5" stop-color="#e7c1d6"/><stop offset="1" stop-color="#fff0e6"/></linearGradient></defs></svg>
-      <q>No curve overshoots. Movement settles, it never bounces.</q>
-      <span class="src">My one rule for motion<br>written at the top of the tokens</span>
+        <p class="sub">Ten curves run the whole app. I set them in the Rive prototype, where every section had its own duration, delay, stagger and four bezier values to tune. The web app carries them over number for number. Here are three, each against the browser’s default in grey.</p></div>
     </div>
 
-    <div class="curves" id="curves">
+    <div class="curves curves--tight" id="curves">
       <article class="cv rv" data-v="0.16,1,0.3,1" data-dur="750">
         <div class="cv-h"><span class="cv-name">Glide</span><span class="cv-tok">--ease-glide</span></div>
         <div class="cv-plot"><canvas></canvas><span class="ghost-l"><i></i>ease</span></div>
         <div class="four"><span><small>X1</small><b>0.16</b></span><span><small>Y1</small><b>1</b></span><span><small>X2</small><b>0.3</b></span><span><small>Y2</small><b>1</b></span></div>
         <div class="cv-track" aria-hidden="true"><u></u><i></i></div>
         <p class="cv-p"><em>The landing.</em> Out of the gate at once, then a long quiet arrival. It’s the expo-out shape, chosen on purpose, and 11 of the 14 sections land on it.</p>
-        <div class="cv-uses"><span>cards</span><span>live</span><span>screen</span><span>momentum</span><span>events</span><span>stats</span><span>lineup</span><span>toast</span><span>goal</span><span>follow</span><span>hover light</span></div>
+        <div class="cv-uses"><span>cards</span><span>screen</span><span>events</span><span>stats</span><span>lineup</span><span>toast</span></div>
       </article>
       <article class="cv rv" style="--rd:.05s" data-v="0.32,0,0.1,1" data-dur="720">
         <div class="cv-h"><span class="cv-name">Player</span><span class="cv-tok">--t-player-ease</span></div>
         <div class="cv-plot"><canvas></canvas><span class="ghost-l"><i></i>ease</span></div>
         <div class="four"><span><small>X1</small><b>0.32</b></span><span><small>Y1</small><b>0</b></span><span><small>X2</small><b>0.1</b></span><span><small>Y2</small><b>1</b></span></div>
         <div class="cv-track" aria-hidden="true"><u></u><i></i></div>
-        <p class="cv-p"><em>The focus pull.</em> A slow start and a soft, sudden finish, so a player grows in from 90% like a camera finding him.</p>
+        <p class="cv-p"><em>The focus pull.</em> A slow start and a soft finish, so a player grows in from 90% like a camera finding him.</p>
         <div class="cv-uses"><span>player view</span><span>bust 0.9 → 1</span><span>player sheet</span></div>
       </article>
-      <article class="cv rv" style="--rd:.1s" data-v="0.12,1,0.3,1" data-dur="504">
-        <div class="cv-h"><span class="cv-name">Land</span><span class="cv-tok">moments</span></div>
+      <article class="cv rv" style="--rd:.1s" data-v="0.7,0,0.2,1" data-dur="420">
+        <div class="cv-h"><span class="cv-name">Roll</span><span class="cv-tok">--ease-roll</span></div>
         <div class="cv-plot"><canvas></canvas><span class="ghost-l"><i></i>ease</span></div>
-        <div class="four"><span><small>X1</small><b>0.12</b></span><span><small>Y1</small><b>1</b></span><span><small>X2</small><b>0.3</b></span><span><small>Y2</small><b>1</b></span></div>
+        <div class="four"><span><small>X1</small><b>0.7</b></span><span><small>Y1</small><b>0</b></span><span><small>X2</small><b>0.2</b></span><span><small>Y2</small><b>1</b></span></div>
         <div class="cv-track" aria-hidden="true"><u></u><i></i></div>
-        <p class="cv-p"><em>The goal word.</em> Each letter of GOAAAL comes in big and soft and lands sharp. LAND gets there sooner than GLIDE, so the letters feel thrown.</p>
-        <div class="cv-uses"><span>GOAAAL letters</span><span>word settle</span><span>wall of light</span></div>
+        <p class="cv-p"><em>The letter roll.</em> A hard pull and a clean drop. Each letter of a pressed label rolls up and comes back from below, 420 ms each, 11 ms apart.</p>
+        <div class="cv-uses"><span>letter roll</span><span>day tabs</span><span>match tabs</span></div>
       </article>
     </div>
 
-    <div class="subhead rv">
-      <h3>Mine against the default.</h3>
-      <p>The browser’s <code>ease</code> is a fine curve, and it’s nobody’s decision. Race any of mine against it at the same duration.</p>
+    <div class="subhead subhead--tight rv">
+      <h3>Section by section.</h3>
+      <p>Each part of the app has its own duration, delay and stagger. Most share a curve; none share a rhythm.</p>
     </div>
-    <div class="race rv" id="race">
-      <div class="race-lanes">
-        <div class="lane def"><span class="ln-n">Default<small>CSS ease</small></span><span class="ln-t"><i></i></span><span class="ln-c">0.25, 0.1, 0.25, 1</span></div>
-        <div class="lane" id="raceMine"><span class="ln-n" id="raceName">Glide<small>mine</small></span><span class="ln-t"><i></i></span><span class="ln-c" id="raceVal">0.16, 1, 0.3, 1</span></div>
+    <div class="mo" id="mo">
+      <div class="mo-list rv" role="listbox" aria-label="The app’s sections" id="moList">
+        <div class="mo-th" aria-hidden="true"><span>Section</span><span>Dur</span><span>Delay</span><span>Stagger</span><span>Curve</span></div>
+        <button class="mo-row" type="button" role="option" aria-selected="false" data-k="player" data-dur="720" data-delay="120" data-stagger="50" data-v="0.32,0,0.1,1" data-c="Player" data-d="Face to bust, then the sheet"><span class="nm">Player</span><span>720</span><span>120</span><span>50</span><span class="cvm"><canvas></canvas><span>Player</span></span></button>
+        <button class="mo-row" type="button" role="option" aria-selected="false" data-k="cards" data-dur="750" data-delay="100" data-stagger="60" data-v="0.16,1,0.3,1" data-c="Glide" data-d="Live cards rising in"><span class="nm">Cards</span><span>750</span><span>100</span><span>60</span><span class="cvm"><canvas></canvas><span>Glide</span></span></button>
+        <button class="mo-row" type="button" role="option" aria-selected="false" data-k="list" data-dur="500" data-delay="50" data-stagger="30" data-v="0.2,0.8,0.2,1" data-c="Ease" data-d="Rows after a day change"><span class="nm">List</span><span>500</span><span>50</span><span>30</span><span class="cvm"><canvas></canvas><span>Ease</span></span></button>
+        <button class="mo-row" type="button" role="option" aria-selected="false" data-k="screen" data-dur="550" data-delay="0" data-stagger="50" data-v="0.16,1,0.3,1" data-c="Glide" data-d="Opening a match"><span class="nm">Screen</span><span>550</span><span>0</span><span>50</span><span class="cvm"><canvas></canvas><span>Glide</span></span></button>
+        <button class="mo-row" type="button" role="option" aria-selected="false" data-k="tabs" data-dur="450" data-delay="0" data-stagger="60" data-v="0.2,0.8,0.2,1" data-c="Ease" data-d="The label rolls, the line follows"><span class="nm">Tabs</span><span>450</span><span>0</span><span>60</span><span class="cvm"><canvas></canvas><span>Ease</span></span></button>
+        <button class="mo-row" type="button" role="option" aria-selected="false" data-k="events" data-dur="500" data-delay="150" data-stagger="40" data-v="0.16,1,0.3,1" data-c="Glide" data-d="Rows from 12 px above"><span class="nm">Events</span><span>500</span><span>150</span><span>40</span><span class="cvm"><canvas></canvas><span>Glide</span></span></button>
+        <button class="mo-row" type="button" role="option" aria-selected="false" data-k="stats" data-dur="900" data-delay="150" data-stagger="60" data-v="0.16,1,0.3,1" data-c="Glide" data-d="Bars open from the middle"><span class="nm">Stats</span><span>900</span><span>150</span><span>60</span><span class="cvm"><canvas></canvas><span>Glide</span></span></button>
+        <button class="mo-row" type="button" role="option" aria-selected="false" data-k="lineup" data-dur="600" data-delay="100" data-stagger="140" data-v="0.16,1,0.3,1" data-c="Glide" data-d="Line by line, forwards first"><span class="nm">Lineup</span><span>600</span><span>100</span><span>140</span><span class="cvm"><canvas></canvas><span>Glide</span></span></button>
+        <button class="mo-row" type="button" role="option" aria-selected="false" data-k="toast" data-dur="600" data-delay="450" data-stagger="200" data-v="0.16,1,0.3,1" data-c="Glide" data-d="Flag, then photo, then name"><span class="nm">Toast</span><span>600</span><span>450</span><span>200</span><span class="cvm"><canvas></canvas><span>Glide</span></span></button>
       </div>
-      <div class="race-ctl">
-        <div class="chipset" id="raceSet" role="group" aria-label="Choose a curve">
-          <button class="chipbtn" type="button" data-v="0.16,1,0.3,1" aria-pressed="true">Glide</button>
-          <button class="chipbtn" type="button" data-v="0.2,0.8,0.2,1" aria-pressed="false">Ease</button>
-          <button class="chipbtn" type="button" data-v="0.32,0,0.1,1" aria-pressed="false">Player</button>
-          <button class="chipbtn" type="button" data-v="0.12,1,0.3,1" aria-pressed="false">Land</button>
-          <button class="chipbtn" type="button" data-v="0.7,0,0.2,1" aria-pressed="false">Roll</button>
-          <button class="chipbtn" type="button" data-v="0.5,0,0.9,0.6" aria-pressed="false">Slam</button>
+      <div class="mo-stage rv" style="--rd:.08s" id="moStage">
+        <div class="mo-h">
+          <div class="mo-t"><b id="moName">Player</b><small id="moSay">Face to bust, then the sheet</small></div>
+          <div class="mo-ctl"><button class="chipbtn" type="button" id="moPlay" aria-label="Play again"><svg aria-hidden="true"><use href="#icRestart"/></svg></button></div>
         </div>
-        <div class="chipset"><button class="chipbtn" type="button" id="raceSlow" aria-pressed="false">Slow ×4</button><button class="btn" type="button" id="raceGo" style="height:34px;font-size:13px"><svg aria-hidden="true" style="width:11px;height:11px"><use href="#icPlay"/></svg>Race</button></div>
+        <div class="mo-box" id="moBox"></div>
+        <div class="mo-foot">
+          <div class="mo-tl" id="moTl" aria-hidden="true"></div>
+          <div class="mo-read" id="moRead"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -301,26 +306,26 @@
   <div class="wrap">
     <div class="shead rv">
       <div><div class="kicker"><i></i>04 — Rive</div><h2>Two Rive files, built by me in the editor.</h2>
-        <p class="sub">Rive draws only what it’s best at. Both files are mine, from the editor, and the app talks to them through view-model properties and nothing else. Here they are running live, outside the app. Play with them.</p></div>
+        <p class="sub">Rive draws only what it’s best at. The app talks to both files through view-model properties and nothing else.</p></div>
     </div>
     <div class="rv-grid">
       <article class="rcard rv" id="rLive">
         <div class="rstage" id="rLiveStage">
-          <span class="tag tag--live rchip">Rive · live-icon.riv</span><span class="rnum" id="rLiveState">islive = true · count = "5"</span>
+          <span class="tag tag--live rchip">Rive · live-icon.riv</span><span class="rnum" id="rLiveState">islive = true · count = "14"</span>
           <canvas id="rLiveCanvas" width="1120" height="384" aria-label="The Live switch, drawn by Rive"></canvas>
           <div class="fallback">The Live switch needs WebGL 2 to draw here. It runs inside the demo phone either way.</div>
           <div class="rhint">
             <button class="chipbtn" type="button" id="rLiveToggle" aria-pressed="true"><span class="dot" aria-hidden="true"></span>Live on</button>
-            <span class="stepper"><button type="button" id="rCountDown" aria-label="One match fewer">−</button><output id="rCount" class="mono">5 live</output><button type="button" id="rCountUp" aria-label="One match more">+</button></span>
+            <span class="stepper"><button type="button" id="rCountDown" aria-label="The day before">−</button><output id="rCount" class="mono" aria-label="Calendar day">day 14</output><button type="button" id="rCountUp" aria-label="The day after">+</button></span>
           </div>
         </div>
         <div class="rtext">
           <div class="kicker"><i></i>Rive 01 · The Live switch</div>
           <h3>A switch that gathers itself.</h3>
-          <p>Turning Live on, the capsule first draws in a little, opens past its mark and settles back. Turning it off, it swells first, then closes. It’s the only thing in the app allowed to overshoot: I animated it by hand in the editor, and wanted it to breathe rather than snap.</p>
+          <p>When Live turns on, the capsule draws in a little, opens past its mark and settles back. When it turns off, it swells first, then closes. It’s the only thing in the app allowed to overshoot: I animated it by hand, and wanted it to breathe rather than snap. The number inside is the calendar day.</p>
           <div class="track">
             <div class="track-h"><span>The capsule, measured from my timeline</span><span id="rTrackLbl">opening · 633 ms</span></div>
-            <canvas id="rTrack" aria-label="The capsule's opening amount over time: it dips to −6%, peaks at 108% at 433 ms and settles at 100%."></canvas>
+            <canvas id="rTrack" aria-label="The capsule's opening amount over time: it dips to −6%, peaks at 107.9% at 433 ms and settles at 100%."></canvas>
           </div>
         </div>
       </article>
@@ -350,7 +355,7 @@
             <span class="mk" data-at="0.854" style="left:50.9%"><i></i><span>last letter lands<br>0.854 s · phase 1</span></span>
             <span class="mk" data-at="1.6772" style="left:100%"><i></i><span>flare and glint done<br>1.677 s · phase 2</span></span>
           </div>
-          <p class="phase-note" id="rPhaseNote">Six letters, 70 ms apart, each landing in 504 ms on Land.</p>
+          <p class="phase-note" id="rPhaseNote">Six letters, 70 ms apart, each landing in 504 ms.</p>
         </div>
       </article>
     </div>

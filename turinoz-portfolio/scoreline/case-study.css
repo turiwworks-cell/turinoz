@@ -515,6 +515,155 @@ h3{font:560 24px/1.15 var(--display);font-stretch:88%;letter-spacing:-.022em}
 .race-ctl .chipset{display:flex;gap:6px;flex-wrap:wrap}
 
 /* ==========================================================================
+   03 — MOTION: three curves, then the app's sections played with their real
+   content (the same players, events and numbers as the demo evening)
+   ========================================================================== */
+.curves--tight .cv{padding:18px}
+.curves--tight .cv-plot{aspect-ratio:16/9;margin-top:14px}
+.curves--tight .four{margin-top:12px}
+.curves--tight .four span{padding:8px 10px 7px}
+.curves--tight .four b{font-size:19px}
+.curves--tight .cv-track{margin-top:12px}
+.curves--tight .cv-p{margin-top:12px}
+.subhead--tight{margin:56px 0 22px}
+
+.mo{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.3fr);gap:16px;align-items:start}
+.mo-list{border-radius:var(--r);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);overflow:hidden}
+.mo-th,.mo-row{display:grid;grid-template-columns:minmax(0,1fr) 40px 44px 52px 78px;gap:8px;align-items:center;padding:0 16px}
+.mo-th{height:34px;font:500 9.5px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:rgba(255,255,255,.015);border-bottom:1px solid var(--line-2)}
+.mo-row{width:100%;height:33px;text-align:left;font:500 12px/1 var(--mono);font-variant-numeric:tabular-nums;color:var(--muted);border-bottom:1px solid var(--line-2);transition:background-color .25s,color .25s}
+.mo-row:last-child{border-bottom:0}
+.mo-row:hover{background:rgba(255,255,255,.025);color:var(--ink-2)}
+.mo-row[aria-selected="true"]{background:rgba(165,143,230,.1);color:var(--ink)}
+.mo-row .nm{font:500 13.5px/1 var(--ui);color:var(--ink);letter-spacing:-.005em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mo-row .cvm{display:flex;align-items:center;gap:7px;min-width:0}
+.mo-row .cvm canvas{width:20px;height:20px;flex:none}
+/* side by side, the list runs the stage's full height: its rows share the room, so both end on one line */
+@media (min-width:1101px){
+  .mo-list{align-self:stretch;display:flex;flex-direction:column}
+  .mo-th{flex:none}
+  .mo-row{flex:1;height:auto;min-height:33px}
+  /* room for the busiest section (seven lanes, one line of numbers), so the stage keeps one height from section to section */
+  .mo-foot{min-height:99px}
+}
+.mo-stage{padding:18px;border-radius:var(--r);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line)}
+.mo-h{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.mo-t{min-width:0;display:flex;flex-direction:column;gap:5px}
+.mo-t b{font:600 18px/1.1 var(--display);font-stretch:90%;letter-spacing:-.015em}
+.mo-t small{font-size:12.5px;line-height:1.2;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mo-ctl{display:flex;gap:6px;flex:none}
+.mo-ctl .chipbtn{height:30px}
+.mo-box{position:relative;height:300px;margin-top:14px;border-radius:16px;background:#000;box-shadow:inset 0 0 0 1px var(--line-2);overflow:hidden;
+  container-type:inline-size;font-family:var(--app);color:var(--ink);font-feature-settings:normal}
+.mo-tl{position:relative;margin-top:14px}
+.mo-tl .row{position:absolute;left:0;right:0;height:5px;border-radius:3px;background:rgba(255,255,255,.04)}
+.mo-tl .seg{position:absolute;height:5px;border-radius:3px;background:var(--accent);opacity:.85}
+.mo-tl .ph{position:absolute;top:-4px;bottom:-4px;width:1.5px;background:var(--ink);left:0}
+.mo-read{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.mo-read .tag{height:24px;text-transform:none;letter-spacing:.02em}
+.mo-read .tag--me::before{opacity:1}
+
+/* the scene inside the box: the app's own type and colours */
+.ms{position:absolute;inset:0;padding:16px 18px}
+.ms .cap{display:flex;justify-content:space-between;gap:10px;font:500 9.5px/1 var(--app);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.ms .cap b{font-weight:500;color:var(--ink)}
+.fl{display:inline-block;flex:none;width:14px;height:14px;border-radius:50%;background:linear-gradient(90deg,var(--a) 0 50%,var(--b) 50% 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+.fl--fra{background:linear-gradient(90deg,#0055a4 0 34%,#fff 34% 66%,#ef4135 66%)}
+.fl--arg{background:linear-gradient(180deg,#74acdf 0 34%,#fff 34% 66%,#74acdf 66%)}
+.hd{flex:none;width:30px;height:30px;border-radius:50%;object-fit:cover;object-position:50% 12%;background:#1c1c1c;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+
+/* cards */
+.ms-cards{display:flex;flex-direction:column;gap:12px}
+.ms-cardrow{flex:1;min-height:0;display:flex;align-items:flex-end;gap:8px}
+.ms-card{flex:1;min-width:0;height:var(--h);border-radius:14px;padding:10px 9px 11px;display:flex;flex-direction:column;justify-content:space-between;
+  background:linear-gradient(180deg,var(--g));color:rgba(0,0,0,.86)}
+.ms-card .tm{display:grid;gap:4px;font:600 10px/1 var(--app);letter-spacing:.02em}
+.ms-card .tm span{display:flex;align-items:center;gap:5px}
+.ms-card .tm .fl{width:10px;height:10px}
+.ms-card .tm b{margin-left:auto;font-weight:600}
+.ms-card .mn{font:300 clamp(20px,5cqw,34px)/1 var(--app);letter-spacing:-.05em}
+.ms-card .bar{height:2px;margin-top:6px;border-radius:2px;background:rgba(0,0,0,.18)}
+.ms-card .bar i{display:block;height:100%;width:var(--p);border-radius:2px;background:rgba(0,0,0,.72)}
+
+/* list, events and lineup: the site's first stage, plain shapes */
+.ms .item{position:absolute;border-radius:12px}
+
+/* tabs: the three day tabs on their own */
+.ms-roll{display:grid;place-items:center;padding:0 14px}
+.ms-roll .daytabs{margin-top:0;max-width:100%}
+
+/* a match screen */
+.ms-screen{display:flex;flex-direction:column;gap:6px}
+.ms-team{display:flex;align-items:center;gap:12px;padding:5px 0;border-top:1px solid rgba(255,255,255,.07)}
+.ms-team .fl{width:28px;height:28px}
+.ms-team .n{font:500 20px/1.1 var(--app);letter-spacing:-.02em}
+.ms-team .n small{display:block;margin-top:3px;font:500 10.5px/1.2 var(--app);letter-spacing:0;color:var(--muted)}
+.ms-team .s{margin-left:auto;font:200 42px/1 var(--app);letter-spacing:-.05em}
+.ms-team.lose .s{color:#5b5a56}
+.ms-mtabs{position:relative;display:flex;border-bottom:1px solid rgba(255,255,255,.08)}
+.ms-mtabs button{flex:1;height:34px;font:600 10px/1 var(--app);letter-spacing:.16em;text-transform:uppercase;color:#5b5a56}
+.ms-mtabs button.on{color:var(--ink)}
+.ms-mtabs .ul{position:absolute;left:0;bottom:-1px;height:2px;border-radius:2px;background:var(--accent);width:60px}
+.ms-ontop{display:flex;align-items:center;gap:10px;margin-top:4px}
+.ms-ontop .fl{width:24px;height:24px}
+.ms-ontop b{display:block;font:500 17px/1.1 var(--app);letter-spacing:-.02em}
+.ms-ontop small{display:block;margin-top:3px;font:400 11px/1.2 var(--app);color:var(--muted)}
+
+/* stats */
+.ms-st{display:grid;gap:6px;padding:7px 0 8px;border-bottom:1px solid rgba(255,255,255,.06)}
+.ms-st .v{display:flex;justify-content:space-between;align-items:center;font:500 14px/1 var(--app);font-variant-numeric:tabular-nums}
+.ms-st .v small{font:500 9px/1 var(--app);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.ms-st .b{position:relative;height:4px;border-radius:2px;background:#74acdf;overflow:hidden}
+.ms-st .b u{position:absolute;inset:0;background:#0055a4;transform-origin:0 50%;text-decoration:none;box-shadow:2px 0 0 #000}
+
+/* player */
+.ms-player{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1fr);gap:14px;padding-bottom:0}
+.ms-bust{position:relative;align-self:end;height:100%;display:grid;place-items:end center}
+.ms-bust .no{position:absolute;inset:auto 0 18% 0;text-align:center;font:200 clamp(90px,26cqw,150px)/1 var(--app);letter-spacing:-.06em;color:rgba(255,255,255,.06)}
+.ms-bust img{position:relative;height:96%;width:auto;max-width:100%;object-fit:contain;object-position:50% 100%;transform-origin:50% 100%}
+.ms-bust::after{content:"";position:absolute;left:8%;right:8%;bottom:0;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,#a8c3ea,transparent);opacity:.8}
+.ms-info{align-self:center;display:grid;gap:12px}
+.ms-info .nm small{display:block;font:400 13px/1 var(--app);color:var(--muted)}
+.ms-info .nm b{display:block;margin-top:4px;font:500 clamp(26px,6cqw,34px)/1 var(--app);letter-spacing:-.03em}
+.ms-info .nm sup{font:400 11px/1 var(--app);color:var(--muted);margin-left:4px;vertical-align:top}
+.ms-info .nm span{display:block;margin-top:6px;font:400 11.5px/1 var(--app);color:var(--muted)}
+.ms-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08)}
+.ms-facts div{display:grid;gap:5px}
+.ms-facts small{font:500 8.5px/1 var(--app);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.ms-facts b{font:500 13px/1.1 var(--app)}
+
+/* toast: the film, at the app's own size (1 px of the phone = 1 px here), smaller only when the box is */
+.ms-clip{position:absolute;inset:0;margin:auto;width:min(calc(var(--w) * 1px),calc(100% - 2px));height:min(calc(var(--h) * 1px),calc(100% - 2px));object-fit:contain}
+
+@media (max-width:1100px){
+  .curves--tight{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:var(--pad);margin:0 calc(var(--pad) * -1);padding:0 var(--pad) 6px;scrollbar-width:none}
+  .curves--tight::-webkit-scrollbar{display:none}
+  .curves--tight .cv{flex:0 0 min(360px,82%);scroll-snap-align:start}
+  .mo{grid-template-columns:minmax(0,1fr);gap:12px}
+  .mo-list{display:flex;gap:6px;overflow-x:auto;padding:0;margin:0 calc(var(--pad) * -1);padding:0 var(--pad);border-radius:0;background:none;box-shadow:none;scrollbar-width:none}
+  .mo-list::-webkit-scrollbar{display:none}
+  .mo-th{display:none}
+  .mo-row{display:inline-flex;width:auto;flex:none;height:32px;padding:0 13px;border:0;border-radius:999px;background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1px var(--line)}
+  .mo-row:last-child{border:0}
+  .mo-row>span:not(.nm){display:none}
+  .mo-row .nm{font-size:12.5px;color:var(--ink-2)}
+  .mo-row[aria-selected="true"]{background:var(--ink)}
+  .mo-row[aria-selected="true"] .nm{color:#0a0a0a}
+}
+@media (max-width:760px){
+  .subhead--tight{margin-top:56px}
+  .mo-stage{padding:14px}
+  .mo-h{flex-direction:column;align-items:flex-start}
+  .mo-box{height:310px}
+  .ms{padding:14px}
+  .mo-read{gap:5px}
+  .mo-read .tag{height:22px;padding:0 9px 0 8px;font-size:9.5px}
+  .ms-cardrow{gap:5px}
+  .ms-card{padding:8px 6px 9px;border-radius:11px}
+  .ms-card .tm .fl{display:none}
+}
+
+/* ==========================================================================
    06 — RIVE
    ========================================================================== */
 .rv-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
@@ -560,6 +709,23 @@ h3{font:560 24px/1.15 var(--display);font-stretch:88%;letter-spacing:-.022em}
 .stepper button{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;color:var(--ink-2)}
 .stepper button:hover{background:rgba(255,255,255,.06);color:var(--ink)}
 .stepper output{min-width:56px;text-align:center;font:500 12px/1 var(--mono);color:var(--ink)}
+/* the Live icon takes a click itself (the file's own listener) */
+#rLiveCanvas{cursor:pointer}
+/* the note under the phase line: small and muted, as .phase-note means (.rtext p was taking it over) */
+.rtext .phase-note{margin-top:4px;font-size:10.5px;color:var(--muted)}
+/* side by side: the two files in two columns, each card its stage over its text */
+@media (min-width:1101px){
+  .rv-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .rcard{grid-template-columns:minmax(0,1fr);grid-template-rows:auto 1fr}
+  .rstage{min-height:300px;border-right:0;border-bottom:1px solid var(--line)}
+  .rstage canvas{max-width:420px}
+  .rstage--goal canvas{max-width:330px}
+  .rtext{padding:24px 26px 26px}
+  .rtext h3{font-size:25px;margin-top:12px}
+  .rtext p{font-size:14.5px}
+  .track{margin-top:16px;padding:14px}
+  .track canvas{height:110px}
+}
 .exports{display:flex;align-items:flex-end;gap:10px;margin-top:20px}
 .exports div{flex:1;display:flex;flex-direction:column;gap:7px}
 .exports i{display:block;border-radius:6px;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px var(--line);height:var(--h)}
