@@ -325,6 +325,9 @@ h3{font:560 24px/1.15 var(--display);font-stretch:88%;letter-spacing:-.022em}
 .proc{margin-top:56px}
 .proc .origin{margin-top:18px}
 .proc-note{margin-top:22px}
+.proc-stack{margin-top:28px}
+.proc-stack b{font-weight:500;color:var(--ink)}
+.proc-stack+.proc-note{margin-top:10px}
 .origin{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
 .era{position:relative;padding:28px;border-radius:var(--r);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);overflow:hidden}
 .era .kicker{margin-bottom:16px}
