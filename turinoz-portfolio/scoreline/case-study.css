@@ -150,14 +150,14 @@ h3{font:560 24px/1.15 var(--display);font-stretch:88%;letter-spacing:-.022em}
 .dock[data-state="away"]{transform:translate(calc(var(--dockw) * .25),-30%) scale(.42);opacity:0;visibility:hidden;pointer-events:none;
   transition:transform .8s var(--glide),opacity .4s var(--ease),visibility 0s linear .8s}
 .dock[data-state="open"]{box-shadow:none}
-.dock-top{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:0 4px}
+.dock-top{position:relative;display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:0 4px}
 .dock-chip{display:inline-flex;align-items:center;gap:9px;height:30px;padding:0 12px 0 11px;border-radius:999px;font-size:12px;color:var(--ink-2);
   background:rgba(18,18,18,.86);box-shadow:inset 0 0 0 1px var(--line);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);white-space:nowrap;overflow:hidden}
 .dock-chip b{color:var(--ink);font-weight:500}
 .dock-chip .rt{color:var(--muted);font-family:var(--mono);font-size:11px;transition:opacity .3s}
 .dock-chip .rt.swap{animation:swapIn .5s var(--glide) both}
 @keyframes swapIn{from{transform:translateY(7px);opacity:0}}
-.dock-x{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:rgba(18,18,18,.86);box-shadow:inset 0 0 0 1px var(--line);color:var(--ink-2);opacity:0;pointer-events:none;transition:opacity .3s}
+.dock-x{position:absolute;right:4px;top:0;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:rgba(18,18,18,.86);box-shadow:inset 0 0 0 1px var(--line);color:var(--ink-2);opacity:0;pointer-events:none;transition:opacity .3s}
 .dock-x svg{width:11px;height:11px}
 .dock[data-state="open"] .dock-x{opacity:1;pointer-events:auto}
 /* the phone: a thin titanium band, a black glass border, the screen, the side buttons */
@@ -183,11 +183,11 @@ h3{font:560 24px/1.15 var(--display);font-stretch:88%;letter-spacing:-.022em}
 .screen iframe{position:absolute;left:0;top:0;width:390px;height:844px;border:0;transform:scale(var(--s));transform-origin:0 0;background:#000}
 .screen .poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top;transition:opacity .6s var(--glide);z-index:1;pointer-events:none}
 .screen.ready .poster{opacity:0}
-.island{position:absolute;z-index:6;left:50%;top:calc(23px * var(--s));width:calc(124px * var(--s));height:calc(36px * var(--s));border-radius:999px;background:#000;transform:translateX(-50%);transition:width .55s cubic-bezier(.32,1.35,.5,1) .05s,box-shadow .4s var(--ease)}
+.island{position:absolute;z-index:6;left:50%;top:calc(23px * var(--s));width:calc(124px * var(--s));height:calc(36px * var(--s));border-radius:999px;background:#000;transform:translateX(-50%);transition:width .55s cubic-bezier(.32,1.35,.5,1) .05s,box-shadow .4s var(--ease),background-color .4s var(--ease)}
 .isl{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 calc(13px * var(--s)) 0 calc(11px * var(--s));opacity:0;transition:opacity .2s var(--ease)}
-.isl svg{width:calc(15px * var(--s));height:calc(15px * var(--s));color:#C9BFF5}
+.isl svg{width:calc(15px * var(--s));height:calc(15px * var(--s));color:#E2DBFF}
 .isl b{font:600 calc(12px * var(--s))/1 -apple-system,BlinkMacSystemFont,"SF Pro Text",var(--ui);letter-spacing:-.01em;color:#fff}
-.dock.control .island{width:calc(166px * var(--s));transition-delay:0s;box-shadow:inset 0 0 0 1px rgba(255,255,255,.26),0 0 calc(14px * var(--s)) rgba(165,143,230,.3)}
+.dock.control .island{width:calc(166px * var(--s));transition-delay:0s;background:#241D44;box-shadow:inset 0 0 0 1px rgba(165,143,230,.62),0 0 calc(18px * var(--s)) rgba(107,88,245,.5)}
 .dock.control .isl{opacity:1;transition:opacity .3s var(--ease) .22s}
 /* the status bar as an iPhone draws it: level with the island, the time centred in the left ear, signal, wi-fi and battery in the right */
 .sbar{position:absolute;z-index:5;left:0;right:0;top:0;height:calc(58px * var(--s));color:#fff;pointer-events:none}
