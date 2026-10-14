@@ -3,7 +3,7 @@
    Scoreline — case study (Turinoz)
    One file, no libraries. In order:
      helpers · reveal, counters & nav · label cursor · pause · THE PHONE (the real app,
-     driven through its own review bridge) · roles · decisions · system · curves ·
+     driven through its own review bridge) · roles · tour · system · curves ·
      timing stage · touch · race · Rive · process · terminal
    The page moves on Scoreline's own curves. Everything that loops sleeps off screen,
    in a hidden tab, when "Pause" is on, and for visitors who prefer reduced motion.
@@ -130,8 +130,7 @@
   const APP = 'app/';
   const dock = $('#dock'), screenEl = $('#screen'), frame = $('#app'), veil = $('#veil');
   const routeEl = $('#dockRoute'), noteEl = $('#dockNote'), backdrop = $('#dockBackdrop'), demoPill = $('#demoPill');
-  const pauseBtn = $('#dockPause');
-  const D = { app: null, started: false, allow: false, open: false, control: false, want: null, token: 0, lastRoute: '', base: '', moment: false };
+  const D = { app: null, started: false, allow: false, open: false, control: false, want: null, token: 0, lastRoute: '', base: '', moment: false, run: 0, retour: null, loud: null };
   D.base = new URL(APP, location.href).pathname.replace(/\/$/, '');      // e.g. /scoreline/app
 
   // the app looks for this on its parent when its demo starts (src/review/protocol.ts)
@@ -158,14 +157,10 @@
   }
   function onAttach() {
     screenEl.classList.add('ready');
-    D.app.subscribe(() => { showRoute(); syncPause(); });
-    showRoute(); syncPause();
+    D.app.subscribe(showRoute);
+    showRoute();
     if (D.want) { const w = D.want; D.want = null; go(w.route, w); }
-  }
-  function syncPause() {
-    const st = D.app && D.app.state(), p = !!(st && st.paused);
-    $('span', pauseBtn).textContent = p ? 'Resume' : 'Pause';
-    $('use', pauseBtn).setAttribute('href', p ? '#icPlay' : '#icPause');
+    kickTour();
   }
   function start() {
     if (D.started) return; D.started = true;
@@ -227,6 +222,7 @@
   function giveBack() {
     D.control = false; dock.classList.remove('control'); frame.tabIndex = -1;
     note('Back on the tour. Take control again any time.');
+    if (D.retour) D.retour();
   }
   veil.addEventListener('click', takeControl);
   $$('[data-take]').forEach(b => b.addEventListener('click', takeControl));
@@ -243,17 +239,11 @@
     if (dock.dataset.state === 'away') openDemo();
     start();
     if (!D.app) { note('The demo is still starting…'); D.want = { route: '/', scene: kind }; return; }
-    hideCursor();
+    hideCursor(); if (D.loud) D.loud();
     note(kind === 'goal' ? 'Scoring…' : 'Showing a red card…');
     try { const said = await D.app.scene(kind); note(said); say(said); } catch (_) { note('That didn’t work. Try again.'); }
   }
   $$('[data-scene]').forEach(b => b.addEventListener('click', () => scene(b.dataset.scene)));
-  pauseBtn.addEventListener('click', () => {
-    if (!D.app) return;
-    const st = D.app.state();
-    if (st.paused) { D.app.resume(); note('The evening is running again.'); } else { D.app.pause(); note('The evening is paused. Goals you add wait for Resume.'); }
-    syncPause();
-  });
   $('#dockRestart').addEventListener('click', () => { if (!D.app) return; D.app.restart(); note('The evening starts again from the top.'); });
 
   /* moving the app between screens: its own router, no new history (the page's Back stays the page's) */
@@ -277,84 +267,16 @@
   }
   const appDoc = () => { try { return frame.contentDocument; } catch (_) { return null; } };
   const presentScreen = () => { const d = appDoc(); return d && [...d.querySelectorAll('[data-screen][data-present="true"]')].pop(); };
-  function find(spec) {
-    const d = appDoc(); if (!d || !spec) return null;
-    const scr = presentScreen() || d.body;
-    const [kind, arg] = [spec.split(':')[0], spec.slice(spec.indexOf(':') + 1)];
-    if (kind === 'label') return d.querySelector(`[aria-label^="${arg}"]`);
-    if (kind === 'h') return [...scr.querySelectorAll('h2,h3')].find(e => e.textContent.trim().toLowerCase() === arg.toLowerCase()) || null;
-    if (kind === 'live-card') return d.querySelector('button[aria-label$=", live"]');
-    if (kind === 'score') return [...scr.querySelectorAll('span')].find(e => !e.children.length && /^\d$/.test(e.textContent.trim()) && parseFloat(getComputedStyle(e).fontSize) > 40) || null;
-    if (kind === 'goal-row') { const a = [...scr.querySelectorAll('span')].find(e => !e.children.length && /^Assist/.test(e.textContent.trim())); return a ? (a.closest('[class*="_goal_"]') || a.parentElement) : null; }
-    return null;
-  }
-  function scrollApp(spec, top = 150) {
-    const scr = presentScreen(); if (!scr) return;
-    const el = spec === 'goal-row' ? find('goal-row') : find('h:' + spec);
-    if (!el) return;
-    const y = el.getBoundingClientRect().top - scr.getBoundingClientRect().top + scr.scrollTop - (spec === 'goal-row' ? scr.clientHeight * .38 : top);
-    scr.scrollTo({ top: Math.max(0, y), behavior: reduce() ? 'auto' : 'smooth' });
-  }
   function resetScroll() { const d = appDoc(); if (!d) return; $$('[data-screen]', d).forEach(s => { if (s.scrollTop) s.scrollTo({ top: 0, behavior: reduce() ? 'auto' : 'smooth' }); }); }
 
-  /* Turinoz's cursor over the phone: glides to the detail, taps, says one line */
-  const TC = { cur: $('.tcur', screenEl), bub: $('.tcur .bub', screenEl), tx: $('.tcur .tx', screenEl) };
-  function hideCursor() { TC.token = (TC.token || 0) + 1; TC.cur.classList.remove('on'); TC.bub.classList.remove('on', 'typing'); }
-  function pointAt(x, y, line) {
-    const tok = TC.token = (TC.token || 0) + 1, cur = TC.cur, fw = screenEl.clientWidth, fh = screenEl.clientHeight;
-    x = clamp(x, 12, fw - 12); y = clamp(y, 40, fh - 30);
-    TC.bub.classList.remove('on', 'typing'); TC.tx.textContent = line;
-    const bw = TC.bub.offsetWidth + 4; TC.tx.textContent = '';
-    const right = x + 20 + bw <= fw - 6, leftOk = x - 12 - bw >= 6, left = !right && leftOk;
-    cur.classList.toggle('left', left); cur.classList.toggle('up', y > fh * .78);
-    let nudge = 0; if (!right && !leftOk) nudge = (fw - 6 - bw) - (x + 20);
-    TC.bub.style.marginLeft = nudge ? nudge.toFixed(0) + 'px' : '';
-    if (!TC.placed) {                                // the first time, it comes in from the middle of the screen
-      TC.placed = true; cur.style.transition = 'none';
-      cur.style.transform = `translate3d(${(fw * .55).toFixed(1)}px,${(fh * .6).toFixed(1)}px,0)`;
-      void cur.offsetWidth; cur.style.transition = '';
-    }
-    cur.style.transform = `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0)`;
-    cur.classList.add('on');
-    (async () => {
-      await wait(reduce() ? 60 : 1000); if (tok !== TC.token) return;
-      cur.classList.add('press', 'clk'); await wait(160); cur.classList.remove('press');
-      await wait(120); if (tok !== TC.token) return;
-      TC.bub.classList.add('on', 'typing');
-      if (reduce()) TC.tx.textContent = line;
-      else for (let i = 1; i <= line.length; i++) { if (tok !== TC.token) return; TC.tx.textContent = line.slice(0, i); await wait(28 + (line[i - 1] === ' ' ? 30 : 0)); }
-      await wait(900); if (tok !== TC.token) return;
-      TC.bub.classList.remove('typing'); cur.classList.remove('clk');
-    })();
-  }
-  function pointSpec(spec, dx, dy, line) {
-    if (!line) { hideCursor(); return; }
-    const s = parseFloat(getComputedStyle(dock).getPropertyValue('--s')) || .86;
-    let x, y;
-    if (spec && spec.startsWith('pct:')) { const [px, py] = spec.slice(4).split(',').map(Number); x = px / 100 * screenEl.clientWidth; y = py / 100 * screenEl.clientHeight; }
-    else {
-      const el = find(spec); if (!el) { hideCursor(); return; }
-      const r = el.getBoundingClientRect();
-      x = (r.left + Math.min(r.width * .5, 60) + (dx || 0)) * s; y = (r.top + r.height * .5 + (dy || 0)) * s;
-    }
-    pointAt(x, y, line);
-  }
-
-  /* go: the screen for a decision, then where to look */
-  async function go(route, opt = {}) {
+  /* go: a screen for the phone, from the top */
+  function go(route, opt = {}) {
     start();
     if (!D.app) { D.want = { route, ...opt }; return; }
     if (D.control) return;                                     // never pull the screen away from someone using it
-    const tok = ++D.token;
-    hideCursor();
-    const moved = navigate(route);
-    if (!moved) return;
-    await wait(route.startsWith('/match') || route.startsWith('/player') ? 650 : 380); if (tok !== D.token) return;
-    if (opt.scroll) { scrollApp(opt.scroll, 182); await wait(700); } else resetScroll();
-    if (tok !== D.token) return;
-    if (opt.scene) { await wait(250); if (tok === D.token) scene(opt.scene); return; }
-    await wait(120); if (tok !== D.token) return;
-    pointSpec(opt.point, opt.dx, opt.dy, opt.say || '');
+    D.run++; hideCursor();
+    if (navigate(route)) setTimeout(resetScroll, 380);
+    if (opt.scene) setTimeout(() => scene(opt.scene), 650);
   }
 
   // start the phone once the page has settled (on a phone, when it's first asked for)
@@ -403,46 +325,265 @@
   }
 
   /* ==========================================================================
-     03 · DECISIONS — the one in the middle of the screen drives the phone
+     01 · TOUR — the stop in the middle of the screen plays itself on the phone:
+     a short run of cursor moves, taps and scrolls in the real app. A newer
+     stop, the phone leaving, or someone taking control stops the run. Goals
+     and red cards only happen from the buttons.
      ========================================================================== */
-  const cards = $$('.dcard');
-  let activeCard = null;
-  const cardOpt = c => ({ route: c.dataset.route || '/', point: c.dataset.point, dx: +c.dataset.dx || 0, dy: +c.dataset.dy || 0, say: c.dataset.say || '', scroll: c.dataset.scroll, scene: null });
-  function activate(c) {
-    if (c === activeCard) return;
-    activeCard = c;
-    cards.forEach(x => x.classList.toggle('on', x === c));
-    if (!c || !mqWide.matches || dock.dataset.state !== 'docked') return;
-    const o = cardOpt(c);
-    // the goal card plays a goal the first time it comes up; after that, the buttons do
-    if (c.dataset.moment && !D.moment) { D.moment = true; o.scene = c.dataset.moment; }
-    go(o.route, o);
+  const tourEl = $('#tour'), cards = $$('.dcard', tourEl);
+  const T = { card: null, ran: null };
+  const ease = t => (t < .5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
+  const CANCEL = Symbol('cancel');
+
+  // what's on the phone
+  const pathNow = () => { const r = appRoute().split('?')[0].replace(/\/$/, ''); return r || '/'; };
+  const scr = () => presentScreen();
+  const inScr = sel => { const s = scr(); return s ? s.querySelector(sel) : null; };
+  const followSec = () => { const d = appDoc(); return d && d.querySelector('section[aria-label="Following"]'); };
+  const EL = {
+    live: () => { const d = appDoc(); return d && d.querySelector('button[aria-label^="Live"]'); },
+    card: () => { const s = followSec(); return s && s.querySelector('button[aria-label$="the player you follow"]'); },
+    match: () => inScr('button[aria-label^="France "][aria-label*="Argentina"]:not([aria-label$=", live"])'),
+    tab: name => { const s = scr(); return s ? [...s.querySelectorAll('[role=tab]')].find(t => t.textContent.trim().startsWith(name)) || null : null; },
+    side: side => inScr(`button[role=radio][data-side="${side}"]`),
+    messi: () => inScr('button[aria-label="10 Messi"]'),
+    heading: name => { const s = scr(); return s ? [...s.querySelectorAll('h2,h3')].find(h => h.textContent.trim() === name) || null : null; },
+  };
+  const isLive = () => { const b = EL.live(); return !b || b.getAttribute('aria-pressed') !== 'false'; };
+  const offsetIn = (el, s) => el.getBoundingClientRect().top - s.getBoundingClientRect().top + s.scrollTop;
+  const maxScroll = s => Math.max(0, s.scrollHeight - s.clientHeight);
+
+  /* a run: every wait checks it is still the current one */
+  const mine = tok => tok === D.run && !D.control && dock.dataset.state !== 'away';
+  const pause = async (tok, ms) => { await new Promise(r => setTimeout(r, ms)); if (!mine(tok)) throw CANCEL; };
+  const frames = (tok, ms, fn) => new Promise((res, rej) => {
+    if (reduce() || ms <= 0) { fn(1); res(); return; }
+    const t0 = performance.now();
+    const f = now => {
+      if (!mine(tok)) return rej(CANCEL);
+      const k = Math.min(1, (now - t0) / ms); fn(ease(k));
+      if (k < 1) requestAnimationFrame(f); else res();
+    };
+    requestAnimationFrame(f);
+  });
+  // a screen, through the app's router (no new history, so the page's Back stays the page's)
+  async function reach(tok, path, kind) {
+    if (pathNow() !== path) navigate(path);
+    for (let k = 0; k < 40; k++) {
+      const s = scr();
+      if (s && s.dataset.screen === kind && pathNow() === path) return s;
+      await pause(tok, 60);
+    }
+    throw CANCEL;
   }
-  scrollers.push(() => {
-    const sec = $('#decisions'), r = sec.getBoundingClientRect();
-    if (r.bottom < 0 || r.top > innerHeight) return;
+  const glide = (tok, s, y, ms) => { const a = s.scrollTop, b = Math.round(clamp(y, 0, maxScroll(s))); return Math.abs(a - b) < 2 ? Promise.resolve() : frames(tok, ms, k => s.scrollTo({ top: lerp(a, b, k), behavior: 'instant' })); };
+  async function liveOn(tok) { if (!isLive()) { EL.live()?.click(); await pause(tok, 450); } }
+
+  /* the cursor: no captions, it just moves and taps */
+  const TC = { cur: $('.tcur', screenEl), on: false, x: 0, y: 0 };
+  const sNow = () => parseFloat(getComputedStyle(dock).getPropertyValue('--s')) || .86;
+  const rest = () => ({ x: screenEl.clientWidth * .62, y: screenEl.clientHeight * .74 });
+  const ptOf = el => { const r = el.getBoundingClientRect(), s = sNow(); return { x: (r.left + Math.min(r.width * .5, 70)) * s, y: (r.top + r.height * .5) * s }; };
+  function placeCursor(x, y) {
+    TC.x = x; TC.y = y;
+    const fw = screenEl.clientWidth, fh = screenEl.clientHeight;
+    TC.cur.style.transform = `translate3d(${clamp(x, 12, fw - 12).toFixed(1)}px,${clamp(y, 40, fh - 30).toFixed(1)}px,0)`;
+  }
+  function showCursor(v) {
+    if (v === TC.on) return;
+    if (v) { const r = rest(); placeCursor(r.x, r.y); }
+    TC.on = v; TC.cur.classList.toggle('on', v);
+  }
+  function hideCursor() { showCursor(false); }
+  async function moveTo(tok, find, ms = 800) {
+    const el = find(); if (!el || !el.getClientRects().length) throw CANCEL;
+    showCursor(true);
+    const A = { x: TC.x, y: TC.y }, B = ptOf(el);
+    await frames(tok, ms, k => placeCursor(lerp(A.x, B.x, k), lerp(A.y, B.y, k)));
+    return el;
+  }
+  function tapRing() {
+    const c = TC.cur; c.classList.remove('clk'); void c.offsetWidth; c.classList.add('press', 'clk');
+    setTimeout(() => c.classList.remove('press'), 160);
+  }
+  async function tap(tok, el, act) { tapRing(); await pause(tok, 140); (act || (() => el.click()))(); }
+
+  /* the stops */
+  const STOPS = {
+    // Live switches off, then on again
+    async live(tok) {
+      const s = await reach(tok, '/', 'list'); await liveOn(tok); await glide(tok, s, 0, 500);
+      await pause(tok, 500);
+      const b = await moveTo(tok, EL.live, 900);
+      await pause(tok, 300); await tap(tok, b);
+      await pause(tok, 1700); await tap(tok, b);
+      await pause(tok, 1100);
+    },
+    // the card of the player you follow
+    async follow(tok) {
+      const s = await reach(tok, '/', 'list'); await liveOn(tok); await glide(tok, s, 0, 500);
+      await pause(tok, 400);
+      await moveTo(tok, EL.card, 900);
+      await pause(tok, 1600);
+    },
+    // into the match: Facts, then down into Events
+    async match(tok) {
+      let s = await reach(tok, '/', 'list'); await liveOn(tok);
+      const row = EL.match();
+      if (row) { const y = offsetIn(row, s), h = s.clientHeight; if (y < s.scrollTop + h * .25 || y > s.scrollTop + h * .8) await glide(tok, s, y - h * .55, 700); }
+      await pause(tok, 300);
+      await moveTo(tok, EL.match, 800);
+      await pause(tok, 200); await tap(tok, null, () => navigate('/match/1/facts'));
+      await pause(tok, 300); hideCursor();
+      s = await reach(tok, '/match/1/facts', 'match');
+      await pause(tok, 1100);
+      const ev = EL.heading('Events');
+      await glide(tok, s, ev ? offsetIn(ev, s) + 240 : maxScroll(s), 2800);
+    },
+    // Stats, and down through them
+    async stats(tok) {
+      let s = scr();
+      if (pathNow() !== '/match/1/stats') { s = await reach(tok, '/match/1/facts', 'match'); await glide(tok, s, 0, 600); }
+      else await glide(tok, s, 0, 600);
+      await pause(tok, 300);
+      const tab = await moveTo(tok, () => EL.tab('Stats'), 800);
+      await pause(tok, 200); await tap(tok, tab);
+      await pause(tok, 500); hideCursor();
+      await pause(tok, 600);
+      s = scr(); await glide(tok, s, maxScroll(s), 2800);
+    },
+    // Lineup, Argentina, then Messi's page
+    async lineup(tok) {
+      let s = scr();
+      if (!/^\/match\/1\//.test(pathNow())) s = await reach(tok, '/match/1/stats', 'match');
+      await glide(tok, s, 0, 600);
+      await pause(tok, 300);
+      const tab = await moveTo(tok, () => EL.tab('Lineup'), 800);
+      await pause(tok, 200); await tap(tok, tab);
+      await pause(tok, 500);
+      if (EL.side('away')?.getAttribute('aria-checked') === 'true') EL.side('home')?.click();
+      await pause(tok, 500);
+      const side = await moveTo(tok, () => EL.side('away'), 800);
+      await pause(tok, 200); await tap(tok, side);
+      await pause(tok, 1100);
+      await moveTo(tok, EL.messi, 800);
+      await pause(tok, 300); await tap(tok, null, () => navigate('/player/arg/10'));
+      await pause(tok, 500); hideCursor();
+    },
+    // nothing happens on its own here: the buttons do it
+    async goal(tok) {
+      const s = await reach(tok, '/', 'list'); await liveOn(tok); await glide(tok, s, 0, 500);
+    },
+  };
+
+  async function play(card) {
+    const tok = ++D.run;
+    hideCursor();
+    if (!D.app) return;
+    const run = STOPS[card.dataset.stop];
+    try { if (run) await run(tok); } catch (e) { if (e !== CANCEL) console.warn(e); }
+    if (tok === D.run) hideCursor();
+  }
+
+  /* which stop: the one across the middle of the screen */
+  function pick() {
     const mid = innerHeight * .5;
-    let best = null, bd = Infinity;
-    cards.forEach(c => { const b = c.getBoundingClientRect(), d = Math.abs((b.top + b.bottom) / 2 - mid); if (d < bd) { bd = d; best = c; } });
-    activate(best);
-  });
-  // hero and roles: the phone rests on Live, then points at the switch once
-  let heroPointed = false;
+    const r = tourEl.getBoundingClientRect();
+    let c = null;
+    if (r.top < mid && r.bottom > mid) c = cards.find(x => { const b = x.getBoundingClientRect(); return b.top <= mid && b.bottom > mid; }) || T.card;
+    if (c !== T.card) { T.card = c; cards.forEach(x => x.classList.toggle('on', x === c)); }
+    const can = c && mqWide.matches && dock.dataset.state === 'docked' && D.app && !D.control;
+    if (!can) { if (T.ran) { T.ran = null; D.run++; hideCursor(); } return; }
+    if (c !== T.ran) { T.ran = c; play(c); }
+  }
+  const kickTour = () => pick();
+  scrollers.push(pick);
+  addEventListener('resize', pick);
+
+  // above the tour the phone rests on Live
+  let wasAbove = true;
   scrollers.push(() => {
-    if (dock.dataset.state !== 'docked') return;
-    const d = $('#decisions').getBoundingClientRect();
-    if (d.top > innerHeight * .5 && activeCard) { activeCard = null; cards.forEach(x => x.classList.remove('on')); go('/', {}); }
+    const above = tourEl.getBoundingClientRect().top > innerHeight * .5;
+    if (above && !wasAbove && dock.dataset.state === 'docked' && D.app && !D.control) go('/');
+    wasAbove = above;
   });
+
+  /* the buttons: Messi's goal or red card as a note on the list, and a goal or a red card in another match */
+  // with reduced motion the app shows its scenes as notes. For a while after a Messi button, its scene
+  // decision (only that, so every other animation keeps its motion) is told reduced motion is on
+  const Q = { until: 0 };
+  const REDUCED = '(prefers-reduced-motion: reduce)';
+  const fromSceneDecision = () => (new Error().stack || '').split('\n').slice(1, 5).some(l => /(?:^|\s)(?:at\s+)?tn(?:\s+\(|@)/.test(l));
+  function quietly(fn) {
+    const w = frame.contentWindow;
+    if (w && !w.__tourQuiet) {
+      const mm = w.matchMedia; w.__tourQuiet = true;
+      w.matchMedia = function (q) {
+        if (q === REDUCED && performance.now() < Q.until && fromSceneDecision()) return { matches: true, media: q, onchange: null, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {}, dispatchEvent: () => false };
+        return mm.call(this, q);
+      };
+    }
+    Q.until = performance.now() + 12000;
+    return fn();
+  }
+  // the engine scores in the featured match only, so for one call its "featured" lookup answers with
+  // another live match: the goal or red card lands there, and the app shows it as a note
+  function elsewhere(fn) {
+    const AP = frame.contentWindow.Array.prototype, find = AP.find;
+    AP.find = function (f, ...rest) {
+      AP.find = find;
+      const hit = find.call(this, f, ...rest);
+      return hit && hit.feat ? find.call(this, m => m && m.status === 'live' && !m.feat) || hit : hit;
+    };
+    try { return fn(); } finally { AP.find = find; }
+  }
+  const MOMENTS = {
+    goalFav: { kind: 'goalFavorite', wrap: quietly, say: 'Messi scores: a note, and his card lights up.' },
+    redFav: { kind: 'redFavorite', wrap: quietly, say: 'Messi is sent off: a note on the list.' },
+    goalElse: { kind: 'goalHome', wrap: elsewhere, say: 'A goal in another match, as a note.' },
+    redElse: { kind: 'redAway', wrap: elsewhere, say: 'A red card in another match, as a note.' },
+  };
+  // a goal can't land on a player who's off, or in a match that's over: then the evening starts again first
+  async function moment(key) {
+    const m = MOMENTS[key]; if (!m) return;
+    if (dock.dataset.state === 'away') openDemo();
+    start();
+    if (!D.app) { note('The demo is still starting…'); return; }
+    D.run++; T.ran = T.card; hideCursor();
+    if (pathNow() !== '/') { navigate('/'); await new Promise(r => setTimeout(r, 450)); }
+    const e = await engine(); if (!e) { note('That didn’t work. Try again.'); return; }
+    const fire = () => { try { return !!m.wrap(() => e.trigger(m.kind)); } catch (_) { return false; } };
+    let ok = fire(), again = false;
+    if (!ok) { D.app.restart(); again = true; await new Promise(r => setTimeout(r, 150)); ok = fire(); }
+    const said = ok ? (again ? 'The evening starts again. ' : '') + m.say : 'Nothing to act on right now.';
+    note(said); say(said);
+  }
+  let engineP = null;
+  function engine() {
+    if (engineP) return engineP;
+    engineP = (async () => {
+      const w = frame.contentWindow, d = appDoc();
+      const url = d && [...d.querySelectorAll('link[rel=modulepreload]')].map(l => l.href).find(h => /followBridge-/.test(h));
+      if (!url) return null;
+      const mod = await new w.Function('u', 'return import(u)')(url);
+      return typeof mod.t === 'function' ? mod.t() : null;
+    })().catch(() => null);
+    engineP.then(e => { if (!e) engineP = null; });
+    return engineP;
+  }
+  $$('[data-moment]').forEach(b => b.addEventListener('click', () => moment(b.dataset.moment)));
+  $$('[data-scene]').forEach(b => b.addEventListener('click', () => { D.run++; T.ran = T.card; }));
+  D.loud = () => { Q.until = 0; };   // a goal in your match gets its scene again
+
+  // on a phone, "Show me" opens the demo and plays that stop in it
   $$('[data-show]').forEach(b => b.addEventListener('click', () => {
-    const c = b.closest('.dcard'); openDemo(); const o = cardOpt(c); setTimeout(() => go(o.route, o), dock.dataset.state === 'open' ? 350 : 0);
+    const c = b.closest('.dcard'); openDemo();
+    const go2 = () => { if (D.app) play(c); else setTimeout(go2, 400); };
+    setTimeout(go2, dock.dataset.state === 'open' ? 350 : 0);
   }));
+  D.retour = () => { T.ran = null; pick(); };
   const tryEl = $('#try');
-  onScreen(tryEl, v => { if (v && mqWide.matches && dock.dataset.state === 'docked') { activeCard = null; go('/', {}); } });
-  onScreen($('#top'), v => {
-    if (!v || heroPointed) return;
-    const tryPoint = () => { if (D.app && dock.dataset.state === 'docked' && !activeCard) { heroPointed = true; setTimeout(() => go('/', { point: 'label:Live', say: 'the real app, running' }), 900); } else if (!heroPointed) setTimeout(tryPoint, 600); };
-    tryPoint();
-  });
+  onScreen(tryEl, v => { if (v && mqWide.matches && dock.dataset.state === 'docked') go('/'); });
 
   /* ==========================================================================
      04 · SYSTEM
