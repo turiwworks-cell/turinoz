@@ -348,17 +348,9 @@ h3{font:560 24px/1.15 var(--display);font-stretch:88%;letter-spacing:-.022em}
 .dcard h3{font-size:clamp(28px,2.8vw,40px);letter-spacing:-.03em;line-height:1.05;text-wrap:balance}
 .dcard p{font-size:16.5px;line-height:1.65;color:var(--ink-2);max-width:54ch;text-wrap:pretty}
 .dcard p em{font-style:normal;color:var(--ink)}
-.dgoal{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;padding:14px 16px;border-radius:14px;background:rgba(165,143,230,.06);box-shadow:inset 0 0 0 1px rgba(165,143,230,.2);max-width:54ch}
-.dgoal dt{font:500 10.5px/1.6 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#C9BFF5}
-.dgoal dd{font-size:14px;color:var(--ink);line-height:1.5}
 .drow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .dshow{display:none}
 .dshot{display:none}
-.dvisual{margin-top:4px;max-width:560px}
-
-/* the desktop still, inside the decisions */
-.desk{position:relative;border-radius:18px;overflow:hidden;box-shadow:inset 0 0 0 1px var(--line),0 30px 80px -40px rgba(0,0,0,.9)}
-.desk img{width:100%;height:auto}
 
 /* ==========================================================================
    04 — SYSTEM (colour, type, material)

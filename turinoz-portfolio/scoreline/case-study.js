@@ -3,7 +3,7 @@
    Scoreline — case study (Turinoz)
    One file, no libraries. In order:
      helpers · reveal, counters & nav · label cursor · pause · THE PHONE (the real app,
-     driven through its own review bridge) · roles · decisions · system · curves ·
+     driven through its own review bridge) · roles · tour · system · curves ·
      timing stage · touch · race · Rive · process · terminal
    The page moves on Scoreline's own curves. Everything that loops sleeps off screen,
    in a hidden tab, when "Pause" is on, and for visitors who prefer reduced motion.
@@ -403,7 +403,7 @@
   }
 
   /* ==========================================================================
-     03 · DECISIONS — the one in the middle of the screen drives the phone
+     01 · TOUR — the stop in the middle of the screen drives the phone
      ========================================================================== */
   const cards = $$('.dcard');
   let activeCard = null;
@@ -419,7 +419,7 @@
     go(o.route, o);
   }
   scrollers.push(() => {
-    const sec = $('#decisions'), r = sec.getBoundingClientRect();
+    const sec = $('#tour'), r = sec.getBoundingClientRect();
     if (r.bottom < 0 || r.top > innerHeight) return;
     const mid = innerHeight * .5;
     let best = null, bd = Infinity;
@@ -430,7 +430,7 @@
   let heroPointed = false;
   scrollers.push(() => {
     if (dock.dataset.state !== 'docked') return;
-    const d = $('#decisions').getBoundingClientRect();
+    const d = $('#tour').getBoundingClientRect();
     if (d.top > innerHeight * .5 && activeCard) { activeCard = null; cards.forEach(x => x.classList.remove('on')); go('/', {}); }
   });
   $$('[data-show]').forEach(b => b.addEventListener('click', () => {
