@@ -583,7 +583,7 @@
   }));
   D.retour = () => { T.ran = null; pick(); };
   const tryEl = $('#try');
-  onScreen(tryEl, v => { if (v && mqWide.matches && dock.dataset.state === 'docked') go('/'); });
+  tryEl && onScreen(tryEl, v => { if (v && mqWide.matches && dock.dataset.state === 'docked') go('/'); });
 
   /* ==========================================================================
      04 · SYSTEM
