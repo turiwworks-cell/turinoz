@@ -638,10 +638,12 @@
     if (reduce()) stageAnims.forEach(a => a.finish());
   }
   rows.forEach(r => r.addEventListener('click', () => playRow(r)));
-  $('#stagePlay').addEventListener('click', () => curRow && playRow(curRow));
-  slowBtn.addEventListener('click', () => { slow = !slow; slowBtn.setAttribute('aria-pressed', String(slow)); curRow && playRow(curRow); });
-  let stagePlayed = false;
-  onScreen($('#stage'), v => { if (v && !stagePlayed) { stagePlayed = true; playRow(rows[0]); } });
+  if (stageBox) {
+    $('#stagePlay').addEventListener('click', () => curRow && playRow(curRow));
+    slowBtn.addEventListener('click', () => { slow = !slow; slowBtn.setAttribute('aria-pressed', String(slow)); curRow && playRow(curRow); });
+    let stagePlayed = false;
+    onScreen($('#stage'), v => { if (v && !stagePlayed) { stagePlayed = true; playRow(rows[0]); } });
+  }
   addEventListener('resize', () => { if (curRow) { stageAnims.forEach(a => a.finish()); } });
 
   /* ==========================================================================
