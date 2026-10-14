@@ -130,7 +130,6 @@
   const APP = 'app/';
   const dock = $('#dock'), screenEl = $('#screen'), frame = $('#app'), veil = $('#veil');
   const routeEl = $('#dockRoute'), noteEl = $('#dockNote'), backdrop = $('#dockBackdrop'), demoPill = $('#demoPill');
-  const pauseBtn = $('#dockPause');
   const D = { app: null, started: false, allow: false, open: false, control: false, want: null, token: 0, lastRoute: '', base: '', moment: false, run: 0, retour: null, loud: null };
   D.base = new URL(APP, location.href).pathname.replace(/\/$/, '');      // e.g. /scoreline/app
 
@@ -158,15 +157,10 @@
   }
   function onAttach() {
     screenEl.classList.add('ready');
-    D.app.subscribe(() => { showRoute(); syncPause(); });
-    showRoute(); syncPause();
+    D.app.subscribe(showRoute);
+    showRoute();
     if (D.want) { const w = D.want; D.want = null; go(w.route, w); }
     kickTour();
-  }
-  function syncPause() {
-    const st = D.app && D.app.state(), p = !!(st && st.paused);
-    $('span', pauseBtn).textContent = p ? 'Resume' : 'Pause';
-    $('use', pauseBtn).setAttribute('href', p ? '#icPlay' : '#icPause');
   }
   function start() {
     if (D.started) return; D.started = true;
@@ -250,12 +244,6 @@
     try { const said = await D.app.scene(kind); note(said); say(said); } catch (_) { note('That didn’t work. Try again.'); }
   }
   $$('[data-scene]').forEach(b => b.addEventListener('click', () => scene(b.dataset.scene)));
-  pauseBtn.addEventListener('click', () => {
-    if (!D.app) return;
-    const st = D.app.state();
-    if (st.paused) { D.app.resume(); note('The evening is running again.'); } else { D.app.pause(); note('The evening is paused. Goals you add wait for Resume.'); }
-    syncPause();
-  });
   $('#dockRestart').addEventListener('click', () => { if (!D.app) return; D.app.restart(); note('The evening starts again from the top.'); });
 
   /* moving the app between screens: its own router, no new history (the page's Back stays the page's) */

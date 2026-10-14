@@ -183,15 +183,21 @@ h3{font:560 24px/1.15 var(--display);font-stretch:88%;letter-spacing:-.022em}
 .screen iframe{position:absolute;left:0;top:0;width:390px;height:844px;border:0;transform:scale(var(--s));transform-origin:0 0;background:#000}
 .screen .poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top;transition:opacity .6s var(--glide);z-index:1;pointer-events:none}
 .screen.ready .poster{opacity:0}
-.island{position:absolute;z-index:6;left:50%;top:calc(23px * var(--s));width:calc(124px * var(--s));height:calc(36px * var(--s));border-radius:999px;background:#000;transform:translateX(-50%);
-  box-shadow:none}
-.sbar{position:absolute;z-index:5;left:0;right:0;top:0;height:calc(54px * var(--s));display:flex;align-items:center;justify-content:space-between;padding:0 calc(34px * var(--s)) 0 calc(40px * var(--s));
-  font:600 calc(15px * var(--s))/1 var(--app);letter-spacing:-.01em;color:#fff;pointer-events:none}
-.sbar .ic{display:flex;gap:calc(6px * var(--s));align-items:center}
-.sbar .ic i{display:block;background:#fff;border-radius:2px}
-.sbar .ic i:nth-child(1){width:calc(17px * var(--s));height:calc(10px * var(--s));clip-path:polygon(0 70%,22% 70%,22% 100%,0 100%,0 70%,28% 45%,50% 45%,50% 100%,28% 100%,28% 45%,56% 20%,78% 20%,78% 100%,56% 100%,56% 20%,84% 0,100% 0,100% 100%,84% 100%)}
-.sbar .ic i:nth-child(2){width:calc(24px * var(--s));height:calc(11px * var(--s));border-radius:calc(3px * var(--s));background:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.5);position:relative}
-.sbar .ic i:nth-child(2)::after{content:"";position:absolute;left:2px;top:2px;bottom:2px;width:70%;background:#fff;border-radius:1px}
+.island{position:absolute;z-index:6;left:50%;top:calc(23px * var(--s));width:calc(124px * var(--s));height:calc(36px * var(--s));border-radius:999px;background:#000;transform:translateX(-50%);transition:width .55s cubic-bezier(.32,1.35,.5,1) .05s,box-shadow .4s var(--ease)}
+.isl{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 calc(13px * var(--s)) 0 calc(11px * var(--s));opacity:0;transition:opacity .2s var(--ease)}
+.isl svg{width:calc(15px * var(--s));height:calc(15px * var(--s));color:var(--lilac)}
+.isl b{font:600 calc(12px * var(--s))/1 -apple-system,BlinkMacSystemFont,"SF Pro Text",var(--ui);letter-spacing:-.01em;color:#fff}
+.dock.control .island{width:calc(166px * var(--s));transition-delay:0s;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.dock.control .isl{opacity:1;transition:opacity .3s var(--ease) .22s}
+/* the status bar as an iPhone draws it: level with the island, the time centred in the left ear, signal, wi-fi and battery in the right */
+.sbar{position:absolute;z-index:5;left:0;right:0;top:0;height:calc(58px * var(--s));color:#fff;pointer-events:none}
+.sb-time{position:absolute;left:0;top:0;width:calc(133px * var(--s));height:100%;display:grid;place-items:center;padding:calc(2.5px * var(--s)) 0 0 calc(4px * var(--s));
+  font:600 calc(17px * var(--s))/1 -apple-system,BlinkMacSystemFont,"SF Pro Text",var(--ui);letter-spacing:-.025em;font-variant-numeric:tabular-nums}
+.sb-ic{position:absolute;left:calc(257px * var(--s));right:0;top:0;height:100%;display:flex;align-items:center;justify-content:center;gap:calc(5.5px * var(--s));padding-right:calc(4px * var(--s))}
+.sb-ic svg{display:block;fill:currentColor;overflow:visible}
+.sb-cell{width:calc(17px * var(--s));height:calc(11.3px * var(--s))}
+.sb-wifi{width:calc(15.4px * var(--s));height:calc(10.9px * var(--s))}
+.sb-batt{width:calc(27.3px * var(--s));height:calc(12.7px * var(--s))}
 .veil{position:absolute;inset:0;z-index:7;cursor:pointer;display:flex;align-items:flex-end;justify-content:center;padding-bottom:calc(26px * var(--s));
   background:linear-gradient(180deg,rgba(0,0,0,0) 70%,rgba(0,0,0,.55));opacity:0;transition:opacity .35s var(--ease)}
 .veil span{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 14px;border-radius:999px;background:rgba(243,242,239,.95);color:#0A0A0A;font-size:12.5px;font-weight:600;
@@ -200,12 +206,12 @@ h3{font:560 24px/1.15 var(--display);font-stretch:88%;letter-spacing:-.022em}
 .device:hover .veil,.veil:focus-visible{opacity:1}
 .device:hover .veil span,.veil:focus-visible span{transform:none}
 .dock.control .veil{display:none}
-.dock.control .device{--gl:52,227,154;box-shadow:0 0 0 calc(.6px * var(--s)) rgba(0,0,0,.9),0 0 0 2px rgba(52,227,154,.6),0 24px 48px -24px rgba(0,0,0,.9)}
 .dock-bar{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;width:calc(414px * var(--s) + 40px)}
 .dock-bar .chipbtn{height:30px;padding:0 11px;font-size:12px}
 .dock-bar .chipbtn .gl{font-size:12px;line-height:1}
 .dock-bar .chipbtn .rc{width:8px;height:11px;border-radius:2px;background:var(--red);transform:rotate(8deg)}
-.dock-bar .give{display:none;color:#8CF0C4;box-shadow:inset 0 0 0 1px rgba(52,227,154,.4)}
+.dock-bar .give{display:none;color:#0A0A0A;background:var(--ink);box-shadow:none}
+.dock-bar .give:hover{color:#0A0A0A;box-shadow:none;opacity:.9}
 .dock.control .dock-bar .give{display:inline-flex}
 .dock.control .dock-bar .take{display:none}
 .dock-note{min-height:18px;max-width:calc(414px * var(--s) + 20px);font-size:12px;line-height:1.45;color:var(--muted);text-align:center;text-wrap:balance;transition:opacity .4s}
