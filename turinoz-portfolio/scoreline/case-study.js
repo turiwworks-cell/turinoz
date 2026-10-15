@@ -47,6 +47,21 @@
   }
   const DEFAULT = [0.25, 0.1, 0.25, 1];
 
+  /* first paint (html.hold in case-study.css): some browsers paint before this script runs, so the phone would
+     fly in from the corner and the sections below would show before the headline. Everything that reveals
+     waits instead for the hero's fonts and, beside a wide screen, the phone's poster (1.5 s at most), then
+     the headline, the phone and the rest arrive together. Set up first, so nothing below can keep it held. */
+  html.classList.add('hold');
+  {
+    const poster = mqWide.matches && document.querySelector('.screen .poster');
+    const fonts = document.fonts && document.fonts.load ? [document.fonts.load('560 100px Archivo'), document.fonts.load('400 16px Inter')] : [];
+    const ready = [...fonts, poster && poster.decode ? poster.decode() : null].filter(Boolean).map(p => p.catch(() => {}));
+    Promise.race([Promise.all(ready), wait(1500)]).then(() => requestAnimationFrame(() => {
+      html.classList.add('arrive'); html.classList.remove('hold'); setTimeout(() => html.classList.remove('arrive'), 1600);
+      const h1 = document.querySelector('.h1'); if (h1) h1.classList.add('in');
+    }));
+  }
+
   /* ==========================================================================
      REVEAL · COUNTERS · NAV · PROGRESS
      ========================================================================== */
@@ -64,7 +79,7 @@
     e.target.classList.add('in'); reveal.unobserve(e.target);
     $$('.count', e.target).forEach(countUp);
   }), { rootMargin: '0px 0px -8% 0px', threshold: .06 });
-  $$('.rv, .h1').forEach(el => reveal.observe(el));
+  $$('.rv').forEach(el => reveal.observe(el));
   $$('.count').forEach(el => { if (!el.closest('.rv')) onScreen(el, v => v && countUp(el)); });
 
   const nav = $('#nav'), links = $$('#links a'), pill = $('#links .pill'), bar = $('.progress u');
@@ -202,10 +217,11 @@
   // a page that has to wait for the phone still shows something: the poster, then the app as it paints
   frame.addEventListener('load', () => { if (D.started) setTimeout(showApp, 1800); });
 
-  /* the poster gives way only once the app's first screen has landed (its entry animations done), so the two
-     never show half and half. It crossfades when the app sits exactly as the poster does (a first visit: Messi
-     followed, the list at the top, the wordmark where the poster has it); any other screen gets a short dip
-     through black instead: the poster out first, then the app in. */
+  /* the poster gives way only once the app's first screen has landed: a screen is there and its entry
+     animations have run and ended (they can start a beat after the app reports in; with none, a short wait
+     stands in), so the two never show half and half. It crossfades when the app sits exactly as the poster
+     does (a first visit: Messi followed, the list at the top, the wordmark where the poster has it); any other
+     screen gets a short dip through black instead: the poster out first, then the app in. */
   const POSTER_HEADING = 65.5;                                  // the wordmark's top in the poster (assets/home.webp), px
   function matchesPoster() {
     try {
@@ -217,10 +233,21 @@
   function showApp() {
     if (D.shown) return; D.shown = true;
     const t0 = performance.now();
+    let since = 0, burst = false;
     const landed = () => {
-      let busy = false;
-      try { busy = frame.contentDocument.getAnimations().some(a => a.playState === 'running' && isFinite(a.effect.getComputedTiming().endTime)); } catch (_) {}
-      if (busy && performance.now() - t0 < 2500) { requestAnimationFrame(landed); return; }
+      const now = performance.now();
+      let later = false;
+      try {
+        const d = frame.contentDocument;
+        if (!d.querySelector('[data-screen-heading]')) later = true;
+        else {
+          const run = d.getAnimations().filter(a => a.playState === 'running' && isFinite(a.effect.getComputedTiming().endTime)).length;
+          if (!since) since = now;
+          if (run > 2) burst = true;
+          later = run > 0 || (!burst && now - since < 400);
+        }
+      } catch (_) {}
+      if (later && now - t0 < 3500) { requestAnimationFrame(landed); return; }
       if (!matchesPoster()) screenEl.classList.add('dip');
       requestAnimationFrame(() => screenEl.classList.add('ready'));
     };
@@ -1026,10 +1053,10 @@
     const IMG = 'app/img/players/';
     const bust = (t, n, cls = '') => `<img class="${cls}" src="${IMG}${t}/${n}-bust@1x.webp" srcset="${IMG}${t}/${n}-bust@2x.webp 2x" alt="" decoding="async">`;
 
-    // the demo evening, as the app shows it at 58’
-    const LIVE = [['fra', 'arg', 2, 1, 58, '--sp2'], ['eng', 'bra', 0, 1, 63, '--sp5'], ['ger', 'ned', 1, 1, 76, '--sp1'], ['bel', 'aut', 0, 2, 47, '--sp3'], ['irl', 'pol', 2, 1, 66, '--sp4']];
+    // the demo evening's five live cards at 58’ (minute, spectrum): only the cards, in their own colors
+    const LIVE = [[58, '--sp2'], [63, '--sp5'], [76, '--sp1'], [47, '--sp3'], [66, '--sp4']];
     const tabsHTML = (names, on, cls) => `<div class="${cls}" role="tablist">${names.map(n => `<button type="button" role="tab" aria-selected="${n === on}"${n === on ? ' class="on"' : ''}>${n}</button>`).join('')}<span class="ul" aria-hidden="true"></span></div>`;
-    const cardsHTML = () => '<div class="ms-cardrow">' + LIVE.map(([h, a, hs, as, m, g]) => `<div class="ms-card" style="--h:${Math.round(28 + m / 90 * 70)}%;--g:var(${g});--p:${(m / 90 * 100).toFixed(1)}%"><div class="tm"><span>${fl(h)}${h.toUpperCase()}<b>${hs}</b></span><span>${fl(a)}${a.toUpperCase()}<b>${as}</b></span></div><div><div class="mn">${m}’</div><div class="bar"><i></i></div></div></div>`).join('') + '</div>';
+    const cardsHTML = () => '<div class="ms-cardrow">' + LIVE.map(([m, g]) => `<div class="ms-card" style="--h:${Math.round(28 + m / 90 * 70)}%;--g:var(${g});--p:${(m / 90 * 100).toFixed(1)}%"><div class="mn">${m}’</div><div class="bar"><i></i></div></div>`).join('') + '</div>';
     // List, Events and Lineup: the site's first stage, plain shapes placed as fractions of the box
     const SPC = ['var(--sp2)', 'var(--sp5)', 'var(--sp1)', 'var(--sp3)', 'var(--sp4)'];
     const item = (sc, css, html) => { const d = document.createElement('div'); d.className = 'item'; d.style.cssText = css; if (html) d.innerHTML = html; sc.appendChild(d); return d; };
@@ -1259,5 +1286,4 @@
 
   /* ---------- first paint ---------- */
   onScroll();
-  setTimeout(() => $('.h1').classList.add('in'), 60);
 })();

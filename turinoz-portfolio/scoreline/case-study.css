@@ -59,6 +59,12 @@ code{font:500 .86em/1 var(--mono);padding:3px 6px 2px;border-radius:6px;backgrou
 /* ---------- reveal ---------- */
 .rv{opacity:0;transform:translateY(22px);transition:opacity .9s var(--glide) var(--rd,0s),transform 1.1s var(--glide) var(--rd,0s)}
 .rv.in{opacity:1;transform:none}
+/* the first paint waits for the hero's fonts and the phone's poster (case-study.js lets go), so the headline,
+   the phone and what's below arrive together, in order, in every browser */
+html.hold .rv{opacity:0!important;transform:translateY(22px)!important}
+html.hold .h1 .ln>span{transform:translateY(110%)!important}
+html.hold .dock{opacity:0!important;scale:.97;transition:none!important}
+html.arrive .sec .rv{transition-delay:calc(var(--rd,0s) + .4s)}       /* what's below the hero comes a beat after it */
 
 /* ---------- nav ---------- */
 /* a glass bar of its own from the first frame: a shade lighter than the page and a hairline under it, so it reads
@@ -130,17 +136,14 @@ h3{font:560 24px/1.15 var(--display);font-stretch:88%;letter-spacing:-.022em}
 .tag--red{color:#FF9A9A;box-shadow:inset 0 0 0 1px rgba(255,90,90,.32)}
 
 /* ---------- buttons ---------- */
-/* the one call to action: the accent, lit from the top, the arrow on a white disc that flies out and back on hover */
-.btn{display:inline-flex;align-items:center;gap:10px;height:46px;padding:0 5px 0 17px;border-radius:999px;text-decoration:none;font-size:14.5px;font-weight:600;letter-spacing:-.005em;white-space:nowrap;color:#fff;
+/* the one call to action: the accent, lit from the top */
+.btn{display:inline-flex;align-items:center;gap:10px;height:46px;padding:0 21px 0 18px;border-radius:999px;text-decoration:none;font-size:14.5px;font-weight:600;letter-spacing:-.005em;white-space:nowrap;color:#fff;
   background:linear-gradient(180deg,#7B6AF8 0%,#6B58F5 55%,#5F4BEF 100%);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.3),inset 0 0 0 1px rgba(255,255,255,.08),0 18px 38px -16px rgba(107,88,245,.95);transition:transform .12s var(--ease),box-shadow .35s var(--ease),filter .35s var(--ease)}
 .btn:hover{filter:brightness(1.07);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),inset 0 0 0 1px rgba(255,255,255,.1),0 22px 44px -16px rgba(107,88,245,1)}
 .btn:active{transform:scale(.97)}
 .btn .dot{background:#fff}
 .btn .dot::after{border-color:#fff}
-.btn .go{display:grid;place-items:center;width:36px;height:36px;margin-left:4px;border-radius:50%;background:#fff;color:#5A47E6;overflow:hidden;box-shadow:0 2px 6px -2px rgba(30,16,110,.5)}
-.btn .go svg{width:12px;height:12px}
-.btn:hover .go svg{animation:fly .6s var(--glide)}
 @keyframes fly{0%{transform:none}38%{transform:translate(14px,-14px)}39%{transform:translate(-14px,14px)}100%{transform:none}}
 .ghost{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 16px;border-radius:999px;text-decoration:none;font-size:14px;font-weight:500;color:var(--ink);
   box-shadow:inset 0 0 0 1px var(--line-3);transition:box-shadow .25s,background-color .25s;white-space:nowrap}
@@ -159,7 +162,7 @@ h3{font:560 24px/1.15 var(--display);font-stretch:88%;letter-spacing:-.022em}
    ========================================================================== */
 .dock{--s:.86;position:fixed;z-index:70;top:calc(50% + 30px);right:max(var(--pad),calc((100vw - var(--wrap))/2 + var(--pad)));width:var(--dockw);
   transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:12px;
-  transition:transform .9s var(--glide),opacity .55s var(--glide),visibility 0s linear 0s}
+  transition:transform .9s var(--glide),opacity .55s var(--glide),scale 1.1s var(--glide),visibility 0s linear 0s}
 .dock[data-state="away"]{transform:translate(calc(var(--dockw) * .25),-30%) scale(.42);opacity:0;visibility:hidden;pointer-events:none;
   transition:transform .8s var(--glide),opacity .4s var(--ease),visibility 0s linear .8s}
 .dock[data-state="open"]{box-shadow:none}
@@ -615,12 +618,8 @@ h3{font:560 24px/1.15 var(--display);font-stretch:88%;letter-spacing:-.022em}
 /* cards */
 .ms-cards{display:flex;flex-direction:column;gap:12px}
 .ms-cardrow{flex:1;min-height:0;display:flex;align-items:flex-end;gap:8px}
-.ms-card{flex:1;min-width:0;height:var(--h);border-radius:14px;padding:10px 9px 11px;display:flex;flex-direction:column;justify-content:space-between;
+.ms-card{flex:1;min-width:0;height:var(--h);border-radius:14px;padding:10px 9px 11px;display:flex;flex-direction:column;justify-content:flex-end;
   background:linear-gradient(180deg,var(--g));color:rgba(0,0,0,.86)}
-.ms-card .tm{display:grid;gap:4px;font:600 10px/1 var(--app);letter-spacing:.02em}
-.ms-card .tm span{display:flex;align-items:center;gap:5px}
-.ms-card .tm .fl{width:10px;height:10px}
-.ms-card .tm b{margin-left:auto;font-weight:600}
 .ms-card .mn{font:300 clamp(20px,5cqw,34px)/1 var(--app);letter-spacing:-.05em}
 .ms-card .bar{height:2px;margin-top:6px;border-radius:2px;background:rgba(0,0,0,.18)}
 .ms-card .bar i{display:block;height:100%;width:var(--p);border-radius:2px;background:rgba(0,0,0,.72)}
@@ -700,7 +699,6 @@ h3{font:560 24px/1.15 var(--display);font-stretch:88%;letter-spacing:-.022em}
   .mo-read .tag{height:22px;padding:0 9px 0 8px;font-size:9.5px}
   .ms-cardrow{gap:5px}
   .ms-card{padding:8px 6px 9px;border-radius:11px}
-  .ms-card .tm .fl{display:none}
 }
 
 /* ==========================================================================
@@ -990,7 +988,7 @@ h3{font:560 24px/1.15 var(--display);font-stretch:88%;letter-spacing:-.022em}
   .aurora i,.dot::after,.belt,.scrollcue i::after{animation:none}
   .dock,.demo-pill{transition-duration:.01s!important}
   .dcard.playing .dplay::after{animation:none}
-  .cr-link svg,.btn:hover .go svg{animation:none}
+  .cr-link svg{animation:none}
 }
 
 /* ==========================================================================
