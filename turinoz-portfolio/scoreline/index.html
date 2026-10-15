@@ -19,6 +19,12 @@
 /* Day / night: the same choice as the portfolio's home page (tz-theme on this device). Night unless day was chosen. */
 try { const t = localStorage.getItem('tz-theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (_) {}
 </script>
+<style>
+/* Until case-study.css has arrived, only the page's ground shows: some browsers paint a first frame without it,
+   and an unstyled page puts the header's arrow across the whole screen. The stylesheet makes the body visible. */
+html{background:#000}html[data-theme="light"]{background:#F4F3EF}
+body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{visibility:visible}}
+</style>
 <link rel="stylesheet" href="case-study.css">
 <script src="case-study.js" defer></script>
 </head>
@@ -70,6 +76,10 @@ try { const t = localStorage.getItem('tz-theme'); if (t === 'light' || t === 'da
   </div>
   <div class="progress" aria-hidden="true"><u></u></div>
 </header>
+<!-- right-click (or long-press) on the logo: the brand sheet, the way product sites keep their logo assets -->
+<div class="ctx" id="brandMenu" role="menu" aria-label="Scoreline brand" hidden>
+  <a class="ctx-i" role="menuitem" href="brand/"><span class="slmark" aria-hidden="true"><i></i><i></i><i></i></span>Brand sheet<svg aria-hidden="true"><use href="#icArrowRight"/></svg></a>
+</div>
 
 <!-- ================= THE PHONE =================
      One live copy of the app (app/, the real build), the whole way down the page. It sits beside the
@@ -133,10 +143,9 @@ try { const t = localStorage.getItem('tz-theme'); if (t === 'light' || t === 'da
         <span class="ln" aria-hidden="true"><span class="mine">Every decision, mine.</span></span>
         <span class="ln" aria-hidden="true"><span class="ais">Every line of code, <b>AI’s.</b></span></span>
       </h1>
-      <p class="lede rv" style="--rd:.18s">Scoreline is a football app for match nights: every live game at a glance, and a goal that arrives the way it does in the stadium. <em>I&nbsp;designed the layout, the colours and the motion.</em></p>
+      <p class="lede rv" style="--rd:.18s">Scoreline, a football app for match nights, was an experiment: a way to test my own direction with AI as a new tool. <em>I&nbsp;designed the layout, the colours and the motion.</em></p>
       <div class="proof rv" style="--rd:.26s">
-        <button class="btn" type="button" data-open-demo data-cursor="Try it yourself"><span class="dot" aria-hidden="true"></span>Try the demo</button>
-        <a class="ghost" href="app/" target="_blank" rel="noopener" data-cursor="Opens in a new tab">Full screen<svg aria-hidden="true"><use href="#icArrowOut"/></svg></a>
+        <a class="btn" href="app/" target="_blank" rel="noopener" data-cursor="Full screen, in a new tab"><span class="dot" aria-hidden="true"></span>Open the app</a>
       </div>
     </div>
   </div>
@@ -386,7 +395,6 @@ try { const t = localStorage.getItem('tz-theme'); if (t === 'light' || t === 'da
         </ol>
       </div>
       <p class="sub rv proc-stack">Built with <b>React 19</b>, <b>TypeScript</b> and <b>Vite</b>. <b>Motion</b> for animation, <b>Zustand</b> for state, <b>Zod</b> for data, and the <b>Rive</b> runtime for the Live switch and the goal word.</p>
-      <p class="sub rv proc-note">Scoreline was an experiment: a way to test my own direction with AI as a new tool.</p>
     </div>
   </div>
 </section>

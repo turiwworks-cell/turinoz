@@ -21,6 +21,12 @@ try { const t = localStorage.getItem('tz-theme'); if (t === 'light' || t === 'da
 </script>
 <link rel="preload" href="../fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Until case-study.css has arrived, only the page's ground shows: some browsers paint a first frame without it,
+   and an unstyled page puts the header's arrow across the whole screen. The stylesheet makes the body visible. */
+html{background:#08090C}@media (prefers-color-scheme:light){html:not([data-theme="dark"]){background:#F3F4FA}}html[data-theme="light"]{background:#F3F4FA}
+body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{visibility:visible}}
+</style>
 <link rel="stylesheet" href="case-study.css">
 <script src="film-data.js" defer></script>
 <script src="case-study.js" defer></script>
