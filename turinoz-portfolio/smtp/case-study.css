@@ -69,7 +69,7 @@
 }
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:84px;-webkit-text-size-adjust:100%;background:var(--bg)}
-body{margin:0;background:var(--bg);color:var(--ink);font:400 15.5px/1.6 var(--ui);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+body{visibility:visible;animation:none;margin:0;background:var(--bg);color:var(--ink);font:400 15.5px/1.6 var(--ui);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
   font-feature-settings:"cv11","ss01";overflow-x:hidden}
 h1,h2,h3,p,figure,dl,dd,blockquote,pre{margin:0}
 a{color:inherit}

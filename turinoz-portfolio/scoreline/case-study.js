@@ -91,6 +91,29 @@
   addEventListener('scroll', kick, { passive: true });
   addEventListener('resize', () => { placePill(onLink); kick(); });
 
+  /* the logo's own menu: right-click (or long-press) the Scoreline logo for the brand sheet */
+  const brandEl = $('.nav .brand'), brandMenu = $('#brandMenu');
+  if (brandEl && brandMenu) {
+    const closeMenu = () => { brandMenu.hidden = true; };
+    brandEl.addEventListener('contextmenu', e => {
+      e.preventDefault();
+      brandMenu.hidden = false;
+      const r = brandEl.getBoundingClientRect(), mw = brandMenu.offsetWidth, mh = brandMenu.offsetHeight;
+      const byKey = !e.clientX && !e.clientY;                   // the context-menu key: under the logo
+      const x = clamp(byKey ? r.left : e.clientX, 8, innerWidth - mw - 8), y = clamp(byKey ? r.bottom + 6 : e.clientY, 8, innerHeight - mh - 8);
+      brandMenu.style.left = x + 'px'; brandMenu.style.top = y + 'px';
+      brandMenu.style.setProperty('--ox', (byKey ? 0 : clamp(e.clientX - x, 0, mw)) + 'px');
+      brandMenu.style.setProperty('--oy', (byKey ? 0 : clamp(e.clientY - y, 0, mh)) + 'px');
+      brandMenu.style.animation = 'none'; void brandMenu.offsetWidth; brandMenu.style.animation = '';
+      if (byKey) $('a', brandMenu).focus();
+    });
+    document.addEventListener('pointerdown', e => { if (!brandMenu.contains(e.target)) closeMenu(); }, true);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !brandMenu.hidden) { closeMenu(); brandEl.focus(); } });
+    addEventListener('scroll', closeMenu, { passive: true });
+    addEventListener('resize', closeMenu);
+    addEventListener('blur', closeMenu);
+  }
+
   /* ==========================================================================
      LABEL CURSOR — says what you're pointing at (fine pointers only)
      ========================================================================== */
@@ -141,7 +164,7 @@
   const APP = 'app/';
   const dock = $('#dock'), screenEl = $('#screen'), frame = $('#app'), veil = $('#veil');
   const routeEl = $('#dockRoute'), noteEl = $('#dockNote'), backdrop = $('#dockBackdrop'), demoPill = $('#demoPill');
-  const D = { app: null, started: false, allow: false, open: false, control: false, want: null, token: 0, lastRoute: '', base: '', moment: false, run: 0, retour: null, loud: null };
+  const D = { app: null, started: false, shown: false, allow: false, open: false, control: false, want: null, token: 0, lastRoute: '', base: '', moment: false, run: 0, retour: null, loud: null };
   D.base = new URL(APP, location.href).pathname.replace(/\/$/, '');      // e.g. /scoreline/app
 
   // the app looks for this on its parent when its demo starts (src/review/protocol.ts)
@@ -167,7 +190,7 @@
     $('#dockFull').href = APP + r.replace(/^\//, '');
   }
   function onAttach() {
-    screenEl.classList.add('ready');
+    showApp();
     D.app.subscribe(showRoute);
     showRoute();
     if (D.want) { const w = D.want; D.want = null; go(w.route, w); }
@@ -178,7 +201,32 @@
     frame.src = APP;
   }
   // a page that has to wait for the phone still shows something: the poster, then the app as it paints
-  frame.addEventListener('load', () => { if (D.started) setTimeout(() => screenEl.classList.add('ready'), 1800); });
+  frame.addEventListener('load', () => { if (D.started) setTimeout(showApp, 1800); });
+
+  /* the poster gives way only once the app's first screen has landed (its entry animations done), so the two
+     never show half and half. It crossfades when the app sits exactly as the poster does (a first visit: Messi
+     followed, the list at the top, the wordmark where the poster has it); any other screen gets a short dip
+     through black instead: the poster out first, then the app in. */
+  const POSTER_HEADING = 65.5;                                  // the wordmark's top in the poster (assets/home.webp), px
+  function matchesPoster() {
+    try {
+      if (localStorage.getItem('scoreline:follow')) return false;
+      const d = frame.contentDocument, h = d.querySelector('[data-screen-heading]'), list = d.querySelector('[data-screen="list"]');
+      return !!h && !!list && Math.abs(h.getBoundingClientRect().top - POSTER_HEADING) < 1 && list.scrollTop === 0 && routeName(appRoute()) === 'List · Live';
+    } catch (_) { return false; }
+  }
+  function showApp() {
+    if (D.shown) return; D.shown = true;
+    const t0 = performance.now();
+    const landed = () => {
+      let busy = false;
+      try { busy = frame.contentDocument.getAnimations().some(a => a.playState === 'running' && isFinite(a.effect.getComputedTiming().endTime)); } catch (_) {}
+      if (busy && performance.now() - t0 < 2500) { requestAnimationFrame(landed); return; }
+      if (!matchesPoster()) screenEl.classList.add('dip');
+      requestAnimationFrame(() => screenEl.classList.add('ready'));
+    };
+    requestAnimationFrame(landed);
+  }
 
   // the phone's size: as tall as the window allows, never wider than its column
   function fit() {
