@@ -82,7 +82,9 @@ python -m http.server 8000
 - **Day / night**: the button next to the email in the header. With nothing chosen, the page
   follows the system; a choice is remembered on this device (`tz-theme` in localStorage). The
   canvas tiles, the Curve Lab and Spectra tiles and the Storm motion system all follow it.
-- **Contact** on the right edge opens an email.
+- Each tier's name has a very small mark before it: a spark for Selected work, a flask for
+  Experiments (`.tier-ic`).
+- **Contact** is the email in the header; the Contact capsule that sat on the right edge is gone.
 
 ## The tiles that changed
 
@@ -162,14 +164,19 @@ python -m http.server 8000
 
 ## Sitemate tile (Storm Motion System)
 
-- The first tile opens on Storm's motion system, already playing: six states feeding the icon,
-  with the diagram in the middle of the tile and the icon on a plain square.
-- Replay (top right, next to "Live in Sitemate") brings back the real Storm composer from
-  Sitemate's product, centred in the tile, and it types its prompt. Pressing Build steps it back
-  with the product's own ease (.45s cubic-bezier(.2,.8,.2,1)), the agent spins once, then the
-  motion system comes back.
+- The first tile opens on the real Storm composer from Sitemate's product, centred in the tile.
+  Its prompt types itself, then Build presses itself (no cursor). The composer steps back with
+  the product's own ease (.45s cubic-bezier(.2,.8,.2,1)) and the Storm logo spins out of the
+  composer's header onto the board, growing from the blue badge into the system's own white
+  square. Storm's motion system draws itself around it and plays: six states feeding the icon.
+- Replay (top right, next to "Live in Sitemate") plays the whole way in again. Someone typing
+  their own prompt takes over: Build then waits for them.
 - The prompt it types is `PROMPT` in the "SITEMATE TILE" script at the end of
   `index.html`. The Lottie clips are the JSON block `#smClips` just above it.
+- The shipped transition clips end a hair off their loop's own pose, which read as a small
+  hitch on the big icon at each change of state. Their last frames are drawn from the loop
+  instead (`TAIL` in the script), so every state hands over on exactly the same pose. The six
+  clips share one 100 × 100 frame, so the icon itself never moves.
 - The motion system has a night version (the `--sy-*` colours on `.st`); the composer stays as
   it is in the product.
 - "View project" and the tile title open `sitemate/`.
