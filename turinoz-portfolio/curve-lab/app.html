@@ -204,6 +204,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 .brand-menu a:hover,.brand-menu a:focus-visible{background:var(--bm-hover);outline:none}
 .brand-menu svg{width:10px;height:10px;flex:none}
 @media (prefers-reduced-motion:reduce){.brand-menu{transition:none}}
+.brand-menu svg rect{fill:var(--cl-ui,#2C50FF)}
 .brand-menu{--bm-bg:var(--raise);--bm-ink:var(--text);--bm-line:var(--line-2);--bm-hover:var(--hover);--bm-font:inherit}
 </style>
 <style>
@@ -4369,6 +4370,97 @@ input.scrubnum:not(:focus) {
 }
 .cl-ap-palette button[aria-pressed="true"] {
   box-shadow: 0 0 0 2px var(--acc);
+}
+.cl-ap-history {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  margin: -4px 0 16px;
+}
+.cl-ap-history-label {
+  font-size: 11px;
+  color: var(--mute);
+  white-space: nowrap;
+}
+.cl-ap-history-list {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.cl-ap-history-list:empty::after {
+  content: "Pick one with +";
+  font-size: 11px;
+  color: var(--dim);
+}
+.cl-ap-hitem {
+  position: relative;
+  display: inline-flex;
+}
+.cl-ap-hitem .sw {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--panel);
+  background: var(--swatch);
+  box-shadow: 0 0 0 1px var(--line-2);
+  padding: 0;
+  transition:
+    box-shadow 0.15s,
+    transform 0.15s;
+}
+.cl-ap-hitem .sw:hover {
+  transform: scale(1.12);
+}
+.cl-ap-hitem .sw[aria-pressed="true"] {
+  box-shadow: 0 0 0 2px var(--acc);
+}
+.cl-ap-hitem .x {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  width: 13px;
+  height: 13px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--raise);
+  color: var(--soft);
+  font-size: 10px;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.cl-ap-hitem:hover .x,
+.cl-ap-hitem:focus-within .x {
+  opacity: 1;
+}
+.cl-ap-add {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px dashed var(--line-3);
+  border-radius: 50%;
+  background: none;
+  color: var(--soft);
+  font-size: 14px;
+  line-height: 1;
+}
+.cl-ap-add:hover {
+  border-color: var(--soft);
+  color: var(--text);
+}
+.brand .bm rect {
+  fill: var(--cl-ui, #2c50ff);
+  transition: fill 0.2s;
 }
 .cl-ap-palette .note {
   margin-left: auto;
@@ -8695,13 +8787,18 @@ html[data-cl-theme="light"] .pop.float {
         /><input class="cl-color" id="clUiColor" type="color" value="#2c50ff" aria-label="Interface color"
       /></span></label>
       <div class="cl-ap-palette" role="group" aria-label="Interface colors">
-        <button type="button" data-ui-color="#2c50ff" style="--swatch: #2c50ff" aria-label="Curve Lab interface" title="Curve Lab"></button
+        <button type="button" data-ui-color="auto" style="--swatch: linear-gradient(135deg, #2c50ff 50%, #ff9a4d 50%)" aria-label="Curve Lab interface: blue in light, orange in dark" title="Curve Lab: blue in light, orange in dark"></button
         ><button type="button" data-ui-color="#95cf2a" style="--swatch: #95cf2a" aria-label="Lime interface" title="Lime"></button
         ><button type="button" data-ui-color="#ededea" style="--swatch: #ededea" aria-label="Neutral interface" title="Neutral"></button
         ><button type="button" data-ui-color="#7cc4ff" style="--swatch: #7cc4ff" aria-label="Blue interface" title="Blue"></button
         ><button type="button" data-ui-color="#a7c8a3" style="--swatch: #a7c8a3" aria-label="Sage interface" title="Sage"></button
         ><button type="button" data-ui-color="#b69cff" style="--swatch: #b69cff" aria-label="Violet interface" title="Violet"></button
         ><button type="button" data-ui-color="#efbb7a" style="--swatch: #efbb7a" aria-label="Warm interface" title="Warm"></button>
+      </div>
+      <div class="cl-ap-history">
+        <span class="cl-ap-history-label">Your colors</span>
+        <div class="cl-ap-history-list" id="clUiHistory" role="group" aria-label="Your colors"></div>
+        <button type="button" class="cl-ap-add" id="clUiAdd" aria-label="Add a color to Your colors" title="Add a color">+</button>
       </div>
       <div class="cl-ap-tint" style="--line-color: var(--acc)" title="How strongly the interface color tints the surfaces">
         <span>Tint</span><input class="cl-opacity" id="clTint" type="range" min="0" max="100" step="1" value="8" aria-label="Tint strength"
@@ -12099,7 +12196,7 @@ const t0=performance.now();
     re("exact");
   }); // Display preferences do not modify curve data or the curve undo history.
   const clAppearanceDefaults = {
-    uiColor: "#2c50ff",
+    uiColor: "auto",
     valueColor: "#f1f1ec",
     speedColor: "#ff9a4d",
     valueOpacity: 100,
@@ -12212,10 +12309,15 @@ const t0=performance.now();
     P.style.setProperty("--cl-selected-color", P.style.getPropertyValue("--cl-" + line + "-selected"));
     P.style.setProperty("--cl-selected-edge", P.style.getPropertyValue("--cl-" + line + "-selected-edge"));
   }
+  // "auto" is the Curve Lab colour for the current theme: blue in light, orange in dark.
+  function clUiColor() {
+    const c = clAppearance.uiColor;
+    return /^#[\da-f]{6}$/i.test(c) ? c.toLowerCase() : P.dataset.ws === "curve" && clTheme === "light" ? "#2c50ff" : "#ff9a4d";
+  }
   function clApplyAppearance() {
     const active = P.dataset.ws === "curve",
       light = active && clTheme === "light",
-      ui = clAppearance.uiColor,
+      ui = clUiColor(),
       amount = (clAppearance.tint / 100) * 0.25,
       root = document.documentElement;
     light ? (root.dataset.clTheme = "light") : delete root.dataset.clTheme;
@@ -12270,6 +12372,8 @@ const t0=performance.now();
       P.style.setProperty("--on-acc", clLuminance(accent) > 0.36 ? "#0c0c0d" : "#ffffff");
       document.body.style.backgroundColor = P.style.getPropertyValue("--bg");
     } else document.body.style.removeProperty("background-color");
+    // The header diamond takes the interface color too.
+    document.documentElement.style.setProperty("--cl-ui", ui);
     clFaviconDraw();
     // "Follow" lets the speed and zero lines take the interface color; the stored colors stay untouched.
     const follow = active && clAppearance.follow,
@@ -12318,7 +12422,8 @@ const t0=performance.now();
         (f("cl" + L + "Hex").value = clAppearance[clMapKey(L.toLowerCase() + "Color")].toUpperCase());
     document
       .querySelectorAll("[data-ui-color]")
-      .forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.uiColor === ui)));
+      .forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.uiColor === clAppearance.uiColor)));
+    clRenderUiHistory();
     clSyncAppearanceRows();
     clSyncThemeBtn();
   }
@@ -12349,6 +12454,39 @@ const t0=performance.now();
     f("opBtn").classList.toggle("on", next);
     f("opBtn").setAttribute("aria-expanded", String(next));
     next && clPositionOpacity();
+  }
+  // ---------- Your colors: interface colors the user picked, newest first ----------
+  const clUiHistoryKey = "turinoz-curve-lab-ui-history-v1";
+  let clUiHistory = [];
+  try {
+    const saved = JSON.parse(localStorage.getItem(clUiHistoryKey) || "[]");
+    Array.isArray(saved) && (clUiHistory = saved.filter((c) => /^#[\da-f]{6}$/.test(c)).slice(0, 12));
+  } catch {}
+  function clSaveUiHistory() {
+    try {
+      localStorage.setItem(clUiHistoryKey, JSON.stringify(clUiHistory));
+    } catch {}
+  }
+  function clRememberUiColor(hex) {
+    hex = String(hex || "").toLowerCase();
+    if (!/^#[\da-f]{6}$/.test(hex) || hex === "#2c50ff" || hex === "#ff9a4d") return;
+    if (document.querySelector(`.cl-ap-palette [data-ui-color="${hex}"]`)) return;
+    clUiHistory = [hex, ...clUiHistory.filter((c) => c !== hex)].slice(0, 12);
+    clSaveUiHistory();
+    clRenderUiHistory();
+  }
+  function clRenderUiHistory() {
+    const list = f("clUiHistory");
+    if (!list) return;
+    const key = clUiHistory.join() + "|" + clAppearance.uiColor;
+    if (list.dataset.key === key) return;
+    list.dataset.key = key;
+    list.innerHTML = clUiHistory
+      .map(
+        (c) =>
+          `<span class="cl-ap-hitem"><button type="button" class="sw" data-ui-hist="${c}" style="--swatch: ${c}" aria-pressed="${c === clAppearance.uiColor}" aria-label="Interface color ${c.toUpperCase()}" title="${c.toUpperCase()}"></button><button type="button" class="x" data-ui-forget="${c}" aria-label="Remove ${c.toUpperCase()} from Your colors" title="Remove">×</button></span>`,
+      )
+      .join("");
   }
   function clSetAppearance(key, value) {
     clAppearance[clMapKey(key)] = value;
@@ -12502,8 +12640,7 @@ const t0=performance.now();
       if (window.top !== window) return;
       const link = f("clFavicon");
       if (!link) return;
-      let acc = String(clAppearance.uiColor || "").trim();
-      /^#[0-9a-f]{6}$/i.test(acc) || (acc = "#2c50ff");
+      const acc = clUiColor();
       const rgb = clRgb(acc),
         neutral = Math.max(...rgb) - Math.min(...rgb) < 14,
         // the tab strip is the browser's: keep the diamond readable on a light or a dark one
@@ -12745,6 +12882,12 @@ const t0=performance.now();
         apply = () => {
           let t = field.value.trim().replace(/^#?/, "#").toLowerCase();
           /^#[\da-f]{3}$/.test(t) && (t = "#" + [...t.slice(1)].map((c) => c + c).join(""));
+          if (key === "uiColor") {
+            // Leaving the field unchanged keeps "auto"; a new color is applied and kept in Your colors.
+            if (!/^#[\da-f]{6}$/.test(t)) return void (field.value = clUiColor().toUpperCase());
+            t !== clUiColor() && (clSetAppearance(key, t), clRememberUiColor(t));
+            return;
+          }
           /^#[\da-f]{6}$/.test(t) ? clSetAppearance(key, t) : (field.value = clAppearance[clMapKey(key)].toUpperCase());
         };
       field.addEventListener("keydown", (e) => {
@@ -12781,6 +12924,26 @@ const t0=performance.now();
         clToggleOpacity(!1);
     });
     f("clUiColor").addEventListener("input", (event) => clSetAppearance("uiColor", event.target.value));
+    f("clUiColor").addEventListener("change", (event) => clRememberUiColor(event.target.value));
+    f("clUiAdd").addEventListener("click", () => {
+      const picker = f("clUiColor");
+      picker.value = clUiColor();
+      try {
+        picker.showPicker ? picker.showPicker() : picker.click();
+      } catch {
+        picker.click();
+      }
+    });
+    f("clUiHistory").addEventListener("click", (event) => {
+      const remove = event.target.closest("[data-ui-forget]"),
+        pick = event.target.closest("[data-ui-hist]");
+      if (remove) {
+        clUiHistory = clUiHistory.filter((c) => c !== remove.dataset.uiForget);
+        clSaveUiHistory();
+        clRenderUiHistory();
+        F("Color removed from Your colors");
+      } else if (pick) clSetAppearance("uiColor", pick.dataset.uiHist);
+    });
     for (const line of ["value", "speed"]) {
       const label = line === "value" ? "Value" : "Speed";
       f("cl" + label + "Color").addEventListener("input", (event) =>
@@ -22586,7 +22749,7 @@ gsap.to(".el", { duration: ${durSec}, ease: "curve", y: 0 });`;
 
           // Theme & Appearance
           { cat: "Theme", lbl: clTheme === "light" ? "Switch to Dark Theme" : "Switch to Light Theme", sub: "Theme", run: () => f("themeBtn")?.click() },
-          { cat: "Theme", lbl: "Interface Color: Curve Lab (#2C50FF)", sub: "Color", run: () => clSetAppearance("uiColor", "#2c50ff") },
+          { cat: "Theme", lbl: "Interface Color: Curve Lab (blue in light, orange in dark)", sub: "Color", run: () => clSetAppearance("uiColor", "auto") },
           { cat: "Theme", lbl: "Interface Color: Violet (#B69CFF)", sub: "Color", run: () => clSetAppearance("uiColor", "#b69cff") },
           { cat: "Theme", lbl: "Interface Color: Lime (#95CF2A)", sub: "Color", run: () => clSetAppearance("uiColor", "#95cf2a") },
           { cat: "Theme", lbl: "Interface Color: Neutral (#EDEDEA)", sub: "Color", run: () => clSetAppearance("uiColor", "#ededea") },
