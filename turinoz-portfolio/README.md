@@ -268,7 +268,16 @@ python -m http.server 8000
   stand-in backend; no real provider, accounts or device testing yet.
 - Needs a server (the app is ES modules); `python -m http.server` is enough for the page. The
   `[[redirects]]` rule in `netlify.toml` lets a reload on one of the app's screens find its page.
-- Rebuilding the app: in scoreline-brain, `SCORELINE_BASE=/scoreline/app/ npm run build`, then copy
-  `dist/` to `scoreline/app/` (without `_redirects`).
+- Rebuilding the app: in scoreline-brain (branch `scoreline-photo-ready`, or main once it is merged
+  there), `SCORELINE_BASE=/scoreline/app/ npm run build`, then copy `dist/` to `scoreline/app/`
+  without `_redirects`, `_headers` (the site's own `_headers` covers the app) and `img/` (the
+  site's player photos are newer than the source repo's). The source already has the American
+  spelling, the 12 px logo bar and the new icons, so a rebuild keeps them.
+- Player photos: the app's profile never plays its entrance over an empty place. The bust joins
+  the entrance once its file is loaded and decoded, or comes in on its own short fade when it is
+  late. A press (or a resting mouse) on a player starts his file before his page opens, and the
+  two players the arrows lead to are fetched once his own is in. The Motion stage's Player scene
+  holds on its first frame until its photo is drawable (4 s at most), and asks for the same
+  AVIF/WebP file as the app, so the two share the cache.
 - After deploying, set `og:image` in `scoreline/index.html` to the absolute URL of
   `scoreline/assets/share-cover.jpg`.
