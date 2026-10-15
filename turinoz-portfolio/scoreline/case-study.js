@@ -237,21 +237,35 @@
   }
   fit(); addEventListener('resize', fit);
 
-  /* states: docked beside a phone section · away (the pill shows) · open (called from the pill) */
+  /* states: docked beside a phone section · gone (scrolled off with its section) · away (put away into
+     the pill) · open (called from the pill). The pill shows for gone and away. */
+  const hidden = () => dock.dataset.state === 'away' || dock.dataset.state === 'gone';
+  let awaySince = 0;
   function setState(st) {
-    if (dock.dataset.state === st) return;
+    const was = dock.dataset.state;
+    if (was === st) return;
+    if (st === 'gone' && was === 'away' && performance.now() - awaySince < 900) return;   // let it finish shrinking into the pill
+    if (st === 'away') awaySince = performance.now();
     dock.dataset.state = st;
-    demoPill.classList.toggle('on', st === 'away');
+    demoPill.classList.toggle('on', st === 'away' || st === 'gone');
     backdrop.classList.toggle('on', st === 'open');
     if (st === 'open' || (st === 'docked' && D.allow)) start();
-    if (st === 'away' && D.control) giveBack();
+    if ((st === 'away' || st === 'gone') && D.control) giveBack();
   }
+  // the phone rests beside a run of phone sections; as the run's last section ends it goes up with the
+  // page, the way a sticky element does, and comes back down the same way on the way up
   function dockFor() {
     if (D.open) return 'open';
     if (!mqWide.matches) return 'away';
-    const mid = innerHeight * .5;
-    const here = $$('main > section').find(s => { const r = s.getBoundingClientRect(); return r.top <= mid && r.bottom > mid; });
-    return here && here.dataset.dock === 'phone' ? 'docked' : 'away';
+    const secs = $$('main > section'), mid = innerHeight * .5, phone = el => !!el && el.dataset.dock === 'phone';
+    let i = -1;
+    secs.forEach((el, k) => { if (el.getBoundingClientRect().top <= mid) i = k; });
+    if (i < 0) return 'away';
+    if (!phone(secs[i])) { if (!phone(secs[i - 1])) return 'gone'; i--; }
+    while (phone(secs[i + 1])) i++;
+    const end = secs[i].getBoundingClientRect().bottom, rest = innerHeight * .5 + 30 + dock.offsetHeight / 2;
+    dock.style.setProperty('--lift', Math.min(0, Math.round(end - rest)) + 'px');
+    return end > 0 ? 'docked' : 'gone';
   }
   scrollers.push(() => setState(dockFor()));
   mqWide.addEventListener('change', () => { fit(); setState(dockFor()); });
@@ -261,7 +275,8 @@
     if (dock.dataset.state === 'docked') { if (e && e.currentTarget && !e.currentTarget.hasAttribute('data-scene')) takeControl(); return; }
     D.open = true; setState('open');
   }
-  function closeDemo() { D.open = false; setState(dockFor()); }
+  // closing from the pill puts it back into the pill
+  function closeDemo() { D.open = false; const st = dockFor(); setState(st === 'gone' ? 'away' : st); }
   $$('[data-open-demo]').forEach(b => b.addEventListener('click', openDemo));
   $('#dockClose').addEventListener('click', closeDemo);
   backdrop.addEventListener('click', closeDemo);
@@ -272,7 +287,7 @@
 
   /* take control: the phone takes the pointer (and the wheel) until it's given back */
   function takeControl() {
-    if (dock.dataset.state === 'away') openDemo();
+    if (hidden()) openDemo();
     D.control = true; dock.classList.add('control'); frame.tabIndex = 0;
     hideCursor();
     note('Scroll, tap, swipe back. Esc gives it back.');
@@ -295,7 +310,7 @@
 
   /* the controls: the app's own calls (the same ones its review page makes) */
   async function scene(kind) {
-    if (dock.dataset.state === 'away') openDemo();
+    if (hidden()) openDemo();
     start();
     if (!D.app) { note('The demo is still starting…'); D.want = { route: '/', scene: kind }; return; }
     hideCursor(); if (D.loud) D.loud();
@@ -413,7 +428,7 @@
   const maxScroll = s => Math.max(0, s.scrollHeight - s.clientHeight);
 
   /* a run: every wait checks it is still the current one */
-  const mine = tok => tok === D.run && !D.control && dock.dataset.state !== 'away';
+  const mine = tok => tok === D.run && !D.control && !hidden();
   const pause = async (tok, ms) => { await new Promise(r => setTimeout(r, ms)); if (!mine(tok)) throw CANCEL; };
   const frames = (tok, ms, fn) => new Promise((res, rej) => {
     if (reduce() || ms <= 0) { fn(1); res(); return; }
@@ -465,7 +480,42 @@
     const c = TC.cur; c.classList.remove('clk'); void c.offsetWidth; c.classList.add('press', 'clk');
     setTimeout(() => c.classList.remove('press'), 160);
   }
-  async function tap(tok, el, act) { tapRing(); await pause(tok, 140); (act || (() => el.click()))(); }
+  // a tap the app feels as one: its buttons press, and tab labels roll, on the pointer,
+  // so the pointer goes down and up on the element before the click
+  function press(el, type) {
+    const w = frame.contentWindow, r = el.getBoundingClientRect(), P = w.PointerEvent || w.MouseEvent;
+    const at = { bubbles: true, cancelable: true, composed: true, view: w, button: 0, buttons: type === 'pointerup' ? 0 : 1,
+      clientX: r.left + r.width / 2, clientY: r.top + r.height / 2, pointerId: 1, pointerType: 'mouse', isPrimary: true };
+    el.dispatchEvent(new P(type, at));
+  }
+  async function tap(tok, el, act) {
+    if (el) { press(el, 'pointerover'); press(el, 'pointerdown'); }
+    tapRing(); await pause(tok, 140);
+    if (el) press(el, 'pointerup');
+    (act || (() => el.click()))();
+  }
+  // the app pushes a screen (into a match, onto a player); for one tap that push lands as a replace, so the
+  // app moves exactly as it does in your hand and the page's Back stays the page's. The index stays put,
+  // so the app's own Back goes up a level instead of back through the page's history. The app then moves
+  // focus to the new screen's title, which would ring it and pull the keyboard into the phone: not on the tour.
+  function noPush(fn) {
+    const h = frame.contentWindow.history, d = appDoc(), had = document.activeElement;
+    const calm = e => {
+      if (D.control) return;
+      if (e.target && e.target.blur) e.target.blur();
+      if (had && had !== frame && had !== document.body && had.focus) had.focus({ preventScroll: true });
+    };
+    d.addEventListener('focusin', calm, true);
+    setTimeout(() => d.removeEventListener('focusin', calm, true), 1500);
+    const done = () => { clearTimeout(t); delete h.pushState; };
+    const t = setTimeout(done, 1500);
+    h.pushState = function (state, title, url) {
+      done();
+      const idx = h.state && typeof h.state.idx === 'number' ? h.state.idx : 0;
+      return h.replaceState(state && typeof state === 'object' ? { ...state, idx } : state, title, url);
+    };
+    try { fn(); } catch (e) { done(); throw e; }
+  }
 
   /* the stops */
   const STOPS = {
@@ -491,8 +541,8 @@
       const row = EL.match();
       if (row) { const y = offsetIn(row, s), h = s.clientHeight; if (y < s.scrollTop + h * .25 || y > s.scrollTop + h * .8) await glide(tok, s, y - h * .55, 700); }
       await pause(tok, 300);
-      await moveTo(tok, EL.match, 800);
-      await pause(tok, 200); await tap(tok, null, () => navigate('/match/1/facts'));
+      const m = await moveTo(tok, EL.match, 800);
+      await pause(tok, 200); await tap(tok, m, () => noPush(() => m.click()));
       await pause(tok, 300); hideCursor();
       s = await reach(tok, '/match/1/facts', 'match');
       await pause(tok, 1100);
@@ -525,8 +575,8 @@
       const side = await moveTo(tok, () => EL.side('away'), 800);
       await pause(tok, 200); await tap(tok, side);
       await pause(tok, 1100);
-      await moveTo(tok, EL.messi, 800);
-      await pause(tok, 300); await tap(tok, null, () => navigate('/player/arg/10'));
+      const p = await moveTo(tok, EL.messi, 800);
+      await pause(tok, 300); await tap(tok, p, () => noPush(() => p.click()));
       await pause(tok, 500); hideCursor();
     },
     // nothing happens on its own here: the buttons do it
@@ -540,7 +590,9 @@
     hideCursor();
     if (!D.app) return;
     const run = STOPS[card.dataset.stop];
+    card._tok = tok; card.classList.add('playing');
     try { if (run) await run(tok); } catch (e) { if (e !== CANCEL) console.warn(e); }
+    if (card._tok === tok) card.classList.remove('playing');
     if (tok === D.run) hideCursor();
   }
 
@@ -558,6 +610,50 @@
   const kickTour = () => pick();
   scrollers.push(pick);
   addEventListener('resize', pick);
+
+  /* the scroll settles each stop level with the phone. When the scroll stops inside the list, the stop
+     nearest the phone's middle glides there; a small scroll away from a stop goes on to the next one,
+     and past the first or the last it lets you out. Any wheel, touch or key stops the glide. */
+  const S = { t: 0, raf: 0, gliding: false, card: null, from: 0 };
+  const level = () => innerHeight * .5 + 30;                                   // the phone's middle (.dock top)
+  const offBy = c => { const b = c.getBoundingClientRect(); return b.top + b.height / 2 - level(); };
+  function glidePage(d) {
+    cancelAnimationFrame(S.raf);
+    const a = scrollY, ms = reduce() ? 0 : clamp(Math.abs(d) * 1.1, 280, 620), t0 = performance.now();
+    S.gliding = true;
+    const f = now => {
+      const k = ms ? Math.min(1, (now - t0) / ms) : 1;
+      scrollTo({ top: a + d * (1 - (1 - k) ** 3), behavior: 'instant' });
+      if (k < 1) S.raf = requestAnimationFrame(f); else { S.gliding = false; S.from = scrollY; }
+    };
+    S.raf = requestAnimationFrame(f);
+  }
+  function glideTo(c) { S.card = c; const d = offBy(c); if (Math.abs(d) > 1) glidePage(d); else S.from = scrollY; }
+  function settle() {
+    if (!mqWide.matches || dock.dataset.state !== 'docked' || D.control) return;
+    const y = level(), top = cards[0].getBoundingClientRect().top, bottom = cards[cards.length - 1].getBoundingClientRect().bottom;
+    if (y < top || y > bottom) { S.card = null; return; }
+    const near = cards.reduce((a, c) => (Math.abs(offBy(c)) < Math.abs(offBy(a)) ? c : a));
+    const moved = scrollY - S.from;
+    let to = near;
+    if (near === S.card && Math.abs(moved) > 24 && Math.abs(moved) < innerHeight) {
+      to = cards[cards.indexOf(near) + Math.sign(moved)];
+      if (!to) { S.card = null; return; }
+    }
+    glideTo(to);
+  }
+  const stopGlide = () => { if (S.gliding) { cancelAnimationFrame(S.raf); S.gliding = false; } };
+  ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach(e => addEventListener(e, stopGlide, { passive: true }));
+  addEventListener('scroll', () => { if (S.gliding) return; clearTimeout(S.t); S.t = setTimeout(settle, 160); }, { passive: true });
+
+  // play: the stop runs again on the phone (a stop that isn't the current one comes level first, and plays as it arrives)
+  $$('[data-play]').forEach(b => b.addEventListener('click', () => {
+    const c = b.closest('.dcard');
+    if (!mqWide.matches) { c.querySelector('[data-show]')?.click(); return; }
+    if (c !== T.card) { stopGlide(); glideTo(c); return; }
+    if (D.control) { giveBack(); return; }                 // giving it back plays the stop in the middle
+    T.ran = c; play(c);
+  }));
 
   // above the tour the phone rests on Live
   let wasAbove = true;
@@ -605,7 +701,7 @@
   // a goal can't land on a player who's off, or in a match that's over: then the evening starts again first
   async function moment(key) {
     const m = MOMENTS[key]; if (!m) return;
-    if (dock.dataset.state === 'away') openDemo();
+    if (hidden()) openDemo();
     start();
     if (!D.app) { note('The demo is still starting…'); return; }
     D.run++; T.ran = T.card; hideCursor();
