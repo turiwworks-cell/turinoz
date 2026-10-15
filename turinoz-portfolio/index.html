@@ -298,8 +298,8 @@ html.study-open,html.study-open body{overflow:hidden}
    The page inside (curve-lab/also-inside.html) uses the site's own paper, light or dark like this page, so the frame matches it. */
 .media--site{background:#F1F0EC}
 .media--site iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;pointer-events:none;background:transparent;color-scheme:normal}
-@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .media--site{background:#0C0C0B} }
-:root[data-theme="dark"] .media--site{background:#0C0C0B}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .media--site{background:#000} }
+:root[data-theme="dark"] .media--site{background:#000}
 /* ---------- Spectra tile: the game itself (spectra/tile.html), played by Turinoz's cursor ----------
    The page inside uses the game's own ground, light or dark like this page, so the frame matches it.
    It takes no pointer until "Play yourself" hands it over (.is-playing). */
@@ -444,13 +444,13 @@ html.study-open,html.study-open body{overflow:hidden}
 /* the system view at night: same parts, same blue */
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]) .st{
-    --sy-bg:#0C0C0B;--sy-dots:rgba(255,255,255,.055);--sy-card:#181C20;--sy-ring:#2A3036;--sy-ring-hi:#3E464E;--sy-line:#2E353B;
+    --sy-bg:#000;--sy-dots:rgba(255,255,255,.055);--sy-card:#181C20;--sy-ring:#2A3036;--sy-ring-hi:#3E464E;--sy-line:#2E353B;
     --sy-ink:#E4E8EB;--sy-ink-2:#8C969E;--sy-ink-3:#5C666E;--sy-chip-ink:#B4BDC4;--sy-blue-ink:#5AB0F5;
     --sy-tag:#20252A;--sy-loop:rgba(0,133,232,.18);--sy-trans:transparent;--sy-trans-ring:rgba(0,133,232,.5);--sy-shimmer:#5D6F81;--sy-shimmer-hi:#C3D0DC;
     --sy-lift:rgba(0,0,0,.7)}
 }
 :root[data-theme="dark"] .st{
-  --sy-bg:#0C0C0B;--sy-dots:rgba(255,255,255,.055);--sy-card:#181C20;--sy-ring:#2A3036;--sy-ring-hi:#3E464E;--sy-line:#2E353B;
+  --sy-bg:#000;--sy-dots:rgba(255,255,255,.055);--sy-card:#181C20;--sy-ring:#2A3036;--sy-ring-hi:#3E464E;--sy-line:#2E353B;
   --sy-ink:#E4E8EB;--sy-ink-2:#8C969E;--sy-ink-3:#5C666E;--sy-chip-ink:#B4BDC4;--sy-blue-ink:#5AB0F5;
   --sy-tag:#20252A;--sy-loop:rgba(0,133,232,.18);--sy-trans:transparent;--sy-trans-ring:rgba(0,133,232,.5);--sy-shimmer:#5D6F81;--sy-shimmer-hi:#C3D0DC;
   --sy-lift:rgba(0,0,0,.7)}
@@ -546,7 +546,7 @@ html.study-open,html.study-open body{overflow:hidden}
 .st.is-cue .su-tip{opacity:1;transform:translate(0,-50%);transition-delay:.5s}
 
 /* ---------- 2. the system view (Storm motion system family) ---------- */
-/* the same ground as the Curve Lab tile beside it; the dot grid keeps clear of the tile's edges */
+/* the same ground as the Curve Lab tile beside it (black at night, like every main tile); the dot grid keeps clear of the tile's edges */
 .sy-bg{position:absolute;inset:0;z-index:3;background:var(--sy-bg);clip-path:circle(0px at 50% 50%);pointer-events:none}
 .sy-bg::before{content:"";position:absolute;inset:16px;background:radial-gradient(circle at 50% 50%,var(--sy-dots) 1px,transparent 1.25px) center/18px 18px space}
 .st.is-sys .sy-bg{clip-path:none}
