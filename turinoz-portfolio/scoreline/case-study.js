@@ -819,7 +819,7 @@
       x.strokeStyle = 'rgba(255,255,255,.05)'; x.lineWidth = 1 * d;
       for (let i = 0; i <= 4; i++) { const t = i / 4; x.beginPath(); x.moveTo(X(t), Y(0)); x.lineTo(X(t), Y(1)); x.stroke(); x.beginPath(); x.moveTo(X(0), Y(t)); x.lineTo(X(1), Y(t)); x.stroke(); }
       x.strokeStyle = 'rgba(255,255,255,.14)'; x.beginPath(); x.moveTo(X(0), Y(0)); x.lineTo(X(1), Y(0)); x.moveTo(X(0), Y(0)); x.lineTo(X(0), Y(1)); x.stroke();
-      // the default, dashed and grey
+      // the default, dashed and gray
       x.setLineDash([4 * d, 4 * d]); x.strokeStyle = 'rgba(133,132,127,.55)'; x.lineWidth = 1.4 * d;
       x.beginPath(); x.moveTo(X(0), Y(0)); x.bezierCurveTo(X(DEFAULT[0]), Y(DEFAULT[1]), X(DEFAULT[2]), Y(DEFAULT[3]), X(1), Y(1)); x.stroke(); x.setLineDash([]);
       // handles

@@ -255,9 +255,9 @@ html.study-open,html.study-open body{overflow:hidden}
 .media[data-r="spherectl"].is-drag{cursor:grabbing}
 
 /* ---------- live Rive Eye & Planet tile ----------
-   Two square canvases (one per icon), each centred on its icon. They are opaque, so each one
+   Two square canvases (one per icon), each centered on its icon. They are opaque, so each one
    is clipped at the line halfway between the icons (clip-path, set from the script). */
-.media[data-rive-ep]{background:#000}       /* the icons' own artboard colour */
+.media[data-rive-ep]{background:#000}       /* the icons' own artboard color */
 .media[data-rive-ep] .ep-cv{position:absolute;inset:auto;display:block;opacity:0;transition:opacity .9s var(--ease);pointer-events:none}
 .media[data-rive-ep].is-ready .ep-cv{opacity:1}
 .media[data-rive-ep] .ep-hit{position:absolute;inset:0;z-index:1;touch-action:pan-y;-webkit-tap-highlight-color:transparent}
@@ -277,7 +277,7 @@ html.study-open,html.study-open body{overflow:hidden}
 
 /* ---------- live Rive Digitigrade tile ----------
    Two columns wide, in Spectra's old place. One square canvas, larger than the tile and
-   centred on the walker's band (legs, numerals, ruler): the .riv also draws readouts in its
+   centered on the walker's band (legs, numerals, ruler): the .riv also draws readouts in its
    four corners, and those fall outside the tile. Band and sizes: RIVE_DG in the main script. */
 .tile--wide{grid-column:span 2}
 .tile--wide .media{aspect-ratio:auto;flex:1 1 auto;min-height:0}      /* as tall as the square tiles beside it */
@@ -344,11 +344,11 @@ html.study-open,html.study-open body{overflow:hidden}
 :root[data-theme="dark"] .sp-play{background:rgba(22,22,24,.72);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);color:#F6F5F2}
 :root[data-theme="dark"] .sp-play:hover{box-shadow:inset 0 0 0 1px rgba(255,255,255,.3)}
 @media (max-width:720px){ .sp-play{top:10px;right:10px;height:24px;padding:0 10px 0 8px;font-size:11.5px} }
-.media[data-rive-dg]{background:#0A0A0B}                              /* the artboard's own colour, so there is no seam */
+.media[data-rive-dg]{background:#0A0A0B}                              /* the artboard's own color, so there is no seam */
 .media[data-rive-dg] .dg-cv{position:absolute;inset:auto;display:block;opacity:0;transition:opacity .9s var(--ease);pointer-events:none}
 .media[data-rive-dg].is-ready .dg-cv{opacity:1}
 .media[data-rive-dg] .dg-hit{position:absolute;inset:0;z-index:1;touch-action:pan-y;-webkit-tap-highlight-color:transparent}
-/* its three controls: status (top left), sound (top centre), follow / avoid (bottom centre).
+/* its three controls: status (top left), sound (top center), follow / avoid (bottom center).
    Same glass as the Eye & Planet chip. */
 .dg-state,.dg-snd,.dg-seg{position:absolute;z-index:6;border-radius:999px;background:rgba(9,10,9,.62);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);
   font:500 12px/1 var(--ui);letter-spacing:-.005em;white-space:nowrap;color:var(--deep-ink);
@@ -804,7 +804,7 @@ html.study-open,html.study-open body{overflow:hidden}
               <span class="d">A check that opens into an inbox and folds back. The mark the <a href="smtp/">smtp.dev product film</a> ends on.</span></figcaption>
           </figure>
           <div class="tile" data-kind="live" data-hint="Drag it sideways">
-            <!-- the real Rive planet (rive/planet_icon.riv), alone and centred; loaded when the tile comes into view -->
+            <!-- the real Rive planet (rive/planet_icon.riv), alone and centered; loaded when the tile comes into view -->
             <div class="media dark" data-rive-ep role="img" aria-label="A planet icon. Move over it, drag it sideways to throw it.">
               <canvas class="ep-cv" data-icon="planet"></canvas>
               <div class="ep-hit"></div>
@@ -815,7 +815,7 @@ html.study-open,html.study-open body{overflow:hidden}
               <span class="d">An icon that orbits your pointer. Drag it sideways and let go. Icon design by Lucas Fields.</span></div>
           </div>
           <div class="tile" data-kind="live" data-hint="Press it">
-            <!-- the real Rive eye (rive/eye_icon.riv), alone and centred; loaded when the tile comes into view. -->
+            <!-- the real Rive eye (rive/eye_icon.riv), alone and centered; loaded when the tile comes into view. -->
             <div class="media dark" data-rive-ep role="img" aria-label="An eye icon. It watches your pointer; press it.">
               <canvas class="ep-cv" data-icon="eye"></canvas>
               <div class="ep-hit"></div>
@@ -2156,11 +2156,11 @@ const sphereLink = (() => {
    WebGL, JS stand-in if Rive can't start), and they rest while off screen or a study is open. */
 const RIVE_EP = {
   stateMachine: 'State Machine 1',
-  art: 500,                          // both artboards are 500 × 500, icon at the centre
+  art: 500,                          // both artboards are 500 × 500, icon at the center
   view: 375,                         // artboard units across each icon's square canvas (as in the lab page)
   icon: { w: .44, h: .34 },          // two icons in one tile: icon width (150 units) as a share of the tile, the smaller of w × width and h × height
-  one: { w: .56, h: .44 },           // one icon alone in its tile (Eye, Planet): the same, centred
-  at: { eye: .29, planet: .71 },     // two icons in one tile: icon centres, as a share of the tile's height
+  one: { w: .56, h: .44 },           // one icon alone in its tile (Eye, Planet): the same, centered
+  at: { eye: .29, planet: .71 },     // two icons in one tile: icon centers, as a share of the tile's height
   // values read from the icons' scripts: script units per artboard unit, and the hit radius
   spec: { eye: { scale: 150 / 354, hit: 221.25 }, planet: { scale: 150 / 350, hit: 250 } },
   boredAfter: 3500,                  // the eye's own rule: a still pointer is ignored after 3.5 s
@@ -2170,7 +2170,7 @@ const eyePlanet = $$('[data-rive-ep]').map(el => (() => {
   const icons = $$('.ep-cv', el).map(canvas => ({ canvas, kind: canvas.dataset.icon, r: null, ready: false, cx: 0, cy: 0, side: 0, zoom: 1 }));
   let fallback = null, ready = false, running = false, visible = false, guard = 0;
 
-  /* geometry: each icon gets a square canvas centred on it */
+  /* geometry: each icon gets a square canvas centered on it */
   function place() {
     const w = el.clientWidth, h = el.clientHeight;
     if (!w || !h || fallback) return;
@@ -2187,7 +2187,7 @@ const eyePlanet = $$('[data-rive-ep]').map(el => (() => {
       const px = Math.round(side * d);
       if (c.width !== px || c.height !== px) { c.width = px; c.height = px; }
       if (o.ready) {
-        const s = px * o.zoom;   // the artboard drawn larger than the canvas, centred
+        const s = px * o.zoom;   // the artboard drawn larger than the canvas, centered
         o.r.layout = new rive.Layout({ fit: rive.Fit.Contain, alignment: rive.Alignment.Center,
           minX: (px - s) / 2, minY: (px - s) / 2, maxX: (px + s) / 2, maxY: (px + s) / 2 });
         o.r._needsRedraw = true;
@@ -2384,7 +2384,7 @@ const eyePlanet = $$('[data-rive-ep]').map(el => (() => {
 const RIVE_DG = {
   stateMachine: 'State Machine 1',
   art: 1080,                                  // the artboard is 1080 × 1080
-  band: { x: 540, y: 484, w: 1020, h: 420 },  // what always stays in view: centre, width, height (artboard units)
+  band: { x: 540, y: 484, w: 1020, h: 420 },  // what always stays in view: center, width, height (artboard units)
   maxView: 712,                               // the tallest slice that still hides the corner readouts (they end at y 125 and start at y 1016)
   idle: 2000,                                 // the script's idleDelay: this long without a move, it walks on its own
   muteAfter: 5000,                            // cursor off the page this long → sound off
@@ -2402,7 +2402,7 @@ const digitigrade = (() => {
   let r = null, vm = null, ready = false, running = false, visible = false, fallback = null, guard = 0;
   let flee = false, sound = true;
 
-  /* geometry: the square canvas is centred on the band, scaled so the band fills the tile's width */
+  /* geometry: the square canvas is centered on the band, scaled so the band fills the tile's width */
   function place() {
     const w = el.clientWidth, h = el.clientHeight;
     if (!w || !h || fallback) return;

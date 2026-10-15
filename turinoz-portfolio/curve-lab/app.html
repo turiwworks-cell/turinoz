@@ -10253,7 +10253,7 @@ const t0=performance.now();
     const k = e.i + e.h;
     k > 0 && k < n && smoothKey(k, e.h ? "in" : "out");
   }
-  // After a whole segment changed (paste, preset, mirror) keep its own speeds and match its neighbours.
+  // After a whole segment changed (paste, preset, mirror) keep its own speeds and match its neighbors.
   function smoothSeg(i) {
     if (a.c.length < 2 || !a.smooth) return;
     i + 1 < a.c.length && smoothKey(i + 1, "in");
@@ -11945,7 +11945,7 @@ const t0=performance.now();
     return j;
   }
   // Shift+I: a key exactly halfway in time between two keys. The motion is unchanged.
-  // Two neighbouring selected keys pick the span; otherwise the active segment.
+  // Two neighboring selected keys pick the span; otherwise the active segment.
   function clMiddleSeg() {
     const sk = [...selectedKeys].sort((x, y) => x - y);
     return sk.length === 2 && sk[1] === sk[0] + 1 ? sk[0] : v(a.sel.seg | 0, 0, a.c.length - 1);
@@ -12342,7 +12342,7 @@ const t0=performance.now();
     P.style.setProperty("--cl-selected-color", P.style.getPropertyValue("--cl-" + line + "-selected"));
     P.style.setProperty("--cl-selected-edge", P.style.getPropertyValue("--cl-" + line + "-selected-edge"));
   }
-  // "auto" is the Curve Lab colour for the current theme: blue in light, orange in dark.
+  // "auto" is the Curve Lab color for the current theme: blue in light, orange in dark.
   function clUiColor() {
     const c = clAppearance.uiColor;
     return /^#[\da-f]{6}$/i.test(c) ? c.toLowerCase() : P.dataset.ws === "curve" && clTheme === "light" ? "#2c50ff" : "#ff9a4d";
@@ -14868,7 +14868,7 @@ const t0=performance.now();
     T.pathBg.style.display = show ? "" : "none";
     if (!show) return;
     let gap = c.gap;
-    // Zoomed far out, every other dot drops away so the grid never turns into a grey wash.
+    // Zoomed far out, every other dot drops away so the grid never turns into a gray wash.
     while (gap / scale < 7) gap *= 2;
     K(T.dotPat, { width: clN3(gap), height: clN3(gap), x: clN3(-gap / 2), y: clN3(-gap / 2) });
     K(T.dotDot, { cx: clN3(gap / 2), cy: clN3(gap / 2), r: clN3(c.size * scale) });
@@ -16245,7 +16245,7 @@ const t0=performance.now();
         ((L[2] = 0.667), (L[3] = 1), (Rr[0] = 0.333), (Rr[1] = 0));
         delete a.keys[k].brk;
       } else {
-        // auto: the handles line up with the neighbours on both sides, so the curve runs through the key smoothly
+        // auto: the handles line up with the neighbors on both sides, so the curve runs through the key smoothly
         const slope = (gr.vb - gl.va) / Math.max(1e-6, gr.ub - gl.ua);
         ((L[2] = 0.667), (Rr[0] = 0.333));
         L[3] = Math.abs(gl.dv) > 1e-9 ? J(v(1 - (slope * gl.du) / 3 / gl.dv, -Q, Q)) : 1;
@@ -16627,7 +16627,7 @@ const t0=performance.now();
     const saved = clWarp.saved;
     clSetWarp(!1, !0);
     saved && saved !== Ke() && (rt(saved), ee(), I(), U());
-    F("Warp cancelled");
+    F("Warp canceled");
   }
 
   function clWarpCells(dn, exactN) {
