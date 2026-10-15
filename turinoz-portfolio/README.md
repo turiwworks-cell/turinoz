@@ -166,11 +166,11 @@ python -m http.server 8000
 
 - The first tile opens on the real Storm composer from Sitemate's product, centred in the tile.
   Its prompt types itself, then Build presses itself (no cursor). The composer steps back with
-  the product's own ease (.45s cubic-bezier(.2,.8,.2,1)) and the Storm logo spins out of the
-  composer's header onto the board, growing from the blue badge into the system's own white
-  square. Storm's motion system draws itself around it and plays: six states feeding the icon.
-- Replay (top right, next to "Live in Sitemate") plays the whole way in again. Someone typing
-  their own prompt takes over: Build then waits for them.
+  the product's own ease (.45s cubic-bezier(.2,.8,.2,1)), the agent appears and spins once,
+  then Storm's motion system comes in and plays: six states feeding the icon.
+- When the system has played through once (to the icon's exit), the composer comes back and it
+  all plays again, on a loop. Replay (top right, next to "Live in Sitemate") starts it over at
+  any time. Someone typing their own prompt takes over: Build then waits for them.
 - The prompt it types is `PROMPT` in the "SITEMATE TILE" script at the end of
   `index.html`. The Lottie clips are the JSON block `#smClips` just above it.
 - The shipped transition clips end a hair off their loop's own pose, which read as a small

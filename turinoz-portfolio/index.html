@@ -404,10 +404,10 @@ html.study-open,html.study-open body{overflow:hidden}
    1. ui  — the real Storm "AI Templates" composer from Sitemate's product
             (markup and sizes copied from storm-agent-ui.html, classes su-*).
             The tile opens on it: the prompt types itself and Build presses
-            itself, then the Storm logo spins out of the composer onto the board.
+            itself, then the agent spins once and the system comes in.
    2. sys — the motion system, in the same family as the Storm motion system
-            page (classes sy-*). Replay brings the composer back and the
-            whole way in plays again.
+            page (classes sy-*). After one full run it hands back to the
+            composer and the whole thing plays again; Replay starts it over.
    Ease for every move here is the product's own: the conversation panel in
    the real UI rises with .45s cubic-bezier(.2,.8,.2,1).
    ========================================================================== */
@@ -570,8 +570,6 @@ html.study-open,html.study-open body{overflow:hidden}
   box-shadow:inset 0 0 0 1px var(--sy-ring),0 1px 2px rgba(20,32,44,.04),0 22px 44px -26px var(--sy-lift)}
 .sy-big{z-index:2}
 .st.is-ui .sy-big{visibility:hidden}
-/* the badge's blue, over the square while it flies out of the composer (an opacity fade, so it stays on the compositor) */
-.sy-tint{position:absolute;inset:0;border-radius:inherit;background:#0085E8;opacity:0;pointer-events:none}
 .sy-read{position:absolute;white-space:nowrap}
 .sy-read.l{text-align:right;font:500 10.5px/1.5 "JB Mono",ui-monospace,monospace;color:var(--sy-ink-3)}
 .sy-read.l b{display:block;color:var(--sy-ink-2);font-weight:500}
@@ -630,9 +628,9 @@ html.study-open,html.study-open body{overflow:hidden}
         <!-- 1. the main work, big: Sitemate, Curve Lab, smtp.dev, Scoreline -->
         <h2 class="tier-head"><span class="tier-t"><svg class="tier-ic" viewBox="0 0 12 12" aria-hidden="true"><path fill="currentColor" d="M6 .4C6.36 3.68 8.32 5.64 11.6 6 8.32 6.36 6.36 8.32 6 11.6 5.64 8.32 3.68 6.36.4 6 3.68 5.64 5.64 3.68 6 .4Z"/></svg>Selected work</span></h2>
         <div class="grid grid--main">
-          <!-- Sitemate: the real Storm composer types its prompt and presses Build → the Storm logo spins onto the board → Storm's motion system, playing. Replay plays it all again. Script: "SITEMATE TILE" at the end. -->
+          <!-- Sitemate: the real Storm composer types its prompt and presses Build → the agent spins once → Storm's motion system plays through once → back to the composer, on a loop. Replay starts it over. Script: "SITEMATE TILE" at the end. -->
           <div class="tile tile--storm" data-kind="study" id="stTile">
-            <div class="media st is-ui" id="st" role="group" aria-label="Storm's AI Templates panel builds Storm's motion system: six states feeding Sitemate's agent icon. Replay plays it again.">
+            <div class="media st is-ui" id="st" role="group" aria-label="Storm's AI Templates panel builds Storm's motion system: six states feeding Sitemate's agent icon. It plays on a loop; Replay starts it over.">
               <a class="st-live" href="https://sitemate.com/storm/" target="_blank" rel="noopener"><i></i>Live in Sitemate<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg></a>
 
               <div class="st-fit st-ui">
@@ -2815,11 +2813,12 @@ requestAnimationFrame(frame);
 /* ==========================================================================
    SITEMATE TILE
    It opens on the real Storm composer from Sitemate's product. The prompt
-   types itself, Build presses itself (no cursor), the composer steps back
-   (the product's own ease: .45s cubic-bezier(.2,.8,.2,1), the same move as
-   its conversation panel rising), and the Storm logo spins out of the
-   composer's header onto the board, where it becomes the system's own
-   square: six states feeding the icon, playing. Replay plays it all again.
+   types itself and Build presses itself (no cursor) → the composer steps
+   back (the product's own ease: .45s cubic-bezier(.2,.8,.2,1), the same move
+   as its conversation panel rising) → the agent appears and spins once →
+   the motion system: six states feeding the icon. When the system has played
+   through once, the composer comes back and it all plays again; Replay
+   starts it over at any time.
    Clips are the six shipped Lottie files in #smClips (24 fps, 100 × 100).
    Rules, as in the product: appear → cone ×2 → cone→cylinder → cylinder ×2
    → cylinder→cone → cone → exit (an exit always leaves from the cone).
@@ -2834,6 +2833,7 @@ const $$ = (s, el = media) => Array.from(el.querySelectorAll(s));
 const DATA = JSON.parse(node.textContent);
 const FPS = 24;
 const EASE = 'cubic-bezier(.2,.8,.2,1)', DUR = 450;
+const SPRING = 'cubic-bezier(.34,1.4,.64,1)';
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
 const PROMPT = 'SWMS for working at heights.';
@@ -2854,7 +2854,7 @@ for (const k in CL) CL[k].op = DATA[CL[k].file].op;
 const SEQ = [['appear', 1], ['cone', 2], ['c2y', 1], ['cyl', 2], ['y2c', 1], ['cone', 1], ['exit', 1]];
 const segs = []; let TOT = 0;
 SEQ.forEach(([id, n]) => { for (let r = 0; r < n; r++) { segs.push({ id, rep: r, of: n, a: TOT, b: TOT + CL[id].op }); TOT += CL[id].op; } });
-const CONE_AT = CL.appear.op;                     // after Build the logo is already there: the clock starts on the cone
+const INTRO = CL.appear.op + CL.cone.op;          // it appears, turns once, then the page changes
 /* The shipped transitions end a hair off their loop's own pose (the rings sit up to ~2% apart), so the
    icon on the board would hitch as each state hands over. Their last frames are drawn from the loop
    instead: [loop, from this frame of the transition, that frame of the loop]. The swap lands on the
@@ -2882,9 +2882,8 @@ class Pl {
 
 /* ---------- parts ---------- */
 const uiFit = $('.st-ui'), sysFit = $('.st-sysfit'), sys = $('#stSys'), bg = $('.sy-bg');
-const ta = $('#stTa'), build = $('#stBuild'), cnt = $('.su-cnt'), mirror = $('.su-mirror span'), dock = $('#stDock'), badge = $('.su-badge');
+const ta = $('#stTa'), build = $('#stBuild'), cnt = $('.su-cnt'), mirror = $('.su-mirror span'), dock = $('#stDock');
 const sqWrap = $('.sy-sqs'), svg = $('.sy-lines'), main = $('.sy-main'), big = $('.sy-big');
-const tint = main.appendChild(document.createElement('i')); tint.className = 'sy-tint';
 const readL = $('.sy-read.l'), readR = $('.sy-read.r'), think = $('.sy-think'), topBar = $('.sy-top'), replay = $('.sy-replay');
 
 const WHITE_CONE = white(DATA['cone-spin']);
@@ -2903,12 +2902,8 @@ ORDER.forEach(id => {
   const d = document.createElement('div'); d.className = 'lot'; d.style.cssText = 'inset:0;visibility:hidden';
   big.appendChild(d); mainP[id] = { d, p: new Pl(d, DATA[CL[id].file], true) };
 });
-/* the logo as it leaves the composer: white, like the badge it comes from; it fades to the board's blue on the way */
-const flyD = document.createElement('div'); flyD.className = 'lot'; flyD.style.cssText = 'inset:0;opacity:0';
-big.appendChild(flyD);
-const flyW = new Pl(flyD, WHITE_CONE);
-/* players are built when the tile first comes on screen */
-const queue = [...ORDER.map(id => mainP[id].p), flyW, ...ORDER.map(id => sq[id].p)];
+/* players are built when the tile first comes on screen: it opens playing */
+const queue = [...ORDER.map(id => mainP[id].p), ...ORDER.map(id => sq[id].p)];
 function loadPlayers() { while (queue.length) queue.shift().load(); }
 const retint = () => ORDER.forEach(id => { mainP[id].p.retint(); sq[id].p.retint(); });
 new MutationObserver(retint).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
@@ -2927,7 +2922,7 @@ function layout(cfg) {
   sysFit.style.setProperty('--dw', cfg.W + 'px'); sysFit.style.setProperty('--dh', cfg.H + 'px');
   sys.style.setProperty('--sq', cfg.sq + 'px'); sys.style.setProperty('--mn', cfg.mn + 'px');
   const rowW = ORDER.length * cfg.sq + (ORDER.length - 1) * cfg.gap, x0 = (cfg.W - rowW) / 2;
-  const mx = cfg.W / 2, my = cfg.mnY + cfg.mn / 2, bs = Math.round(cfg.mn * .29) * 2;   // even, so the icon sits on whole pixels
+  const mx = cfg.W / 2, my = cfg.mnY + cfg.mn / 2, bs = Math.round(cfg.mn * .58);
   Object.assign(main.style, { left: mx - cfg.mn / 2 + 'px', top: cfg.mnY + 'px' });
   Object.assign(big.style, { left: mx - bs / 2 + 'px', top: my - bs / 2 + 'px', width: bs + 'px', height: bs + 'px' });
   Object.assign(readL.style, { right: cfg.W - (mx - cfg.mn / 2 - cfg.readGap) + 'px', top: my - 15 + 'px' });
@@ -2974,15 +2969,14 @@ function fit() {
 const mainCenter = () => [media.clientWidth / 2, media.clientHeight / 2 + (lay.mnY + lay.mn / 2 - lay.H / 2) * s2];
 
 /* ---------- the composer ---------- */
-let state = 'ui', userTyped = false, typing = 0;
+let state = 'ui', userTyped = false, typing = 0, vis = false;
 const studyOpen = () => document.documentElement.classList.contains('study-open');
-let vis = false;
 // the story waits while the tile is off screen, behind a study, or in a hidden tab
 const seen = () => new Promise(r => { const t = () => vis && !studyOpen() && !document.hidden ? r() : setTimeout(t, 200); t(); });
 function setText(v) { if (ta.value !== v) ta.value = v; cnt.textContent = `${v.length} / 2000`; mirror.textContent = v; build.disabled = !v.trim(); }
 function cue() { if (state === 'ui' && ta.value.trim()) media.classList.add('is-cue'); }
-// each time the composer is up (on first sight, and after Replay) the prompt types itself in and Build presses itself;
-// someone typing their own prompt takes over, and Build waits for them
+// each time the composer is up (first sight, after a full run of the system, Replay) the prompt types itself in
+// and Build presses itself; someone typing their own prompt takes over, and Build waits for them
 async function typeIn() {
   const me = ++typing;
   if (state !== 'ui') return;
@@ -2995,13 +2989,13 @@ async function typeIn() {
     if (me !== typing || state !== 'ui' || userTyped) break;
     setText(PROMPT.slice(0, i));
     const ch = PROMPT[i - 1];
-    await sleep(ch === ',' ? 260 : ch === ' ' ? 70 + Math.random() * 60 : 34 + Math.random() * 46);
+    await sleep(ch === ' ' ? 40 + Math.random() * 30 : 18 + Math.random() * 22);
   }
   if (me !== typing) return;
   media.classList.remove('is-typing');
   if (state !== 'ui') return;
   if (userTyped) { cue(); return; }
-  await sleep(480);
+  await sleep(420);
   await seen();
   if (me !== typing || state !== 'ui' || userTyped) return;
   build.classList.add('is-press');
@@ -3019,8 +3013,8 @@ build.addEventListener('click', go);
 replay.addEventListener('click', toUI);
 setText('');
 
-/* ---------- Build → the composer steps back → the logo spins onto the board → the system ---------- */
-let clock = 0, revealed = false, started = false, raf = 0, last = 0, startAt = 0, anims = [], flight = [];
+/* ---------- Build → step back → one turn → the system ---------- */
+let clock = 0, revealed = false, started = false, leaving = false, raf = 0, last = 0, startAt = 0, anims = [];
 const keep = a => (anims.push(a), a);
 function setInert() { uiFit.inert = state !== 'ui'; sysFit.inert = topBar.inert = state !== 'sys' || !revealed; }
 function go() {
@@ -3031,62 +3025,33 @@ function go() {
   media.classList.remove('is-cue', 'is-typing', 'is-ui'); media.classList.add('is-intro');
   build.classList.remove('is-press');
   loadPlayers();
-  clock = CONE_AT / FPS; revealed = false; lastSeg = -1; lastPid = '';
-  tick(CONE_AT);
-  if (reduce) { reveal(); return; }
+  clock = 0; revealed = false; lastSeg = -1; lastPid = '';
+  if (reduce) { clock = (INTRO + 2) / FPS; reveal(); tick(Math.floor(clock * FPS)); return; }
   const s = parseFloat(uiFit.style.getPropertyValue('--s')) || 1;
   keep(uiFit.animate([{ transform: `scale(${s})`, opacity: 1 }, { transform: `scale(${s * .88})`, opacity: 0 }],
     { duration: DUR, easing: EASE, fill: 'forwards' }));
-  keep(think.animate([{ opacity: 0, translate: '0 6px' }, { opacity: 1, translate: '0 0' }], { duration: DUR, delay: 420, easing: EASE, fill: 'forwards' }));
-  fly();
-  startAt = performance.now();
+  keep(think.animate([{ opacity: 0, translate: '0 6px' }, { opacity: 1, translate: '0 0' }], { duration: DUR, delay: 320, easing: EASE, fill: 'forwards' }));
+  startAt = performance.now() + 300;
   run();
 }
-/* The Storm logo leaves the composer's header and lands on the board as the system's own square: the real square
-   and icon (.sy-main, .sy-big) start on top of the badge, at its size, and grow into place while the icon spins.
-   Blue square and white icon on the way out (.sy-tint and the white player fade away), the board's own card and
-   icon on arrival. */
-const FLY = 1050, FLY_EASE = 'cubic-bezier(.62,0,.18,1)';
-function fly() {
-  const mr = media.getBoundingClientRect(), br = badge.getBoundingClientRect();
-  const w = media.clientWidth, h = media.clientHeight;
-  // the badge's centre and size on the board (the board is centred in the tile and scaled by s2)
-  const bx = lay.W / 2 + (br.left + br.width / 2 - mr.left - w / 2) / s2;
-  const by = lay.H / 2 + (br.top + br.height / 2 - mr.top - h / 2) / s2;
-  const bw = br.width / s2, u = bw / 20;   // the badge is 20 px in the product: its icon is 16 px, 0.3 px right and 1.2 px down of centre
-  const dx = bx - lay.W / 2, dy = by - (lay.mnY + lay.mn / 2), bs = big.offsetWidth || lay.mn * .58;
-  badge.style.visibility = 'hidden';
-  flight = [
-    // only transforms and opacity move here, so the flight stays smooth while the rest of the page is still loading
-    main.animate([{ opacity: 1, transform: `translate(${dx}px,${dy}px) scale(${bw / lay.mn})` }, { opacity: 1, transform: 'none' }],
-      { duration: FLY, easing: FLY_EASE, fill: 'forwards' }),
-    tint.animate([{ opacity: 1 }, { opacity: 1, offset: .36 }, { opacity: 0, offset: .8 }, { opacity: 0 }], { duration: FLY, easing: FLY_EASE, fill: 'forwards' }),
-    big.animate([{ transform: `translate(${dx + .3 * u}px,${dy + 1.2 * u}px) scale(${16 * u / bs})` }, { transform: 'none' }],
-      { duration: FLY, easing: FLY_EASE, fill: 'forwards' }),
-    flyD.animate([{ opacity: 1 }, { opacity: 1, offset: .46 }, { opacity: isDark() ? 1 : 0, offset: .86 }, { opacity: isDark() ? 1 : 0 }],   // at night the board's icon is white too
-      { duration: FLY, easing: FLY_EASE, fill: 'forwards' }),
-  ];
-  flight[0].finished.then(() => { if (state === 'intro') reveal(); }, () => {});
-}
-function endFlight() { flight.forEach(a => a.cancel()); flight = []; badge.style.visibility = ''; }
 function reveal() {
   const fromIntro = state === 'intro';
-  endFlight();                             // the square and icon are where the board draws them, in its own colours
   revealed = true; lastSeg = -1; state = 'sys'; setInert();
   media.classList.remove('is-intro'); media.classList.add('is-sys');
-  if (reduce) { tick(Math.floor(clock * FPS)); return; }
+  if (reduce) return;
   const [cx, cy] = mainCenter(), w = media.clientWidth, h = media.clientHeight;
   const R = Math.hypot(Math.max(cx, w - cx), Math.max(cy, h - cy)) + 2;
-  keep(bg.animate([{ clipPath: `circle(${(lay.mn * s2 * .5).toFixed(1)}px at ${cx}px ${cy}px)` }, { clipPath: `circle(${R.toFixed(1)}px at ${cx}px ${cy}px)` }],
+  keep(bg.animate([{ clipPath: `circle(0px at ${cx}px ${cy}px)` }, { clipPath: `circle(${R.toFixed(1)}px at ${cx}px ${cy}px)` }],
     { duration: 760, easing: EASE }));
   if (fromIntro) keep(think.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, easing: EASE, fill: 'forwards' }));
-  keep(topBar.animate([{ opacity: 0, translate: '0 -6px' }, { opacity: 1, translate: '0 0' }], { duration: DUR, delay: 300, easing: EASE, fill: 'backwards' }));
+  keep(main.animate([{ opacity: 0, scale: '.86' }, { opacity: 1, scale: '1' }], { duration: 620, delay: 90, easing: SPRING, fill: 'backwards' }));
+  keep(topBar.animate([{ opacity: 0, translate: '0 -6px' }, { opacity: 1, translate: '0 0' }], { duration: DUR, delay: 380, easing: EASE, fill: 'backwards' }));
   ORDER.forEach((id, i) => keep(sq[id].el.animate([{ opacity: 0, translate: '0 10px' }, { opacity: 1, translate: '0 0' }],
-    { duration: 520, delay: 160 + Math.abs(i - 2.5) * 70, easing: EASE, fill: 'backwards' })));
-  keep(svg.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 10, delay: 300, fill: 'backwards' }));
+    { duration: 520, delay: 240 + Math.abs(i - 2.5) * 70, easing: EASE, fill: 'backwards' })));
+  keep(svg.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 10, delay: 380, fill: 'backwards' }));
   ORDER.forEach((id, i) => { const e = edges[id]; e.base.style.strokeDasharray = e.L;
-    keep(e.base.animate([{ strokeDashoffset: e.L }, { strokeDashoffset: 0 }], { duration: 640, delay: 320 + Math.abs(i - 2.5) * 60, easing: 'cubic-bezier(.65,0,.35,1)', fill: 'backwards' })); });
-  [readL, readR].forEach(el => keep(el.animate([{ opacity: 0, translate: '0 6px' }, { opacity: 1, translate: '0 0' }], { duration: DUR, delay: 520, easing: EASE, fill: 'backwards' })));
+    keep(e.base.animate([{ strokeDashoffset: e.L }, { strokeDashoffset: 0 }], { duration: 640, delay: 400 + Math.abs(i - 2.5) * 60, easing: 'cubic-bezier(.65,0,.35,1)', fill: 'backwards' })); });
+  [readL, readR].forEach(el => keep(el.animate([{ opacity: 0, translate: '0 6px' }, { opacity: 1, translate: '0 0' }], { duration: DUR, delay: 600, easing: EASE, fill: 'backwards' })));
 }
 // the tile opens on the composer, the first time it comes on screen
 function start() {
@@ -3096,15 +3061,17 @@ function start() {
   state = 'ui'; media.classList.add('is-ui'); setInert();
   setTimeout(typeIn, reduce ? 0 : 700);
 }
-function toUI() {
-  if (state === 'ui' || !started) return;
-  const refocus = media.contains(document.activeElement);     // Replay had the focus: it goes to the composer
+// back to the composer: from Replay, or by itself once the system has played through
+function toUI(e) {
+  if (state === 'ui' || !started || leaving) return;
+  leaving = true;
+  const refocus = !!e && media.contains(document.activeElement);     // Replay had the focus: it goes to the composer
   const fade = reduce ? null : [bg, sysFit].map(el => el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: EASE, fill: 'forwards' }));
   const back = () => {
-    anims.forEach(a => a.cancel()); anims = []; endFlight();
+    anims.forEach(a => a.cancel()); anims = [];
     if (fade) fade.forEach(a => a.cancel());
     cancelAnimationFrame(raf); raf = 0;
-    state = 'ui'; revealed = false; lastSeg = -1; lastPid = ''; setInert();
+    state = 'ui'; revealed = false; leaving = false; lastSeg = -1; lastPid = ''; setInert();
     media.classList.remove('is-sys', 'is-intro'); media.classList.add('is-ui');
     for (const id in mainP) mainP[id].d.style.visibility = 'hidden';
     for (const id in sq) { sq[id].el.classList.remove('on'); sq[id].p.set(CL[id].rest); }
@@ -3137,7 +3104,6 @@ function tick(gf) {
   const pid = tail ? t[0] : sg.id, pf = tail ? t[2] + lf - t[1] : lf;
   if (pid !== lastPid) { lastPid = pid; for (const id in mainP) mainP[id].d.style.visibility = id === pid ? 'visible' : 'hidden'; }
   mainP[pid].p.set(pf);
-  if (state === 'intro') flyW.set(pf);
   if (revealed) {
     sq[sg.id].p.set(lf);
     const e = edges[sg.id], pr = Math.min(1, (lf + 1) / c.op);
@@ -3148,15 +3114,18 @@ function tick(gf) {
 }
 function frame(now) {
   raf = 0;
-  if (!vis || state === 'ui' || studyOpen()) return;
+  if (!vis || state === 'ui' || leaving || studyOpen()) return;
   const dt = Math.min(.1, (now - last) / 1000); last = now;
   if (now >= startAt) {
     clock += dt;
-    tick(Math.floor(clock * FPS));
+    const gf = Math.floor(clock * FPS);
+    if (gf >= TOT) { toUI(); return; }   // one full run, through the exit: the composer comes back and it all plays again
+    if (!revealed && gf >= INTRO) reveal();
+    tick(gf);
   }
   raf = requestAnimationFrame(frame);
 }
-function run() { if (!raf && started && vis && state !== 'ui' && !reduce) { last = performance.now(); raf = requestAnimationFrame(frame); } }
+function run() { if (!raf && started && vis && state !== 'ui' && !leaving && !reduce) { last = performance.now(); raf = requestAnimationFrame(frame); } }
 new MutationObserver(run).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 
 /* ---------- start when the tile is on screen ---------- */
