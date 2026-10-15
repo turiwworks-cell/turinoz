@@ -241,7 +241,13 @@ function fit() {
 let at = -1;                                         // -1 = the title
 function place(now) {
   let y = 0;
-  if (at >= 0) { const el = stops[at]; y = Math.max(0, off(el) + el.offsetHeight / 2 - H / 2); }
+  if (at > 0) { const el = stops[at]; y = Math.max(0, off(el) + el.offsetHeight / 2 - H / 2); }
+  else if (at === 0) {
+    // the first stop stays under the title while it fits on the first screen, so the title is never cut in half
+    const el = stops[0], last = el.lastElementChild;
+    y = Math.max(0, off(last) + last.offsetHeight + 56 - H);
+    if (y > 0) y = Math.max(0, off(el) + el.offsetHeight / 2 - H / 2);
+  }
   if (now) { run.style.transition = 'none'; run.style.transform = `translate3d(0,${-y}px,0)`; void run.offsetWidth; run.style.transition = ''; }
   else run.style.transform = `translate3d(0,${-y}px,0)`;
 }
@@ -259,9 +265,21 @@ function setStop(k) {
 const D = { app: null, shown: false, run: 0 };
 const BASE = new URL('app/', location.href).pathname.replace(/\/$/, '');
 window.scorelineReviewHost = {
-  attach(f) { D.app = f; showApp(); try { if (asleep()) f.pause(); } catch (_) {} wake(); },
+  attach(f) { D.app = f; calm(); showApp(); try { if (asleep()) f.pause(); } catch (_) {} wake(); },
   detach(f) { if (D.app === f) D.app = null; },
 };
+// the app moves focus to each new screen's title. Here that would take the keyboard from the page around
+// the tile (the arrow keys and space would stop scrolling it), so inside the app nothing takes focus
+function calm() {
+  try {
+    const w = frame.contentWindow;
+    if (!w || w.__tileCalm) return;
+    w.__tileCalm = true;
+    const no = function () {};
+    w.HTMLElement.prototype.focus = no; w.SVGElement.prototype.focus = no;
+  } catch (_) {}
+}
+frame.addEventListener('load', calm);
 const appDoc = () => { try { return frame.contentDocument; } catch (_) { return null; } };
 const appRoute = () => { try { const l = frame.contentWindow.location; return (l.pathname.startsWith(BASE) ? l.pathname.slice(BASE.length) : l.pathname) + l.search; } catch (_) { return '/'; } };
 // the poster gives way once the app's first screen has landed and its entry animations have run
@@ -493,7 +511,7 @@ const STOPS = {
 };
 
 /* ---------- the loop: the title, then every stop in turn, then again from the title ---------- */
-let k = -1, looping = false;
+let k = -1, laps = 0, looping = false;
 async function loop() {
   if (looping) return; looping = true;
   try {
@@ -502,6 +520,9 @@ async function loop() {
       try {
         if (k < 0) {                                 // the title, standing still, with the phone on Live
           setStop(-1); hideCursor(); navigate('/');
+          // every lap plays the same evening: the goals of the last lap don't stay on the scoreboard,
+          // and the matches never run out of time
+          if (laps++) { try { D.app.restart(); } catch (_) {} }
           await pause(tok, 2000);
           k = 0; setStop(0);
           await pause(tok, reduce() ? 300 : 1300);
@@ -518,8 +539,11 @@ async function loop() {
         }
       } catch (e) {
         stops.forEach(s => s.classList.remove('playing')); hideCursor();
-        if (e !== CANCEL) { console.warn(e); await new Promise(r => setTimeout(r, 1500)); }
-        else break;
+        if (e === CANCEL && !mine(tok)) break;      // asleep, or a newer run: it picks up again on waking
+        // the stop couldn't run (a screen didn't come, or what it taps isn't there): from the title again
+        if (e !== CANCEL) console.warn(e);
+        run.classList.add('fade'); await new Promise(r => setTimeout(r, 750));
+        k = -1; setStop(-1); place(true); run.classList.remove('fade');
       }
     }
   } finally { looping = false; }
