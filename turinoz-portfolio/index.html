@@ -316,21 +316,14 @@ html.study-open,html.study-open body{overflow:hidden}
 .sp-play:focus-visible{outline:2px solid var(--select);outline-offset:2px}
 .sp-play svg{width:11px;height:11px;flex:none}
 .sp-play .sp-watch,.sp-play[aria-pressed="true"] .sp-go{display:none}
-/* ---------- Scoreline tile: the real app (scoreline/app/), two columns wide, in the Live score concept's place ----------
-   The app is drawn at a fixed size and scaled to the frame (the script sets --sl-w, --sl-h and --sl-k), so the
-   frame shows two panes when wide and the phone when narrow. The poster stays until the app has painted. */
-.media--sl{background:#000}
-.media--sl .sl-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:0 0;transition:opacity .7s var(--ease);z-index:1}
-.media--sl.is-ready .sl-poster{opacity:0}
-.media--sl iframe{position:absolute;left:0;top:0;width:var(--sl-w,920px);height:var(--sl-h,555px);border:0;transform:scale(var(--sl-k,1));transform-origin:0 0;pointer-events:none;background:#000;color-scheme:dark}
-.sl-cover{position:absolute;inset:0;z-index:4;border-radius:inherit}
-.sl-cover:focus-visible{outline:2px solid var(--select);outline-offset:-4px}
-.sl-chip{position:absolute;z-index:6;left:14px;top:14px;display:inline-flex;align-items:center;gap:7px;height:26px;padding:0 10px 0 9px;border-radius:999px;
-  font:500 12px/1 var(--ui);letter-spacing:-.005em;white-space:nowrap;color:#F3F2EF;pointer-events:none;
-  background:rgba(9,10,9,.66);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-.sl-chip i{width:7px;height:7px;border-radius:50%;flex:none;background:#34E39A;box-shadow:0 0 0 3px rgba(52,227,154,.22)}
-.sl-chip b{font:460 11px/1 var(--mono);color:#85847F;margin-left:1px}
-.tile--sl:hover .cta svg{transform:translateX(2px)}
+/* ---------- Scoreline tile: the case study's tour, playing on its own (scoreline/tile.html) ----------
+   The page inside shows the stops beside the phone (the real app), which plays each one, and uses the
+   case study's own ground, light or dark like this page. A narrow frame gets the phone with one stop above it. */
+.media--tour{background:#F4F3EF}
+.media--tour iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;pointer-events:none;background:transparent;color-scheme:normal}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .media--tour{background:#000} }
+:root[data-theme="dark"] .media--tour{background:#000}
+.tile--sl:hover .cta svg,.tile--sl:focus-visible .cta svg{transform:translateX(2px)}
 @media (max-width:720px){ .tile.tile--sl[data-kind] .media{aspect-ratio:4/5} }
 .sp-play[aria-pressed="true"] .sp-watch{display:inline-flex;align-items:center;gap:6px}
 .sp-play .sp-go{display:inline-flex;align-items:center;gap:6px}
@@ -740,23 +733,19 @@ html.study-open,html.study-open body{overflow:hidden}
               <span class="cta cta--solid">View case study<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6h8M6.8 2.8 10 6 6.8 9.2"/></svg></span>
               <span class="d">From the pain of testing email to four calm steps, in 53 seconds. Concept, design and animation by me.</span></div>
           </a>
-          <!-- Scoreline: the real app (scoreline/app/, its own demo evening) in place of the Live score concept tile.
-               Loaded when the tile comes near the screen, drawn at a fixed size and scaled to the frame: two panes
-               on a wide tile, the phone on a narrow one. It takes no pointer; the whole frame opens the case study
-               (scoreline/). A goal, a red card and another goal play once each while it's on screen.
-               It sleeps (the demo pauses) off screen, behind a study, or in a hidden tab. Script: "Scoreline tile".
+          <!-- Scoreline: the case study's "A quick tour" section, playing on its own (scoreline/tile.html): the stops
+               come by one at a time and the phone beside them, the real app, plays each one with Turinoz's cursor,
+               ending on a goal elsewhere and a goal in your match. Not interactive; the whole tile opens the case
+               study (scoreline/). It sleeps off screen, behind a study, or in a hidden tab. Light or dark like this page.
                The Live score concept tile is parked below, and its study is still in the study layer (#live-score). -->
-          <div class="tile tile--sl" data-kind="study" id="slTile">
-            <div class="media media--sl">
-              <img class="sl-poster" src="scoreline/assets/tile.webp" alt="" width="1380" height="833" loading="lazy" decoding="async">
-              <iframe data-src="scoreline/app/" title="Scoreline, the real app running its demo evening" tabindex="-1" aria-hidden="true"></iframe>
-              <a class="sl-cover" href="scoreline/" aria-label="Scoreline: view the case study"></a>
-              <span class="sl-chip" aria-hidden="true"><i></i><span>Live demo</span><b>the real app</b></span>
+          <a class="tile tile--sl" data-kind="study" href="scoreline/" aria-label="Scoreline: view the case study">
+            <div class="media media--tour">
+              <iframe src="scoreline/tile.html" title="The Scoreline case study, its tour playing on the real app" loading="lazy" tabindex="-1" aria-hidden="true"></iframe>
             </div>
-            <div class="cap"><a class="t" href="scoreline/">Scoreline</a>
-              <a class="cta cta--solid" href="scoreline/">View case study<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6h8M6.8 2.8 10 6 6.8 9.2"/></svg></a>
+            <div class="cap"><span class="t">Scoreline</span>
+              <span class="cta cta--solid">View case study<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6h8M6.8 2.8 10 6 6.8 9.2"/></svg></span>
               <span class="d">A live football app. Design, motion, Rive and every decision by me; the code by AI, over hundreds of rounds. That’s the real demo running.</span></div>
-          </div>
+          </a>
         </div>
 
         <!-- 2. the experiments, smaller: live pieces and loops -->
@@ -2718,52 +2707,6 @@ const digitigrade = (() => {
   else narrow(media.clientWidth);
 })();
 
-/* ================= Scoreline tile =================
-   The real app (scoreline/app/) runs its demo evening in the tile. It loads when the tile nears the
-   screen, is drawn at a fixed size and scaled to the frame (two panes when the frame is wide, the
-   phone when it's narrow), and takes no pointer: the frame opens the case study. Through the app's
-   own review bridge (same origin) a goal, a red card and another goal play once each while the
-   tile is on screen, and the evening pauses off screen, behind a study, or in a hidden tab. */
-(() => {
-  const media = $('#slTile .media--sl');
-  if (!media) return;
-  const frame = $('iframe', media);
-  let app = null, seen = false, visible = false, started = false, timer = 0, step = 0;
-  const MOMENTS = [[6000, 'goal'], [26000, 'red'], [30000, 'goal']];    // ms after the previous one, while on screen
-  window.scorelineReviewHost = {
-    attach(f) { app = f; setTimeout(() => media.classList.add('is-ready'), 900); sync(); },
-    detach(f) { if (app === f) app = null; },
-  };
-  const fit = () => {
-    const w = media.clientWidth, h = media.clientHeight;
-    if (!w || !h) return;
-    // wide: two panes, drawn at least 540 tall so the live cards keep their minutes; narrow: the phone
-    const L = w < 520 ? 390 : Math.max(820, w, Math.round(540 * w / h)), H = L * h / w;
-    media.style.setProperty('--sl-w', L + 'px'); media.style.setProperty('--sl-h', H.toFixed(1) + 'px');
-    media.style.setProperty('--sl-k', (w / L).toFixed(5));
-  };
-  const awake = () => visible && !document.hidden && !document.documentElement.classList.contains('study-open');
-  const next = () => {
-    clearTimeout(timer);
-    if (!app || step >= MOMENTS.length || !awake()) return;
-    timer = setTimeout(() => { if (!awake() || !app) return; app.scene(MOMENTS[step][1]).catch(() => {}); step++; next(); }, MOMENTS[step][0]);
-  };
-  function sync() {
-    if (!app) return;
-    try { const st = app.state(); if (awake() && st.paused) app.resume(); else if (!awake() && !st.paused) app.pause(); } catch (_) {}
-    next();
-  }
-  fit();
-  if ('ResizeObserver' in window) new ResizeObserver(fit).observe(media);
-  new IntersectionObserver(es => {
-    visible = es[0].isIntersecting;
-    if (visible && !started) { started = true; frame.src = frame.dataset.src; }
-    sync();
-  }, { rootMargin: '200px 0px' }).observe(media);
-  document.addEventListener('visibilitychange', sync);
-  new MutationObserver(sync).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-})();
-
 /* ================= studies ================= */
 const STUDIES = new Set(['curve-lab', 'spectra', 'live-score']);
 const layer = $('#studyLayer'), backdrop = $('#studyBackdrop'), page = $('#page');
@@ -2883,7 +2826,7 @@ requestAnimationFrame(frame);
     const next = now() === 'dark' ? 'light' : 'dark';
     root.dataset.theme = next;
     try { localStorage.setItem('tz-theme', next); } catch (_) {}
-    document.querySelectorAll('#clTile iframe, #spTile iframe, .media--beats iframe').forEach(f => { try { f.contentWindow.postMessage({ tzTheme: next }, '*'); } catch (_) {} });
+    document.querySelectorAll('#clTile iframe, #spTile iframe, .media--beats iframe, .media--tour iframe').forEach(f => { try { f.contentWindow.postMessage({ tzTheme: next }, '*'); } catch (_) {} });
     show();
   });
   mq.addEventListener('change', show);
