@@ -163,7 +163,7 @@
      ========================================================================== */
   const APP = 'app/';
   const dock = $('#dock'), screenEl = $('#screen'), frame = $('#app'), veil = $('#veil');
-  const routeEl = $('#dockRoute'), noteEl = $('#dockNote'), backdrop = $('#dockBackdrop'), demoPill = $('#demoPill');
+  const routeEl = $('#dockRoute'), backdrop = $('#dockBackdrop'), demoPill = $('#demoPill');
   const D = { app: null, started: false, shown: false, allow: false, open: false, control: false, want: null, token: 0, lastRoute: '', base: '', moment: false, run: 0, retour: null, loud: null };
   D.base = new URL(APP, location.href).pathname.replace(/\/$/, '');      // e.g. /scoreline/app
 
@@ -187,7 +187,6 @@
     if (name === D.lastRoute) return;
     D.lastRoute = name; routeEl.textContent = name;
     routeEl.classList.remove('swap'); void routeEl.offsetWidth; routeEl.classList.add('swap');
-    $('#dockFull').href = APP + r.replace(/^\//, '');
   }
   function onAttach() {
     showApp();
@@ -299,14 +298,13 @@
     if (D.retour) D.retour();
   }
   veil.addEventListener('click', takeControl);
-  $$('[data-take]').forEach(b => b.addEventListener('click', takeControl));
   $('#dockGive').addEventListener('click', giveBack);
   let leaveT = 0;
   dock.addEventListener('pointerleave', e => { if (D.control && e.pointerType === 'mouse') leaveT = setTimeout(giveBack, 2600); });
   dock.addEventListener('pointerenter', () => clearTimeout(leaveT));
   frame.style.pointerEvents = 'auto';
-  // without control the frame takes nothing: the veil sits over it
-  const note = t => { noteEl.textContent = t; };
+  // without control the frame takes nothing: the veil sits over it. What the phone does is said to screen readers only
+  const note = t => say(t);
 
   /* the controls: the app's own calls (the same ones its review page makes) */
   async function scene(kind) {
@@ -364,20 +362,20 @@
      ========================================================================== */
   const statement = $('#statement');
   if (statement) {
-    const wrapWords = (node, hl) => {
+    const wrapWords = node => {
       [...node.childNodes].forEach(n => {
         if (n.nodeType === 3) {
           const frag = document.createDocumentFragment();
           n.textContent.split(/(\s+)/).forEach(part => {
             if (!part) return;
             if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
-            const s = document.createElement('span'); s.className = 'w' + (hl ? ' hl' : ''); s.textContent = part; frag.appendChild(s);
+            const s = document.createElement('span'); s.className = 'w'; s.textContent = part; frag.appendChild(s);
           });
           n.replaceWith(frag);
-        } else if (n.nodeType === 1) { const isHl = n.classList.contains('hl'); if (isHl) n.classList.remove('hl'); wrapWords(n, hl || isHl); }
+        } else if (n.nodeType === 1) wrapWords(n);
       });
     };
-    wrapWords(statement, false);
+    wrapWords(statement);
     const words = $$('.w', statement);
     let lit = -1;
     const light = () => {
@@ -388,14 +386,6 @@
       words.forEach((w, i) => w.classList.toggle('lit', i < n));
     };
     scrollers.push(light); light();
-  }
-  // the round: four steps lighting in turn while the loop is on screen
-  const loopEl = $('#loop');
-  if (loopEl) {
-    const steps = $$('.step', loopEl); let k = 0, t = 0, on = false;
-    const next = () => { if (!on) return; if (!paused() && !reduce()) { steps.forEach((s, i) => s.classList.toggle('on', i === k)); k = (k + 1) % steps.length; } t = setTimeout(next, 1500); };
-    onScreen(loopEl, v => { on = v; clearTimeout(t); if (v) next(); });
-    if (reduce()) steps.forEach(s => s.classList.add('on'));
   }
 
   /* ==========================================================================
@@ -528,12 +518,9 @@
       await pause(tok, 1700); await tap(tok, b);
       await pause(tok, 1100);
     },
-    // the card of the player you follow
+    // the card of the player you follow, at the top of the list: nothing to point at
     async follow(tok) {
       const s = await reach(tok, '/', 'list'); await liveOn(tok); await glide(tok, s, 0, 500);
-      await pause(tok, 400);
-      await moveTo(tok, EL.card, 900);
-      await pause(tok, 1600);
     },
     // into the match: Facts, then down into Events
     async match(tok) {
@@ -743,12 +730,49 @@
   /* ==========================================================================
      04 · SYSTEM
      ========================================================================== */
-  const wght = $('#wght'), wOut = $('#wghtOut'), wSample = $('#wghtSample');
-  const W_NAMES = { 100: 'Thin', 200: 'ExtraLight', 300: 'Light', 400: 'Regular', 500: 'Medium', 600: 'SemiBold', 700: 'Bold', 800: 'ExtraBold', 900: 'Black' };
-  wght && wght.addEventListener('input', () => {
-    const v = +wght.value; wSample.style.fontWeight = v;
-    const near = Math.round(v / 100) * 100; wOut.textContent = v + ' · ' + (Math.abs(v - near) < 15 ? W_NAMES[near] : '');
-  });
+  /* the app's icons: right-click (or long-press) one and its SVG is on the clipboard, standalone: the app's
+     stroke widths, its colors as values, and the clip or gradient it needs carried inside */
+  const iconsEl = $('#icons'), icoTip = $('#icoTip');
+  if (iconsEl) {
+    // a touch screen has no right-click (and iOS gives a long-press no menu): there a tap copies
+    const touch = matchMedia('(hover: none)').matches;
+    if (touch) icoTip.textContent = 'Tap an icon to copy its SVG';
+    const TIP = icoTip.textContent;
+    let tipT = 0;
+    const svgOf = b => {
+      const svg = $('svg', b).cloneNode(true);
+      svg.removeAttribute('aria-hidden'); svg.removeAttribute('style');
+      $$('[style*="--icon-sw"]', svg).forEach(el => { el.setAttribute('stroke-width', el.style.strokeWidth.match(/([\d.]+)\)?$/)[1]); el.removeAttribute('style'); });
+      const used = id => svg.innerHTML.includes(`url(#${id})`) && $('#' + id).cloneNode(true);
+      const defs = ['slDisc', 'slFollow'].map(used).filter(Boolean);
+      if (defs.length) { const d = document.createElementNS(svg.namespaceURI, 'defs'); defs.forEach(x => d.appendChild(x)); svg.prepend(d); }
+      // one element a line, indented
+      let depth = 0;
+      return new XMLSerializer().serializeToString(svg).replace(/>\s*</g, '>\n<').split('\n').map(l => {
+        if (l.startsWith('</')) depth--;
+        const line = '  '.repeat(Math.max(0, depth)) + l;
+        if (!l.startsWith('</') && !l.endsWith('/>') && !/<\/[\w:]+>$/.test(l)) depth++;
+        return line;
+      }).join('\n');
+    };
+    const copy = async text => {
+      try { await navigator.clipboard.writeText(text); return true; } catch (_) {}
+      const t = document.createElement('textarea'); t.value = text; t.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(t); t.select();
+      let ok = false; try { ok = document.execCommand('copy'); } catch (_) {} t.remove(); return ok;
+    };
+    const told = (b, ok) => {
+      const name = b.dataset.cursor;
+      $$('.ico.copied', iconsEl).forEach(x => x.classList.remove('copied'));
+      b.classList.toggle('copied', ok);
+      icoTip.textContent = ok ? `${name} copied as SVG` : 'Copying didn’t work here'; icoTip.classList.toggle('ok', ok); say(icoTip.textContent);
+      clearTimeout(tipT); tipT = setTimeout(() => { icoTip.textContent = TIP; icoTip.classList.remove('ok'); b.classList.remove('copied'); }, 1800);
+    };
+    $$('.ico', iconsEl).forEach(b => {
+      b.addEventListener('contextmenu', async e => { e.preventDefault(); told(b, await copy(svgOf(b))); });
+      // the keyboard's way in: Shift+F10 and the menu key are a context menu too; Enter copies as well
+      b.addEventListener('click', e => { if (e.detail === 0 || touch) b.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true })); });
+    });
+  }
   // the spectrum cards tick on, a minute at a time, like the live list
   const specs = $$('#specs .spec');
   if (specs.length) {
@@ -819,8 +843,7 @@
       x.strokeStyle = 'rgba(243,242,239,.18)'; x.lineWidth = 1 * d; x.beginPath(); x.moveTo(X(t), Y(0)); x.lineTo(X(t), Y(y)); x.stroke();
     }
   }
-  const curveCards = $$('.cv').map(el => ({ el, v: parseV(el.dataset.v), dur: +el.dataset.dur || 700, canvas: $('canvas', el), dot: $('.cv-track i', el), ghost: $('.cv-track u', el), track: $('.cv-track', el), on: false, t0: 0, drawn: 0 }));
-  const defaultF = bezier(...DEFAULT);
+  const curveCards = $$('.cv').map(el => ({ el, v: parseV(el.dataset.v), dur: +el.dataset.dur || 700, canvas: $('canvas', el), on: false, t0: 0, drawn: 0 }));
   function curveFrame(now) {
     let any = false;
     curveCards.forEach(c => {
@@ -828,9 +851,6 @@
       if (c.drawn < 1) { c.drawn = reduce() ? 1 : clamp((now - c.d0) / 900, 0, 1); }
       const cyc = c.dur + 900, el = paused() || reduce() ? c.dur : (now - c.t0) % cyc;
       const p = clamp(el / c.dur, 0, 1);
-      const travel = c.track.clientWidth - 30;
-      c.dot.style.transform = `translateX(${(bezier(...c.v)(p) * travel).toFixed(1)}px)`;
-      c.ghost.style.transform = `translateX(${(defaultF(p) * travel).toFixed(1)}px)`;
       plot(c.canvas, c.v, { draw: bezier(.16, 1, .3, 1)(c.drawn), dot: p });
     });
     if (any) requestAnimationFrame(curveFrame); else curveRun = false;
@@ -998,7 +1018,6 @@
   const moBox = $('#moBox');
   if (moBox) {
     const moRows = $$('.mo-row'), moTl = $('#moTl'), moRead = $('#moRead');
-    const ROLL = [.7, 0, .2, 1], BASE = [.2, .8, .2, 1];
     const TC = { eng: ['#ce1124', '#1d3e8a'], bra: ['#ffdf00', '#009c3b'], ger: ['#ffce00', '#dd0000'], ned: ['#f36c21', '#21468b'], bel: ['#ed2939', '#fdda24'],
       aut: ['#c8102e', '#f4f4f4'], irl: ['#169b62', '#ff883e'], pol: ['#dc143c', '#f4f4f4'], nga: ['#008751', '#f4f4f4'], sen: ['#00853f', '#fdef42'],
       civ: ['#f77f00', '#009e60'], mli: ['#14b53a', '#fcd116'], swe: ['#006aa7', '#fecc02'], den: ['#c8102e', '#f4f4f4'], esp: ['#aa151b', '#f1bf00'],
@@ -1011,13 +1030,6 @@
     const LIVE = [['fra', 'arg', 2, 1, 58, '--sp2'], ['eng', 'bra', 0, 1, 63, '--sp5'], ['ger', 'ned', 1, 1, 76, '--sp1'], ['bel', 'aut', 0, 2, 47, '--sp3'], ['irl', 'pol', 2, 1, 66, '--sp4']];
     const tabsHTML = (names, on, cls) => `<div class="${cls}" role="tablist">${names.map(n => `<button type="button" role="tab" aria-selected="${n === on}"${n === on ? ' class="on"' : ''}>${n}</button>`).join('')}<span class="ul" aria-hidden="true"></span></div>`;
     const cardsHTML = () => '<div class="ms-cardrow">' + LIVE.map(([h, a, hs, as, m, g]) => `<div class="ms-card" style="--h:${Math.round(28 + m / 90 * 70)}%;--g:var(${g});--p:${(m / 90 * 100).toFixed(1)}%"><div class="tm"><span>${fl(h)}${h.toUpperCase()}<b>${hs}</b></span><span>${fl(a)}${a.toUpperCase()}<b>${as}</b></span></div><div><div class="mn">${m}’</div><div class="bar"><i></i></div></div></div>`).join('') + '</div>';
-    // a pressed label: every letter twice, stacked, so it can roll up and come back from below
-    const rollable = b => {
-      const txt = b.textContent; b.setAttribute('aria-label', txt); b.textContent = '';
-      const w = document.createElement('span'); w.className = 'rolltxt'; w.setAttribute('aria-hidden', 'true');
-      [...txt].forEach(ch => { const c = document.createElement('span'), t = ch === ' ' ? '&nbsp;' : ch; c.className = 'ch'; c.style.cssText = 'height:1.15em;overflow:hidden;vertical-align:top'; c.innerHTML = `<span style="display:block;line-height:1.15em">${t}</span><span style="display:block;line-height:1.15em">${t}</span>`; w.appendChild(c); });
-      b.appendChild(w);
-    };
     // List, Events and Lineup: the site's first stage, plain shapes placed as fractions of the box
     const SPC = ['var(--sp2)', 'var(--sp5)', 'var(--sp1)', 'var(--sp3)', 'var(--sp4)'];
     const item = (sc, css, html) => { const d = document.createElement('div'); d.className = 'item'; d.style.cssText = css; if (html) d.innerHTML = html; sc.appendChild(d); return d; };
@@ -1030,7 +1042,7 @@
     };
     const under = (tabs, b) => { const ul = $('.ul', tabs), inset = tabs.classList.contains('daytabs') ? 13 : 10; return { left: (b.offsetLeft + inset) + 'px', width: (b.offsetWidth - 2 * inset) + 'px' }; };
 
-    let cur = null, anims = [], raf = 0, day = 'Yesterday', want = null;
+    let cur = null, anims = [], raf = 0;
     const SCENES = {
       cards(sc, A, D) {
         sc.className += ' ms-cards'; sc.innerHTML = `<div class="cap"><span>Live now</span><b>5 in play</b></div>` + cardsHTML();
@@ -1048,21 +1060,6 @@
         const tabs = $('.ms-mtabs', sc), ul = $('.ul', tabs);
         X.place = () => Object.assign(ul.style, under(tabs, $('button.on', tabs))); X.place();
         [0, 1, 1, 3, 4].forEach((idx, i) => A(sc.children[i], [{ transform: 'translateY(12px)', opacity: 0 }, { transform: 'none', opacity: 1 }], D.delay + idx * D.stag));
-      },
-      tabs(sc, A, D, X) {
-        const names = ['Yesterday', 'Ongoing', 'Tomorrow'], to = names.includes(want) ? want : 'Ongoing', from = to === day ? (to === 'Ongoing' ? 'Yesterday' : 'Ongoing') : day;
-        sc.className += ' ms-roll';
-        sc.innerHTML = tabsHTML(names, from, 'daytabs');
-        const tabs = $('.daytabs', sc), btns = $$('button', tabs), b = btns.find(x => x.textContent === to), ul = $('.ul', tabs);
-        btns.forEach(rollable);
-        X.place = () => Object.assign(ul.style, under(tabs, btns.find(x => x.classList.contains('on'))));
-        X.place(); ul.style.transition = 'none';
-        btns.forEach(x => { x.classList.toggle('on', x === b); x.setAttribute('aria-selected', String(x === b)); });
-        X.roll(b, 0);
-        A(ul, [{ left: ul.style.left, width: ul.style.width }, under(tabs, b)], D.delay, D.dur, D.v);
-        Object.assign(ul.style, under(tabs, b));
-        day = to;
-        X.tap = { tabs };
       },
       events(sc, A, D) { plainRows(sc, A, D, 7, 'translate(0,-12px)', 12); },
       stats(sc, A, D) {
@@ -1098,7 +1095,7 @@
     let X = {};
     function play(r) {
       cur = r;
-      moRows.forEach(x => { const on = x === r; x.setAttribute('aria-selected', String(on)); plot($('canvas', x), parseV(x.dataset.v), { mini: true, on }); });
+      moRows.forEach(x => x.setAttribute('aria-selected', String(x === r)));
       anims.forEach(a => a.cancel()); anims = []; cancelAnimationFrame(raf);
       const D = { dur: +r.dataset.dur, delay: +r.dataset.delay, stag: +r.dataset.stagger, v: parseV(r.dataset.v) };
       const segs = [];
@@ -1107,16 +1104,11 @@
         anims.push(el.animate(kf, { duration: Math.max(1, len), delay: at, easing: cb(v), fill: 'both' }));
         if (lane) segs.push([at, len]);
       };
-      X = { roll: (b, at) => { const chs = $$('.ch', b); chs.forEach((c, i) => [...c.children].forEach(s => A(s, [{ transform: 'translateY(0)' }, { transform: 'translateY(-1.15em)' }], at + i * 11, 420, ROLL, false))); segs.push([at, 420 + 11 * (chs.length - 1)]); }, lane: (at, len) => segs.push([at, len]) };
+      X = { lane: (at, len) => segs.push([at, len]) };
       $('#moName').textContent = $('.nm', r).textContent;
       moBox.innerHTML = '';
       const sc = document.createElement('div'); sc.className = 'ms'; moBox.appendChild(sc);
       SCENES[r.dataset.k](sc, A, D, X);
-      want = null;
-      if (X.tap) X.tap.tabs.addEventListener('click', e => {
-        const b = e.target.closest('button'); if (!b || b.classList.contains('on')) return;   // SL-11: the chosen tab doesn't roll again
-        want = b.getAttribute('aria-label'); play(cur);
-      });
       // the timeline: each part's own span, to scale, with a playhead
       const total = Math.max(...segs.map(([a, l]) => a + l)) || 1, lanes = segs.slice(0, 7);
       $('#moSay').textContent = `${r.dataset.d} · ${Math.round(total).toLocaleString('en-US')} ms in all`;
@@ -1127,14 +1119,12 @@
       const tick = now => { const p = clamp((film ? film.currentTime * 1000 : now - t0) / total, 0, 1); ph.style.left = (p * 100) + '%'; if (p < 1 && !(film && film.ended)) raf = requestAnimationFrame(tick); };
       raf = requestAnimationFrame(tick);
       const read = [`dur ${D.dur} ms`, `delay ${D.delay} ms`, `stagger ${D.stag} ms`, `${r.dataset.c} · cubic-bezier(${fmtV(D.v)})`];
-      if (r.dataset.k === 'tabs') read.push('letters 420 ms · Roll · 11 ms apart');
       moRead.innerHTML = read.map((t, i) => `<span class="tag${i === 3 ? ' tag--me' : ''}">${t}</span>`).join('');
       if (film && !reduce()) film.play().catch(() => {});
       if (film && reduce()) { const end = () => { film.currentTime = Math.max(0, film.duration - .05); }; film.readyState ? end() : film.addEventListener('loadedmetadata', end, { once: true }); }
       if (reduce()) { anims.forEach(a => a.finish()); ph.style.left = '100%'; }
     }
-    moRows.forEach(r => { plot($('canvas', r), parseV(r.dataset.v), { mini: true }); r.addEventListener('click', () => play(r)); });
-    addEventListener('tz-theme', () => moRows.forEach(r => plot($('canvas', r), parseV(r.dataset.v), { mini: true, on: r.getAttribute('aria-selected') === 'true' })));
+    moRows.forEach(r => r.addEventListener('click', () => play(r)));
     $('#moPlay').addEventListener('click', () => cur && play(cur));
     let moPlayed = false;
     onScreen($('#moStage'), v => { if (v && !moPlayed) { moPlayed = true; play(moRows[0]); } });
@@ -1162,43 +1152,7 @@
   const sizeCanvas = (c, r) => { const b = c.getBoundingClientRect(), d = dpr(); c.width = Math.max(1, Math.round(b.width * d)); c.height = Math.max(1, Math.round(b.height * d)); r && r.resizeDrawingSurfaceToCanvas(); };
   const argb = hex => (0xff000000 | parseInt(hex.slice(1), 16)) >>> 0;
 
-  /* the Live switch: islive, and count, which is the calendar's day (today's, to start); the measured capsule beside it */
-  const LIVE_OPENING = [[0, 0], [17, -0.0263], [33, -0.0373], [83, -0.0537], [133, -0.0603], [183, -0.0614], [200, -0.049], [217, -0.0208], [233, 0.0293], [267, 0.2168], [283, 0.3575], [317, 0.6738], [333, 0.806], [350, 0.9079], [367, 0.9803], [383, 1.0307], [400, 1.0604], [417, 1.0757], [433, 1.0789], [450, 1.0757], [483, 1.0636], [567, 1.0175], [600, 1.0055], [633, 1]];
-  const LIVE_CLOSING = [[0, 1], [50, 1.0077], [183, 1.0735], [217, 1.0789], [233, 1.0746], [250, 1.0636], [267, 1.0428], [283, 1.0132], [300, 0.9715], [333, 0.8454], [367, 0.6522], [400, 0.4134], [433, 0.1996], [467, 0.0538], [500, -0.0263], [517, -0.0471], [533, -0.0592], [583, -0.0592], [633, -0.0449], [717, -0.011], [783, 0]];
-  const trackC = $('#rTrack'), trackLbl = $('#rTrackLbl');
-  let trackLive = true, trackT0 = 0, trackRaf = 0;
-  function drawTrack(p) {
-    const c = trackC; if (!c) return;
-    const b = c.getBoundingClientRect(), d = dpr(); const w = Math.round(b.width * d), h = Math.round(b.height * d);
-    if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
-    const x = c.getContext('2d'); x.clearRect(0, 0, w, h);
-    const tr = trackLive ? LIVE_OPENING : LIVE_CLOSING, T = tr[tr.length - 1][0], pad = 14 * d, lo = -0.15, hi = 1.15;
-    const X = ms => pad + ms / 800 * (w - 2 * pad), Y = v => h - pad - (v - lo) / (hi - lo) * (h - 2 * pad);
-    x.strokeStyle = 'rgba(255,255,255,.07)'; x.lineWidth = d;
-    [0, 1].forEach(v => { x.beginPath(); x.moveTo(X(0), Y(v)); x.lineTo(X(800), Y(v)); x.stroke(); });
-    x.fillStyle = 'rgba(133,132,127,.9)'; x.font = `${10 * d}px "JB Mono", monospace`;
-    x.fillText('on', X(800) - 16 * d, Y(1) - 5 * d); x.fillText('off', X(800) - 20 * d, Y(0) - 5 * d);
-    const g = x.createLinearGradient(X(0), 0, X(T), 0); ['#34E39A', '#a8c3ea', '#e7c1d6'].forEach((s, i) => g.addColorStop(i / 2, s));
-    x.strokeStyle = g; x.lineWidth = 2.4 * d; x.lineJoin = 'round'; x.beginPath();
-    tr.forEach(([ms, v], i) => (i ? x.lineTo(X(ms), Y(v)) : x.moveTo(X(ms), Y(v)))); x.stroke();
-    const peak = tr.reduce((a, b2) => (trackLive ? (b2[1] > a[1] ? b2 : a) : (b2[1] < a[1] ? b2 : a)));
-    x.fillStyle = '#F3F2EF'; x.beginPath(); x.arc(X(peak[0]), Y(peak[1]), 3 * d, 0, 7); x.fill();
-    x.fillText((peak[1] * 100).toFixed(1) + '%', X(peak[0]) + 6 * d, Y(peak[1]) + (trackLive ? -6 : 14) * d);
-    if (p != null) {
-      const ms = p * T; let v = tr[0][1];
-      for (let i = 1; i < tr.length; i++) if (tr[i][0] >= ms) { const [a, va] = tr[i - 1], [b2, vb] = tr[i]; v = lerp(va, vb, (ms - a) / (b2 - a)); break; }
-      x.strokeStyle = 'rgba(243,242,239,.3)'; x.lineWidth = d; x.beginPath(); x.moveTo(X(ms), pad); x.lineTo(X(ms), h - pad); x.stroke();
-      x.fillStyle = '#34E39A'; x.shadowColor = 'rgba(52,227,154,.7)'; x.shadowBlur = 10 * d; x.beginPath(); x.arc(X(ms), Y(v), 5 * d, 0, 7); x.fill(); x.shadowBlur = 0;
-    }
-  }
-  function runTrack() {
-    cancelAnimationFrame(trackRaf); trackLbl.textContent = trackLive ? 'opening · 633 ms' : 'closing · 783 ms';
-    const T = trackLive ? 633 : 783; trackT0 = performance.now();
-    const tick = now => { const p = clamp((now - trackT0) / T, 0, 1); drawTrack(p); if (p < 1) trackRaf = requestAnimationFrame(tick); };
-    trackRaf = requestAnimationFrame(tick);
-  }
-  drawTrack(null); addEventListener('resize', () => drawTrack(null));
-
+  /* the Live switch: islive, and count, which is the calendar's day (today's, to start) */
   const RL = { r: null, vm: null, live: true, count: new Date().getDate(), visible: false };
   const liveToggle = $('#rLiveToggle'), countOut = $('#rCount'), liveState = $('#rLiveState');
   function liveWrite() {
@@ -1207,33 +1161,18 @@
     if (!RL.vm) return;
     try { RL.vm.boolean('islive').value = RL.live; RL.vm.string('count').value = String(RL.count); } catch (_) {}
   }
-  const liveSet = v => { RL.live = v; liveWrite(); trackLive = v; runTrack(); };
+  const liveSet = v => { RL.live = v; liveWrite(); };
   liveToggle.addEventListener('click', () => liveSet(!RL.live));
   // the calendar runs 1 to 31 and wraps round
   $('#rCountUp').addEventListener('click', () => { RL.count = RL.count % 31 + 1; liveWrite(); });
   $('#rCountDown').addEventListener('click', () => { RL.count = (RL.count + 29) % 31 + 1; liveWrite(); });
   liveWrite();
 
-  /* moments: kind, the team's two colours, play; phase comes back */
-  const RW = { r: null, vm: null, colors: ['#0055a4', '#ef4135'], kind: 'goal', visible: false, t0: 0, raf: 0, played: false };
-  const wordState = $('#rWordState'), phaseEl = $('#rPhase');
-  const marks = $$('.mk', phaseEl);
-  const phaseNote = $('#rPhaseNote');
-  function setMarks(kind) {
-    const T = kind === 'goal' ? 1.6772 : 1.12;
-    const spec = kind === 'goal' ? [[0, 'play<br>0 s'], [0.854, 'last letter lands<br>0.854 s · phase 1'], [1.6772, 'flare and glint done<br>1.677 s · phase 2']]
-      : [[0, 'play<br>0 s'], [1.12, 'last letter lands<br>1.12 s · phases 1 and 2'], null];
-    marks.forEach((m, i) => {
-      const s = spec[i]; m.hidden = !s; m.classList.remove('hit'); if (!s) return;
-      m.dataset.at = s[0]; m.style.left = (s[0] / T * 100) + '%'; $('span', m).innerHTML = s[1];
-    });
-    phaseNote.textContent = kind === 'goal' ? 'Six letters, 70 ms apart, each landing in 504 ms.' : 'RED CARD, 60 ms apart, each letter slamming in from 1.4× in 700 ms. No flare, no glint.';
-    phaseEl.style.setProperty('--p', 0);
-    return T;
-  }
+  /* moments: kind, the team's two colors, play; phase comes back */
+  const RW = { r: null, vm: null, colors: ['#0055a4', '#ef4135'], kind: 'goal', visible: false, played: false };
+  const wordState = $('#rWordState');
   function playWord(kind) {
     RW.kind = kind;
-    const T = setMarks(kind);
     if (!RW.vm) { RW.pending = kind; wordState.textContent = 'Rive is starting…'; return; }
     try {
       RW.vm.string('kind').value = kind;
@@ -1241,14 +1180,7 @@
       RW.vm.number('phase').value = 0;
       RW.vm.trigger('play').trigger();
     } catch (_) { return; }
-    RW.played = true; cancelAnimationFrame(RW.raf); RW.t0 = performance.now();
-    const tick = now => {
-      const s = (now - RW.t0) / 1000, p = clamp(s / T, 0, 1);
-      phaseEl.style.setProperty('--p', p.toFixed(4));
-      marks.forEach(m => m.classList.toggle('hit', !m.hidden && s >= +m.dataset.at));
-      if (p < 1) RW.raf = requestAnimationFrame(tick);
-    };
-    RW.raf = requestAnimationFrame(tick);
+    RW.played = true;
   }
   $('#rGoal').addEventListener('click', () => playWord('goal'));
   $('#rRed').addEventListener('click', () => playWord('red'));
@@ -1267,7 +1199,7 @@
         layout: new rv.Layout({ fit: rv.Fit.Contain, alignment: rv.Alignment.Center }), shouldDisableRiveListeners: false,
         onLoad: () => {
           RL.vm = RL.r.viewModelInstance; RL.r.resizeDrawingSurfaceToCanvas(); liveWrite(); if (!RL.visible) RL.r.pause();
-          // a click on the icon flips islive inside the file, as in the editor: the button and the curve follow it
+          // a click on the icon flips islive inside the file, as in the editor: the button follows it
           try { const il = RL.vm.boolean('islive'); il.on(() => { if (il.value !== RL.live) liveSet(il.value); }); } catch (_) {}
         },
         onLoadError: () => $('#rLiveStage').classList.add('failed'),
@@ -1287,7 +1219,7 @@
   }
   let riveAsked = false;
   onScreen($('#rive'), v => { if (v && !riveAsked) { riveAsked = true; mountRive(); } }, '600px');
-  onScreen($('#rLiveStage'), v => { RL.visible = v; if (!RL.r) return; if (v) { RL.r.play(); runTrack(); } else RL.r.pause(); });
+  onScreen($('#rLiveStage'), v => { RL.visible = v; if (!RL.r) return; if (v) RL.r.play(); else RL.r.pause(); });
   onScreen($('#rWordStage'), v => { RW.visible = v; if (!RW.r) return; if (v) { RW.r.play(); if (!RW.played && RW.vm) playWord('goal'); } else RW.r.pause(); });
   document.addEventListener('visibilitychange', () => {
     [[RL, document.hidden], [RW, document.hidden]].forEach(([o, h]) => { if (!o.r) return; if (h) o.r.pause(); else if (o.visible) o.r.play(); });
