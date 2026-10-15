@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
 <meta name="theme-color" content="#000000">
-<title>Scoreline — Turinoz</title>
-<meta name="description" content="Scoreline, a live football app. Product, design, motion, Rive and every decision by Turinoz; the code written by AI over hundreds of round trips. With the real demo running on the page.">
+<title>Scoreline, a football app made with AI · Turinoz</title>
+<meta name="description" content="Scoreline, a football app for match nights, was an experiment: a way to test my own direction with AI as a new tool. I designed the layout, the colors and the motion. The real app runs on the page.">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Scoreline — every decision mine, every line of code AI’s">
-<meta property="og:description" content="A live football app designed, animated and directed by Turinoz, built by AI. Ten curves, two Rive files, one demo you can play.">
+<meta property="og:title" content="Scoreline, a football app made with AI">
+<meta property="og:description" content="Designed and animated by Turinoz, built by AI. The real app runs on the page, and you can take over.">
 <meta property="og:image" content="assets/share-cover.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Cdefs%3E%3ClinearGradient id='a' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%236aaef0'/%3E%3Cstop offset='.34' stop-color='%23c9b8e0'/%3E%3Cstop offset='.58' stop-color='%23f2b3c9'/%3E%3Cstop offset='1' stop-color='%23b0243c'/%3E%3C/linearGradient%3E%3ClinearGradient id='b' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%236b58f5'/%3E%3Cstop offset='.4' stop-color='%23a58fe6'/%3E%3Cstop offset='.76' stop-color='%23e7c1d6'/%3E%3Cstop offset='1' stop-color='%23fff0e6'/%3E%3C/linearGradient%3E%3ClinearGradient id='c' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23a8c3ea'/%3E%3Cstop offset='.38' stop-color='%23e2e2e4'/%3E%3Cstop offset='.68' stop-color='%23c9c92a'/%3E%3Cstop offset='1' stop-color='%23f0eed0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='180' height='180' rx='36' fill='%23000'/%3E%3Crect x='36' y='60' width='36' height='72' fill='url%28%23a%29'/%3E%3Crect x='72' y='24' width='36' height='132' fill='url%28%23b%29'/%3E%3Crect x='108' y='48' width='36' height='72' fill='url%28%23c%29'/%3E%3C/svg%3E">
@@ -119,12 +119,12 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
     <span class="hw" aria-hidden="true"></span>
   </div>
   <div class="dock-bar" role="group" aria-label="Demo controls">
+    <button class="chipbtn give" type="button" id="dockGive"><svg aria-hidden="true"><use href="#icCheck"/></svg>Give it back</button>
     <button class="chipbtn" type="button" data-scene="goal"><svg class="ball" aria-hidden="true"><use href="#icBall"/></svg>Goal</button>
     <button class="chipbtn" type="button" data-scene="red"><span class="rc" aria-hidden="true"></span>Red card</button>
     <button class="chipbtn" type="button" data-moment="goalFav"><svg class="ball" aria-hidden="true"><use href="#icBall"/></svg>Messi scores</button>
     <button class="chipbtn" type="button" data-moment="redFav"><span class="rc" aria-hidden="true"></span>Messi sent off</button>
     <button class="chipbtn" type="button" id="dockRestart" aria-label="Start the match night again"><svg aria-hidden="true"><use href="#icRestart"/></svg></button>
-    <button class="chipbtn give" type="button" id="dockGive"><svg aria-hidden="true"><use href="#icCheck"/></svg>Give it back</button>
   </div>
 </aside>
 <button class="demo-pill" id="demoPill" type="button" data-open-demo aria-label="Open the live demo">
@@ -146,7 +146,7 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
       </h1>
       <p class="lede rv" style="--rd:.18s">Scoreline, a football app for match nights, was an experiment: a way to test my own direction with AI as a new tool. <em>I&nbsp;designed the layout, the colors and the motion.</em></p>
       <div class="proof rv" style="--rd:.26s">
-        <a class="btn" href="app/" target="_blank" rel="noopener" data-cursor="Full screen, in a new tab"><span class="dot" aria-hidden="true"></span>Try it live<span class="go" aria-hidden="true"><svg><use href="#icArrowOut"/></svg></span></a>
+        <a class="btn" href="app/" target="_blank" rel="noopener" data-cursor="Full screen, in a new tab"><span class="dot" aria-hidden="true"></span>Try it live</a>
       </div>
     </div>
   </div>
@@ -285,7 +285,7 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
         <div class="cv-h"><span class="cv-name">Glide</span><span class="cv-tok">--ease-glide</span></div>
         <div class="cv-plot"><canvas></canvas><span class="ghost-l"><i></i>ease</span></div>
         <div class="four"><span><small>X1</small><b>0.16</b></span><span><small>Y1</small><b>1</b></span><span><small>X2</small><b>0.3</b></span><span><small>Y2</small><b>1</b></span></div>
-        <p class="cv-p"><em>The landing.</em> Out of the gate at once, then a long quiet arrival. It’s the expo-out shape, and 11 of the 14 sections land on it.</p>
+        <p class="cv-p"><em>The landing.</em> Out of the gate at once, then a long quiet arrival. It’s the expo-out shape, and most of the app’s sections land on it.</p>
         <div class="cv-uses"><span>cards</span><span>screen</span><span>events</span><span>stats</span><span>lineup</span><span>toast</span></div>
       </article>
       <article class="cv rv" style="--rd:.05s" data-v="0.32,0,0.1,1" data-dur="720">
@@ -338,7 +338,7 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
 <section class="sec" id="rive">
   <div class="wrap">
     <div class="shead rv">
-      <div><div class="kicker"><i></i>04 — Rive</div><h2>Two Rive files, built by me in the editor.</h2>
+      <div><div class="kicker"><i></i>04 — Rive</div><h2>Two Rive files, built by me.</h2>
         <p class="sub">Rive draws only what it’s best at. The app talks to both files through view-model properties and nothing else.</p></div>
     </div>
     <div class="rv-grid">
@@ -391,7 +391,7 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
     <div class="col">
       <div class="kicker rv"><i></i>05 — Process</div>
       <h2 class="rv">I directed. The AI built.</h2>
-      <p class="statement" id="statement" style="margin-top:34px"><span class="hl">Claude and Codex wrote 39,650 lines across 125 commits,</span> working from my decisions.</p>
+      <p class="statement" id="statement" style="margin-top:34px"><span class="hl">Claude and Codex wrote 39,650 lines</span> across 125 commits.</p>
     </div>
     <div class="proc">
       <div class="loop rv" id="loop">
