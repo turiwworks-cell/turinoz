@@ -283,10 +283,10 @@ html.study-open,html.study-open body{overflow:hidden}
 .tile--wide .media{aspect-ratio:auto;flex:1 1 auto;min-height:0}      /* as tall as the square tiles beside it */
 /* ---------- smtp.dev tile (main tier): the case study's Beat by beat section, playing on its own ----------
    The page inside (smtp/beats-tile.html) uses the case study's own ground, light or dark like this page. */
-.media--beats{background:#F3F4FA}
+.media--beats{background:#F4F3EF}
 .media--beats iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;pointer-events:none;background:transparent;color-scheme:normal}
-@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .media--beats{background:#08090C} }
-:root[data-theme="dark"] .media--beats{background:#08090C}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .media--beats{background:#000} }
+:root[data-theme="dark"] .media--beats{background:#000}
 .tile--film:hover .cta svg,.tile--film:focus-visible .cta svg{transform:translateX(2px)}
 @media (max-width:1100px){ .tile--wide .media{flex:none;aspect-ratio:2/1} }
 @media (max-width:720px){
@@ -436,25 +436,24 @@ html.study-open,html.study-open body{overflow:hidden}
    Ease for every move here is the product's own: the conversation panel in
    the real UI rises with .45s cubic-bezier(.2,.8,.2,1).
    ========================================================================== */
-.st{--st-ease:cubic-bezier(.2,.8,.2,1);--st-dur:.45s;--blue:#0085E8;background:var(--surface);user-select:none;-webkit-user-select:none;touch-action:pan-y;
-  --sy-bg:#F3F4F5;--sy-dots:#D7DCE1;--sy-card:#fff;--sy-ring:#E4E7EA;--sy-ring-hi:#C9D0D6;--sy-line:#D3D9DE;
+.st{--st-ease:cubic-bezier(.2,.8,.2,1);--st-dur:.45s;--blue:#0085E8;background:var(--sy-bg);user-select:none;-webkit-user-select:none;touch-action:pan-y;
+  --sy-bg:#F1F0EC;--sy-dots:rgba(12,12,11,.085);--sy-card:#fff;--sy-ring:#E4E7EA;--sy-ring-hi:#C9D0D6;--sy-line:#D3D9DE;
   --sy-ink:#2E3940;--sy-ink-2:#7B858E;--sy-ink-3:#AAB2B9;--sy-chip-ink:#4F5B63;--sy-blue-ink:#0B62AF;
   --sy-tag:#F1F3F4;--sy-loop:#E7F1FC;--sy-trans:#fff;--sy-trans-ring:#C1DAF4;--sy-shimmer:#8FA3B8;--sy-shimmer-hi:#DCE5EE;
   --sy-lift:rgba(20,32,44,.4)}
 /* the system view at night: same parts, same blue */
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]) .st{
-    --sy-bg:#101316;--sy-dots:#23292E;--sy-card:#181C20;--sy-ring:#2A3036;--sy-ring-hi:#3E464E;--sy-line:#2E353B;
+    --sy-bg:#0C0C0B;--sy-dots:rgba(255,255,255,.055);--sy-card:#181C20;--sy-ring:#2A3036;--sy-ring-hi:#3E464E;--sy-line:#2E353B;
     --sy-ink:#E4E8EB;--sy-ink-2:#8C969E;--sy-ink-3:#5C666E;--sy-chip-ink:#B4BDC4;--sy-blue-ink:#5AB0F5;
     --sy-tag:#20252A;--sy-loop:rgba(0,133,232,.18);--sy-trans:transparent;--sy-trans-ring:rgba(0,133,232,.5);--sy-shimmer:#5D6F81;--sy-shimmer-hi:#C3D0DC;
     --sy-lift:rgba(0,0,0,.7)}
 }
 :root[data-theme="dark"] .st{
-  --sy-bg:#101316;--sy-dots:#23292E;--sy-card:#181C20;--sy-ring:#2A3036;--sy-ring-hi:#3E464E;--sy-line:#2E353B;
+  --sy-bg:#0C0C0B;--sy-dots:rgba(255,255,255,.055);--sy-card:#181C20;--sy-ring:#2A3036;--sy-ring-hi:#3E464E;--sy-line:#2E353B;
   --sy-ink:#E4E8EB;--sy-ink-2:#8C969E;--sy-ink-3:#5C666E;--sy-chip-ink:#B4BDC4;--sy-blue-ink:#5AB0F5;
   --sy-tag:#20252A;--sy-loop:rgba(0,133,232,.18);--sy-trans:transparent;--sy-trans-ring:rgba(0,133,232,.5);--sy-shimmer:#5D6F81;--sy-shimmer-hi:#C3D0DC;
   --sy-lift:rgba(0,0,0,.7)}
-.st::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 70% at 50% 58%,var(--glow),transparent 70%);pointer-events:none}
 .st-fit{position:absolute;left:50%;top:50%;width:var(--dw);height:var(--dh);margin:calc(var(--dh) / -2) 0 0 calc(var(--dw) / -2);
   transform:scale(var(--s,1));transform-origin:50% 50%}
 .st-ui{--dw:700px;--dh:400px;z-index:2}
@@ -547,8 +546,9 @@ html.study-open,html.study-open body{overflow:hidden}
 .st.is-cue .su-tip{opacity:1;transform:translate(0,-50%);transition-delay:.5s}
 
 /* ---------- 2. the system view (Storm motion system family) ---------- */
-.sy-bg{position:absolute;inset:0;z-index:3;background:radial-gradient(circle at 1px 1px,var(--sy-dots) 1px,transparent 1.25px) 0 0/18px 18px,var(--sy-bg);
-  clip-path:circle(0px at 50% 50%);pointer-events:none}
+/* the same ground as the Curve Lab tile beside it; the dot grid keeps clear of the tile's edges */
+.sy-bg{position:absolute;inset:0;z-index:3;background:var(--sy-bg);clip-path:circle(0px at 50% 50%);pointer-events:none}
+.sy-bg::before{content:"";position:absolute;inset:16px;background:radial-gradient(circle at 50% 50%,var(--sy-dots) 1px,transparent 1.25px) center/18px 18px space}
 .st.is-sys .sy-bg{clip-path:none}
 .sy,.sy-top{font:400 13px/1.4 "Inter",system-ui,sans-serif;color:var(--sy-ink);-webkit-font-smoothing:antialiased;font-feature-settings:"cv11","ss01"}
 .sy{position:absolute;inset:0}
@@ -2880,16 +2880,23 @@ const segs = []; let TOT = 0;
 SEQ.forEach(([id, n]) => { for (let r = 0; r < n; r++) { segs.push({ id, rep: r, of: n, a: TOT, b: TOT + CL[id].op }); TOT += CL[id].op; } });
 const INTRO = CL.appear.op + CL.cone.op;          // it appears, turns once, then the page changes
 
+/* the page's theme: at night the icons on the board play white */
+const darkMq = matchMedia('(prefers-color-scheme: dark)');
+const isDark = () => { const t = document.documentElement.dataset.theme; return t ? t === 'dark' : darkMq.matches; };
+
 /* one Lottie player, created the first time it's needed */
 class Pl {
-  constructor(el, data) { this.el = el; this.data = data; this.op = data.op; this.f = -1; this.a = null; this.pending = 0; }
+  constructor(el, data, night) { this.el = el; this.data = data; this.night = night; this.op = data.op; this.f = -1; this.a = null; this.pending = 0; this.dark = false; }
   load() {
     if (this.a) return;
-    this.a = lottie.loadAnimation({ container: this.el, renderer: 'svg', loop: false, autoplay: false, animationData: clone(this.data),
+    this.dark = !!this.night && isDark();
+    if (this.dark && !this.whiteData) this.whiteData = white(this.data);
+    this.a = lottie.loadAnimation({ container: this.el, renderer: 'svg', loop: false, autoplay: false, animationData: this.dark ? clone(this.whiteData) : clone(this.data),
       rendererSettings: { preserveAspectRatio: 'xMidYMid meet' } });
     const f = this.pending; this.f = -1; this.set(f);
   }
   set(f) { f = Math.max(0, Math.min(this.op - 1, Math.floor(f))); if (f === this.f) return; if (!this.a) { this.pending = f; return; } this.f = f; this.a.goToAndStop(f, true); }
+  retint() { if (!this.a || !this.night || this.dark === isDark()) return; const f = Math.max(this.f, 0); this.a.destroy(); this.a = null; this.pending = f; this.load(); }
 }
 
 /* ---------- parts ---------- */
@@ -2906,17 +2913,20 @@ ORDER.forEach((id, i) => {
   el.innerHTML = `<b>0${i + 1}</b><div class="lot"></div>`;
   el.title = CL[id].name;
   sqWrap.appendChild(el);
-  sq[id] = { el, i, p: new Pl(el.querySelector('.lot'), DATA[CL[id].file]) };
+  sq[id] = { el, i, p: new Pl(el.querySelector('.lot'), DATA[CL[id].file], true) };
   sq[id].p.set(CL[id].rest);
 });
 const mainP = {};
 ORDER.forEach(id => {
   const d = document.createElement('div'); d.className = 'lot'; d.style.cssText = 'inset:0;visibility:hidden';
-  big.appendChild(d); mainP[id] = { d, p: new Pl(d, DATA[CL[id].file]) };
+  big.appendChild(d); mainP[id] = { d, p: new Pl(d, DATA[CL[id].file], true) };
 });
 /* players are built when the tile first comes on screen: it opens playing */
 const queue = [...ORDER.map(id => mainP[id].p), ...ORDER.map(id => sq[id].p)];
 function loadPlayers() { while (queue.length) queue.shift().load(); }
+const retint = () => ORDER.forEach(id => { mainP[id].p.retint(); sq[id].p.retint(); });
+new MutationObserver(retint).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+darkMq.addEventListener('change', retint);
 
 /* ---------- layout: the system view is drawn on a fixed board, then scaled ----------
    The board holds only the diagram (states, lines, the icon), with even room above and below,
