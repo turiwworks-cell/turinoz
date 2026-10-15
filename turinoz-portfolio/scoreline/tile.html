@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Scoreline · A quick tour, playing</title>
+<!--
+  The Scoreline tile on the home page: the case study's "A quick tour" section, playing by itself.
+  The stops come by one at a time, and the phone beside them (the real app, app/) plays each one the
+  way the case study does: Turinoz's cursor taps through Live, Following, Match, Stats and the lineup,
+  then a goal elsewhere arrives as a note and a goal in your match takes the whole screen. Then it
+  starts again from the title. Nothing to click: the tile around it opens the case study.
+  Drawn at one size and scaled to the frame; a narrow frame gets the phone with one stop above it.
+  Light or dark like the page around it (the phone stays night, as in the case study).
+  The stop copy is copied from scoreline/index.html (#tour), and the runs from case-study.js
+  ("01 · TOUR"); change them in both places. Tricks stay in this page, never in app/.
+-->
+<script>
+/* day / night: the page around it, else this device's choice, else the system */
+(function(){var r=document.documentElement,t=null;try{if(parent!==window)t=parent.document.documentElement.dataset.theme}catch(_){}
+if(!t){try{t=localStorage.getItem('tz-theme')}catch(_){}}if(t==='light'||t==='dark')r.dataset.theme=t})();
+</script>
+<style>
+@font-face{font-family:"Archivo";src:url(../fonts/archivo.woff2) format("woff2");font-weight:100 900;font-stretch:62% 125%;font-style:normal;font-display:swap}
+@font-face{font-family:"Inter";src:url(../fonts/inter.woff2) format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+@font-face{font-family:"JB Mono";src:url(../fonts/jetbrains-mono.woff2) format("woff2");font-weight:100 800;font-style:normal;font-display:swap}
+/* the case study's own palette (case-study.css): the app's night by default, its paper by day */
+:root{--grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .5 0 0 0 .55'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --bg:#000; --line-3:rgba(255,255,255,.16);
+  --ink:#F3F2EF; --ink-2:#B8B6B0; --muted:#85847F; --on-ink:#0A0A0A;
+  --violet:#6B58F5; --lilac:#A58FE6; --glow:1;
+  --phone-shadow:0 24px 48px -24px rgba(0,0,0,.9);
+  --display:"Archivo","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --ui:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JB Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --ease:cubic-bezier(.2,.8,.2,1);
+  --glide:cubic-bezier(.16,1,.3,1);
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:light){
+  :root:not([data-theme="dark"]){--bg:#F4F3EF; --line-3:rgba(12,12,12,.18); --ink:#0C0C0C; --ink-2:#46453F; --muted:#7A7872; --on-ink:#F3F2EF; --glow:.62;
+    --phone-shadow:0 50px 90px -40px rgba(30,22,90,.45),0 18px 36px -22px rgba(0,0,0,.35); color-scheme:light}
+}
+:root[data-theme="light"]{--bg:#F4F3EF; --line-3:rgba(12,12,12,.18); --ink:#0C0C0C; --ink-2:#46453F; --muted:#7A7872; --on-ink:#F3F2EF; --glow:.62;
+  --phone-shadow:0 50px 90px -40px rgba(30,22,90,.45),0 18px 36px -22px rgba(0,0,0,.35); color-scheme:light}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--bg)}
+/* a picture of the section: nothing to click, select or scroll */
+body{color:var(--ink);font:400 15.5px/1.6 var(--ui);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-feature-settings:"cv11","ss01";
+  pointer-events:none;user-select:none;-webkit-user-select:none;cursor:default}
+h2,h3,p,ol{margin:0}
+ol{padding:0;list-style:none}
+img,svg,iframe{display:block}
+.mono{font-family:var(--mono);font-feature-settings:normal;font-variant-numeric:tabular-nums}
+
+/* the composition: drawn at one size (--w × --h), scaled to the frame */
+#cv{position:absolute;left:50%;top:50%;width:var(--w,1040px);height:var(--h,650px);transform:translate(-50%,-50%) scale(var(--k,1));transform-origin:50% 50%;
+  opacity:0;transition:opacity .6s var(--ease)}
+#cv.on{opacity:1}
+
+/* the section, as in the case study (#tour), at its desktop layout. The column moves by transform. */
+.col{position:absolute;left:56px;top:0;width:var(--colw,500px);height:100%;overflow:hidden;
+  -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 7%,#000 93%,transparent);mask-image:linear-gradient(180deg,transparent 0,#000 7%,#000 93%,transparent)}
+.run{will-change:transform;transition:transform 1.5s cubic-bezier(.71,0,.14,1),opacity .7s var(--ease)}
+.run.fade{opacity:0}
+.head{padding-top:64px}
+.kicker{display:flex;align-items:center;gap:10px;font:500 11px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.kicker i{width:6px;height:6px;border-radius:50%;background:var(--lilac);box-shadow:0 0 0 3px rgba(165,143,230,.18);flex:none}
+h2{font:560 58px/1.02 var(--display);font-stretch:84%;letter-spacing:-.034em;margin-top:18px}
+.sub{font-size:16px;color:var(--ink-2);margin-top:16px;max-width:30em}
+.stops{padding-bottom:50vh}
+.stop{min-height:var(--stoph,420px);display:flex;flex-direction:column;justify-content:center;gap:16px;opacity:.22;transition:opacity .7s var(--ease)}
+.stop.on{opacity:1}
+.dn{display:flex;align-items:center;gap:10px;font:500 12px/1 var(--mono);color:var(--muted)}
+.dn b{display:inline-grid;place-items:center;height:22px;padding:0 8px;border-radius:999px;font-weight:500;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line-3)}
+.stop.on .dn b{background:var(--ink);color:var(--on-ink);box-shadow:none}
+.dplay{position:relative;display:inline-grid;place-items:center;height:22px;padding:0 10px;border-radius:999px;color:#fff;background:var(--violet)}
+.dplay svg{width:10px;height:10px}
+.dplay::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 1.5px var(--violet);opacity:0}
+.stop.playing .dplay::after{animation:dring 1.4s var(--ease) infinite}
+@keyframes dring{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(1.55,1.9)}}
+.stop h3{font:560 40px/1.05 var(--display);font-stretch:88%;letter-spacing:-.03em}
+.stop p{font-size:16.5px;line-height:1.65;color:var(--ink-2);max-width:31em}
+
+/* the phone, as in the case study: a thin titanium band, a black glass border, the screen, the side buttons */
+.dock{position:absolute;top:50%;right:var(--dockr,64px);transform:translateY(-50%)}
+.device{--s:.64;--gl:107,88,245;position:relative;width:calc(414px * var(--s));height:calc(868px * var(--s));border-radius:calc(64px * var(--s));padding:calc(12px * var(--s));background:#000;
+  box-shadow:0 0 0 calc(.6px * var(--s)) rgba(0,0,0,.9),var(--phone-shadow)}
+.glow{position:absolute;z-index:-1;left:50%;top:66%;width:230%;height:122%;transform:translate(-50%,-50%);opacity:var(--glow);
+  background:radial-gradient(closest-side,rgba(var(--gl),.56) 0%,rgba(var(--gl),.47) 15%,rgba(var(--gl),.33) 32%,rgba(var(--gl),.19) 50%,rgba(var(--gl),.085) 68%,rgba(var(--gl),.026) 84%,rgba(var(--gl),.006) 94%,rgba(var(--gl),0) 100%);
+  -webkit-mask:var(--grain);mask:var(--grain);-webkit-mask-size:180px;mask-size:180px}
+.device::before{content:"";position:absolute;inset:0;border-radius:inherit;z-index:8;padding:calc(3.4px * var(--s));
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.26),rgba(255,255,255,0) 5%,rgba(255,255,255,0) 95%,rgba(255,255,255,.12)),
+    linear-gradient(90deg,#5c5c60 0%,#2a2a2c 3%,#121213 22%,#1b1b1d 50%,#121213 78%,#2a2a2c 97%,#5c5c60 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+.device::after{content:"";position:absolute;inset:calc(3.4px * var(--s));border-radius:calc(60.6px * var(--s));z-index:8;
+  box-shadow:inset 0 0 0 calc(.8px * var(--s)) rgba(255,255,255,.07),inset 0 calc(1px * var(--s)) calc(2px * var(--s)) rgba(255,255,255,.08)}
+.hw{position:absolute;inset:0}
+.hw::before,.hw::after{content:"";position:absolute;width:calc(3px * var(--s));border-radius:calc(2px * var(--s))}
+.hw::before{left:calc(-2.2px * var(--s));top:calc(150px * var(--s));height:calc(232px * var(--s));
+  background:linear-gradient(180deg,#58585c 0,#2a2a2d calc(34px * var(--s)),transparent calc(34px * var(--s)) calc(74px * var(--s)),#58585c calc(74px * var(--s)),#2a2a2d calc(150px * var(--s)),transparent calc(150px * var(--s)) calc(162px * var(--s)),#58585c calc(162px * var(--s)),#2a2a2d 100%)}
+.hw::after{right:calc(-2.2px * var(--s));top:calc(230px * var(--s));height:calc(104px * var(--s));background:linear-gradient(180deg,#58585c,#2a2a2d)}
+.screen{position:relative;width:100%;height:100%;border-radius:calc(53px * var(--s));overflow:hidden;background:#000;isolation:isolate}
+.screen iframe{position:absolute;left:0;top:0;width:390px;height:844px;border:0;transform:scale(var(--s));transform-origin:0 0;background:#000;color-scheme:dark}
+.screen .poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top;transition:opacity .6s var(--glide);z-index:1}
+.screen.ready .poster{opacity:0}
+.screen.dip iframe{opacity:0;transition:none}
+.screen.dip.ready iframe{opacity:1;transition:opacity .4s var(--ease) .12s}
+.screen.dip.ready .poster{transition-duration:.18s;transition-timing-function:var(--ease)}
+.island{position:absolute;z-index:6;left:50%;top:calc(23px * var(--s));width:calc(124px * var(--s));height:calc(36px * var(--s));border-radius:999px;background:#000;transform:translateX(-50%)}
+/* the status bar as an iPhone draws it */
+.sbar{position:absolute;z-index:5;left:0;right:0;top:0;height:calc(58px * var(--s));color:#fff}
+.sb-time{position:absolute;left:0;top:0;width:calc(133px * var(--s));height:100%;display:grid;place-items:center;padding:calc(2.5px * var(--s)) 0 0 calc(4px * var(--s));
+  font:600 calc(17px * var(--s))/1 -apple-system,BlinkMacSystemFont,"SF Pro Text",var(--ui);letter-spacing:-.025em;font-variant-numeric:tabular-nums}
+.sb-ic{position:absolute;left:calc(257px * var(--s));right:0;top:0;height:100%;display:flex;align-items:center;justify-content:center;gap:calc(5.5px * var(--s));padding-right:calc(4px * var(--s))}
+.sb-ic svg{fill:currentColor;overflow:visible}
+.sb-cell{width:calc(17px * var(--s));height:calc(11.3px * var(--s))}
+.sb-wifi{width:calc(15.4px * var(--s));height:calc(10.9px * var(--s))}
+.sb-batt{width:calc(27.3px * var(--s));height:calc(12.7px * var(--s))}
+/* Turinoz's cursor, over the phone */
+.tcur{position:absolute;left:0;top:0;z-index:8;opacity:0;transition:opacity .45s var(--ease);will-change:transform}
+.tcur.on{opacity:1}
+.tcur .arrow{position:absolute;left:-5px;top:-3px;width:25px;height:25px;overflow:visible;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35)) drop-shadow(0 5px 9px rgba(0,0,0,.32));transform-origin:5px 3px;transition:transform .22s var(--ease)}
+.tcur .arrow path{fill:#fff;stroke:#111;stroke-width:1.25;stroke-linejoin:round}
+.tcur.press .arrow{transform:scale(.86)}
+.tcur .ring{position:absolute;left:-18px;top:-18px;width:36px;height:36px;border-radius:50%;border:1.5px solid #fff;opacity:0}
+.tcur.clk .ring{animation:ring .7s var(--ease)}
+@keyframes ring{0%{opacity:.85;transform:scale(.2)}100%{opacity:0;transform:scale(1.25)}}
+
+/* a narrow frame: the phone in the middle, the stop's name above it */
+.cap{display:none}
+html.narrow .col{display:none}
+html.narrow .dock{right:auto;left:50%;top:auto;bottom:var(--capb,40px);transform:translateX(-50%)}
+html.narrow .cap{display:flex;position:absolute;left:0;right:0;top:34px;flex-direction:column;align-items:center;gap:12px;text-align:center}
+html.narrow .cap h3{font:560 34px/1.05 var(--display);font-stretch:88%;letter-spacing:-.03em;padding:0 24px}
+.cap .dn b{background:var(--ink);color:var(--on-ink);box-shadow:none}
+.cap .swap{animation:swapIn .5s var(--glide) both}
+@keyframes swapIn{from{transform:translateY(7px);opacity:0}}
+@media (prefers-reduced-motion:reduce){ .run,.stop{transition:none} }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="icPlay" viewBox="0 0 16 16"><path d="M4.5 2.8v10.4c0 .6.6.9 1.1.6l8-5.2c.4-.3.4-.9 0-1.2l-8-5.2c-.5-.3-1.1 0-1.1.6z" fill="currentColor"/></symbol></svg>
+<div id="cv">
+  <div class="col"><div class="run" id="run">
+    <div class="head">
+      <div class="kicker"><i></i>01 — Tour</div>
+      <h2>A quick tour.</h2>
+      <p class="sub">The phone is the real app. It follows along as you scroll, and you can take over any time.</p>
+    </div>
+    <ol class="stops">
+      <li class="stop" data-stop="live" data-name="Live">
+        <span class="dn"><b>01</b><span class="dplay"><svg><use href="#icPlay"/></svg></span>Live</span>
+        <h3>It opens on what’s live.</h3>
+        <p>On a match night, that’s the first thing you want to know. Each card grows a little with every minute, so you can tell which games are nearly over.</p>
+      </li>
+      <li class="stop" data-stop="follow" data-name="Following">
+        <span class="dn"><b>02</b>Following</span>
+        <h3>Follow one player.</h3>
+        <p>Every touch, live. Pick a player and they get their own card at the top.</p>
+      </li>
+      <li class="stop" data-stop="match" data-name="Match">
+        <span class="dn"><b>03</b><span class="dplay"><svg><use href="#icPlay"/></svg></span>Match</span>
+        <h3>The match, as it happens.</h3>
+        <p>Facts first: the score and who’s on top. Then every event, minute by minute.</p>
+      </li>
+      <li class="stop" data-stop="stats" data-name="Stats">
+        <span class="dn"><b>04</b><span class="dplay"><svg><use href="#icPlay"/></svg></span>Stats</span>
+        <h3>Stats, live.</h3>
+        <p>Every shot, corner, foul and more, counted as it happens.</p>
+      </li>
+      <li class="stop" data-stop="lineup" data-name="Player">
+        <span class="dn"><b>05</b><span class="dplay"><svg><use href="#icPlay"/></svg></span>Player</span>
+        <h3>From the lineup to the player.</h3>
+        <p>See who’s playing where, then tap anyone for their own stats in this match.</p>
+      </li>
+      <li class="stop" data-stop="goal" data-name="Goal">
+        <span class="dn"><b>06</b>Goal</span>
+        <h3>Elsewhere, just a note.</h3>
+        <p>A goal or a red card in another match comes in quietly. Your match gets the whole screen.</p>
+      </li>
+    </ol>
+  </div></div>
+  <div class="cap" id="cap"><span class="dn"><b>01</b><span>Live</span></span><h3>It opens on what’s live.</h3></div>
+  <div class="dock">
+    <div class="device" id="device">
+      <span class="glow"></span>
+      <div class="screen" id="screen">
+        <img class="poster" src="assets/home.webp" alt="" width="780" height="1688">
+        <iframe id="app" title="Scoreline, the real app playing the tour" tabindex="-1" aria-hidden="true" allow="autoplay"></iframe>
+        <div class="sbar">
+          <span class="sb-time">9:41</span>
+          <span class="sb-ic">
+            <svg class="sb-cell" viewBox="0 0 18 12"><rect x="0" y="7.6" width="3.2" height="4.4" rx="1"/><rect x="4.9" y="5.2" width="3.2" height="6.8" rx="1"/><rect x="9.8" y="2.6" width="3.2" height="9.4" rx="1"/><rect x="14.7" y="0" width="3.2" height="12" rx="1"/></svg>
+            <svg class="sb-wifi" viewBox="-.8 0 17.6 12.4"><path d="M8 12 5.17 9.17a4 4 0 0 1 5.66 0z"/><path d="M3.3 7.3a6.65 6.65 0 0 1 9.4 0" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><path d="M.61 4.61a10.45 10.45 0 0 1 14.78 0" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg>
+            <svg class="sb-batt" viewBox="0 0 28 13"><rect x=".5" y=".5" width="24" height="12" rx="3.8" fill="none" stroke="currentColor" stroke-opacity=".35"/><rect x="2" y="2" width="21" height="9" rx="2.4"/><path d="M26 4.5v4c.8-.3 1.3-1.1 1.3-2s-.5-1.7-1.3-2z" fill-opacity=".4"/></svg>
+          </span>
+        </div>
+        <div class="tcur"><span class="ring"></span><svg class="arrow" viewBox="0 0 25 25"><path d="M5 3v17.2l4.6-4.3 3.2 7.1 3.1-1.4-3.2-6.9 6.3-.3z"/></svg></div>
+      </div>
+      <span class="island"></span>
+      <span class="hw"></span>
+    </div>
+  </div>
+</div>
+<script>
+(() => {
+'use strict';
+const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const html = document.documentElement;
+const RM = matchMedia('(prefers-reduced-motion: reduce)');
+const reduce = () => RM.matches;
+const cv = $('#cv'), run = $('#run'), stops = $$('.stop'), device = $('#device'), screenEl = $('#screen'), frame = $('#app'), cap = $('#cap');
+
+/* ---------- size: one composition, scaled to the frame ---------- */
+let W = 1040, H = 650, K = 1, S = .64, narrow = false;
+const off = el => { let y = 0; while (el && el !== run) { y += el.offsetTop; el = el.offsetParent; } return y; };
+function fit() {
+  const vw = innerWidth, vh = innerHeight; if (!vw || !vh) return;
+  narrow = vw / vh < 1.15;
+  html.classList.toggle('narrow', narrow);
+  if (narrow) { W = 520; H = Math.round(W / clamp(vw / vh, .62, 1.15)); S = clamp((H - 200) / 868, .4, .66); }
+  else { W = 1040; H = Math.round(W / clamp(vw / vh, 1.3, 2)); S = clamp((H - 64) / 868, .5, .7); }
+  K = Math.min(vw / W, vh / H);
+  const s = html.style;
+  s.setProperty('--w', W + 'px'); s.setProperty('--h', H + 'px'); s.setProperty('--k', K.toFixed(5));
+  device.style.setProperty('--s', S.toFixed(4));
+  const phoneW = 414 * S, right = Math.round(Math.max(48, (W * .44 - phoneW) / 2));
+  s.setProperty('--dockr', right + 'px');
+  s.setProperty('--colw', Math.round(W - 56 - right - phoneW - 48) + 'px');
+  s.setProperty('--stoph', Math.round(H * .62) + 'px');
+  s.setProperty('--capb', Math.round((H - 150 - 868 * S) / 2 + 20) + 'px');
+  place(true);
+}
+
+/* ---------- the column: the title, then each stop with its middle level with the phone ---------- */
+let at = -1;                                         // -1 = the title
+function place(now) {
+  let y = 0;
+  if (at >= 0) { const el = stops[at]; y = Math.max(0, off(el) + el.offsetHeight / 2 - H / 2); }
+  if (now) { run.style.transition = 'none'; run.style.transform = `translate3d(0,${-y}px,0)`; void run.offsetWidth; run.style.transition = ''; }
+  else run.style.transform = `translate3d(0,${-y}px,0)`;
+}
+function setStop(k) {
+  at = k;
+  stops.forEach((s, i) => s.classList.toggle('on', i === k));
+  place(reduce());
+  if (k < 0) return;
+  const s = stops[k], b = $('b', cap), n = $('.dn span', cap), h = $('h3', cap);
+  b.textContent = String(k + 1).padStart(2, '0'); n.textContent = s.dataset.name; h.textContent = $('h3', s).textContent;
+  [b.parentNode, h].forEach(e => { e.classList.remove('swap'); void e.offsetWidth; e.classList.add('swap'); });
+}
+
+/* ---------- the phone: the real app, through its own review bridge (as in case-study.js) ---------- */
+const D = { app: null, shown: false, run: 0 };
+const BASE = new URL('app/', location.href).pathname.replace(/\/$/, '');
+window.scorelineReviewHost = {
+  attach(f) { D.app = f; showApp(); try { if (asleep()) f.pause(); } catch (_) {} wake(); },
+  detach(f) { if (D.app === f) D.app = null; },
+};
+const appDoc = () => { try { return frame.contentDocument; } catch (_) { return null; } };
+const appRoute = () => { try { const l = frame.contentWindow.location; return (l.pathname.startsWith(BASE) ? l.pathname.slice(BASE.length) : l.pathname) + l.search; } catch (_) { return '/'; } };
+// the poster gives way once the app's first screen has landed and its entry animations have run
+function showApp() {
+  if (D.shown) return; D.shown = true;
+  const t0 = performance.now(); let since = 0, burst = false;
+  const landed = () => {
+    const now = performance.now(); let later = false;
+    try {
+      const d = frame.contentDocument;
+      if (!d.querySelector('[data-screen-heading]')) later = true;
+      else {
+        const n = d.getAnimations().filter(a => a.playState === 'running' && isFinite(a.effect.getComputedTiming().endTime)).length;
+        if (!since) since = now; if (n > 2) burst = true;
+        later = n > 0 || (!burst && now - since < 400);
+      }
+    } catch (_) {}
+    if (later && now - t0 < 3500) { requestAnimationFrame(landed); return; }
+    screenEl.classList.add('dip');
+    requestAnimationFrame(() => screenEl.classList.add('ready'));
+  };
+  requestAnimationFrame(landed);
+}
+// the app's own router, no new history
+function navigate(route) {
+  let w; try { w = frame.contentWindow; if (!w || !w.history) return; } catch (_) { return; }
+  if (appRoute() === route) return;
+  const st = w.history.state || {};
+  const next = { usr: null, key: Math.random().toString(36).slice(2, 10), idx: typeof st.idx === 'number' ? st.idx : 0 };
+  w.history.replaceState(next, '', BASE + route);
+  w.dispatchEvent(new PopStateEvent('popstate', { state: next }));
+}
+const presentScreen = () => { const d = appDoc(); return d && [...d.querySelectorAll('[data-screen][data-present="true"]')].pop(); };
+
+/* ---------- the stops: the same runs as the case study's tour ---------- */
+const ease = t => (t < .5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
+const CANCEL = Symbol('cancel');
+const pathNow = () => { const r = appRoute().split('?')[0].replace(/\/$/, ''); return r || '/'; };
+const scr = () => presentScreen();
+const inScr = sel => { const s = scr(); return s ? s.querySelector(sel) : null; };
+const followSec = () => { const d = appDoc(); return d && d.querySelector('section[aria-label="Following"]'); };
+const EL = {
+  live: () => { const d = appDoc(); return d && d.querySelector('button[aria-label^="Live"]'); },
+  match: () => inScr('button[aria-label^="France "][aria-label*="Argentina"]:not([aria-label$=", live"])'),
+  tab: name => { const s = scr(); return s ? [...s.querySelectorAll('[role=tab]')].find(t => t.textContent.trim().startsWith(name)) || null : null; },
+  side: side => inScr(`button[role=radio][data-side="${side}"]`),
+  messi: () => inScr('button[aria-label="10 Messi"]'),
+  heading: name => { const s = scr(); return s ? [...s.querySelectorAll('h2,h3')].find(h => h.textContent.trim() === name) || null : null; },
+};
+const isLive = () => { const b = EL.live(); return !b || b.getAttribute('aria-pressed') !== 'false'; };
+const offsetIn = (el, s) => el.getBoundingClientRect().top - s.getBoundingClientRect().top + s.scrollTop;
+const maxScroll = s => Math.max(0, s.scrollHeight - s.clientHeight);
+
+// a run: every wait checks it is still the current one, and that the tile is awake
+const mine = tok => tok === D.run && !asleep();
+const pause = async (tok, ms) => { await new Promise(r => setTimeout(r, ms)); if (!mine(tok)) throw CANCEL; };
+const frames = (tok, ms, fn) => new Promise((res, rej) => {
+  if (reduce() || ms <= 0) { fn(1); res(); return; }
+  const t0 = performance.now();
+  const f = now => {
+    if (!mine(tok)) return rej(CANCEL);
+    const k = Math.min(1, (now - t0) / ms); fn(ease(k));
+    if (k < 1) requestAnimationFrame(f); else res();
+  };
+  requestAnimationFrame(f);
+});
+async function reach(tok, path, kind) {
+  if (pathNow() !== path) navigate(path);
+  for (let k = 0; k < 40; k++) {
+    const s = scr();
+    if (s && s.dataset.screen === kind && pathNow() === path) return s;
+    await pause(tok, 60);
+  }
+  throw CANCEL;
+}
+const glide = (tok, s, y, ms) => { const a = s.scrollTop, b = Math.round(clamp(y, 0, maxScroll(s))); return Math.abs(a - b) < 2 ? Promise.resolve() : frames(tok, ms, k => s.scrollTo({ top: lerp(a, b, k), behavior: 'instant' })); };
+async function liveOn(tok) { if (!isLive()) { EL.live()?.click(); await pause(tok, 450); } }
+
+// the cursor: no captions, it just moves and taps
+const TC = { cur: $('.tcur', screenEl), on: false, x: 0, y: 0 };
+const rest = () => ({ x: screenEl.clientWidth * .62, y: screenEl.clientHeight * .74 });
+const ptOf = el => { const r = el.getBoundingClientRect(); return { x: (r.left + Math.min(r.width * .5, 70)) * S, y: (r.top + r.height * .5) * S }; };
+function placeCursor(x, y) {
+  TC.x = x; TC.y = y;
+  const fw = screenEl.clientWidth, fh = screenEl.clientHeight;
+  TC.cur.style.transform = `translate3d(${clamp(x, 12, fw - 12).toFixed(1)}px,${clamp(y, 40, fh - 30).toFixed(1)}px,0)`;
+}
+function showCursor(v) {
+  if (v === TC.on) return;
+  if (v) { const r = rest(); placeCursor(r.x, r.y); }
+  TC.on = v; TC.cur.classList.toggle('on', v);
+}
+const hideCursor = () => showCursor(false);
+async function moveTo(tok, find, ms = 800) {
+  const el = find(); if (!el || !el.getClientRects().length) throw CANCEL;
+  showCursor(true);
+  const A = { x: TC.x, y: TC.y }, B = ptOf(el);
+  await frames(tok, ms, k => placeCursor(lerp(A.x, B.x, k), lerp(A.y, B.y, k)));
+  return el;
+}
+function tapRing() { const c = TC.cur; c.classList.remove('clk'); void c.offsetWidth; c.classList.add('press', 'clk'); setTimeout(() => c.classList.remove('press'), 160); }
+// a tap the app feels as one: pointer down and up on the element before the click
+function press(el, type) {
+  const w = frame.contentWindow, r = el.getBoundingClientRect(), P = w.PointerEvent || w.MouseEvent;
+  el.dispatchEvent(new P(type, { bubbles: true, cancelable: true, composed: true, view: w, button: 0, buttons: type === 'pointerup' ? 0 : 1,
+    clientX: r.left + r.width / 2, clientY: r.top + r.height / 2, pointerId: 1, pointerType: 'mouse', isPrimary: true }));
+}
+async function tap(tok, el, act) {
+  if (el) { press(el, 'pointerover'); press(el, 'pointerdown'); }
+  tapRing(); await pause(tok, 140);
+  if (el) press(el, 'pointerup');
+  (act || (() => el.click()))();
+}
+// the app pushes a screen; for one tap that push lands as a replace, and the app's focus move is let go
+function noPush(fn) {
+  const h = frame.contentWindow.history, d = appDoc();
+  const calm = e => { if (e.target && e.target.blur) e.target.blur(); };
+  d.addEventListener('focusin', calm, true);
+  setTimeout(() => d.removeEventListener('focusin', calm, true), 1500);
+  const done = () => { clearTimeout(t); delete h.pushState; };
+  const t = setTimeout(done, 1500);
+  h.pushState = function (state, title, url) {
+    done();
+    const idx = h.state && typeof h.state.idx === 'number' ? h.state.idx : 0;
+    return h.replaceState(state && typeof state === 'object' ? { ...state, idx } : state, title, url);
+  };
+  try { fn(); } catch (e) { done(); throw e; }
+}
+// a goal in another match: for one call the engine's "featured" lookup answers with another live match
+function elsewhere(fn) {
+  const AP = frame.contentWindow.Array.prototype, find = AP.find;
+  AP.find = function (f, ...r) {
+    AP.find = find;
+    const hit = find.call(this, f, ...r);
+    return hit && hit.feat ? find.call(this, m => m && m.status === 'live' && !m.feat) || hit : hit;
+  };
+  try { return fn(); } finally { AP.find = find; }
+}
+let engineP = null;
+function engine() {
+  if (engineP) return engineP;
+  engineP = (async () => {
+    const w = frame.contentWindow, d = appDoc();
+    const url = d && [...d.querySelectorAll('link[rel=modulepreload]')].map(l => l.href).find(h => /followBridge-/.test(h));
+    if (!url) return null;
+    const mod = await new w.Function('u', 'return import(u)')(url);
+    return typeof mod.t === 'function' ? mod.t() : null;
+  })().catch(() => null);
+  engineP.then(e => { if (!e) engineP = null; });
+  return engineP;
+}
+
+const STOPS = {
+  // Live switches off, then on again
+  async live(tok) {
+    const s = await reach(tok, '/', 'list'); await liveOn(tok); await glide(tok, s, 0, 500);
+    await pause(tok, 500);
+    const b = await moveTo(tok, EL.live, 900);
+    await pause(tok, 300); await tap(tok, b);
+    await pause(tok, 1700); await tap(tok, b);
+    await pause(tok, 1400);
+  },
+  // the card of the player you follow, at the top of the list
+  async follow(tok) {
+    const s = await reach(tok, '/', 'list'); await liveOn(tok); await glide(tok, s, 0, 500);
+    await pause(tok, 3200);
+  },
+  // into the match: Facts, then down into Events
+  async match(tok) {
+    let s = await reach(tok, '/', 'list'); await liveOn(tok);
+    const row = EL.match();
+    if (row) { const y = offsetIn(row, s), h = s.clientHeight; if (y < s.scrollTop + h * .25 || y > s.scrollTop + h * .8) await glide(tok, s, y - h * .55, 700); }
+    await pause(tok, 300);
+    const m = await moveTo(tok, EL.match, 800);
+    await pause(tok, 200); await tap(tok, m, () => noPush(() => m.click()));
+    await pause(tok, 300); hideCursor();
+    s = await reach(tok, '/match/1/facts', 'match');
+    await pause(tok, 1100);
+    const ev = EL.heading('Events');
+    await glide(tok, s, ev ? offsetIn(ev, s) + 240 : maxScroll(s), 2800);
+    await pause(tok, 900);
+  },
+  // Stats, and down through them
+  async stats(tok) {
+    let s = scr();
+    if (pathNow() !== '/match/1/stats') { s = await reach(tok, '/match/1/facts', 'match'); await glide(tok, s, 0, 600); }
+    else await glide(tok, s, 0, 600);
+    await pause(tok, 300);
+    const tab = await moveTo(tok, () => EL.tab('Stats'), 800);
+    await pause(tok, 200); await tap(tok, tab);
+    await pause(tok, 500); hideCursor();
+    await pause(tok, 600);
+    s = scr(); await glide(tok, s, maxScroll(s), 2800);
+    await pause(tok, 900);
+  },
+  // Lineup, Argentina, then Messi's page
+  async lineup(tok) {
+    let s = scr();
+    if (!/^\/match\/1\//.test(pathNow())) s = await reach(tok, '/match/1/stats', 'match');
+    await glide(tok, s, 0, 600);
+    await pause(tok, 300);
+    const tab = await moveTo(tok, () => EL.tab('Lineup'), 800);
+    await pause(tok, 200); await tap(tok, tab);
+    await pause(tok, 500);
+    if (EL.side('away')?.getAttribute('aria-checked') === 'true') EL.side('home')?.click();
+    await pause(tok, 500);
+    const side = await moveTo(tok, () => EL.side('away'), 800);
+    await pause(tok, 200); await tap(tok, side);
+    await pause(tok, 1100);
+    const p = await moveTo(tok, EL.messi, 800);
+    await pause(tok, 300); await tap(tok, p, () => noPush(() => p.click()));
+    await pause(tok, 500); hideCursor();
+    await pause(tok, 2200);
+  },
+  // a goal in another match as a note on the list, then a goal in your match, on the whole screen
+  async goal(tok) {
+    const s = await reach(tok, '/', 'list'); await liveOn(tok); await glide(tok, s, 0, 500);
+    await pause(tok, 800);
+    const e = await engine();
+    if (e) {
+      const fire = () => { try { return !!elsewhere(() => e.trigger('goalHome')); } catch (_) { return false; } };
+      if (!fire()) { D.app.restart(); await pause(tok, 400); fire(); }
+    }
+    await pause(tok, 3600);
+    try { await D.app.scene('goal'); } catch (_) {}
+    if (!mine(tok)) throw CANCEL;
+    await pause(tok, 7500);                          // the scene plays out, and the list comes back
+  },
+};
+
+/* ---------- the loop: the title, then every stop in turn, then again from the title ---------- */
+let k = -1, looping = false;
+async function loop() {
+  if (looping) return; looping = true;
+  try {
+    while (D.app && !asleep()) {
+      const tok = ++D.run;
+      try {
+        if (k < 0) {                                 // the title, standing still, with the phone on Live
+          setStop(-1); hideCursor(); navigate('/');
+          await pause(tok, 2000);
+          k = 0; setStop(0);
+          await pause(tok, reduce() ? 300 : 1300);
+        }
+        const s = stops[k];
+        s.classList.add('playing');
+        await STOPS[s.dataset.stop](tok);
+        s.classList.remove('playing'); hideCursor();
+        if (k < stops.length - 1) { k++; setStop(k); await pause(tok, reduce() ? 300 : 1300); }
+        else {                                       // the end: fade, and from the title again
+          hideCursor(); run.classList.add('fade'); await pause(tok, 750);
+          k = -1; setStop(-1); place(true); navigate('/');
+          await pause(tok, 300); run.classList.remove('fade');
+        }
+      } catch (e) {
+        stops.forEach(s => s.classList.remove('playing')); hideCursor();
+        if (e !== CANCEL) { console.warn(e); await new Promise(r => setTimeout(r, 1500)); }
+        else break;
+      }
+    }
+  } finally { looping = false; }
+}
+
+/* ---------- awake only while the tile is on screen, in front, and no study covers it ---------- */
+let seen = true, started = false;
+const asleep = () => { if (document.hidden || !seen) return true; try { return parent !== window && parent.document.documentElement.classList.contains('study-open'); } catch (_) { return false; } };
+function wake() {
+  const zz = asleep();
+  if (!started && !zz) { started = true; frame.src = 'app/'; }
+  if (!D.app) return;
+  try { const st = D.app.state(); if (zz && !st.paused) D.app.pause(); else if (!zz && st.paused) D.app.resume(); } catch (_) {}
+  if (zz) { D.run++; return; }
+  loop();
+}
+if ('IntersectionObserver' in window) new IntersectionObserver(es => { seen = es[es.length - 1].isIntersecting; wake(); }, { rootMargin: '60px' }).observe(cv);
+document.addEventListener('visibilitychange', wake);
+setInterval(wake, 700);              // picks up again after a study closes
+
+/* ---------- day / night follows the page around it ---------- */
+function follow() {
+  try {
+    const t = parent !== window && parent.document.documentElement.dataset.theme, r = html;
+    if (t === 'light' || t === 'dark') { if (r.dataset.theme !== t) r.dataset.theme = t; }
+    else if (parent !== window && r.dataset.theme) delete r.dataset.theme;
+  } catch (_) {}
+}
+setInterval(follow, 1000);
+addEventListener('message', e => { if (e.source === parent && e.data && e.data.tzTheme) follow(); });
+addEventListener('resize', fit);
+
+fit(); setStop(-1);
+(document.fonts && document.fonts.ready || Promise.resolve()).then(() => { fit(); cv.classList.add('on'); wake(); });
+})();
+</script>
+</body>
+</html>
