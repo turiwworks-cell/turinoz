@@ -39,6 +39,9 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
       <stop offset=".59" stop-color="#9387d9"/><stop offset=".68" stop-color="#6d5ccc"/><stop offset=".77" stop-color="#4f3ac1"/>
       <stop offset=".86" stop-color="#3922ba"/><stop offset=".93" stop-color="#2c14b5"/><stop offset="1" stop-color="#280fb4"/>
     </linearGradient>
+    <!-- for the app's own icons (02 · System, and the ball on the buttons) -->
+    <clipPath id="slDisc" clipPathUnits="userSpaceOnUse"><circle r="1"/></clipPath>
+    <linearGradient id="slFollow" gradientUnits="userSpaceOnUse" x1="3" y1="0" x2="21" y2="0"><stop offset="0" stop-color="#6B58F5"/><stop offset=".4" stop-color="#A58FE6"/><stop offset=".76" stop-color="#E7C1D6"/><stop offset="1" stop-color="#FFF0E6"/></linearGradient>
   </defs>
   <symbol id="tzLogo" viewBox="0 0 1080 1080">
     <circle fill="#010008" cx="540" cy="540" r="530.68"/>
@@ -54,6 +57,7 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
   <symbol id="icHand" viewBox="0 0 16 16"><path d="M6 8.5V3.2a1.1 1.1 0 0 1 2.2 0V7m0-1.2a1.1 1.1 0 0 1 2.2 0V7.6m0-.8a1.1 1.1 0 0 1 2.2 0v3.1c0 2.4-1.7 4.3-4.1 4.3H8c-1.4 0-2.4-.6-3.2-1.7L3 10.1a1.1 1.1 0 0 1 1.7-1.4L6 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="icCheck" viewBox="0 0 16 16"><path d="m3.5 8.4 2.9 2.8 6.1-6.4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="icDot" viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.4" fill="currentColor"/></symbol>
+  <symbol id="icBall" viewBox="-1 -1 2 2"><circle r="1" fill="#F3F2EF"/><g transform="scale(0.76)" fill="#161616"><path d="M 0 -1 L 0.9511 -0.309 L 0.5878 0.809 L -0.5878 0.809 L -0.9511 -0.309 Z" transform="scale(0.36)"/><g clip-path="url(#slDisc)"><path d="M 0 -1 L 0.9511 -0.309 L 0.5878 0.809 L -0.5878 0.809 L -0.9511 -0.309 Z" transform="translate(0 -1.02) rotate(-180) scale(0.32)"/><path d="M 0 -1 L 0.9511 -0.309 L 0.5878 0.809 L -0.5878 0.809 L -0.9511 -0.309 Z" transform="translate(0.9701 -0.3152) rotate(-108) scale(0.32)"/><path d="M 0 -1 L 0.9511 -0.309 L 0.5878 0.809 L -0.5878 0.809 L -0.9511 -0.309 Z" transform="translate(0.5995 0.8252) rotate(-36) scale(0.32)"/><path d="M 0 -1 L 0.9511 -0.309 L 0.5878 0.809 L -0.5878 0.809 L -0.9511 -0.309 Z" transform="translate(-0.5995 0.8252) rotate(36) scale(0.32)"/><path d="M 0 -1 L 0.9511 -0.309 L 0.5878 0.809 L -0.5878 0.809 L -0.9511 -0.309 Z" transform="translate(-0.9701 -0.3152) rotate(108) scale(0.32)"/></g><path d="M 0 -0.36 L 0 -0.72 M 0.3424 -0.1112 L 0.6848 -0.2225 M 0.2116 0.2912 L 0.4232 0.5825 M -0.2116 0.2912 L -0.4232 0.5825 M -0.3424 -0.1112 L -0.6848 -0.2225" fill="none" stroke="#161616" stroke-width="0.1" stroke-linecap="round" stroke-linejoin="round"/><circle r="1" fill="none" stroke="#161616" stroke-width="0.12"/></g></symbol>
   <symbol id="icX" viewBox="0 0 12 12"><path d="M3 3l6 6M9 3 3 9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
 </svg>
 
@@ -115,16 +119,13 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
     <span class="hw" aria-hidden="true"></span>
   </div>
   <div class="dock-bar" role="group" aria-label="Demo controls">
-    <button class="chipbtn" type="button" data-scene="goal"><span class="gl" aria-hidden="true">⚽</span>Goal</button>
+    <button class="chipbtn" type="button" data-scene="goal"><svg class="ball" aria-hidden="true"><use href="#icBall"/></svg>Goal</button>
     <button class="chipbtn" type="button" data-scene="red"><span class="rc" aria-hidden="true"></span>Red card</button>
-    <button class="chipbtn" type="button" data-moment="goalFav"><span class="gl" aria-hidden="true">⚽</span>Messi scores</button>
+    <button class="chipbtn" type="button" data-moment="goalFav"><svg class="ball" aria-hidden="true"><use href="#icBall"/></svg>Messi scores</button>
     <button class="chipbtn" type="button" data-moment="redFav"><span class="rc" aria-hidden="true"></span>Messi sent off</button>
     <button class="chipbtn" type="button" id="dockRestart" aria-label="Start the match night again"><svg aria-hidden="true"><use href="#icRestart"/></svg></button>
-    <button class="chipbtn take" type="button" data-take><svg aria-hidden="true"><use href="#icHand"/></svg>Take control</button>
     <button class="chipbtn give" type="button" id="dockGive"><svg aria-hidden="true"><use href="#icCheck"/></svg>Give it back</button>
-    <a class="chipbtn" id="dockFull" href="app/" target="_blank" rel="noopener" aria-label="Open the app full screen, in a new tab"><svg aria-hidden="true"><use href="#icArrowOut"/></svg></a>
   </div>
-  <p class="dock-note" id="dockNote" aria-live="polite">The real app, playing a match night on its own.</p>
 </aside>
 <button class="demo-pill" id="demoPill" type="button" data-open-demo aria-label="Open the live demo">
   <span class="mini" aria-hidden="true"><span class="slmark"><i></i><i></i><i></i></span></span>
@@ -143,9 +144,9 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
         <span class="ln" aria-hidden="true"><span class="mine">Every decision, mine.</span></span>
         <span class="ln" aria-hidden="true"><span class="ais">Every line of code, <b>AI’s.</b></span></span>
       </h1>
-      <p class="lede rv" style="--rd:.18s">Scoreline, a football app for match nights, was an experiment: a way to test my own direction with AI as a new tool. <em>I&nbsp;designed the layout, the colours and the motion.</em></p>
+      <p class="lede rv" style="--rd:.18s">Scoreline, a football app for match nights, was an experiment: a way to test my own direction with AI as a new tool. <em>I&nbsp;designed the layout, the colors and the motion.</em></p>
       <div class="proof rv" style="--rd:.26s">
-        <a class="btn" href="app/" target="_blank" rel="noopener" data-cursor="Full screen, in a new tab"><span class="dot" aria-hidden="true"></span>Open the app</a>
+        <a class="btn" href="app/" target="_blank" rel="noopener" data-cursor="Full screen, in a new tab"><span class="dot" aria-hidden="true"></span>Try it live<span class="go" aria-hidden="true"><svg><use href="#icArrowOut"/></svg></span></a>
       </div>
     </div>
   </div>
@@ -169,11 +170,11 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
           <div class="drow"><button class="chipbtn dshow" type="button" data-show>Show me in the demo</button></div>
         </li>
         <li class="dcard" data-stop="follow" data-route="/">
-          <span class="dn"><b>02</b><button class="dplay" type="button" data-play aria-label="Play Following on the phone" data-cursor="Play it"><svg aria-hidden="true"><use href="#icPlay"/></svg></button>Following</span>
+          <span class="dn"><b>02</b>Following</span>
           <h3>Follow one player.</h3>
           <p>Every touch, live. Pick a player and they get their own card at the top.</p>
           <div class="dshot"><img src="assets/follow.webp" alt="The follow card: Messi, his rating, touches, passes and shots, and what he is doing now." loading="lazy" width="600" height="1298"></div>
-          <div class="drow"><button class="chipbtn dshow" type="button" data-show>Show me in the demo</button><button class="chipbtn" type="button" data-moment="goalFav"><span aria-hidden="true">⚽</span>Your player scores</button><button class="chipbtn" type="button" data-moment="redFav"><span class="rc" style="width:8px;height:11px;border-radius:2px;background:var(--red);transform:rotate(8deg)" aria-hidden="true"></span>Your player sent off</button></div>
+          <div class="drow"><button class="chipbtn dshow" type="button" data-show>Show me in the demo</button><button class="chipbtn" type="button" data-moment="goalFav"><svg class="ball" aria-hidden="true"><use href="#icBall"/></svg>Your player scores</button><button class="chipbtn" type="button" data-moment="redFav"><span class="rc" style="width:8px;height:11px;border-radius:2px;background:var(--red);transform:rotate(8deg)" aria-hidden="true"></span>Your player sent off</button></div>
         </li>
         <li class="dcard" data-stop="match" data-route="/match/1/facts">
           <span class="dn"><b>03</b><button class="dplay" type="button" data-play aria-label="Play Match on the phone" data-cursor="Play it"><svg aria-hidden="true"><use href="#icPlay"/></svg></button>Match</span>
@@ -191,9 +192,9 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
         </li>
         <li class="dcard" data-stop="lineup" data-route="/match/1/lineup">
           <span class="dn"><b>05</b><button class="dplay" type="button" data-play aria-label="Play Player on the phone" data-cursor="Play it"><svg aria-hidden="true"><use href="#icPlay"/></svg></button>Player</span>
-          <h3>From the line-up to the player.</h3>
+          <h3>From the lineup to the player.</h3>
           <p>See who’s playing where, then tap anyone for their own stats in this match.</p>
-          <div class="dshot"><img src="assets/lineup.webp" alt="The line-up on a pitch, with photos, ratings and name plates." loading="lazy" width="600" height="1298"></div>
+          <div class="dshot"><img src="assets/lineup.webp" alt="The lineup on a field, with photos, ratings and name plates." loading="lazy" width="600" height="1298"></div>
           <div class="drow"><button class="chipbtn dshow" type="button" data-show>Show me in the demo</button></div>
         </li>
         <li class="dcard" data-stop="goal" data-route="/">
@@ -201,7 +202,7 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
           <h3>Elsewhere, just a note.</h3>
           <p>A goal or a red card in another match comes in quietly. Your match gets the whole screen.</p>
           <div class="dshot"><img src="assets/toast.webp" alt="A goal in England against Brazil arrives as a small notice at the top of the list." loading="lazy" width="600" height="1298"></div>
-          <div class="drow"><button class="chipbtn" type="button" data-moment="goalElse"><span aria-hidden="true">⚽</span>Goal elsewhere</button><button class="chipbtn" type="button" data-moment="redElse"><span class="rc" style="width:8px;height:11px;border-radius:2px;background:var(--red);transform:rotate(8deg)" aria-hidden="true"></span>Red card elsewhere</button><button class="chipbtn" type="button" data-scene="goal"><span aria-hidden="true">⚽</span>Goal in your match</button><button class="chipbtn" type="button" data-scene="red"><span class="rc" style="width:8px;height:11px;border-radius:2px;background:var(--red);transform:rotate(8deg)" aria-hidden="true"></span>Red card in your match</button></div>
+          <div class="drow"><button class="chipbtn" type="button" data-moment="goalElse"><svg class="ball" aria-hidden="true"><use href="#icBall"/></svg>Goal elsewhere</button><button class="chipbtn" type="button" data-moment="redElse"><span class="rc" style="width:8px;height:11px;border-radius:2px;background:var(--red);transform:rotate(8deg)" aria-hidden="true"></span>Red card elsewhere</button><button class="chipbtn" type="button" data-scene="goal"><svg class="ball" aria-hidden="true"><use href="#icBall"/></svg>Goal in your match</button><button class="chipbtn" type="button" data-scene="red"><span class="rc" style="width:8px;height:11px;border-radius:2px;background:var(--red);transform:rotate(8deg)" aria-hidden="true"></span>Red card in your match</button></div>
         </li>
       </ol>
     </div>
@@ -227,19 +228,43 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
           <div class="spec" style="--stops:var(--sp4);--h:88%;--p:.73"><span class="lbl">IRL 2<br>POL 1</span><span class="min">66</span><span class="bar"><u></u></span></div>
         </div>
         <div class="stops"><span>Spectrum 2</span><span>Spectrum 5</span><span>Spectrum 1</span><span>Spectrum 3 · accent</span><span>Spectrum 4</span></div>
-        <p class="pc">The third one is the accent: the tab line, the chosen segment, and this page’s progress bar. In the app, live cards take the two teams’ own colours on the same recipe.</p>
+        <p class="pc">The third one is the accent: the tab line, the chosen segment, and this page’s progress bar. In the app, live cards take the two teams’ own colors on the same recipe.</p>
       </div>
       <div class="panel p-type rv">
         <div class="kicker"><i></i>Type</div>
         <h3>Light for numbers, bold only for GOAAAL.</h3>
         <div class="typerow">
-          <figure><span class="t1" id="wghtSample">58’</span><figcaption>Light 300 · 86 px · −0.05 em · the score</figcaption></figure>
+          <figure><span class="t1">58’</span><figcaption>Light 300 · 86 px · −0.05 em · the score</figcaption></figure>
           <figure><span class="t2">Messi</span><figcaption>Medium 500 · 26 · names</figcaption></figure>
           <figure><span class="t3">GOAAAL</span><figcaption>Bold 700 · 46 · one word</figcaption></figure>
           <figure><span class="t4">Live now</span><figcaption>500 · 10.5 · +0.16 em · labels</figcaption></figure>
         </div>
-        <div class="wght"><span class="mono" style="font-size:11px;color:var(--muted)">Weight</span><input type="range" min="100" max="900" value="300" id="wght" aria-label="Weight of the sample numeral"><output class="mono" id="wghtOut">300 · Light</output></div>
         <p class="pc">Hanken Grotesk, self-hosted. Twenty-one sizes, from 8 to 86 px, every one from the prototype, so text sits on the same baselines it did in Rive.</p>
+      </div>
+      <div class="panel p-icons rv" style="--rd:.06s">
+        <div class="ico-h"><div class="kicker"><i></i>Icons</div><span class="ico-tip mono" id="icoTip">Right-click to copy the SVG</span></div>
+        <div class="icons" id="icons" role="group" aria-label="The app’s icons">
+          <button class="ico" type="button" data-cursor="Goal" aria-label="Goal: right-click to copy the SVG"><svg viewBox="-1 -1 2 2" width="22" height="22" aria-hidden="true"><circle r="1" fill="#F3F2EF"/><g transform="scale(0.76)" fill="#161616"><path d="M 0 -1 L 0.9511 -0.309 L 0.5878 0.809 L -0.5878 0.809 L -0.9511 -0.309 Z" transform="scale(0.36)"/><g clip-path="url(#slDisc)"><path d="M 0 -1 L 0.9511 -0.309 L 0.5878 0.809 L -0.5878 0.809 L -0.9511 -0.309 Z" transform="translate(0 -1.02) rotate(-180) scale(0.32)"/><path d="M 0 -1 L 0.9511 -0.309 L 0.5878 0.809 L -0.5878 0.809 L -0.9511 -0.309 Z" transform="translate(0.9701 -0.3152) rotate(-108) scale(0.32)"/><path d="M 0 -1 L 0.9511 -0.309 L 0.5878 0.809 L -0.5878 0.809 L -0.9511 -0.309 Z" transform="translate(0.5995 0.8252) rotate(-36) scale(0.32)"/><path d="M 0 -1 L 0.9511 -0.309 L 0.5878 0.809 L -0.5878 0.809 L -0.9511 -0.309 Z" transform="translate(-0.5995 0.8252) rotate(36) scale(0.32)"/><path d="M 0 -1 L 0.9511 -0.309 L 0.5878 0.809 L -0.5878 0.809 L -0.9511 -0.309 Z" transform="translate(-0.9701 -0.3152) rotate(108) scale(0.32)"/></g><path d="M 0 -0.36 L 0 -0.72 M 0.3424 -0.1112 L 0.6848 -0.2225 M 0.2116 0.2912 L 0.4232 0.5825 M -0.2116 0.2912 L -0.4232 0.5825 M -0.3424 -0.1112 L -0.6848 -0.2225" fill="none" stroke="#161616" stroke-width="0.1" stroke-linecap="round" stroke-linejoin="round"/><circle r="1" fill="none" stroke="#161616" stroke-width="0.12"/></g></svg></button>
+          <button class="ico" type="button" data-cursor="Assist" aria-label="Assist: right-click to copy the SVG"><svg viewBox="-1 -1 2 2" width="22" height="22" aria-hidden="true"><circle r="1" fill="#F3F2EF"/><g transform="translate(0 -0.06) scale(1.166)"><path d="M -0.60 -0.27 C -0.50 -0.31 -0.36 -0.29 -0.27 -0.22 C -0.19 -0.17 -0.11 -0.19 -0.05 -0.27 C 0.08 -0.12 0.28 -0.01 0.50 0.04 C 0.63 0.07 0.67 0.15 0.62 0.18 L -0.60 0.18 C -0.64 0.05 -0.65 -0.16 -0.60 -0.27 Z" fill="none" stroke="#161616" stroke-width="0.085" stroke-linecap="round" stroke-linejoin="round"/><path d="M -0.62 0.14 L 0.63 0.14 C 0.66 0.19 0.63 0.25 0.57 0.25 L -0.59 0.25 C -0.63 0.24 -0.64 0.19 -0.62 0.14 Z M -0.545 0.25 L -0.415 0.25 L -0.438 0.36 L -0.522 0.36 Z M -0.275 0.25 L -0.165 0.25 L -0.185 0.36 L -0.255 0.36 Z M 0.105 0.25 L 0.215 0.25 L 0.195 0.36 L 0.125 0.36 Z M 0.355 0.25 L 0.485 0.25 L 0.462 0.36 L 0.378 0.36 Z" fill="#161616"/><path d="M -0.01 -0.17 L 0.06 -0.09 M 0.12 -0.09 L 0.19 -0.01" fill="none" stroke="#161616" stroke-width="0.085" stroke-linecap="round" stroke-linejoin="round"/></g></svg></button>
+          <button class="ico" type="button" data-cursor="Yellow card" aria-label="Yellow card: right-click to copy the SVG"><svg viewBox="-1 -1 2 2" width="22" height="22" aria-hidden="true"><circle r="1" fill="#F3F2EF"/><rect x="-0.41" y="-0.59" width="0.82" height="1.18" rx="0.16" transform="rotate(11.4592)" fill="#E7C94A"/></svg></button>
+          <button class="ico" type="button" data-cursor="Red card" aria-label="Red card: right-click to copy the SVG"><svg viewBox="-1 -1 2 2" width="22" height="22" aria-hidden="true"><circle r="1" fill="#F3F2EF"/><rect x="-0.41" y="-0.59" width="0.82" height="1.18" rx="0.16" transform="rotate(11.4592)" fill="#FF5A5A"/></svg></button>
+          <button class="ico" type="button" data-cursor="Sub off" aria-label="Sub off: right-click to copy the SVG"><svg viewBox="-1 -1 2 2" width="22" height="22" aria-hidden="true"><circle r="1" fill="#FF5A5A"/><path d="M 0.42 0 L -0.4 0 M -0.04 -0.36 L -0.42 0 L -0.04 0.36" transform="scale(1.12)" fill="none" stroke-width="0.17" stroke-linecap="round" stroke-linejoin="round" stroke="#F3F2EF"/></svg></button>
+          <button class="ico" type="button" data-cursor="Sub on" aria-label="Sub on: right-click to copy the SVG"><svg viewBox="-1 -1 2 2" width="22" height="22" aria-hidden="true"><circle r="1" fill="#34E39A"/><path d="M -0.42 0 L 0.4 0 M 0.04 -0.36 L 0.42 0 L 0.04 0.36" transform="scale(1.12)" fill="none" stroke-width="0.17" stroke-linecap="round" stroke-linejoin="round" stroke="#032616"/></svg></button>
+          <button class="ico" type="button" data-cursor="Follow" aria-label="Follow: right-click to copy the SVG"><svg viewBox="-0.75 -0.75 25.5 25.5" width="23.38" height="23.38" style="--icon-sw:1.58" aria-hidden="true"><path d="M 12 3 L 14.6 8.6 L 20.7 9.4 L 16.2 13.6 L 17.3 19.7 L 12 16.8 L 6.6 19.7 L 7.7 13.6 L 3.2 9.4 L 9.3 8.6 Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="stroke-width: var(--icon-sw, 1.5);"/></svg></button>
+          <button class="ico" type="button" data-cursor="Following" aria-label="Following: right-click to copy the SVG"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M 12 3 L 14.6 8.6 L 20.7 9.4 L 16.2 13.6 L 17.3 19.7 L 12 16.8 L 6.6 19.7 L 7.7 13.6 L 3.2 9.4 L 9.3 8.6 Z" fill="url(#slFollow)"/></svg></button>
+          <button class="ico" type="button" data-cursor="Star" aria-label="Star: right-click to copy the SVG"><svg viewBox="-1 -1 2 2" width="13" height="13" aria-hidden="true"><path d="M 0 -1 L 0.2469 -0.3398 L 0.9511 -0.309 L 0.3994 0.1298 L 0.5878 0.809 L 0 0.42 L -0.5878 0.809 L -0.3994 0.1298 L -0.9511 -0.309 L -0.2469 -0.3398 Z" fill="currentColor"/></svg></button>
+          <button class="ico" type="button" data-cursor="Substitution" aria-label="Substitution: right-click to copy the SVG"><svg viewBox="-0.8 -0.8 25.6 25.6" width="23.47" height="23.47" style="--icon-sw:1.58" aria-hidden="true"><path d="M 7 4 L 7 17 M 3 13 L 7 17 L 11 13 M 17 20 L 17 7 M 13 11 L 17 7 L 21 11" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="stroke-width: var(--icon-sw, 1.6);"/></svg></button>
+          <button class="ico" type="button" data-cursor="Play" aria-label="Play: right-click to copy the SVG"><svg viewBox="0 0 7 9" width="9.1" height="11.7" aria-hidden="true"><path d="M 0 0 L 7 4.5 L 0 9 Z" fill="currentColor"/></svg></button>
+          <button class="ico" type="button" data-cursor="Plus" aria-label="Plus: right-click to copy the SVG"><svg viewBox="-0.75 -0.75 11.5 11.5" width="14.95" height="14.95" style="--icon-sw:1.12" aria-hidden="true"><path d="M 5 0 L 5 10 M 0 5 L 10 5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="stroke-width: var(--icon-sw, 1.5);"/></svg></button>
+          <button class="ico" type="button" data-cursor="Close" aria-label="Close: right-click to copy the SVG"><svg viewBox="-0.8 -0.8 13.6 13.6" width="17.68" height="17.68" style="--icon-sw:1.12" aria-hidden="true"><path d="M 1 1 L 11 11 M 11 1 L 1 11" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="stroke-width: var(--icon-sw, 1.6);"/></svg></button>
+          <button class="ico" type="button" data-cursor="Back" aria-label="Back: right-click to copy the SVG"><svg viewBox="-0.8 -0.8 10.6 17.6" width="13.78" height="22.88" style="--icon-sw:1.12" aria-hidden="true"><path d="M 7.5 1.5 L 1.5 8 L 7.5 14.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="stroke-width: var(--icon-sw, 1.6);"/></svg></button>
+          <button class="ico" type="button" data-cursor="Forward" aria-label="Forward: right-click to copy the SVG"><svg viewBox="-0.8 -0.8 10.6 17.6" width="13.78" height="22.88" style="--icon-sw:1.12" aria-hidden="true"><path d="M 1.5 1.5 L 7.5 8 L 1.5 14.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="stroke-width: var(--icon-sw, 1.6);"/></svg></button>
+          <button class="ico" type="button" data-cursor="Chevron down" aria-label="Chevron down: right-click to copy the SVG"><svg viewBox="-0.7 -0.7 11.4 7.4" width="14.82" height="9.62" style="--icon-sw:1.12" aria-hidden="true"><path d="M 1 1 L 5 5 L 9 1" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="stroke-width: var(--icon-sw, 1.4);"/></svg></button>
+          <button class="ico" type="button" data-cursor="Chevron up" aria-label="Chevron up: right-click to copy the SVG"><svg viewBox="-0.8 -0.8 11.6 7.6" width="15.08" height="9.88" style="--icon-sw:1.12" aria-hidden="true"><path d="M 1 5 L 5 1 L 9 5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="stroke-width: var(--icon-sw, 1.6);"/></svg></button>
+          <button class="ico" type="button" data-cursor="Chevron right" aria-label="Chevron right: right-click to copy the SVG"><svg viewBox="-0.75 -0.75 7.5 11.5" width="9.75" height="14.95" style="--icon-sw:1.12" aria-hidden="true"><path d="M 1 1 L 5 5 L 1 9" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="stroke-width: var(--icon-sw, 1.5);"/></svg></button>
+          <button class="ico" type="button" data-cursor="Arrow up" aria-label="Arrow up: right-click to copy the SVG"><svg viewBox="-0.75 -0.75 9.5 11.5" width="12.35" height="14.95" style="--icon-sw:1.12" aria-hidden="true"><path d="M 4 9 L 4 1 M 1 4 L 4 1 L 7 4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="stroke-width: var(--icon-sw, 1.5);"/></svg></button>
+          <button class="ico" type="button" data-cursor="Arrow down" aria-label="Arrow down: right-click to copy the SVG"><svg viewBox="-0.75 -0.75 9.5 11.5" width="12.35" height="14.95" style="--icon-sw:1.12" aria-hidden="true"><path d="M 4 1 L 4 9 M 1 6 L 4 9 L 7 6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="stroke-width: var(--icon-sw, 1.5);"/></svg></button>
+        </div>
       </div>
     </div>
   </div>
@@ -252,7 +277,7 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
   <div class="wrap">
     <div class="shead rv">
       <div><div class="kicker"><i></i>03 — Motion</div><h2>Every curve, set by hand.</h2>
-        <p class="sub">Ten curves run the whole app. I set them in the Rive prototype, where every section had its own duration, delay, stagger and four bezier values to tune. The web app carries them over number for number. Here are three, each against the browser’s default in grey.</p></div>
+        <p class="sub">Ten curves run the whole app. I set them in the Rive prototype, where every section had its own duration, delay, stagger and four bezier values to tune. The web app carries them over number for number. Here are three, each against the browser’s default in gray.</p></div>
     </div>
 
     <div class="curves curves--tight" id="curves">
@@ -260,15 +285,13 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
         <div class="cv-h"><span class="cv-name">Glide</span><span class="cv-tok">--ease-glide</span></div>
         <div class="cv-plot"><canvas></canvas><span class="ghost-l"><i></i>ease</span></div>
         <div class="four"><span><small>X1</small><b>0.16</b></span><span><small>Y1</small><b>1</b></span><span><small>X2</small><b>0.3</b></span><span><small>Y2</small><b>1</b></span></div>
-        <div class="cv-track" aria-hidden="true"><u></u><i></i></div>
-        <p class="cv-p"><em>The landing.</em> Out of the gate at once, then a long quiet arrival. It’s the expo-out shape, chosen on purpose, and 11 of the 14 sections land on it.</p>
+        <p class="cv-p"><em>The landing.</em> Out of the gate at once, then a long quiet arrival. It’s the expo-out shape, and 11 of the 14 sections land on it.</p>
         <div class="cv-uses"><span>cards</span><span>screen</span><span>events</span><span>stats</span><span>lineup</span><span>toast</span></div>
       </article>
       <article class="cv rv" style="--rd:.05s" data-v="0.32,0,0.1,1" data-dur="720">
         <div class="cv-h"><span class="cv-name">Player</span><span class="cv-tok">--t-player-ease</span></div>
         <div class="cv-plot"><canvas></canvas><span class="ghost-l"><i></i>ease</span></div>
         <div class="four"><span><small>X1</small><b>0.32</b></span><span><small>Y1</small><b>0</b></span><span><small>X2</small><b>0.1</b></span><span><small>Y2</small><b>1</b></span></div>
-        <div class="cv-track" aria-hidden="true"><u></u><i></i></div>
         <p class="cv-p"><em>The focus pull.</em> A slow start and a soft finish, so a player grows in from 90% like a camera finding him.</p>
         <div class="cv-uses"><span>player view</span><span>bust 0.9 → 1</span><span>player sheet</span></div>
       </article>
@@ -276,28 +299,25 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
         <div class="cv-h"><span class="cv-name">Roll</span><span class="cv-tok">--ease-roll</span></div>
         <div class="cv-plot"><canvas></canvas><span class="ghost-l"><i></i>ease</span></div>
         <div class="four"><span><small>X1</small><b>0.7</b></span><span><small>Y1</small><b>0</b></span><span><small>X2</small><b>0.2</b></span><span><small>Y2</small><b>1</b></span></div>
-        <div class="cv-track" aria-hidden="true"><u></u><i></i></div>
         <p class="cv-p"><em>The letter roll.</em> A hard pull and a clean drop. Each letter of a pressed label rolls up and comes back from below, 420 ms each, 11 ms apart.</p>
         <div class="cv-uses"><span>letter roll</span><span>day tabs</span><span>match tabs</span></div>
       </article>
     </div>
 
-    <div class="subhead subhead--tight rv">
-      <h3>Section by section.</h3>
-      <p>Each part of the app has its own duration, delay and stagger. Most share a curve; none share a rhythm.</p>
-    </div>
     <div class="mo" id="mo">
-      <div class="mo-list rv" role="listbox" aria-label="The app’s sections" id="moList">
-        <div class="mo-th" aria-hidden="true"><span>Section</span><span>Dur</span><span>Delay</span><span>Stagger</span><span>Curve</span></div>
-        <button class="mo-row" type="button" role="option" aria-selected="false" data-k="player" data-dur="720" data-delay="120" data-stagger="50" data-v="0.32,0,0.1,1" data-c="Player" data-d="Face to bust, then the sheet"><span class="nm">Player</span><span>720</span><span>120</span><span>50</span><span class="cvm"><canvas></canvas><span>Player</span></span></button>
-        <button class="mo-row" type="button" role="option" aria-selected="false" data-k="cards" data-dur="750" data-delay="100" data-stagger="60" data-v="0.16,1,0.3,1" data-c="Glide" data-d="Live cards rising in"><span class="nm">Cards</span><span>750</span><span>100</span><span>60</span><span class="cvm"><canvas></canvas><span>Glide</span></span></button>
-        <button class="mo-row" type="button" role="option" aria-selected="false" data-k="list" data-dur="500" data-delay="50" data-stagger="30" data-v="0.2,0.8,0.2,1" data-c="Ease" data-d="Rows after a day change"><span class="nm">List</span><span>500</span><span>50</span><span>30</span><span class="cvm"><canvas></canvas><span>Ease</span></span></button>
-        <button class="mo-row" type="button" role="option" aria-selected="false" data-k="screen" data-dur="550" data-delay="0" data-stagger="50" data-v="0.16,1,0.3,1" data-c="Glide" data-d="Opening a match"><span class="nm">Screen</span><span>550</span><span>0</span><span>50</span><span class="cvm"><canvas></canvas><span>Glide</span></span></button>
-        <button class="mo-row" type="button" role="option" aria-selected="false" data-k="tabs" data-dur="450" data-delay="0" data-stagger="60" data-v="0.2,0.8,0.2,1" data-c="Ease" data-d="The label rolls, the line follows"><span class="nm">Tabs</span><span>450</span><span>0</span><span>60</span><span class="cvm"><canvas></canvas><span>Ease</span></span></button>
-        <button class="mo-row" type="button" role="option" aria-selected="false" data-k="events" data-dur="500" data-delay="150" data-stagger="40" data-v="0.16,1,0.3,1" data-c="Glide" data-d="Rows from 12 px above"><span class="nm">Events</span><span>500</span><span>150</span><span>40</span><span class="cvm"><canvas></canvas><span>Glide</span></span></button>
-        <button class="mo-row" type="button" role="option" aria-selected="false" data-k="stats" data-dur="900" data-delay="150" data-stagger="60" data-v="0.16,1,0.3,1" data-c="Glide" data-d="Bars open from the middle"><span class="nm">Stats</span><span>900</span><span>150</span><span>60</span><span class="cvm"><canvas></canvas><span>Glide</span></span></button>
-        <button class="mo-row" type="button" role="option" aria-selected="false" data-k="lineup" data-dur="600" data-delay="100" data-stagger="140" data-v="0.16,1,0.3,1" data-c="Glide" data-d="Line by line, forwards first"><span class="nm">Lineup</span><span>600</span><span>100</span><span>140</span><span class="cvm"><canvas></canvas><span>Glide</span></span></button>
-        <button class="mo-row" type="button" role="option" aria-selected="false" data-k="toast" data-dur="600" data-delay="450" data-stagger="200" data-v="0.16,1,0.3,1" data-c="Glide" data-d="Flag, then photo, then name"><span class="nm">Toast</span><span>600</span><span>450</span><span>200</span><span class="cvm"><canvas></canvas><span>Glide</span></span></button>
+      <div class="mo-side rv">
+        <h3>A few sections, played.</h3>
+        <p>Eight of the app’s fourteen sections, as examples. Each one has its own duration, delay and stagger.</p>
+        <div class="mo-list" role="listbox" aria-label="The app’s sections" id="moList">
+          <button class="mo-row" type="button" role="option" aria-selected="false" data-k="player" data-dur="720" data-delay="120" data-stagger="50" data-v="0.32,0,0.1,1" data-c="Player" data-d="Face to bust, then the sheet"><span class="no">01</span><span class="nm">Player</span></button>
+          <button class="mo-row" type="button" role="option" aria-selected="false" data-k="cards" data-dur="750" data-delay="100" data-stagger="60" data-v="0.16,1,0.3,1" data-c="Glide" data-d="Live cards rising in"><span class="no">02</span><span class="nm">Cards</span></button>
+          <button class="mo-row" type="button" role="option" aria-selected="false" data-k="list" data-dur="500" data-delay="50" data-stagger="30" data-v="0.2,0.8,0.2,1" data-c="Ease" data-d="Rows after a day change"><span class="no">03</span><span class="nm">List</span></button>
+          <button class="mo-row" type="button" role="option" aria-selected="false" data-k="screen" data-dur="550" data-delay="0" data-stagger="50" data-v="0.16,1,0.3,1" data-c="Glide" data-d="Opening a match"><span class="no">04</span><span class="nm">Screen</span></button>
+          <button class="mo-row" type="button" role="option" aria-selected="false" data-k="events" data-dur="500" data-delay="150" data-stagger="40" data-v="0.16,1,0.3,1" data-c="Glide" data-d="Rows from 12 px above"><span class="no">05</span><span class="nm">Events</span></button>
+          <button class="mo-row" type="button" role="option" aria-selected="false" data-k="stats" data-dur="900" data-delay="150" data-stagger="60" data-v="0.16,1,0.3,1" data-c="Glide" data-d="Bars open from the middle"><span class="no">06</span><span class="nm">Stats</span></button>
+          <button class="mo-row" type="button" role="option" aria-selected="false" data-k="lineup" data-dur="600" data-delay="100" data-stagger="140" data-v="0.16,1,0.3,1" data-c="Glide" data-d="Line by line, forwards first"><span class="no">07</span><span class="nm">Lineup</span></button>
+          <button class="mo-row" type="button" role="option" aria-selected="false" data-k="toast" data-dur="600" data-delay="450" data-stagger="200" data-v="0.16,1,0.3,1" data-c="Glide" data-d="Flag, then photo, then name"><span class="no">08</span><span class="nm">Toast</span></button>
+        </div>
       </div>
       <div class="mo-stage rv" style="--rd:.08s" id="moStage">
         <div class="mo-h">
@@ -336,10 +356,6 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
           <div class="kicker"><i></i>Rive 01 · The Live switch</div>
           <h3>A switch that gathers itself.</h3>
           <p>When Live turns on, the capsule draws in a little, opens past its mark and settles back. When it turns off, it swells first, then closes. It’s the only thing in the app allowed to overshoot: I animated it by hand, and wanted it to breathe rather than snap. The number inside is the calendar day.</p>
-          <div class="track">
-            <div class="track-h"><span>The capsule, measured from my timeline</span><span id="rTrackLbl">opening · 633 ms</span></div>
-            <canvas id="rTrack" aria-label="The capsule's opening amount over time: it dips to −6%, peaks at 107.9% at 433 ms and settles at 100%."></canvas>
-          </div>
         </div>
       </article>
       <article class="rcard rv" id="rWord">
@@ -360,15 +376,8 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
         <div class="rtext">
           <div class="kicker"><i></i>Rive 02 · Moments</div>
           <h3>GOAAAL, letter by letter.</h3>
-          <p>Each letter comes in big and out of focus and lands sharp, one after another, while the word settles from a touch larger. When the last one lands, a soft flare blooms and a glint crosses it. The colours are the scoring team’s, made pastel. A red card slams in instead, in fixed reds.</p>
-          <div class="drow" style="margin-top:18px"><button class="chipbtn" type="button" id="rGoal"><span aria-hidden="true">⚽</span>GOAAAL</button><button class="chipbtn" type="button" id="rRed"><span style="width:8px;height:11px;border-radius:2px;background:var(--red);transform:rotate(8deg)" aria-hidden="true"></span>Red card</button><button class="chipbtn" type="button" data-scene="goal" data-open-demo><svg aria-hidden="true"><use href="#icArrowRight"/></svg>See it in the app</button></div>
-          <div class="phase" id="rPhase" aria-hidden="true">
-            <span class="rail"></span><span class="fill"></span>
-            <span class="mk" data-at="0" style="left:0%"><i></i><span>play<br>0 s</span></span>
-            <span class="mk" data-at="0.854" style="left:50.9%"><i></i><span>last letter lands<br>0.854 s · phase 1</span></span>
-            <span class="mk" data-at="1.6772" style="left:100%"><i></i><span>flare and glint done<br>1.677 s · phase 2</span></span>
-          </div>
-          <p class="phase-note" id="rPhaseNote">Six letters, 70 ms apart, each landing in 504 ms.</p>
+          <p>Each letter comes in big and out of focus and lands sharp, one after another, while the word settles from a touch larger. When the last one lands, a soft flare blooms and a glint crosses it. The colors are the scoring team’s, made pastel. A red card slams in instead, in fixed reds.</p>
+          <div class="drow" style="margin-top:18px"><button class="chipbtn" type="button" id="rGoal"><svg class="ball" aria-hidden="true"><use href="#icBall"/></svg>GOAAAL</button><button class="chipbtn" type="button" id="rRed"><span style="width:8px;height:11px;border-radius:2px;background:var(--red);transform:rotate(8deg)" aria-hidden="true"></span>Red card</button><button class="chipbtn" type="button" data-scene="goal" data-open-demo><svg aria-hidden="true"><use href="#icArrowRight"/></svg>See it in the app</button></div>
         </div>
       </article>
     </div>
@@ -382,16 +391,16 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
     <div class="col">
       <div class="kicker rv"><i></i>05 — Process</div>
       <h2 class="rv">I directed. The AI built.</h2>
-      <p class="statement" id="statement" style="margin-top:34px"><span class="hl">Claude and Codex wrote 39,650 lines across 125 commits,</span> and every one of them answered to a decision of mine.</p>
+      <p class="statement" id="statement" style="margin-top:34px"><span class="hl">Claude and Codex wrote 39,650 lines across 125 commits,</span> working from my decisions.</p>
     </div>
     <div class="proc">
       <div class="loop rv" id="loop">
         <div class="loop-h"><h3>How one round went</h3><span class="loop-n mono"><b>25+</b>AI sessions · 32 branches</span></div>
         <ol class="steps">
-          <li class="step"><span class="who me">Me</span><h4>Decide</h4><p>The look, the timing, the rule. Written down so it can’t drift.</p></li>
-          <li class="step"><span class="who">AI</span><h4>Build</h4><p>The code, and a test that fails if my number changes.</p></li>
-          <li class="step"><span class="who me">Me</span><h4>Review</h4><p>On a phone, frame by frame. Screenshots, videos, notes.</p></li>
-          <li class="step"><span class="who me">Me → AI</span><h4>Ship or redo</h4><p>Back to build until I approve. Some things I reverted the next day.</p></li>
+          <li class="step step--me"><span class="who"><b>01</b>Me</span><h4>Decide</h4><p>The look, the timing, the rule. Written down so it can’t drift.</p></li>
+          <li class="step step--ai"><span class="who"><b>02</b>AI</span><h4>Build</h4><p>The code, and a test that fails if my number changes.</p></li>
+          <li class="step step--me"><span class="who"><b>03</b>Me</span><h4>Review</h4><p>On a phone, frame by frame. Screenshots, videos, notes.</p></li>
+          <li class="step step--both"><span class="who"><b>04</b>Me → AI</span><h4>Ship or redo<svg aria-hidden="true"><use href="#icRestart"/></svg></h4><p>Back to build until I approve. Some things I reverted the next day.</p></li>
         </ol>
       </div>
       <p class="sub rv proc-stack">Built with <b>React 19</b>, <b>TypeScript</b> and <b>Vite</b>. <b>Motion</b> for animation, <b>Zustand</b> for state, <b>Zod</b> for data, and the <b>Rive</b> runtime for the Live switch and the goal word.</p>
@@ -419,8 +428,7 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
     </div>
     <dl class="crx-meta rv" style="--rd:.06s">
       <div><dt>Typeface</dt><dd>Hanken Grotesk</dd></div>
-      <div><dt>Brand</dt><dd><a class="cr-link" href="brand/">Brand sheet<svg aria-hidden="true"><use href="#icArrowRight"/></svg></a></dd></div>
-      <div><dt>Demo data</dt><dd>Simulated</dd></div>
+      <div><dt>Brand</dt><dd><a class="cr-link" href="brand/">Brand sheet<span class="cr-go" aria-hidden="true"><svg><use href="#icArrowOut"/></svg></span></a></dd></div>
     </dl>
     <a class="next rv" href="../sitemate/" data-cursor="Next project">
       <span class="next-k mono">Next project</span>
