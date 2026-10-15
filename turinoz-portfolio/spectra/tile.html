@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Spectra · tile</title>
-<meta name="description" content="Spectra, a colour-guessing game by Turinoz, played by its own cursor inside a portfolio tile.">
+<meta name="description" content="Spectra, a color-guessing game by Turinoz, played by its own cursor inside a portfolio tile.">
 <meta name="robots" content="noindex">
 <style>
 /* The portfolio's own font files (../fonts), so the tile looks the same on every system. */
@@ -55,7 +55,7 @@ body.play canvas{touch-action:none}
 // =============================================================================
 // SPECTRA / portfolio tile — the plain-canvas build of the game (mobile/), laid out
 // again for a 4:5 tile (a 320 × 400 board, scaled to whatever frame it sits in).
-// In the tile, Turinoz's cursor plays it: three colours, then a little play with the
+// In the tile, Turinoz's cursor plays it: three colors, then a little play with the
 // cards, then the results, and again. "Play yourself" (in the page around it) hands
 // the game over; "Watch demo", or 35 s without a touch, gives it back to the cursor.
 // It sleeps while off screen, behind a study, or in a hidden tab.
@@ -69,8 +69,8 @@ const FONT = '"Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe 
 const L = {
   rx: 22, rw: 276,
   hero:  { x: 22, y: 64, w: 276, h: 186, r: 22 },     // ready / look
-  strip: { x: 22, y: 64, w: 276, h: 72, r: 18 },      // mix: your colour, live
-  left:  { x: 22, y: 64, w: 138, h: 116, r: 18 },     // result: the colour you were shown
+  strip: { x: 22, y: 64, w: 276, h: 72, r: 18 },      // mix: your color, live
+  left:  { x: 22, y: 64, w: 138, h: 116, r: 18 },     // result: the color you were shown
   right: { x: 160, y: 64, w: 138, h: 116, r: 18 },    // result: yours
   bar: 262, headTitle: 296, headLine: 316,
   rowTop: 148, rowGap: 62, labelOff: 8, trackOff: 18, trackH: 28, inset: 11, capW: 18, capH: 40,
@@ -80,7 +80,7 @@ const L = {
   stack: { top: 58, bottom: 338 },
   sum: { label: 82, score: 126, rule: 138, rows: 150, rowH: 62 },
 };
-// a kept colour is the phone card (292 × 340) at 64 %
+// a kept color is the phone card (292 × 340) at 64 %
 const CARD = { w: 292, h: 340, r: 28 }, CK = 0.64, CW = CARD.w * CK, CH = CARD.h * CK;
 const CARDS = { keep: 8, show: 4, dx: 14, dy: 16, fanDx: 18, fanDy: 21, fanRot: 3.5, throw: 60 };
 const FEEL = {
@@ -123,8 +123,8 @@ const SAY = {
   look: ["don't blink", "hold it… hold it…", "got it. I think"],
   last: ["last one", "last one. focus"],
   hue: ["hue first", "hue first. the easy part"],
-  richer: ["more colour", "richer than that"],
-  softer: ["softer", "a touch greyer"],
+  richer: ["more color", "richer than that"],
+  softer: ["softer", "a touch grayer"],
   brighter: ["brighter", "lighter. there"],
   darker: ["darker", "deeper. there"],
   cards: ["three for the collection", "my little palette"],
@@ -271,7 +271,7 @@ for (let i = 0; i < 3; i++) {
 S.gIntro = spring(1, FEEL.soft); S.gLook = spring(0, FEEL.soft); S.gResult = spring(0, FEEL.soft);
 S.scrim = spring(0, FEEL.soft); S.swapT = spring(0, FEEL.soft); S.lookSwap = spring(0, FEEL.soft);
 S.scoreShown = spring(0, FEEL.count); S.fanT = spring(0, FEEL.snap);
-// a colour block: position and size spring separately, so the hero can become a strip, then half of a pair
+// a color block: position and size spring separately, so the hero can become a strip, then half of a pair
 const block = (R, a) => ({
   x: spring(R.x, FEEL.snap), y: spring(R.y, FEEL.snap), w: spring(R.w, FEEL.snap), h: spring(R.h, FEEL.snap), r: spring(R.r, FEEL.snap),
   a: spring(a, FEEL.soft), k: spring(1, FEEL.bounce), seam: spring(0, FEEL.snap),
@@ -375,7 +375,7 @@ function toResult() {
   S.gResult.t = 1;
   snap(S.scoreShown, 0); later(0.12, () => { S.scoreShown.t = S.score; });
   for (let i = 0; i < 3; i++) { snap(S.driftT[i], 0); later(0.32 + 0.09 * i, () => { S.driftT[i].t = 1; }); }
-  setButton("Keep the colour");
+  setButton("Keep the color");
 }
 
 // ---- card stack ----------------------------------------------------------------------
@@ -406,7 +406,7 @@ function toReveal() {
   S.cards.push(makeCard());
   while (S.cards.length > CARDS.keep) S.cards.shift();
   S.scrim.t = 1; S.gResult.t = 0; S.A.a.t = 0; S.B.a.t = 0;
-  setButton(S.roundIdx < RUN_LENGTH - 1 ? "Next colour" : "See results");
+  setButton(S.roundIdx < RUN_LENGTH - 1 ? "Next color" : "See results");
 }
 function toExit() {
   clearQueue();
@@ -784,7 +784,7 @@ function drawSummary(P) {
   GA = g;
   const Z = L.sum, rx = L.rx, rw = L.rw;
   ctx.save(); ctx.translate(0, (1 - g) * 10);
-  txt("THREE COLOURS", rx, Z.label, 9.5, P.muted, 1, "left", 0.8, 600);
+  txt("THREE COLORS", rx, Z.label, 9.5, P.muted, 1, "left", 0.8, 600);
   txt(round(S.scoreShown.x * 100) + "%", rx, Z.score, 44, P.ink, 1, "left", -2, 700);
   let verdict = VERDICTS[VERDICTS.length - 1][1];
   for (const v of VERDICTS) if (avgOf(S.run.scores) >= v[0]) { verdict = v[1]; break; }
@@ -821,7 +821,7 @@ function draw() {
   ctx.setTransform(scale * dpr, 0, 0, scale * dpr, offX * dpr, offY * dpr);
 
   drawLeft(P);
-  drawHeading(P, S.gIntro.x, "Ready", "Three colours, two seconds each.");
+  drawHeading(P, S.gIntro.x, "Ready", "Three colors, two seconds each.");
   drawHeading(P, S.gLook.x, "Look", "Hold it in your eye.");
   drawRails(P);
   drawResult(P);
@@ -1006,7 +1006,7 @@ async function dragRail(run, i, v) {
 async function playRound(run, r) {
   const C = cur;
   await until(run, () => S.stage === "look");
-  // step aside so the colour is in plain view
+  // step aside so the color is in plain view
   const aside = C.glide(W * 0.84, L.headTitle + 4, run, 0.75);
   if (r === 0 || r === RUN_LENGTH - 1) { await aside; await C.say(pick(r === 0 ? SAY.look : SAY.last), run); } else await aside;
   await until(run, () => S.stage === "mix");
@@ -1021,9 +1021,9 @@ async function playRound(run, r) {
   await C.glide(W * 0.8, L.score - 26, run, 0.8);
   await wait(run, 0.6);
   await C.say(resultLine(), run, 0.5);
-  await C.toButton(run); await C.click(run);                       // Keep the colour
+  await C.toButton(run); await C.click(run);                       // Keep the color
   await wait(run, 0.9);
-  if (r < RUN_LENGTH - 1) { await C.toButton(run); await C.click(run); }   // Next colour
+  if (r < RUN_LENGTH - 1) { await C.toButton(run); await C.click(run); }   // Next color
 }
 async function playCards(run) {
   const C = cur;
