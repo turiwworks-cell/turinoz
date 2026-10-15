@@ -240,7 +240,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
   --orange: #ff9a4d;
   --sky: #7cc4ff;
   --pink: #ff8fb8;
-  --speed: #ff9a4d;
+  --speed: #2c50ff;
   --warn: #ff9a4d;
   --ok: #8fe07a;
   --k-animation: #9db8ff;
@@ -4916,6 +4916,35 @@ body:has(.app[data-ws="curve"][data-size="large"]) {
 .oppanel[hidden] {
   display: none;
 }
+.oppanel.float {
+  position: fixed;
+  z-index: 60;
+  animation: none;
+  max-height: calc(100dvh - 16px);
+  overflow: auto;
+  box-shadow:
+    0 0 0 1px var(--line-2),
+    0 30px 80px -20px #000c;
+}
+.oppanel.float .op-head {
+  cursor: grab;
+  margin: -12px -12px 0;
+  padding: 8px 8px 8px 12px;
+  border-bottom: 1px solid var(--line);
+}
+.oppanel.float.moving .op-head {
+  cursor: grabbing;
+}
+.oppanel .op-head .ib.sm svg {
+  width: 14px;
+  height: 14px;
+}
+.oppanel.float .op-dock {
+  color: var(--acc);
+}
+.oppanel:not(.float) #opClose {
+  display: none;
+}
 .op-head {
   display: flex;
   align-items: center;
@@ -9378,6 +9407,10 @@ html[data-cl-theme="light"] .pop.float {
                 ><button class="mini" id="opColorReset" type="button" title="Reset line colors only">Reset colors</button
                 ><button class="mini" id="opReset" type="button" title="Reset opacity only (double-click a slider resets that line)">
                   Reset opacity
+                </button
+                ><button class="ib sm op-dock" id="opDock" type="button"></button
+                ><button class="ib sm" id="opClose" type="button" aria-label="Close lines" title="Close">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="m4 4 8 8M12 4l-8 8" /></svg>
                 </button>
               </div>
               <div class="op-row" style="--line-color: var(--value)">
@@ -9392,7 +9425,7 @@ html[data-cl-theme="light"] .pop.float {
               </div>
               <div class="op-row" style="--line-color: var(--speed)">
                 <span class="op-name">Speed <i id="clSpeedRole">Guide</i></span
-                ><span class="hexf"><input class="cl-color" id="clSpeedColor" type="color" value="#ff9a4d" aria-label="Speed line color" /><input type="text" id="clSpeedHex" class="mono" maxlength="7" spellcheck="false" aria-label="Speed line color hex" /></span
+                ><span class="hexf"><input class="cl-color" id="clSpeedColor" type="color" value="#2c50ff" aria-label="Speed line color" /><input type="text" id="clSpeedHex" class="mono" maxlength="7" spellcheck="false" aria-label="Speed line color hex" /></span
                 ><input class="cl-opacity" id="clSpeedOpacity" type="range" min="0" max="100" step="1" value="32" aria-label="Speed line opacity" /><label
                   class="cl-ap-percent mono"
                   ><input id="clSpeedPercent" type="number" min="0" max="100" step="1" value="32" aria-label="Speed line opacity percent" /><span
@@ -12198,7 +12231,7 @@ const t0=performance.now();
   const clAppearanceDefaults = {
     uiColor: "auto",
     valueColor: "#f1f1ec",
-    speedColor: "#ff9a4d",
+    speedColor: "#2c50ff",
     valueOpacity: 100,
     speedOpacity: 100,
     valueGuideOpacity: 40,
@@ -12429,7 +12462,7 @@ const t0=performance.now();
   }
   function clSaveAppearance() {
     try {
-      localStorage.setItem(clAppearanceKey, JSON.stringify({ ...clAppearance, v3: 1 }));
+      localStorage.setItem(clAppearanceKey, JSON.stringify({ ...clAppearance, v3: 1, v4: 1 }));
     } catch {}
   }
   const clColorKeys = ["uiColor", "valueColor", "speedColor", "zeroColor", "oneColor"],
@@ -12441,7 +12474,7 @@ const t0=performance.now();
   }
   function clPositionOpacity() {
     const panel = f("opPanel");
-    if (panel.hidden) return;
+    if (panel.hidden || panel.classList.contains("float")) return;
     const box = $n.getBoundingClientRect(),
       btn = f("opBtn").getBoundingClientRect();
     panel.style.top = Math.round(btn.bottom - box.top + 6) + "px";
@@ -12454,6 +12487,11 @@ const t0=performance.now();
     f("opBtn").classList.toggle("on", next);
     f("opBtn").setAttribute("aria-expanded", String(next));
     next && clPositionOpacity();
+    if (panel.classList.contains("float"))
+      try {
+        (clPanels.opPanel || (clPanels.opPanel = {})).open = next;
+        clSavePanels();
+      } catch {}
   }
   // ---------- Your colors: interface colors the user picked, newest first ----------
   const clUiHistoryKey = "turinoz-curve-lab-ui-history-v1";
@@ -12848,8 +12886,12 @@ const t0=performance.now();
         !stored.v3 &&
         ["#ededea", "#95cf2a"].includes(clAppearance.uiColor) &&
         (clAppearance.uiColor = clAppearanceDefaults.uiColor);
-      // The old Curve Lab blue moves to the new brand blue.
-      clAppearance.uiColor === "#7389ff" && (clAppearance.uiColor = clAppearanceDefaults.uiColor);
+      // Once: the old Curve Lab blue becomes "auto" (blue in light, orange in dark),
+      // and the old orange speed line in dark becomes blue, so it no longer matches the orange interface.
+      if (stored && !stored.v4) {
+        clAppearance.uiColor === "#7389ff" && (clAppearance.uiColor = clAppearanceDefaults.uiColor);
+        clAppearance.speedColor === "#ff9a4d" && (clAppearance.speedColor = clAppearanceDefaults.speedColor);
+      }
     } catch {}
     clApplyAppearance();
     clBindExtras();
@@ -12919,6 +12961,7 @@ const t0=performance.now();
     });
     document.addEventListener("pointerdown", (event) => {
       !f("opPanel").hidden &&
+        !f("opPanel").classList.contains("float") &&
         !event.target.closest("#opPanel") &&
         !event.target.closest("#opBtn") &&
         clToggleOpacity(!1);
@@ -13318,7 +13361,85 @@ const t0=performance.now();
       clSavePanels();
     }
     clSyncAppearanceButton();
-    addEventListener("resize", () => [vp, ap].forEach(clClampPanel));
+    // Lines (value, speed and guide colors and opacity) can float too.
+    const op = f("opPanel"),
+      oh = op.querySelector(".op-head"),
+      ob = f("opDock"),
+      syncDock = () => {
+        const on = op.classList.contains("float");
+        ob.innerHTML = on ? clDockIcon : clUndockIcon;
+        ob.title = on ? "Dock it back" : "Undock: keep it open as a panel you can move";
+        ob.setAttribute("aria-label", ob.title);
+      },
+      setOpFloat = (on, at0) => {
+        const st = clPanels.opPanel || (clPanels.opPanel = {});
+        if (on) {
+          const r = at0 || op.getBoundingClientRect();
+          op._home || (op._home = { parent: op.parentElement, next: op.nextSibling });
+          op.parentElement !== P && P.append(op);
+          op.classList.add("float");
+          op.style.right = op.style.bottom = "auto";
+          op.style.left = Math.round(r.left) + "px";
+          op.style.top = Math.round(r.top) + "px";
+          clClampPanel(op);
+          ((st.x = parseFloat(op.style.left)), (st.y = parseFloat(op.style.top)));
+        } else {
+          op.classList.remove("float");
+          op._home && op.parentElement !== op._home.parent && op._home.parent.insertBefore(op, op._home.next);
+          op.style.left = op.style.top = op.style.right = op.style.bottom = "";
+          clPositionOpacity();
+        }
+        st.float = on;
+        st.open = !op.hidden;
+        syncDock();
+        clSavePanels();
+      };
+    syncDock();
+    ob.addEventListener("click", (e) => {
+      e.stopPropagation();
+      setOpFloat(!op.classList.contains("float"));
+    });
+    f("opClose").addEventListener("click", () => {
+      clToggleOpacity(!1);
+      f("opBtn").focus();
+    });
+    oh.addEventListener("pointerdown", (e) => {
+      if (!op.classList.contains("float") || e.button !== 0 || e.target.closest("button, input, label")) return;
+      e.preventDefault();
+      const x0 = e.clientX,
+        y0 = e.clientY,
+        l0 = parseFloat(op.style.left) || 0,
+        t0 = parseFloat(op.style.top) || 0;
+      try {
+        oh.setPointerCapture(e.pointerId);
+      } catch {}
+      op.classList.add("moving");
+      const move = (m) => {
+          op.style.left = l0 + m.clientX - x0 + "px";
+          op.style.top = t0 + m.clientY - y0 + "px";
+          clClampPanel(op);
+        },
+        done = () => {
+          oh.removeEventListener("pointermove", move);
+          oh.removeEventListener("pointerup", done);
+          oh.removeEventListener("pointercancel", done);
+          op.classList.remove("moving");
+          const st = clPanels.opPanel || (clPanels.opPanel = {});
+          ((st.x = parseFloat(op.style.left)), (st.y = parseFloat(op.style.top)), clSavePanels());
+        };
+      oh.addEventListener("pointermove", move);
+      oh.addEventListener("pointerup", done);
+      oh.addEventListener("pointercancel", done);
+    });
+    {
+      const st = clPanels.opPanel;
+      if (st && st.float && Number.isFinite(st.x) && Number.isFinite(st.y)) {
+        const open = !!st.open;
+        setOpFloat(!0, { left: st.x, top: st.y });
+        open && clToggleOpacity(!0);
+      }
+    }
+    addEventListener("resize", () => [vp, ap, op].forEach(clClampPanel));
   }
   f("panBtn").addEventListener("click", () => {
     clPanPinned = !clPanPinned;
