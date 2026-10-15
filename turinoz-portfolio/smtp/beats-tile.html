@@ -24,7 +24,7 @@ if(!t){try{t=localStorage.getItem('tz-theme')}catch(_){}}if(t==='light'||t==='da
 @font-face{font-family:"JB Mono";src:url(../fonts/jetbrains-mono.woff2) format("woff2");font-weight:100 800;font-style:normal;font-display:swap}
 /* the case study's own palette (smtp/case-study.css): night by default, smtp.dev's light palette by day */
 :root{
-  --bg:#08090C; --line:rgba(255,255,255,.075); --line-2:rgba(255,255,255,.05); --line-3:rgba(255,255,255,.15);
+  --bg:#0C0C0B; --line:rgba(255,255,255,.075); --line-2:rgba(255,255,255,.05); --line-3:rgba(255,255,255,.15);
   --ink:#ECEEF2; --ink-2:#AEB4BF; --muted:#7C838F; --faint:#4D535E;
   --blue:#3F7CFF; --blue-ink:#8DB0FF; --blue-soft:rgba(63,124,255,.14);
   --red:#E5484D; --red-ink:#FF8E92; --red-soft:rgba(229,72,77,.14);
@@ -37,7 +37,7 @@ if(!t){try{t=localStorage.getItem('tz-theme')}catch(_){}}if(t==='light'||t==='da
 }
 @media (prefers-color-scheme:light){
   :root:not([data-theme="dark"]){
-    --bg:#F3F4FA; --line:rgba(15,17,26,.09); --line-2:rgba(15,17,26,.06); --line-3:rgba(15,17,26,.16);
+    --bg:#F1F0EC; --line:rgba(15,17,26,.09); --line-2:rgba(15,17,26,.06); --line-3:rgba(15,17,26,.16);
     --ink:#0F111A; --ink-2:#404147; --muted:#6B6E78; --faint:#A3A6AF;
     --blue:#378FE3; --blue-ink:#1257CD; --blue-soft:rgba(55,143,227,.16);
     --red-ink:#C2373C; --red-soft:rgba(229,72,77,.1);
@@ -46,7 +46,7 @@ if(!t){try{t=localStorage.getItem('tz-theme')}catch(_){}}if(t==='light'||t==='da
   }
 }
 :root[data-theme="light"]{
-  --bg:#F3F4FA; --line:rgba(15,17,26,.09); --line-2:rgba(15,17,26,.06); --line-3:rgba(15,17,26,.16);
+  --bg:#F1F0EC; --line:rgba(15,17,26,.09); --line-2:rgba(15,17,26,.06); --line-3:rgba(15,17,26,.16);
   --ink:#0F111A; --ink-2:#404147; --muted:#6B6E78; --faint:#A3A6AF;
   --blue:#378FE3; --blue-ink:#1257CD; --blue-soft:rgba(55,143,227,.16);
   --red-ink:#C2373C; --red-soft:rgba(229,72,77,.1);

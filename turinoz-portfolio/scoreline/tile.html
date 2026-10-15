@@ -27,7 +27,7 @@ if(!t){try{t=localStorage.getItem('tz-theme')}catch(_){}}if(t==='light'||t==='da
 @font-face{font-family:"JB Mono";src:url(../fonts/jetbrains-mono.woff2) format("woff2");font-weight:100 800;font-style:normal;font-display:swap}
 /* the case study's own palette (case-study.css): the app's night by default, its paper by day */
 :root{--grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .5 0 0 0 .55'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  --bg:#000; --line-3:rgba(255,255,255,.16);
+  --bg:#0C0C0B; --line-3:rgba(255,255,255,.16);
   --ink:#F3F2EF; --ink-2:#B8B6B0; --muted:#85847F; --on-ink:#0A0A0A;
   --violet:#6B58F5; --lilac:#A58FE6; --glow:1;
   --phone-shadow:0 24px 48px -24px rgba(0,0,0,.9);
@@ -39,10 +39,10 @@ if(!t){try{t=localStorage.getItem('tz-theme')}catch(_){}}if(t==='light'||t==='da
   color-scheme:dark;
 }
 @media (prefers-color-scheme:light){
-  :root:not([data-theme="dark"]){--bg:#F4F3EF; --line-3:rgba(12,12,12,.18); --ink:#0C0C0C; --ink-2:#46453F; --muted:#7A7872; --on-ink:#F3F2EF; --glow:.62;
+  :root:not([data-theme="dark"]){--bg:#F1F0EC; --line-3:rgba(12,12,12,.18); --ink:#0C0C0C; --ink-2:#46453F; --muted:#7A7872; --on-ink:#F3F2EF; --glow:.62;
     --phone-shadow:0 50px 90px -40px rgba(30,22,90,.45),0 18px 36px -22px rgba(0,0,0,.35); color-scheme:light}
 }
-:root[data-theme="light"]{--bg:#F4F3EF; --line-3:rgba(12,12,12,.18); --ink:#0C0C0C; --ink-2:#46453F; --muted:#7A7872; --on-ink:#F3F2EF; --glow:.62;
+:root[data-theme="light"]{--bg:#F1F0EC; --line-3:rgba(12,12,12,.18); --ink:#0C0C0C; --ink-2:#46453F; --muted:#7A7872; --on-ink:#F3F2EF; --glow:.62;
   --phone-shadow:0 50px 90px -40px rgba(30,22,90,.45),0 18px 36px -22px rgba(0,0,0,.35); color-scheme:light}
 *,*::before,*::after{box-sizing:border-box}
 html,body{margin:0;height:100%;overflow:hidden;background:var(--bg)}
