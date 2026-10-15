@@ -1050,8 +1050,20 @@
       civ: ['#f77f00', '#009e60'], mli: ['#14b53a', '#fcd116'], swe: ['#006aa7', '#fecc02'], den: ['#c8102e', '#f4f4f4'], esp: ['#aa151b', '#f1bf00'],
       por: ['#da291c', '#046a38'], col: ['#fcd116', '#003893'], mex: ['#006847', '#ce1126'], ita: ['#0066b3', '#009246'], jpn: ['#1c3f94', '#bc002d'], mar: ['#c1272d', '#006233'] };
     const fl = t => TC[t] ? `<i class="fl" style="--a:${TC[t][0]};--b:${TC[t][1]}"></i>` : `<i class="fl fl--${t}"></i>`;
+    // a player's bust as the app asks for it (AVIF first, WebP else, 1x/2x): at every density this picks
+    // the same file as the app's own profile, so whichever of the two loads it first, the other has it
     const IMG = 'app/img/players/';
-    const bust = (t, n, cls = '') => `<img class="${cls}" src="${IMG}${t}/${n}-bust@1x.webp" srcset="${IMG}${t}/${n}-bust@2x.webp 2x" alt="" decoding="async">`;
+    const set = (t, n, f) => `${IMG}${t}/${n}-bust@1x.${f} 1x, ${IMG}${t}/${n}-bust@2x.${f} 2x`;
+    const bust = (t, n, cls = '') => `<picture><source type="image/avif" srcset="${set(t, n, 'avif')}"><img class="${cls}" src="${IMG}${t}/${n}-bust@1x.webp" srcset="${set(t, n, 'webp')}" alt="" decoding="async"></picture>`;
+    // ready to draw: loaded and decoded (a failed file counts as done, so nothing waits on it)
+    const drawable = img => img.complete && img.naturalWidth > 0 ? Promise.resolve() : new Promise(ok => {
+      img.addEventListener('load', () => (img.decode ? img.decode().then(ok, ok) : ok()), { once: true });
+      img.addEventListener('error', ok, { once: true });
+    });
+    // the Player scene's bust, fetched off the page ahead of its play: once the stage is on screen, and
+    // again on a hover or focus of its row (the same request, kept while the page is open)
+    let warmed = null;
+    const warmBust = () => { if (warmed) return; const w = document.createElement('div'); w.innerHTML = bust('arg', 10); warmed = w.querySelector('img'); };
 
     // the demo evening's five live cards at 58’ (minute, spectrum): only the cards, in their own colors
     const LIVE = [[58, '--sp2'], [63, '--sp5'], [76, '--sp1'], [47, '--sp3'], [66, '--sp4']];
@@ -1105,7 +1117,10 @@
         sc.innerHTML = `<div class="ms-bust"><span class="no" aria-hidden="true">10</span>${bust('arg', 10)}</div>
           <div class="ms-info"><div class="nm"><small>Lionel</small><b>Messi<sup>10</sup></b><span>Forward · Argentina</span></div>
           <div class="ms-facts"><div><small>Club</small><b>Inter Miami</b></div><div><small>Age</small><b>39</b></div><div><small>Height</small><b>170 cm</b></div><div><small>Shirt</small><b>#10</b></div></div></div>`;
-        A($('.ms-bust img', sc), [{ transform: 'scale(.9)', opacity: 0 }, { transform: 'scale(1)', opacity: 1 }], 0);
+        const img = $('.ms-bust img', sc);
+        A(img, [{ transform: 'scale(.9)', opacity: 0 }, { transform: 'scale(1)', opacity: 1 }], 0);
+        // the scene starts once the picture can be drawn: its bust's entrance is the first thing it plays
+        X.ready = drawable(img);
         [$('.nm', sc), ...$$('.ms-facts div', sc)].forEach((el, i) => A(el, [{ transform: 'translateY(14px)', opacity: 0 }, { transform: 'none', opacity: 1 }], D.delay + i * D.stag));
       },
       toast(sc, A, D, X) {
@@ -1119,9 +1134,9 @@
       }
     };
 
-    let X = {};
+    let X = {}, run = 0;
     function play(r) {
-      cur = r;
+      cur = r; const me = ++run;
       moRows.forEach(x => x.setAttribute('aria-selected', String(x === r)));
       anims.forEach(a => a.cancel()); anims = []; cancelAnimationFrame(raf);
       const D = { dur: +r.dataset.dur, delay: +r.dataset.delay, stag: +r.dataset.stagger, v: parseV(r.dataset.v) };
@@ -1142,9 +1157,20 @@
       moTl.style.height = (lanes.length * 9) + 'px';
       moTl.innerHTML = lanes.map(([a, l], i) => `<span class="row" style="top:${i * 9}px"></span><span class="seg" style="top:${i * 9}px;left:${a / total * 100}%;width:${l / total * 100}%"></span>`).join('') + '<span class="ph"></span>';
       // the playhead follows the film where there is one (its frame 0 is the moment the app starts the section)
-      const ph = $('.ph', moTl), t0 = performance.now(), film = X.film;
+      const ph = $('.ph', moTl), film = X.film;
+      let t0 = performance.now();
       const tick = now => { const p = clamp((film ? film.currentTime * 1000 : now - t0) / total, 0, 1); ph.style.left = (p * 100) + '%'; if (p < 1 && !(film && film.ended)) raf = requestAnimationFrame(tick); };
-      raf = requestAnimationFrame(tick);
+      // a scene with a picture holds on its first frame until the picture is there (4 s at most), then
+      // plays on its exact numbers: a slow file never plays its entrance over an empty place
+      if (X.ready && !reduce()) {
+        anims.forEach(a => a.pause()); ph.style.left = '0%';
+        let started = false;
+        const go = () => {
+          if (started || me !== run) return; started = true;
+          anims.forEach(a => a.play()); t0 = performance.now(); raf = requestAnimationFrame(tick);
+        };
+        X.ready.then(go); setTimeout(go, 4000);
+      } else raf = requestAnimationFrame(tick);
       const read = [`dur ${D.dur} ms`, `delay ${D.delay} ms`, `stagger ${D.stag} ms`, `${r.dataset.c} · cubic-bezier(${fmtV(D.v)})`];
       moRead.innerHTML = read.map((t, i) => `<span class="tag${i === 3 ? ' tag--me' : ''}">${t}</span>`).join('');
       if (film && !reduce()) film.play().catch(() => {});
@@ -1154,7 +1180,9 @@
     moRows.forEach(r => r.addEventListener('click', () => play(r)));
     $('#moPlay').addEventListener('click', () => cur && play(cur));
     let moPlayed = false;
-    onScreen($('#moStage'), v => { if (v && !moPlayed) { moPlayed = true; play(moRows[0]); } });
+    onScreen($('#moStage'), v => { if (v && !moPlayed) { moPlayed = true; play(moRows[0]); idle(warmBust); } });
+    const playerRow = moRows.find(r => r.dataset.k === 'player');
+    if (playerRow) ['pointerenter', 'focus'].forEach(e => playerRow.addEventListener(e, warmBust));
     addEventListener('resize', () => { anims.forEach(a => a.finish()); X.place && X.place(); });
   }
 
