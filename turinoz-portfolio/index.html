@@ -560,11 +560,12 @@ html.study-open,html.study-open body{overflow:hidden}
   -webkit-background-clip:text;background-clip:text;color:transparent;animation:syShimmer 1.6s linear infinite}
 @keyframes syShimmer{from{background-position:100% 0}to{background-position:-150% 0}}
 /* Storm at work, under the icon once the board is up: one step at a time, the last one done */
-.sy-ops{transition:opacity .3s var(--st-ease)}
+/* no opacity transition here: on the way back to the composer the board's fade is cancelled at the end,
+   and a transition would bring "Template ready" back for a moment before it went again */
 .sy-ops.on{opacity:1}
 .sy-ops span{display:inline-block}
 .sy-ops.swap span{animation:sySwap .42s var(--st-ease) both,syShimmer 1.6s linear infinite}
-.sy-ops.done span{animation:sySwap .42s var(--st-ease) both;background:none;color:var(--sy-ink-2)}
+.sy-ops.done span{animation:none;background:none;color:var(--sy-ink-2)}
 
 @media (max-width:720px){ .tile.tile--storm[data-kind] .media{aspect-ratio:1/1} }
 @media (prefers-reduced-motion:reduce){
