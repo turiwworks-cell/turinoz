@@ -167,13 +167,16 @@ python -m http.server 8000
 - The first tile opens on the real Storm composer from Sitemate's product, centred in the tile.
   Its prompt types itself, then Build presses itself (no cursor). The composer steps back
   ("Thinking…" under the icon), the agent appears and spins once, then Storm's motion system
-  comes in and plays: six states feeding the icon. Once all six are on the board, Storm's steps
-  on the template run under the icon (`OPS`), and the exit says "Template ready".
+  comes in and plays: six states feeding the icon. Each state's line to the icon draws in the
+  first time that state connects (Appear's with the board, since it has already played). Once
+  all six are on the board, one of Storm's steps shows under the icon (`OPS`, the next one each
+  run), and the exit says "Template ready".
 - When the system has played through once (to the icon's exit), the composer comes back and it
   all plays again, on a loop. The composer's entrance and exit are softer than the product's
   (`IN` and `OUT` in the script).
 - Nothing in the tile takes input: nobody can type or press Build. A click anywhere on it opens
-  `sitemate/` (the `.st-hit` link); only the "Live in Sitemate" chips sit above it.
+  `sitemate/` (the `.st-hit` link); only the "Live in Sitemate" chip sits above it, and it is on
+  the motion system only, not over the composer.
 - The prompt it types is `PROMPT`, and Storm's steps are `OPS`, in the "SITEMATE TILE" script at the end of
   `index.html`. The Lottie clips are the JSON block `#smClips` just above it.
 - The shipped transition clips end a hair off their loop's own pose, which read as a small
