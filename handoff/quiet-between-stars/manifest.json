@@ -12,9 +12,9 @@
     },
     {
       "path": "turinoz-portfolio/README.md",
-      "bytes": 21811,
-      "sha256": "66bdb5d0c3aa4ebd8c9e72ae47bf7e25f05d77e9cf7ff8e9c07cdbcc39ab8792",
-      "git_blob_sha": "b9e0712869820feac5ac498dddc9213b68eb6794"
+      "bytes": 21513,
+      "sha256": "c6576791634322786694f4262fc16a14415fb4209da3aaae0cd5c13e2fa359e9",
+      "git_blob_sha": "70b059b5f4ee326c7ed75be08d1b2b797d5b7700"
     },
     {
       "path": "turinoz-portfolio/quiet-between-stars/assets/after-refinement.mp4",
@@ -210,9 +210,9 @@
     },
     {
       "path": "handoff/quiet-between-stars/Quiet-Between-Stars-Integration.zip",
-      "bytes": 29861734,
-      "sha256": "931973b1c3f2a762e3e70cc1989f3650c7f7ab855330e5482b9b350effb5b194",
-      "git_blob_sha": "f934eb3530611ab499f3c5f636045b21bf18dd5c"
+      "bytes": 29861695,
+      "sha256": "4417ebfffbdcd7542d2bd672b2ffcfb22bb16d6dbb1974924f533f81005b0b90",
+      "git_blob_sha": "a77e8f3fd8e349239455e6bef85e510c0c515583"
     },
     {
       "path": "handoff/quiet-between-stars/Quiet-Between-Stars-Research-Report.md",
