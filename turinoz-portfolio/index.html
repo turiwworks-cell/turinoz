@@ -513,12 +513,13 @@ html.study-open,html.study-open body{overflow:hidden}
 .sy .lot svg,.sy-top .lot svg{width:100%!important;height:100%!important;display:block}
 .sy-in{opacity:0}
 .st.is-sys .sy-in{opacity:1}
-/* its top bar sits on the tile's own corners, so the diagram can take the middle */
+/* its top bar sits on the tile's own corners, so the diagram can take the middle; it stays put on both
+   screens, the composer's and the system's, and never fades or moves */
 .sy-top{position:absolute;z-index:6;left:14px;right:14px;top:14px;height:28px;display:flex;align-items:center;justify-content:space-between;pointer-events:none}
-.st.is-sys .sy-chip{pointer-events:auto}
+.sy-chip{pointer-events:auto}
 .sy-brand{display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px;letter-spacing:-.01em;white-space:nowrap}
 .sy-brand span{color:var(--sy-ink-2);font-weight:400}
-.st.is-narrow .sy-brand > span:not(.sy-badge){display:none}                      /* a narrow tile: just "Storm", so Live fits */
+.st.is-tight .sy-brand > span:not(.sy-badge){display:none}                       /* only a very narrow tile drops "Motion system", so Live fits */
 .sy-badge{position:relative;width:22px;height:22px;border-radius:6px;background:#0085E8;overflow:hidden;flex:none}
 .sy-badge .lot{left:3px;top:3px;width:16px;height:16px}
 .sy-right{display:flex;align-items:center;gap:6px}
@@ -646,7 +647,7 @@ html.study-open,html.study-open body{overflow:hidden}
               </div>
 
               <div class="sy-bg" aria-hidden="true"></div>
-              <div class="sy-top sy-in">
+              <div class="sy-top">
                 <div class="sy-brand"><span class="sy-badge"><span class="lot" data-st="badge2"></span></span>Storm <span>Motion system</span></div>
                 <div class="sy-right">
                   <a class="sy-chip" href="https://sitemate.com/storm/" target="_blank" rel="noopener"><i></i>Live in Sitemate<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg></a>
@@ -2871,7 +2872,7 @@ class Pl {
 const uiFit = $('.st-ui'), sysFit = $('.st-sysfit'), sys = $('#stSys'), bg = $('.sy-bg');
 const ta = $('#stTa'), build = $('#stBuild'), cnt = $('.su-cnt'), mirror = $('.su-mirror span');
 const sqWrap = $('.sy-sqs'), svg = $('.sy-lines'), main = $('.sy-main'), big = $('.sy-big');
-const readL = $('.sy-read.l'), readR = $('.sy-read.r'), think = $('.sy-think'), ops = $('.sy-ops'), opsT = $('.sy-ops span'), topBar = $('.sy-top');
+const readL = $('.sy-read.l'), readR = $('.sy-read.r'), think = $('.sy-think'), ops = $('.sy-ops'), opsT = $('.sy-ops span');
 
 const WHITE_CONE = white(DATA['cone-spin']);
 const badges = $$('[data-st^="badge"]').map(el => new Pl(el, WHITE_CONE));
@@ -2946,6 +2947,7 @@ function fit() {
     if (!reduce) uiFit.animate([{ opacity: 0 }, { opacity: 1 }], { duration: IN.dur, easing: IN.ease });
   }
   const narrow = sw * 600 < 380;
+  media.classList.toggle('is-tight', w < 340);
   media.classList.toggle('is-narrow', narrow);
   uiFit.style.setProperty('--s', (narrow ? Math.min(w / 450, h / 330, 1) : sw).toFixed(4));
   const ws = Math.min(w / LAY.wide.W, h / LAY.wide.H, 1.15);
@@ -3026,7 +3028,6 @@ function reveal() {
     { duration: 760, easing: EASE }));
   if (fromIntro) keep(think.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, easing: EASE, fill: 'forwards' }));
   keep(main.animate([{ opacity: 0, scale: '.86' }, { opacity: 1, scale: '1' }], { duration: 620, delay: 90, easing: SPRING, fill: 'backwards' }));
-  keep(topBar.animate([{ opacity: 0, translate: '0 -6px' }, { opacity: 1, translate: '0 0' }], { duration: DUR, delay: 380, easing: EASE, fill: 'backwards' }));
   ORDER.forEach((id, i) => keep(sq[id].el.animate([{ opacity: 0, translate: '0 10px' }, { opacity: 1, translate: '0 0' }],
     { duration: 520, delay: 240 + Math.abs(i - 2.5) * 70, easing: EASE, fill: 'backwards' })));
   keep(svg.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 10, delay: 380, fill: 'backwards' }));

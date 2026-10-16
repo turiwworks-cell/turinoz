@@ -175,8 +175,10 @@ python -m http.server 8000
   all plays again, on a loop. The composer's entrance and exit are softer than the product's
   (`IN` and `OUT` in the script).
 - Nothing in the tile takes input: nobody can type or press Build. A click anywhere on it opens
-  `sitemate/` (the `.st-hit` link); only the "Live in Sitemate" chip sits above it, and it is on
-  the motion system only, not over the composer.
+  `sitemate/` (the `.st-hit` link); only the "Live in Sitemate" chip sits above it.
+- The top bar (the Storm badge, "Storm Motion system", "Live in Sitemate") stays in the same
+  place on both screens, the composer's and the system's, and never fades or moves. Only a tile
+  under 340 px wide drops "Motion system" so the chip fits.
 - The prompt it types is `PROMPT`, and Storm's steps are `OPS`, in the "SITEMATE TILE" script at the end of
   `index.html`. The Lottie clips are the JSON block `#smClips` just above it.
 - The shipped transition clips end a hair off their loop's own pose, which read as a small
