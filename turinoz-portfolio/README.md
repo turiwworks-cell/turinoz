@@ -82,7 +82,9 @@ python -m http.server 8000
 - **Day / night**: the button next to the email in the header. With nothing chosen, the page
   follows the system; a choice is remembered on this device (`tz-theme` in localStorage). The
   canvas tiles, the Curve Lab and Spectra tiles and the Storm motion system all follow it.
-- **Contact** on the right edge opens an email.
+- Each tier's name has a very small mark before it: a spark for Selected work, a flask for
+  Experiments (`.tier-ic`).
+- **Contact** is the email in the header; the Contact capsule that sat on the right edge is gone.
 
 ## The tiles that changed
 
@@ -162,14 +164,27 @@ python -m http.server 8000
 
 ## Sitemate tile (Storm Motion System)
 
-- The first tile opens on Storm's motion system, already playing: six states feeding the icon,
-  with the diagram in the middle of the tile and the icon on a plain square.
-- Replay (top right, next to "Live in Sitemate") brings back the real Storm composer from
-  Sitemate's product, centred in the tile, and it types its prompt. Pressing Build steps it back
-  with the product's own ease (.45s cubic-bezier(.2,.8,.2,1)), the agent spins once, then the
-  motion system comes back.
-- The prompt it types is `PROMPT` in the "SITEMATE TILE" script at the end of
+- The first tile opens on the real Storm composer from Sitemate's product, centred in the tile.
+  Its prompt types itself, then Build presses itself (no cursor). The composer steps back
+  ("Thinking…" under the icon), the agent appears and spins once, then Storm's motion system
+  comes in and plays: six states feeding the icon. Each state's line to the icon draws in the
+  first time that state connects (Appear's with the board, since it has already played). Once
+  all six are on the board, one of Storm's steps shows under the icon (`OPS`, the next one each
+  run), and the exit says "Template ready".
+- When the system has played through once (to the icon's exit), the composer comes back and it
+  all plays again, on a loop. The composer's entrance and exit are softer than the product's
+  (`IN` and `OUT` in the script).
+- Nothing in the tile takes input: nobody can type or press Build. A click anywhere on it opens
+  `sitemate/` (the `.st-hit` link); only the "Live in Sitemate" chip sits above it.
+- The top bar (the Storm badge, "Storm Motion system", "Live in Sitemate") stays in the same
+  place on both screens, the composer's and the system's, and never fades or moves. Only a tile
+  under 340 px wide drops "Motion system" so the chip fits.
+- The prompt it types is `PROMPT`, and Storm's steps are `OPS`, in the "SITEMATE TILE" script at the end of
   `index.html`. The Lottie clips are the JSON block `#smClips` just above it.
+- The shipped transition clips end a hair off their loop's own pose, which read as a small
+  hitch on the big icon at each change of state. Their last frames are drawn from the loop
+  instead (`TAIL` in the script), so every state hands over on exactly the same pose. The six
+  clips share one 100 × 100 frame, so the icon itself never moves.
 - The motion system has a night version (the `--sy-*` colours on `.st`); the composer stays as
   it is in the product.
 - "View project" and the tile title open `sitemate/`.

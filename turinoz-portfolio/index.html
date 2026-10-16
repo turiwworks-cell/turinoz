@@ -43,7 +43,6 @@ try { const t = localStorage.getItem('tz-theme'); if (t === 'light' || t === 'da
   --ease:cubic-bezier(.2,0,0,1);
   --t1:160ms; --t2:320ms; --t3:640ms;
   --edge:clamp(16px,3.2vw,44px);
-  --tz-orange:#FF5B1F; --tz-orange-hi:#FF8A3D; --tz-orange-rgb:255,91,31;
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
@@ -83,7 +82,7 @@ ul{padding:0;list-style:none}
   background:radial-gradient(1100px 520px at 50% -260px,var(--glow),transparent 70%) no-repeat,var(--ground);
   color:var(--ink);
 }
-.work .page{padding-left:var(--edge);padding-right:calc(var(--edge) + 46px)}
+.work .page{padding-inline:var(--edge)}
 @media (min-width:900px){ .work .page{padding-inline:calc(var(--edge) + 46px)} }
 .wrap{max-width:1440px;margin-inline:auto;padding-block:clamp(18px,2.4vw,30px) clamp(72px,8vw,120px)}
 .mono{font-size:12.5px;font-stretch:112%;font-weight:460;letter-spacing:.01em;line-height:1.3}
@@ -129,6 +128,9 @@ ul{padding:0;list-style:none}
    the experiments below (.grid--more, four to a row, square, with smaller captions) */
 .tier-head{display:flex;align-items:center;gap:14px;margin:0 0 20px;color:var(--ink-2);font-size:12.5px;font-weight:500;font-stretch:112%;letter-spacing:.01em;line-height:1.3}
 .tier-head::after{content:"";flex:1;height:1px;background:var(--rule)}
+/* a very small mark before each tier's name: a spark for the selected work, a flask for the experiments */
+.tier-t{display:inline-flex;align-items:center;gap:7px}
+.tier-ic{width:11px;height:11px;flex:none;overflow:visible}
 .tier-head--more{margin-top:clamp(80px,9vw,128px)}
 .grid{display:grid;gap:56px 20px}
 .grid--main{grid-template-columns:repeat(2,minmax(0,1fr));gap:64px 24px}
@@ -233,7 +235,6 @@ html.study-open,html.study-open body{overflow:hidden}
 @media (max-width:720px){
   .grid--main,.grid--more{grid-template-columns:minmax(0,1fr);row-gap:40px}
   .grid--main .media{aspect-ratio:4/3}
-  .study{padding-right:calc(var(--edge) + 40px)}
   .study-head,.study-sec{grid-template-columns:minmax(0,1fr)}
   .lede,.meta,.study-sec > h2,.study-sec .body,.study-title,.study-kind{grid-column:1/-1}
   .study-hero{aspect-ratio:4/3}
@@ -392,33 +393,6 @@ html.study-open,html.study-open body{overflow:hidden}
 .media--video video{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover;object-position:50% 50%;pointer-events:none}
 @media (prefers-reduced-motion:reduce){ .ep-state i::after{animation:none} }
 
-/* ---------- Contact: always on the right, always centered ---------- */
-.tz-side{
-  position:fixed; z-index:70; right:clamp(8px,1.4vw,20px); top:50%;
-  transform:translateY(-50%);
-  display:flex; flex-direction:column; align-items:center; gap:8px;
-  font-family:var(--font);
-}
-.tz-sbtn{
-  writing-mode:vertical-rl; rotate:180deg;
-  display:block; width:40px; padding:20px 0; border:0; border-radius:999px; cursor:pointer; text-decoration:none; text-align:center;
-  background:var(--ink); color:var(--ground);
-  font-size:12px; font-weight:600; font-stretch:115%; letter-spacing:.12em; text-transform:uppercase; line-height:1;
-  box-shadow:0 10px 24px -12px rgba(0,0,0,.45);
-  transition:translate .55s cubic-bezier(.34,1.56,.64,1),padding .45s cubic-bezier(.2,0,0,1),background-color .25s,color .25s;
-}
-.tz-sbtn::after{
-  content:""; display:inline-block; width:5px; height:5px; border-radius:50%;
-  background:currentColor; margin-top:10px; opacity:.45; transition:opacity .25s;
-}
-.tz-side:hover .tz-sbtn:first-child{translate:0 -5px}
-.tz-side:hover .tz-sbtn:last-child{translate:0 5px}
-.tz-sbtn:hover,.tz-sbtn:focus-visible{background:var(--tz-orange);color:#fff;padding:28px 0}
-.tz-sbtn:hover::after{opacity:1}
-.tz-sbtn:active{scale:.96}
-.tz-sbtn:focus-visible{outline:2px solid var(--tz-orange);outline-offset:3px}
-@media (max-width:720px){ .tz-sbtn{width:34px;padding:16px 0;font-size:11px} .tz-sbtn:hover{padding:20px 0} }
-
 @media (max-width:560px){ .study-bar .next{display:none} }
 @media (prefers-reduced-motion:reduce){
   .wordshot span{animation:none;font-weight:520;font-stretch:100%}
@@ -428,11 +402,12 @@ html.study-open,html.study-open body{overflow:hidden}
 /* ==========================================================================
    SITEMATE TILE
    1. ui  — the real Storm "AI Templates" composer from Sitemate's product
-            (markup and sizes copied from storm-agent-ui.html, classes su-*)
+            (markup and sizes copied from storm-agent-ui.html, classes su-*).
+            The tile opens on it: the prompt types itself and Build presses
+            itself, then the agent spins once and the system comes in.
    2. sys — the motion system, in the same family as the Storm motion system
-            page. The tile opens on it; Replay brings back the composer, and
-            Build plays the way in again: the agent spins once, then the system.
-            as the Storm motion system page (classes sy-*)
+            page (classes sy-*). After one full run it hands back to the
+            composer and the whole thing plays again; Replay starts it over.
    Ease for every move here is the product's own: the conversation panel in
    the real UI rises with .45s cubic-bezier(.2,.8,.2,1).
    ========================================================================== */
@@ -456,22 +431,18 @@ html.study-open,html.study-open body{overflow:hidden}
   --sy-lift:rgba(0,0,0,.7)}
 .st-fit{position:absolute;left:50%;top:50%;width:var(--dw);height:var(--dh);margin:calc(var(--dh) / -2) 0 0 calc(var(--dw) / -2);
   transform:scale(var(--s,1));transform-origin:50% 50%}
-.st-ui{--dw:700px;--dh:400px;z-index:2}
+.st-ui{--dw:700px;--dh:400px;z-index:2;pointer-events:none}   /* it plays by itself: nothing in it takes a click */
 .st-sysfit{--dw:560px;--dh:360px;z-index:3;pointer-events:none}
-.st.is-sys .st-sysfit{pointer-events:auto}
-.st:not(.is-ui) .st-ui{pointer-events:none}
-.st:not(.is-ui):not(.is-intro) .st-ui{visibility:hidden}     /* the tile opens on the system; Replay brings the composer */
+.st:not(.is-ui):not(.is-intro) .st-ui{visibility:hidden}     /* once the system is up the composer is gone, until the run is over */
+.st:not(.is-fit) .st-ui{visibility:hidden}                   /* until the script has sized it to the tile */
 
-/* "live" proof, top-left over the UI */
-.st-live{position:absolute;z-index:6;left:14px;top:14px;display:inline-flex;align-items:center;gap:7px;height:26px;padding:0 10px 0 9px;border-radius:999px;
-  font:500 12px/1 var(--ui);letter-spacing:-.005em;color:var(--ink);text-decoration:none;white-space:nowrap;
-  background:color-mix(in srgb,var(--ground) 80%,transparent);
-  box-shadow:inset 0 0 0 1px var(--ring-hi);transition:opacity .3s var(--st-ease),box-shadow .25s}
-.st-live:hover{box-shadow:inset 0 0 0 1px var(--ink-2)}
-.st-live svg{width:10px;height:10px;opacity:.6}
-.st-live i,.sy-chip i{position:relative;width:7px;height:7px;border-radius:50%;background:#4CC764;flex:none}
-.st-live i::after,.sy-chip i::after{content:"";position:absolute;inset:-3px;border-radius:50%;border:1.5px solid #4CC764;opacity:0;animation:stPing 2.2s var(--st-ease) infinite}
-.st:not(.is-ui) .st-live{opacity:0;pointer-events:none}
+/* a click anywhere on the tile opens the case study; only the Live chip on the motion system sits above it */
+.st-hit{position:absolute;inset:0;z-index:5;border-radius:inherit;-webkit-tap-highlight-color:transparent}
+.st-hit:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
+.tile--storm:has(.st-hit:hover) .cap .t{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+
+.sy-chip i{position:relative;width:7px;height:7px;border-radius:50%;background:#4CC764;flex:none}
+.sy-chip i::after{content:"";position:absolute;inset:-3px;border-radius:50%;border:1.5px solid #4CC764;opacity:0;animation:stPing 2.2s var(--st-ease) infinite}
 @keyframes stPing{0%{transform:scale(.6);opacity:.7}70%,100%{transform:scale(1.6);opacity:0}}
 
 /* ---------- 1. the Storm composer (real UI) ---------- */
@@ -495,10 +466,10 @@ html.study-open,html.study-open body{overflow:hidden}
 .su-composer{height:182px;position:relative}
 .su-ta,.su-mirror{position:absolute;left:0;right:0;top:15.1px;height:78px;margin:0;border:0;outline:0;resize:none;background:transparent;
   font:400 14px/20px "Roboto",Arial,sans-serif;color:#2E3940;padding:0 10px;white-space:pre-wrap;overflow-wrap:break-word;overflow:hidden}
-.su-ta{caret-color:#2E3940;user-select:text;-webkit-user-select:text}
+.su-ta{caret-color:transparent;user-select:none;-webkit-user-select:none}
 .su-mirror{color:transparent;pointer-events:none}
 .su-mirror i{display:inline-block;width:1px;height:17px;margin-left:1px;vertical-align:-3px;background:#2E3940;animation:suCaret 1.05s steps(1) infinite}
-.st:not(.is-typing):not(.is-cue) .su-mirror i,.su.is-focus .su-mirror{display:none}
+.st:not(.is-typing) .su-mirror i{display:none}
 @keyframes suCaret{50%{opacity:0}}
 .su-cnt{position:absolute;right:19px;top:104px;font-size:12px;line-height:16px;color:#B0B2B4}
 .su-tools{position:absolute;left:10px;right:9.5px;bottom:10.25px;height:32px;display:flex;align-items:center}
@@ -515,14 +486,13 @@ html.study-open,html.study-open body{overflow:hidden}
 .su-circ{width:30px;height:30px;border-radius:50%;background:#F5F6F7;display:grid;place-items:center;margin-left:5px;flex:none}
 .su-mic svg{width:21px;height:21px;fill:currentColor}
 .su-tune svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
-.su-build{position:relative;margin:0 0 0 5px;height:30px;width:77px;border:0;border-radius:15px;background:#5FC360;color:#fff;font:500 14.5px/1 "Roboto",Arial,sans-serif;
-  display:flex;align-items:center;justify-content:center;gap:4px;padding:0 2px 0 0;cursor:pointer;-webkit-tap-highlight-color:transparent;
+.su-build{position:relative;margin:0 0 0 5px;height:30px;width:77px;border-radius:15px;background:#5FC360;color:#fff;font:500 14.5px/1 "Roboto",Arial,sans-serif;
+  display:flex;align-items:center;justify-content:center;gap:4px;padding:0 2px 0 0;
   transition:opacity .2s,transform .25s cubic-bezier(.34,1.56,.64,1),filter .2s}
 .su-build svg{width:18px;height:18px;fill:currentColor}
-.su-build:disabled{opacity:.55;cursor:default}
-.su-build:not(:disabled):hover{filter:brightness(1.06)}
-.su-build:not(:disabled):active{transform:scale(.94)}
-.su-build:focus-visible{outline:2px solid #2E81DA;outline-offset:3px}
+.su-build.is-off{opacity:.55}
+/* Build presses itself once the prompt is in (no cursor): a quick press, then back on the button's own spring */
+.su-build.is-press{transform:scale(.92);filter:brightness(.92);transition-duration:.12s}
 .su-legal{position:relative;z-index:1;margin:-10px 10px 0;height:38px;padding-top:10px;background:#2E3940;border-radius:0 0 10px 10px;color:#E0E2E4;font-size:12px;line-height:28px;text-align:center}
 .su-legal b{color:#fff;font-weight:700}
 /* compact composer for narrow tiles: same parts, two pills fewer */
@@ -530,20 +500,7 @@ html.study-open,html.study-open body{overflow:hidden}
 .st.is-narrow .st-ui{--dw:450px;--dh:330px}
 .st.is-narrow .su-loc,.st.is-narrow .su-mic,.st.is-narrow .su-hsub{display:none}
 
-/* Build has to be the obvious next step */
-.st.is-cue .su-dim,.st.is-intro .su-dim{opacity:.38;filter:saturate(.4)}
-/* the pulse only moves transform + opacity, so it never repaints */
-.st.is-cue .su-build::before,.st.is-cue .su-build::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;background:rgba(95,195,96,.42);
-  opacity:0;animation:suPulse 2.2s cubic-bezier(.2,.8,.2,1) infinite;pointer-events:none;will-change:transform,opacity}
-.st.is-cue .su-build::after{animation-delay:1.1s}
-.st.is-cue .su-build{box-shadow:0 6px 18px -6px rgba(95,195,96,.9);isolation:isolate}
-@keyframes suPulse{0%{opacity:.75;transform:scale(1)}85%,100%{opacity:0;transform:scale(1.3,1.85)}}
-.su-tip{position:absolute;right:calc(100% + 12px);top:50%;display:flex;align-items:center;gap:7px;height:28px;padding:0 10px;border-radius:6px;background:#2E3940;color:#fff;
-  font:500 12.5px/1 "Roboto",Arial,sans-serif;white-space:nowrap;opacity:0;transform:translate(6px,-50%);transition:opacity .35s var(--st-ease),transform .45s var(--st-ease);pointer-events:none}
-.su-tip::after{content:"";position:absolute;left:100%;top:50%;margin-top:-5px;border:5px solid transparent;border-left-color:#2E3940}
-.su-tip kbd{font:500 11px/1 "Roboto",Arial,sans-serif;padding:3px 5px;border-radius:4px;background:rgba(255,255,255,.14)}
-@media (pointer:coarse){ .su-tip kbd{display:none} }
-.st.is-cue .su-tip{opacity:1;transform:translate(0,-50%);transition-delay:.5s}
+.st.is-intro .su-dim{opacity:.38;filter:saturate(.4)}
 
 /* ---------- 2. the system view (Storm motion system family) ---------- */
 /* the same ground as the Curve Lab tile beside it (the same paper for every main tile, day and night); the dot grid keeps clear of the tile's edges */
@@ -556,12 +513,13 @@ html.study-open,html.study-open body{overflow:hidden}
 .sy .lot svg,.sy-top .lot svg{width:100%!important;height:100%!important;display:block}
 .sy-in{opacity:0}
 .st.is-sys .sy-in{opacity:1}
-/* its top bar sits on the tile's own corners, so the diagram can take the middle */
-.sy-top{position:absolute;z-index:6;left:14px;right:14px;top:14px;height:28px;display:flex;align-items:center;justify-content:space-between}
-.st:not(.is-sys) .sy-top{pointer-events:none}
+/* its top bar sits on the tile's own corners, so the diagram can take the middle; it stays put on both
+   screens, the composer's and the system's, and never fades or moves */
+.sy-top{position:absolute;z-index:6;left:14px;right:14px;top:14px;height:28px;display:flex;align-items:center;justify-content:space-between;pointer-events:none}
+.sy-chip{pointer-events:auto}
 .sy-brand{display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px;letter-spacing:-.01em;white-space:nowrap}
 .sy-brand span{color:var(--sy-ink-2);font-weight:400}
-.st.is-narrow .sy-brand > span:not(.sy-badge){display:none}                      /* a narrow tile: just "Storm", so Replay and Live fit */
+.st.is-tight .sy-brand > span:not(.sy-badge){display:none}                       /* only a very narrow tile drops "Motion system", so Live fits */
 .sy-badge{position:relative;width:22px;height:22px;border-radius:6px;background:#0085E8;overflow:hidden;flex:none}
 .sy-badge .lot{left:3px;top:3px;width:16px;height:16px}
 .sy-right{display:flex;align-items:center;gap:6px}
@@ -569,11 +527,6 @@ html.study-open,html.study-open body{overflow:hidden}
   font-size:11.5px;color:var(--sy-chip-ink);text-decoration:none;white-space:nowrap;transition:box-shadow .2s,color .2s}
 .sy-chip:hover{box-shadow:inset 0 0 0 1px var(--sy-ring-hi);color:var(--sy-ink)}
 .sy-chip svg{width:9px;height:9px;opacity:.55}
-.sy-replay{width:24px;height:24px;border:0;padding:0;border-radius:50%;background:var(--sy-card);box-shadow:inset 0 0 0 1px var(--sy-ring);display:grid;place-items:center;color:var(--sy-ink-2);cursor:pointer;
-  transition:color .2s,box-shadow .2s,transform .3s cubic-bezier(.34,1.56,.64,1)}
-.sy-replay:hover{color:var(--sy-ink);box-shadow:inset 0 0 0 1px var(--sy-ring-hi)}
-.sy-replay:active{transform:scale(.9)}
-.sy-replay svg{width:11px;height:11px}
 .sy-sq{position:absolute;width:var(--sq);height:var(--sq);border-radius:12px;background:var(--sy-card);box-shadow:inset 0 0 0 1px var(--sy-ring),0 1px 2px rgba(20,32,44,.04);
   transition:box-shadow .35s var(--st-ease),transform .45s cubic-bezier(.34,1.56,.64,1)}
 .sy-sq .lot{left:24%;top:24%;width:52%;height:52%;opacity:.36;transition:opacity .3s}
@@ -601,15 +554,22 @@ html.study-open,html.study-open body{overflow:hidden}
 .sy-read.r span.trans{background:var(--sy-trans);color:var(--sy-blue-ink);box-shadow:inset 0 0 0 1px var(--sy-trans-ring)}
 .sy-read.r.swap b,.sy-read.r.swap span{animation:sySwap .42s var(--st-ease) both}
 @keyframes sySwap{from{transform:translateY(6px);opacity:0}}
-.sy-think{position:absolute;transform:translateX(-50%);font:400 14px/20px "Roboto",Arial,sans-serif;white-space:nowrap;opacity:0;
+.sy-think,.sy-ops{position:absolute;transform:translateX(-50%);white-space:nowrap;opacity:0}
+.sy-think,.sy-ops span{font:400 14px/20px "Roboto",Arial,sans-serif;white-space:nowrap;
   background:linear-gradient(90deg,var(--sy-shimmer) 0%,var(--sy-shimmer) 38%,var(--sy-shimmer-hi) 50%,var(--sy-shimmer) 62%,var(--sy-shimmer) 100%);background-size:250% 100%;
   -webkit-background-clip:text;background-clip:text;color:transparent;animation:syShimmer 1.6s linear infinite}
 @keyframes syShimmer{from{background-position:100% 0}to{background-position:-150% 0}}
+/* Storm at work, under the icon once the board is up: one step at a time, the last one done */
+/* no opacity transition here: on the way back to the composer the board's fade is cancelled at the end,
+   and a transition would bring "Template ready" back for a moment before it went again */
+.sy-ops.on{opacity:1}
+.sy-ops span{display:inline-block}
+.sy-ops.swap span{animation:sySwap .42s var(--st-ease) both,syShimmer 1.6s linear infinite}
+.sy-ops.done span{animation:none;background:none;color:var(--sy-ink-2)}
 
 @media (max-width:720px){ .tile.tile--storm[data-kind] .media{aspect-ratio:1/1} }
 @media (prefers-reduced-motion:reduce){
   .st *{animation:none!important}
-  .st.is-cue .su-build{box-shadow:0 0 0 3px rgba(95,195,96,.45)}
 }
 </style>
 </head>
@@ -640,12 +600,12 @@ html.study-open,html.study-open body{overflow:hidden}
       </header>
       <div class="tiers" id="grid">
         <!-- 1. the main work, big: Sitemate, Curve Lab, smtp.dev, Scoreline -->
-        <h2 class="tier-head">Selected work</h2>
+        <h2 class="tier-head"><span class="tier-t"><svg class="tier-ic" viewBox="0 0 12 12" aria-hidden="true"><path fill="currentColor" d="M6 .4C6.36 3.68 8.32 5.64 11.6 6 8.32 6.36 6.36 8.32 6 11.6 5.64 8.32 3.68 6.36.4 6 3.68 5.64 5.64 3.68 6 .4Z"/></svg>Selected work</span></h2>
         <div class="grid grid--main">
-          <!-- Sitemate: Storm's motion system, playing. Replay brings back the real Storm composer; Build → the agent spins once → the system again. Script: "SITEMATE TILE" at the end. -->
+          <!-- Sitemate: the real Storm composer types its prompt and presses Build → the agent thinks and spins once → Storm's motion system plays through once while Storm works → back to the composer, on a loop. Not interactive: a click anywhere opens the case study, except on Live in Sitemate (on the motion system only). Script: "SITEMATE TILE" at the end. -->
           <div class="tile tile--storm" data-kind="study" id="stTile">
-            <div class="media st" id="st" role="group" aria-label="Storm's motion system: six states feeding Sitemate's agent icon. Replay shows the Storm AI Templates panel it lives in.">
-              <a class="st-live" href="https://sitemate.com/storm/" target="_blank" rel="noopener"><i></i>Live in Sitemate<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg></a>
+            <div class="media st is-ui" id="st" role="group" aria-label="Storm's AI Templates panel builds Storm's motion system: six states feeding Sitemate's agent icon, playing on a loop.">
+              <a class="st-hit" href="sitemate/" aria-label="Storm Motion System: view the case study"></a>
 
               <div class="st-fit st-ui">
                 <div class="su" id="stDock">
@@ -660,7 +620,7 @@ html.study-open,html.study-open body{overflow:hidden}
                     </div>
                     <div class="su-body">
                       <div class="su-composer">
-                        <textarea class="su-ta" id="stTa" maxlength="2000" spellcheck="false" rows="3" aria-label="Write instructions for Storm"></textarea>
+                        <textarea class="su-ta" id="stTa" maxlength="2000" spellcheck="false" rows="3" readonly tabindex="-1" aria-hidden="true"></textarea>
                         <div class="su-mirror" aria-hidden="true"><span></span><i></i></div>
                         <div class="su-cnt" aria-hidden="true">0 / 2000</div>
                         <div class="su-tools">
@@ -670,8 +630,7 @@ html.study-open,html.study-open body{overflow:hidden}
                           <div class="su-circ su-mic su-dim" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg></div>
                           <div style="flex:1"></div>
                           <div class="su-circ su-tune su-dim" aria-hidden="true"><svg viewBox="0 0 18 18"><path d="M1.5 5.5h15M1.5 12.5h15"/><circle cx="7.2" cy="5.5" r="2.1" fill="#F5F6F7"/><circle cx="10.8" cy="12.5" r="2.1" fill="#F5F6F7"/></svg></div>
-                          <button class="su-build" id="stBuild" type="button" disabled>Build<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></svg>
-                            <span class="su-tip" aria-hidden="true">Press Build <kbd>↵</kbd></span></button>
+                          <div class="su-build is-off" id="stBuild" aria-hidden="true">Build<svg viewBox="0 0 24 24"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></svg></div>
                         </div>
                       </div>
                     </div>
@@ -681,10 +640,9 @@ html.study-open,html.study-open body{overflow:hidden}
               </div>
 
               <div class="sy-bg" aria-hidden="true"></div>
-              <div class="sy-top sy-in">
+              <div class="sy-top">
                 <div class="sy-brand"><span class="sy-badge"><span class="lot" data-st="badge2"></span></span>Storm <span>Motion system</span></div>
                 <div class="sy-right">
-                  <button class="sy-replay" type="button" aria-label="Replay from the Storm composer" title="Replay"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.2 6.2A3.9 3.9 0 1 0 3.4 3.1"/><path d="M2.6 1.4v2.2h2.2"/></svg></button>
                   <a class="sy-chip" href="https://sitemate.com/storm/" target="_blank" rel="noopener"><i></i>Live in Sitemate<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg></a>
                 </div>
               </div>
@@ -696,7 +654,8 @@ html.study-open,html.study-open body{overflow:hidden}
                   <div class="lot sy-big" role="img" aria-label="The Storm agent icon, playing its full cycle"></div>
                   <div class="sy-read l sy-in" aria-hidden="true"><b>f 00 / 00</b>24 fps</div>
                   <div class="sy-read r sy-in" aria-live="polite"><b>Appear</b><span>Entry</span></div>
-                  <div class="sy-think" aria-hidden="true">Building the motion system…</div>
+                  <div class="sy-think" aria-hidden="true">Thinking…</div>
+                  <div class="sy-ops" aria-hidden="true"><span></span></div>
                 </div>
               </div>
             </div>
@@ -741,7 +700,7 @@ html.study-open,html.study-open body{overflow:hidden}
         </div>
 
         <!-- 2. the experiments, smaller: live pieces and loops -->
-        <h2 class="tier-head tier-head--more">Experiments</h2>
+        <h2 class="tier-head tier-head--more"><span class="tier-t"><svg class="tier-ic" viewBox="0 0 12 12" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round" d="M4.3 .9h3.4M5 .9v3.7L1.75 9.95a.75.75 0 0 0 .64 1.15h7.22a.75.75 0 0 0 .64-1.15L7 4.6V.9"/><path fill="currentColor" d="M2.95 7.95h6.1l1.2 2a.75.75 0 0 1-.64 1.15H2.39a.75.75 0 0 1-.64-1.15Z"/></svg>Experiments</span></h2>
         <div class="grid grid--more">
           <div class="tile" data-kind="live" data-hint="Drag it">
             <!-- the real Rive sphere (sphere/sphere.riv), loaded when the tile comes into view -->
@@ -988,10 +947,6 @@ html.study-open,html.study-open body{overflow:hidden}
   </article>
 </div>
 
-<!-- Contact — always on the right -->
-<nav class="tz-side" id="tzSide" aria-label="Contact">
-  <a class="tz-sbtn" href="mailto:hey@turinoz.co">Contact</a>
-</nav>
 
 <script>
 /* ==========================================================================
@@ -2830,11 +2785,16 @@ requestAnimationFrame(frame);
 <script>
 /* ==========================================================================
    SITEMATE TILE
-   It opens on the motion system, playing: six states feeding the icon.
-   Replay brings back the real Storm composer from Sitemate's product, which
-   types a prompt. Build → the composer steps back (the product's own ease:
-   .45s cubic-bezier(.2,.8,.2,1), the same move as its conversation panel
-   rising) → the agent appears and spins once → the system again.
+   It opens on the real Storm composer from Sitemate's product. The prompt
+   types itself and Build presses itself (no cursor) → the composer steps
+   back (the product's own ease, a touch slower) → "Thinking…" while the
+   agent appears and spins once → the motion system: six states feeding the
+   icon, and once they are all in, one of Storm's steps under it, then
+   "Template ready" with the exit.
+   When the system has played through once, the composer comes back and it
+   all plays again. Each state's line to the icon draws in the first time
+   that state connects. Nothing in it takes input: a click anywhere opens the
+   case study, except on the Live in Sitemate chips.
    Clips are the six shipped Lottie files in #smClips (24 fps, 100 × 100).
    Rules, as in the product: appear → cone ×2 → cone→cylinder → cylinder ×2
    → cylinder→cone → cone → exit (an exit always leaves from the cone).
@@ -2849,10 +2809,15 @@ const $$ = (s, el = media) => Array.from(el.querySelectorAll(s));
 const DATA = JSON.parse(node.textContent);
 const FPS = 24;
 const EASE = 'cubic-bezier(.2,.8,.2,1)', DUR = 450;
+const IN = { dur: 760, ease: 'cubic-bezier(.22,1,.36,1)', from: .94 };      // the composer coming back: longer and softer
+const OUT = { dur: 520, ease: 'cubic-bezier(.3,.7,.2,1)', to: .9 };          // and stepping back: a hair softer than the product's
 const SPRING = 'cubic-bezier(.34,1.4,.64,1)';
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
-const PROMPT = 'Create a SWMS for working at heights.';
+const PROMPT = 'SWMS for working at heights.';
+// what Storm is doing, under the icon, once every state is on the board: one step a run (the next one each
+// time round), then "Template ready" lands with the exit
+const OPS = ['Reading the job: work at heights', 'Finding the hazards', 'Adding fall protection controls', 'Writing the safe work steps'];
+const DONE = 'Template ready';
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const clone = o => JSON.parse(JSON.stringify(o));
 const white = d => { const c = clone(d); (function w(n) { if (!n || typeof n !== 'object') return; if (Array.isArray(n)) { n.forEach(w); return; } if (n.ty === 'fl' && n.c && !n.c.a) n.c.k = [1, 1, 1, 1]; for (const k in n) w(n[k]); })(c.layers); return c; };
@@ -2871,6 +2836,11 @@ const SEQ = [['appear', 1], ['cone', 2], ['c2y', 1], ['cyl', 2], ['y2c', 1], ['c
 const segs = []; let TOT = 0;
 SEQ.forEach(([id, n]) => { for (let r = 0; r < n; r++) { segs.push({ id, rep: r, of: n, a: TOT, b: TOT + CL[id].op }); TOT += CL[id].op; } });
 const INTRO = CL.appear.op + CL.cone.op;          // it appears, turns once, then the page changes
+/* The shipped transitions end a hair off their loop's own pose (the rings sit up to ~2% apart), so the
+   icon on the board would hitch as each state hands over. Their last frames are drawn from the loop
+   instead: [loop, from this frame of the transition, that frame of the loop]. The swap lands on the
+   clip's fastest step, where the eye can't catch it, and every state then meets the next on the same pose. */
+const TAIL = { appear: ['cone', 15, 14], c2y: ['cyl', 14, 14], y2c: ['cone', 14, 14] };
 
 /* the page's theme: at night the icons on the board play white */
 const darkMq = matchMedia('(prefers-color-scheme: dark)');
@@ -2893,9 +2863,9 @@ class Pl {
 
 /* ---------- parts ---------- */
 const uiFit = $('.st-ui'), sysFit = $('.st-sysfit'), sys = $('#stSys'), bg = $('.sy-bg');
-const ta = $('#stTa'), build = $('#stBuild'), cnt = $('.su-cnt'), mirror = $('.su-mirror span'), dock = $('#stDock');
+const ta = $('#stTa'), build = $('#stBuild'), cnt = $('.su-cnt'), mirror = $('.su-mirror span');
 const sqWrap = $('.sy-sqs'), svg = $('.sy-lines'), main = $('.sy-main'), big = $('.sy-big');
-const readL = $('.sy-read.l'), readR = $('.sy-read.r'), think = $('.sy-think'), topBar = $('.sy-top'), replay = $('.sy-replay');
+const readL = $('.sy-read.l'), readR = $('.sy-read.r'), think = $('.sy-think'), ops = $('.sy-ops'), opsT = $('.sy-ops span');
 
 const WHITE_CONE = white(DATA['cone-spin']);
 const badges = $$('[data-st^="badge"]').map(el => new Pl(el, WHITE_CONE));
@@ -2927,7 +2897,7 @@ const LAY = {
   wide:    { W: 560, H: 300, sq: 50, gap: 16, sqY: 38, mn: 98,  mnY: 164, readGap: 22 },
   compact: { W: 360, H: 260, sq: 44, gap: 10, sqY: 28, mn: 90,  mnY: 142, readGap: 14 },
 };
-let lay = null, edges = {}, s2 = 1, lastSeg = -1;
+let lay = null, edges = {}, s2 = 1, lastSeg = -1, lastPid = '';
 function layout(cfg) {
   lay = cfg;
   sysFit.style.setProperty('--dw', cfg.W + 'px'); sysFit.style.setProperty('--dh', cfg.H + 'px');
@@ -2939,6 +2909,7 @@ function layout(cfg) {
   Object.assign(readL.style, { right: cfg.W - (mx - cfg.mn / 2 - cfg.readGap) + 'px', top: my - 15 + 'px' });
   Object.assign(readR.style, { left: mx + cfg.mn / 2 + cfg.readGap + 'px', top: my - 21 + 'px' });
   Object.assign(think.style, { left: mx + 'px', top: cfg.mnY + cfg.mn + 22 + 'px' });
+  Object.assign(ops.style, { left: mx + 'px', top: cfg.mnY + cfg.mn + 22 + 'px' });
   svg.setAttribute('width', cfg.W); svg.setAttribute('height', cfg.H); svg.setAttribute('viewBox', `0 0 ${cfg.W} ${cfg.H}`);
   const sy0 = cfg.sqY + cfg.sq + 5, ey = cfg.mnY - 3;
   let html = '';
@@ -2957,13 +2928,19 @@ function layout(cfg) {
     f.style.strokeDasharray = L; f.style.strokeDashoffset = L;
     edges[id] = { f, L, pts, base: f.previousElementSibling, dot: svg.querySelector(`[data-d="${id}"]`) };
   });
+  paintLines();
   lastSeg = -1;
 }
 function fit() {
   const w = media.clientWidth, h = media.clientHeight;
   if (!w || !h) return false;
   const sw = Math.min(w / 700, h / 400, 1);
+  if (!media.classList.contains('is-fit')) {             // the first fit: the composer fades in
+    media.classList.add('is-fit');
+    if (!reduce) uiFit.animate([{ opacity: 0 }, { opacity: 1 }], { duration: IN.dur, easing: IN.ease });
+  }
   const narrow = sw * 600 < 380;
+  media.classList.toggle('is-tight', w < 340);
   media.classList.toggle('is-narrow', narrow);
   uiFit.style.setProperty('--s', (narrow ? Math.min(w / 450, h / 330, 1) : sw).toFixed(4));
   const ws = Math.min(w / LAY.wide.W, h / LAY.wide.H, 1.15);
@@ -2976,57 +2953,66 @@ function fit() {
 const mainCenter = () => [media.clientWidth / 2, media.clientHeight / 2 + (lay.mnY + lay.mn / 2 - lay.H / 2) * s2];
 
 /* ---------- the composer ---------- */
-let state = 'sys', userTyped = false, typing = 0;
-function setText(v) { if (ta.value !== v) ta.value = v; cnt.textContent = `${v.length} / 2000`; mirror.textContent = v; build.disabled = !v.trim(); }
-function cue() { if (state === 'ui' && ta.value.trim()) media.classList.add('is-cue'); }
-// the prompt types itself in each time the composer comes back (Replay)
+let state = 'ui', typing = 0, vis = false;
+const studyOpen = () => document.documentElement.classList.contains('study-open');
+// the story waits while the tile is off screen, behind a study, or in a hidden tab
+const seen = () => new Promise(r => { const t = () => vis && !studyOpen() && !document.hidden ? r() : setTimeout(t, 200); t(); });
+function setText(v) { if (ta.value !== v) ta.value = v; cnt.textContent = `${v.length} / 2000`; mirror.textContent = v; build.classList.toggle('is-off', !v.trim()); }
+// each time the composer is up (first sight, after a full run of the system) the prompt types itself in
+// and Build presses itself; nobody else can type or press
 async function typeIn() {
   const me = ++typing;
   if (state !== 'ui') return;
-  userTyped = false;
-  if (reduce) { setText(PROMPT); cue(); return; }
+  await seen();
+  if (me !== typing || state !== 'ui') return;
+  if (reduce) { setText(PROMPT); await sleep(1600); if (me === typing && state === 'ui') go(); return; }
   media.classList.add('is-typing');
   for (let i = 1; i <= PROMPT.length; i++) {
-    if (me !== typing || state !== 'ui' || userTyped) break;
+    if (me !== typing || state !== 'ui') break;
     setText(PROMPT.slice(0, i));
     const ch = PROMPT[i - 1];
-    await sleep(ch === ',' ? 260 : ch === ' ' ? 70 + Math.random() * 60 : 34 + Math.random() * 46);
+    await sleep(ch === ' ' ? 40 + Math.random() * 30 : 18 + Math.random() * 22);
   }
   if (me !== typing) return;
   media.classList.remove('is-typing');
-  if (state === 'ui') { await sleep(260); cue(); }
+  if (state !== 'ui') return;
+  await sleep(420);
+  await seen();
+  if (me !== typing || state !== 'ui') return;
+  build.classList.add('is-press');
+  await sleep(150);
+  build.classList.remove('is-press');
+  await sleep(120);
+  if (me === typing && state === 'ui') go();
 }
-ta.readOnly = !fine;                       // no keyboard popping up on phones
-ta.addEventListener('focus', () => dock.classList.add('is-focus'));
-ta.addEventListener('blur', () => dock.classList.remove('is-focus'));
-ta.addEventListener('input', () => { userTyped = true; setText(ta.value); media.classList.toggle('is-cue', !!ta.value.trim()); });
-ta.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); go(); } });
-build.addEventListener('click', go);
-replay.addEventListener('click', toUI);
 setText('');
 
 /* ---------- Build → step back → one turn → the system ---------- */
-let clock = 0, revealed = false, started = false, vis = false, raf = 0, last = 0, startAt = 0, anims = [];
+let clock = 0, revealed = false, started = false, leaving = false, raf = 0, last = 0, startAt = 0, anims = [];
 const keep = a => (anims.push(a), a);
-function setInert() { uiFit.inert = state !== 'ui'; sysFit.inert = topBar.inert = state !== 'sys' || !revealed; }
+function setInert() { uiFit.inert = true; sysFit.inert = true; }
 function go() {
   if (state !== 'ui') return;
-  if (!userTyped || !ta.value.trim()) setText(PROMPT);
-  state = 'intro'; ta.blur(); setInert();
-  media.classList.remove('is-cue', 'is-typing', 'is-ui'); media.classList.add('is-intro');
+  ++typing;                                // nothing more types or presses itself
+  setText(PROMPT);
+  state = 'intro';
+  media.classList.remove('is-typing', 'is-ui'); media.classList.add('is-intro');
+  build.classList.remove('is-press');
   loadPlayers();
-  clock = 0; revealed = false; lastSeg = -1;
+  clock = 0; revealed = false; lastSeg = -1; lastPid = ''; runs++;
   if (reduce) { clock = (INTRO + 2) / FPS; reveal(); tick(Math.floor(clock * FPS)); return; }
   const s = parseFloat(uiFit.style.getPropertyValue('--s')) || 1;
-  keep(uiFit.animate([{ transform: `scale(${s})`, opacity: 1 }, { transform: `scale(${s * .88})`, opacity: 0 }],
-    { duration: DUR, easing: EASE, fill: 'forwards' }));
-  keep(think.animate([{ opacity: 0, translate: '0 6px' }, { opacity: 1, translate: '0 0' }], { duration: DUR, delay: 320, easing: EASE, fill: 'forwards' }));
+  keep(uiFit.animate([{ transform: `scale(${s})`, opacity: 1 }, { transform: `scale(${s * OUT.to})`, opacity: 0 }],
+    { duration: OUT.dur, easing: OUT.ease, fill: 'forwards' }));
+  keep(think.animate([{ opacity: 0, translate: '0 6px' }, { opacity: 1, translate: '0 0' }], { duration: DUR, delay: 340, easing: EASE, fill: 'forwards' }));
   startAt = performance.now() + 300;
   run();
 }
 function reveal() {
   const fromIntro = state === 'intro';
-  revealed = true; lastSeg = -1; state = 'sys'; setInert();
+  revealed = true; lastSeg = -1; lastOp = -1; state = 'sys';
+  linked = new Set(); fresh = true; paintLines();
+  if (reduce) ORDER.forEach(id => linked.add(id));
   media.classList.remove('is-intro'); media.classList.add('is-sys');
   if (reduce) return;
   const [cx, cy] = mainCenter(), w = media.clientWidth, h = media.clientHeight;
@@ -3035,63 +3021,94 @@ function reveal() {
     { duration: 760, easing: EASE }));
   if (fromIntro) keep(think.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, easing: EASE, fill: 'forwards' }));
   keep(main.animate([{ opacity: 0, scale: '.86' }, { opacity: 1, scale: '1' }], { duration: 620, delay: 90, easing: SPRING, fill: 'backwards' }));
-  keep(topBar.animate([{ opacity: 0, translate: '0 -6px' }, { opacity: 1, translate: '0 0' }], { duration: DUR, delay: 380, easing: EASE, fill: 'backwards' }));
   ORDER.forEach((id, i) => keep(sq[id].el.animate([{ opacity: 0, translate: '0 10px' }, { opacity: 1, translate: '0 0' }],
     { duration: 520, delay: 240 + Math.abs(i - 2.5) * 70, easing: EASE, fill: 'backwards' })));
   keep(svg.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 10, delay: 380, fill: 'backwards' }));
-  ORDER.forEach((id, i) => { const e = edges[id]; e.base.style.strokeDasharray = e.L;
-    keep(e.base.animate([{ strokeDashoffset: e.L }, { strokeDashoffset: 0 }], { duration: 640, delay: 400 + Math.abs(i - 2.5) * 60, easing: 'cubic-bezier(.65,0,.35,1)', fill: 'backwards' })); });
+  link('appear', 400);
   [readL, readR].forEach(el => keep(el.animate([{ opacity: 0, translate: '0 6px' }, { opacity: 1, translate: '0 0' }], { duration: DUR, delay: 600, easing: EASE, fill: 'backwards' })));
 }
-// the way the tile opens: straight into the system, playing from the icon's entry
+// the tile opens on the composer, the first time it comes on screen
 function start() {
   if (started) return;
   started = true;
   loadPlayers();
-  clock = reduce ? (INTRO + 2) / FPS : 0; lastSeg = -1;
-  startAt = performance.now() + 200;
-  reveal();
-  if (reduce) tick(Math.floor(clock * FPS));
-  run();
+  state = 'ui'; media.classList.add('is-ui'); setInert();
+  setTimeout(typeIn, reduce ? 0 : 700);
 }
+// back to the composer, by itself once the system has played through
 function toUI() {
-  if (state === 'ui' || !started) return;
-  const refocus = media.contains(document.activeElement);     // Replay had the focus: it goes to the composer
+  if (state === 'ui' || !started || leaving) return;
+  leaving = true;
   const fade = reduce ? null : [bg, sysFit].map(el => el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: EASE, fill: 'forwards' }));
   const back = () => {
     anims.forEach(a => a.cancel()); anims = [];
     if (fade) fade.forEach(a => a.cancel());
     cancelAnimationFrame(raf); raf = 0;
-    state = 'ui'; revealed = false; lastSeg = -1; setInert();
+    state = 'ui'; revealed = false; leaving = false; lastSeg = -1; lastPid = ''; lastOp = -1;
+    linked = new Set(); paintLines();
+    ops.classList.remove('on', 'swap', 'done');
     media.classList.remove('is-sys', 'is-intro'); media.classList.add('is-ui');
     for (const id in mainP) mainP[id].d.style.visibility = 'hidden';
     for (const id in sq) { sq[id].el.classList.remove('on'); sq[id].p.set(CL[id].rest); }
     for (const id in edges) { edges[id].f.classList.remove('on'); edges[id].dot.classList.remove('on'); }
     setText('');
     if (!reduce) { const s = parseFloat(uiFit.style.getPropertyValue('--s')) || 1;
-      uiFit.animate([{ transform: `scale(${s * .88})`, opacity: 0 }, { transform: `scale(${s})`, opacity: 1 }], { duration: DUR, easing: EASE }); }
-    setTimeout(typeIn, reduce ? 0 : DUR + 150);
-    if (refocus) try { ta.focus({ preventScroll: true }); } catch (_) {}
+      uiFit.animate([{ transform: `scale(${s * IN.from})`, opacity: 0 }, { transform: `scale(${s})`, opacity: 1 }], { duration: IN.dur, easing: IN.ease }); }
+    setTimeout(typeIn, reduce ? 0 : IN.dur + 100);
   };
   if (fade) fade[0].finished.then(back, back); else back();
 }
 
+/* ---------- Storm at work ----------
+   One step, once the last state has landed on the board (its entry ends 935 ms after the reveal),
+   held up to the exit; the exit says the template is ready. Each run takes the next step. */
+const OPS_AT = INTRO + Math.ceil(.95 * FPS), EXIT_AT = segs[segs.length - 1].a;
+let lastOp = -1, runs = -1;
+function opsAt(gf) {
+  if (!revealed || gf < OPS_AT) return;
+  const i = gf >= EXIT_AT ? 1 : 0;
+  if (i === lastOp) return;
+  lastOp = i;
+  opsT.textContent = i ? DONE : OPS[runs % OPS.length] + '…';
+  ops.classList.add('on'); ops.classList.toggle('done', !!i);
+  if (!reduce) { ops.classList.remove('swap'); void ops.offsetWidth; ops.classList.toggle('swap', !i); }
+}
+
+/* ---------- the lines ----------
+   A state's line to the icon draws in the first time that state connects, at the pace of its clip,
+   under the blue that runs along it. Appear has already played when the board comes up, so its
+   line draws with the board. */
+let linked = new Set(), fresh = false;
+function paintLines() { for (const id in edges) { const e = edges[id]; e.base.style.strokeDasharray = e.L; e.base.style.strokeDashoffset = linked.has(id) || reduce ? 0 : e.L; } }
+function link(id, delay = 0) {
+  if (linked.has(id)) return;
+  linked.add(id);
+  const e = edges[id]; e.base.style.strokeDashoffset = 0;
+  if (!reduce) keep(e.base.animate([{ strokeDashoffset: e.L }, { strokeDashoffset: 0 }],
+    { duration: Math.round(CL[id].op / FPS * 1000), delay, easing: 'cubic-bezier(.4,0,.2,1)', fill: 'backwards' }));
+}
+
 /* ---------- the clock ---------- */
 function tick(gf) {
+  opsAt(gf);
   const mf = ((gf % TOT) + TOT) % TOT;
   let si = 0; while (si < segs.length - 1 && mf >= segs[si].b) si++;
   const sg = segs[si], c = CL[sg.id], lf = mf - sg.a;
   if (si !== lastSeg) {
     lastSeg = si;
-    for (const id in mainP) mainP[id].d.style.visibility = id === sg.id ? 'visible' : 'hidden';
     if (revealed) {
+      link(sg.id, fresh ? 400 : 0); fresh = false;      // the first one waits for its square to come in
       for (const id in sq) { const on = id === sg.id; sq[id].el.classList.toggle('on', on); if (!on) sq[id].p.set(CL[id].rest); }
       for (const id in edges) { const on = id === sg.id; edges[id].f.classList.toggle('on', on); edges[id].dot.classList.toggle('on', on); }
       readR.innerHTML = `<b>${c.name}</b><span class="${c.k}">${c.tag}${sg.of > 1 ? ` · ${sg.rep + 1} of ${sg.of}` : ''}</span>`;
       if (!reduce) { readR.classList.remove('swap'); void readR.offsetWidth; readR.classList.add('swap'); }
     }
   }
-  mainP[sg.id].p.set(lf);
+  // the icon on the board: this state's clip, or for a transition's last frames, its loop's (see TAIL)
+  const t = TAIL[sg.id], tail = !!t && lf >= t[1];
+  const pid = tail ? t[0] : sg.id, pf = tail ? t[2] + lf - t[1] : lf;
+  if (pid !== lastPid) { lastPid = pid; for (const id in mainP) mainP[id].d.style.visibility = id === pid ? 'visible' : 'hidden'; }
+  mainP[pid].p.set(pf);
   if (revealed) {
     sq[sg.id].p.set(lf);
     const e = edges[sg.id], pr = Math.min(1, (lf + 1) / c.op);
@@ -3100,20 +3117,20 @@ function tick(gf) {
     readL.firstChild.textContent = `f ${String(lf).padStart(2, '0')} / ${c.op}`;
   }
 }
-const studyOpen = () => document.documentElement.classList.contains('study-open');
 function frame(now) {
   raf = 0;
-  if (!vis || state === 'ui' || studyOpen()) return;
+  if (!vis || state === 'ui' || leaving || studyOpen()) return;
   const dt = Math.min(.1, (now - last) / 1000); last = now;
   if (now >= startAt) {
     clock += dt;
     const gf = Math.floor(clock * FPS);
+    if (gf >= TOT) { toUI(); return; }   // one full run, through the exit: the composer comes back and it all plays again
     if (!revealed && gf >= INTRO) reveal();
     tick(gf);
   }
   raf = requestAnimationFrame(frame);
 }
-function run() { if (!raf && started && vis && state !== 'ui' && !reduce) { last = performance.now(); raf = requestAnimationFrame(frame); } }
+function run() { if (!raf && started && vis && state !== 'ui' && !leaving && !reduce) { last = performance.now(); raf = requestAnimationFrame(frame); } }
 new MutationObserver(run).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 
 /* ---------- start when the tile is on screen ---------- */
