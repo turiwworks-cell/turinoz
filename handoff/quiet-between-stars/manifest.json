@@ -1,0 +1,242 @@
+{
+  "project": "Quiet Between Stars",
+  "branch": "quiet-between-stars-handoff",
+  "research_base": "4e9fce0504e67e93337e5f82343b5c8996b2af0e",
+  "integration_base": "cef58d27d675c8767f3eaf307054af2b4faae120",
+  "files": [
+    {
+      "path": "turinoz-portfolio/index.html",
+      "bytes": 339671,
+      "sha256": "4d9f0cc6bfa8ddb533e226432eb5e8651a07ed0d16577536939d2c14872ca0cc",
+      "git_blob_sha": "132749bfeebc2fa18d6c91e6b55815d8b8a7d083"
+    },
+    {
+      "path": "turinoz-portfolio/README.md",
+      "bytes": 21811,
+      "sha256": "66bdb5d0c3aa4ebd8c9e72ae47bf7e25f05d77e9cf7ff8e9c07cdbcc39ab8792",
+      "git_blob_sha": "b9e0712869820feac5ac498dddc9213b68eb6794"
+    },
+    {
+      "path": "turinoz-portfolio/quiet-between-stars/assets/after-refinement.mp4",
+      "bytes": 310611,
+      "sha256": "83bce736fe56777c7e01c0ae7da33171cd05b5c5cf1858c57e70106af087c685",
+      "git_blob_sha": "ace67dc5116ec1ae1ac580a57967954dda47e4e8"
+    },
+    {
+      "path": "turinoz-portfolio/quiet-between-stars/assets/before-refinement.mp4",
+      "bytes": 355233,
+      "sha256": "52961f89c0ee8111ebc4164e96224270eefb8b9ef7d51339d300ea9a4a906afa",
+      "git_blob_sha": "f57c8fa15300ef6b198dbb2ee8c184b6403df1d4"
+    },
+    {
+      "path": "turinoz-portfolio/quiet-between-stars/assets/controller.webp",
+      "bytes": 439660,
+      "sha256": "449e8fa9f2441ee6433ba962a67bc97a4fbf4c0c573525b044c09852ca2dcb1b",
+      "git_blob_sha": "1272ec36762f65c68b64d3629508b097428913b0"
+    },
+    {
+      "path": "turinoz-portfolio/quiet-between-stars/assets/cruise-poster.webp",
+      "bytes": 44738,
+      "sha256": "d960d8286416446131b240377bb019c9fc3fec2bb8f8364e91b4b506c08f5299",
+      "git_blob_sha": "24161a9610800a0c2225ad91fbf8078d2d0e7f8d"
+    },
+    {
+      "path": "turinoz-portfolio/quiet-between-stars/assets/cruise.mp4",
+      "bytes": 22669987,
+      "sha256": "42d0b39391ade6d628ba3c843b42f413b67afee9ff0895ecca05b69479c0eed2",
+      "git_blob_sha": "550af98d2567173244c6d3c13c076bec9424b4a5"
+    },
+    {
+      "path": "turinoz-portfolio/quiet-between-stars/assets/entry-poster.webp",
+      "bytes": 23624,
+      "sha256": "57ee188b919923b7cbbb4af50cdaed3b15f4aa3fd8ca6d219d355e95701093a4",
+      "git_blob_sha": "84b0c73d11e2bc99e252e20a6d43f33d36185feb"
+    },
+    {
+      "path": "turinoz-portfolio/quiet-between-stars/assets/entry.mp4",
+      "bytes": 501620,
+      "sha256": "c97199823df117dc49017f091fa18a5611f9eb81737a7f1894f9f2dae7353722",
+      "git_blob_sha": "722e0ff4acd126604462944d04b098089f2d1ae8"
+    },
+    {
+      "path": "turinoz-portfolio/quiet-between-stars/assets/exit-poster.webp",
+      "bytes": 12740,
+      "sha256": "a5891bfbafee9dc0d3d22d7de17d43cdcb40f2f0da2ca298df8470b645bf2f87",
+      "git_blob_sha": "646fb90965f92fd911a8bb70408e2342870784a9"
+    },
+    {
+      "path": "turinoz-portfolio/quiet-between-stars/assets/exit.mp4",
+      "bytes": 441418,
+      "sha256": "6c50f37a32fa6989c720a6e1f9eeed87a05c5ee9dccb41033e46d4e39ff92a9d",
+      "git_blob_sha": "02608cbc482d2ed42e2940184c292c6138e244ac"
+    },
+    {
+      "path": "turinoz-portfolio/quiet-between-stars/assets/expressions.webp",
+      "bytes": 143978,
+      "sha256": "acba3b01bd12cac4385809a7b0976594959ee17de771afd566cce20511bdc3e3",
+      "git_blob_sha": "12cf79aa6107956e97d7dc645c581e4398f454ba"
+    },
+    {
+      "path": "turinoz-portfolio/quiet-between-stars/assets/guide-architecture.webp",
+      "bytes": 109808,
+      "sha256": "7fe868ce599e4fa6fc235438ffcca7598582705cb5087c42a2c3e467b5849026",
+      "git_blob_sha": "d3afb4bd7c652b22cf73b07f2289e6838a2d6655"
+    },
+    {
+      "path": "turinoz-portfolio/quiet-between-stars/assets/guide-controllers.webp",
+      "bytes": 29226,
+      "sha256": "0acedc25fb3e406a3b2ea3242d0aa42ae065dcc2b64353686813d4305795d1ed",
+      "git_blob_sha": "356a49f6b70922f15ab0bcc64cca070566a80978"
+    },
+    {
+      "path": "turinoz-portfolio/quiet-between-stars/assets/idle-poster.webp",
+      "bytes": 20304,
+      "sha256": "3ef84c30109331f38c564774180dc4f6f8a5bc64784341e9154d20a9938f93ed",
+      "git_blob_sha": "ce1d6d67408c33caf1323836cac912f22e827308"
+    },
+    {
+      "path": "turinoz-portfolio/quiet-between-stars/assets/idle.mp4",
+      "bytes": 2034452,
+      "sha256": "809d0e247d598b26a837f5243ae9b5f4ca9d9c0ea458d8f286d5bf25aeef82db",
+      "git_blob_sha": "0b9740448323e9663a62560b1e783d102cdd9672"
+    },
+    {
+      "path": "turinoz-portfolio/quiet-between-stars/assets/media-manifest.json",
+      "bytes": 17846,
+      "sha256": "fb007554bcf90f90bfb2652bbec57bb9924d855418b987fa8de9ac75e468f613",
+      "git_blob_sha": "03aa4b01528920c899f4b6f3fa7a01f4d9b5ad57"
+    },
+    {
+      "path": "turinoz-portfolio/quiet-between-stars/assets/portrait.webp",
+      "bytes": 19972,
+      "sha256": "fcf48185ce32dd42e02a74b7e42c31c2166412797d35c2f536283194b2a7e3b3",
+      "git_blob_sha": "855906b05bfc51783afed5f57083484c65df2946"
+    },
+    {
+      "path": "turinoz-portfolio/quiet-between-stars/assets/preview.mp4",
+      "bytes": 839685,
+      "sha256": "0a8921d1e16b1a02de0428041465d174bbfa435fa61f908a1f38b259492a0068",
+      "git_blob_sha": "b1e77c65057d6d03c0584505f087a0ba95e027da"
+    },
+    {
+      "path": "turinoz-portfolio/quiet-between-stars/assets/star-system.webp",
+      "bytes": 179444,
+      "sha256": "40881aca2212dad5222cdea6f8f2cc592e44e86704185985e195637e0915ce8a",
+      "git_blob_sha": "cddecdc2fcf7dfd3ceadd3374dcb9af2a5ecce62"
+    },
+    {
+      "path": "turinoz-portfolio/quiet-between-stars/assets/style-a-dark.webp",
+      "bytes": 28402,
+      "sha256": "474da17399e39a8200e20a29c72c4f534b876dc835aa64712af3b811e86d78a3",
+      "git_blob_sha": "cd18db0773ba2d86ff563a29d83163622bca9e58"
+    },
+    {
+      "path": "turinoz-portfolio/quiet-between-stars/assets/style-a.webp",
+      "bytes": 30004,
+      "sha256": "0d5e7ee2a3da291661d8c7e95a4a82b5e42d650a73ed4f718f880840b98f82ce",
+      "git_blob_sha": "e1b9ce4b6ce9fc46c263ff748e70bc2396fdba23"
+    },
+    {
+      "path": "turinoz-portfolio/quiet-between-stars/assets/style-b.webp",
+      "bytes": 34746,
+      "sha256": "52e07ba790836818ac8e21ad59f6d33a7450878d79685c2ff1ac8da0020942d3",
+      "git_blob_sha": "8766d593826ee6326c1a038d93044da116f6cf16"
+    },
+    {
+      "path": "turinoz-portfolio/quiet-between-stars/assets/style-c.webp",
+      "bytes": 22874,
+      "sha256": "c5bbfcafef65a788aebdf135ce016011146d0cb2de6bc14cd88cd00b61f5f4b7",
+      "git_blob_sha": "c5eaaec78e3c7af359b217eb70ed54d7954df7ff"
+    },
+    {
+      "path": "turinoz-portfolio/quiet-between-stars/assets/triplewide.webp",
+      "bytes": 20386,
+      "sha256": "218b82120b2d9908c423a4dcd2c796f31da67425fad079c1841494c22d4f37f6",
+      "git_blob_sha": "93c3ae6b87c98dc7499481a68a05dd9297ac856e"
+    },
+    {
+      "path": "turinoz-portfolio/quiet-between-stars/assets/ultrawide-3840.webp",
+      "bytes": 18072,
+      "sha256": "418e8a6261d5a4dcc3fbec362b98df1730e0b1063d7684052f7a672bc2dfa6f1",
+      "git_blob_sha": "353b1820179f9c60c588397855ef1fbf6426295a"
+    },
+    {
+      "path": "turinoz-portfolio/quiet-between-stars/assets/ultrawide-5120.webp",
+      "bytes": 13504,
+      "sha256": "607043f4a3ab22016352de434f48b44d20d61f1e90bc7e01e884cd71fd20975d",
+      "git_blob_sha": "3ed22c9d29dc5034dfc103bf633c9c746f5f7cfc"
+    },
+    {
+      "path": "turinoz-portfolio/quiet-between-stars/case-study.css",
+      "bytes": 22344,
+      "sha256": "9d1cf829ae549f214510988b5f31be8bd10fedc4a4a2357f4ad2dab967d3702c",
+      "git_blob_sha": "713b919fc190ac2115251166f407a022ea4151f8"
+    },
+    {
+      "path": "turinoz-portfolio/quiet-between-stars/case-study.js",
+      "bytes": 10241,
+      "sha256": "a9cfb3a92005d94a1380bea2ad874b15520d0eb2789129895b77487946af39cb",
+      "git_blob_sha": "1bbb1d3eeebbc51e7d26ec0b1353740a630aae89"
+    },
+    {
+      "path": "turinoz-portfolio/quiet-between-stars/index.html",
+      "bytes": 19619,
+      "sha256": "2b7bf961842436886c4c90d77c1ef894a6ad0576014ae92915559c259e14d223",
+      "git_blob_sha": "85c725b783bcd4929bb1b10f507dacd3d85c9ffb"
+    },
+    {
+      "path": "turinoz-portfolio/quiet-between-stars/README.md",
+      "bytes": 2634,
+      "sha256": "e966b31d16a56f9638da2f497a97d1be5c4c990963537dfc935b15f11d11d672",
+      "git_blob_sha": "a386fb7195f82149d64f7dd0c250d595d74d6f7c"
+    },
+    {
+      "path": "turinoz-portfolio/quiet-between-stars/tile.html",
+      "bytes": 2928,
+      "sha256": "c06b42135ceb08ec6791a85b2b93c582649e6dcef097833aa7fa53d45457a7e9",
+      "git_blob_sha": "a75cc16c2a5d8b697341e6b16e59de11a0d61f31"
+    },
+    {
+      "path": "handoff/quiet-between-stars/AGENT-HANDOFF.md",
+      "bytes": 4386,
+      "sha256": "f22d1dce900745059b38aed50a7091779ffbe80160434d22d1b69d96340f736a",
+      "git_blob_sha": "9dc8f8879ae0f9eb1fd09835be1c92c87c44db19"
+    },
+    {
+      "path": "handoff/quiet-between-stars/CASE-STUDY.md",
+      "bytes": 5036,
+      "sha256": "cf71c126df56da36a532a47419cb0432776eef985d949147943c44ae48faa7c0",
+      "git_blob_sha": "34f6a90ab7e39125a54ce740d4b653fa074a5e4c"
+    },
+    {
+      "path": "handoff/quiet-between-stars/Quiet-Between-Stars-Integration.zip",
+      "bytes": 29861734,
+      "sha256": "931973b1c3f2a762e3e70cc1989f3650c7f7ab855330e5482b9b350effb5b194",
+      "git_blob_sha": "f934eb3530611ab499f3c5f636045b21bf18dd5c"
+    },
+    {
+      "path": "handoff/quiet-between-stars/Quiet-Between-Stars-Research-Report.md",
+      "bytes": 67868,
+      "sha256": "9a050abb845f9b580a44a3a48a3df33a04ec0df8c6e9697eb41164207c3f6ca8",
+      "git_blob_sha": "bf75e6f9fad505053a41d2267465b8b0a80a4fcb"
+    },
+    {
+      "path": "handoff/quiet-between-stars/README.md",
+      "bytes": 1396,
+      "sha256": "2de315b857ef2dcf23f8c6bc20371c4835c6fe5ab18d6deb1d919f5161db9d48",
+      "git_blob_sha": "b4b3603c70d35578e15632e9f023ba6e37ec1581"
+    },
+    {
+      "path": "handoff/quiet-between-stars/site-integration.patch",
+      "bytes": 3548,
+      "sha256": "910af3f82c37c3e7d007ba07180b5bece665b987280e03683c6ecec5179ce3b9",
+      "git_blob_sha": "1f0023d5466b6459d1e1c93378a0dbb6d6719f29"
+    },
+    {
+      "path": "handoff/quiet-between-stars/VALIDATION.md",
+      "bytes": 1525,
+      "sha256": "c80b708ec0cf29326d80683eff2d3f411944873e63eeff0e38e7ef7225ac82c2",
+      "git_blob_sha": "de8b0e2ae98d851770f1821270398ca5eb29f3c7"
+    }
+  ]
+}

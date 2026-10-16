@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#070b0b">
+<title>Quiet Between Stars — Ambient motion system · Turinoz</title>
+<meta name="description" content="A procedural space for thinking clearly. Creative direction, design and motion by Turinoz for Petie Clark: Primary Idle, Hyperspace and a system made to keep changing.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Quiet Between Stars — Turinoz">
+<meta property="og:description" content="A place to stay awhile. An ambient motion system for Petie Clark, designed and directed by Turinoz.">
+<meta property="og:image" content="https://turinoz.co/quiet-between-stars/assets/idle-poster.webp">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%230C0C0B'/%3E%3Cpath d='M28 66V44L40 53L47 33.3L60 51L72 31V66Z' fill='none' stroke='%23F1F0EC' stroke-width='6'/%3E%3C/svg%3E">
+<script>try{const t=localStorage.getItem('tz-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch{}</script>
+<link rel="preload" href="../fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="case-study.css">
+<script src="case-study.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the case study</a>
+<svg class="symbols" aria-hidden="true"><symbol id="arrow" viewBox="0 0 16 16"><path d="M3 8h10M9 4l4 4-4 4"/></symbol><symbol id="out" viewBox="0 0 16 16"><path d="M4 12l8-8M4 4h8v8"/></symbol><symbol id="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1 1m12 12 1 1M5 19l1-1M18 6l1-1"/></symbol><symbol id="moon" viewBox="0 0 24 24"><path d="M20 15A8.5 8.5 0 0 1 9 4a8.5 8.5 0 1 0 11 11Z"/></symbol></svg>
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="back icon-button" href="../" aria-label="Back to the Turinoz portfolio"><svg class="icon reverse"><use href="#arrow"/></svg></a>
+    <a class="brand" href="#top" aria-label="Quiet Between Stars, back to top"><span class="qbs-mark" aria-hidden="true">✳</span><span>Quiet Between Stars</span></a>
+    <nav aria-label="Sections"><a href="#states">States</a><a href="#direction">Direction</a><a href="#system">System</a><a href="#refinement">Refinement</a><a href="#delivery">Delivery</a></nav>
+    <div class="nav-actions"><button class="motion-button" id="motionToggle" type="button" aria-pressed="false" hidden>Pause motion</button><button class="icon-button" id="themeToggle" type="button" aria-label="Switch color theme"><svg class="icon sun"><use href="#sun"/></svg><svg class="icon moon"><use href="#moon"/></svg></button></div>
+  </div><div class="reading-progress" aria-hidden="true"></div>
+</header>
+<main id="main">
+  <section class="hero wrap" id="top">
+    <p class="eyebrow"><i></i>Ambient motion system · Petie Clark · 2025–26</p>
+    <h1>A place to<br><span>stay awhile.</span></h1>
+    <p class="hero-copy">Quiet Between Stars is a space for thinking clearly.<br class="desktop"> I designed the world, its motion, and the system that keeps it alive.</p>
+    <dl class="hero-facts"><div><dt>Primary Idle</dt><dd>180<span>s</span></dd></div><div><dt>Hyperspace</dt><dd>170<span>s</span></dd></div><div><dt>Entry / exit</dt><dd>5<span>s each</span></dd></div><div><dt>Master canvas</dt><dd class="dimensions">6480 × 3840</dd></div></dl>
+  </section>
+
+  <section class="showcase wrap" aria-label="The four delivered states">
+    <div class="player" id="player">
+      <div class="player-top mono"><span><i class="live-dot"></i><b id="playerState">Primary Idle</b></span><span>24 fps · Silent</span></div>
+      <video id="stateVideo" src="assets/idle.mp4" poster="assets/idle-poster.webp" preload="metadata" muted playsinline loop controls aria-label="Primary Idle, full 180-second render"></video>
+      <div class="player-controls" id="playerControls" hidden><button id="playToggle" type="button" aria-label="Play the current state">Play</button><label class="sr-only" for="seek">Seek within the current state</label><input id="seek" type="range" min="0" max="180" step="0.04" value="0"><span class="time mono" id="time" aria-hidden="true">0:00 / 3:00</span><button id="fullscreen" type="button" aria-label="View the render fullscreen">Expand <svg class="icon"><use href="#out"/></svg></button></div>
+      <p class="player-error" id="playerError" hidden>The preview could not load. <a id="fallbackLink" href="assets/idle.mp4">Open the video file</a>.</p>
+    </div>
+    <div class="state-tabs" role="group" aria-label="Choose a rendered state"><button type="button" data-state="idle" aria-pressed="true"><span>01</span>Primary Idle<small>3:00 · loop</small></button><button type="button" data-state="entry" aria-pressed="false"><span>02</span>Entry<small>0:05 · transition</small></button><button type="button" data-state="cruise" aria-pressed="false"><span>03</span>Hyperspace<small>2:50 · loop</small></button><button type="button" data-state="exit" aria-pressed="false"><span>04</span>Return<small>0:05 · transition</small></button></div>
+    <p class="media-note"><span id="stateNote">The full Primary Idle loop, at its original pace.</span><span>Web previews from the delivered renders.</span></p>
+    <p class="sr-only" role="status" id="playerStatus"></p>
+  </section>
+
+  <section class="brief wrap section">
+    <div class="brief-heading"><p class="eyebrow"><i></i>The brief</p><h2>A space,<br>rather than a scene.</h2></div>
+    <div class="prose"><p>Petie wanted his office to feel like the inside of a ship: somewhere to work quietly, think clearly, and feel removed from urgency. The future installation was three large vertical OLED displays, with ultrawide versions for his desk.</p><p>The work had to stay easy to live with for hours. Deep black, distant structure, and motion slow enough to forget it was there. That became the rule for everything that followed.</p></div>
+  </section>
+
+  <section class="wrap section" id="states">
+    <div class="section-head"><div><p class="eyebrow"><i></i>01 — States</p><h2>Still water.<br>A smooth current.</h2></div><p class="sub">Idle supports focus. Hyperspace carries a little more momentum. The feeling changes; the world stays connected.</p></div>
+    <div class="state-story">
+      <button type="button" data-state="idle"><span class="index mono">01</span><div><h3>Stay.</h3><p>Sparse stars, a little atmosphere, and depth that shifts slowly. Nothing asks to be watched.</p></div><span class="state-duration mono">180 s<svg class="icon"><use href="#arrow"/></svg></span></button>
+      <button type="button" data-state="entry"><span class="index mono">02</span><div><h3>Begin to move.</h3><p>The field gathers and stretches into the tunnel. A controlled change of state, in five seconds.</p></div><span class="state-duration mono">5 s<svg class="icon"><use href="#arrow"/></svg></span></button>
+      <button type="button" data-state="cruise"><span class="index mono">03</span><div><h3>Find the flow.</h3><p>A sustained cloud tunnel. More movement, with the same restraint. This is the long part of the journey.</p></div><span class="state-duration mono">170 s<svg class="icon"><use href="#arrow"/></svg></span></button>
+      <button type="button" data-state="exit"><span class="index mono">04</span><div><h3>Ease back.</h3><p>The tunnel gives way to the star field it came from. The same seed carries through entry, cruise, and return.</p></div><span class="state-duration mono">5 s<svg class="icon"><use href="#arrow"/></svg></span></button>
+    </div>
+    <p class="fine">Choose a state to play it above. Entry continues into Hyperspace; Return continues into Idle.</p>
+    <div class="timeline"><span class="mono timeline-label">One 180-second hyperspace package</span><div class="timeline-bar" aria-hidden="true"><i></i><i></i><i></i></div><div class="timeline-labels mono"><span>00:00<br><b>Entry</b></span><span>00:05 → 02:55<br><b>Cruise</b></span><span>03:00<br><b>Return</b></span></div></div>
+  </section>
+
+  <section class="wrap section" id="direction">
+    <div class="section-head"><div><p class="eyebrow"><i></i>02 — Direction</p><h2>Give the black<br>more room.</h2></div><p class="sub">The early pass had the pacing. The clouds needed to step back. I reduced their presence and left more of the frame open. A02 became our visual baseline.</p></div>
+    <figure class="comparison"><div class="compare-frame" id="compareFrame"><img src="assets/style-a.webp" width="1800" height="1067" alt="A01 early styleframe with a more present cloud structure" loading="lazy"><img class="compare-after" src="assets/style-a-dark.webp" width="1800" height="1067" alt="Approved A02 darker styleframe with more negative space" loading="lazy"><span class="compare-line" aria-hidden="true"></span><span class="image-label left mono">A01 · Early</span><span class="image-label right mono">A02 · Chosen</span></div><figcaption><label for="compareRange">Move between the two passes</label><input type="range" id="compareRange" min="0" max="100" value="50" aria-label="Reveal the approved darker styleframe"><span class="mono" aria-hidden="true">A01 ↔ A02</span></figcaption></figure>
+    <div class="frame-pair"><figure><button class="image-open" type="button" data-image="assets/style-b.webp" data-caption="B01 · An alternate balance of structure and open space" aria-label="Enlarge styleframe B01"><img src="assets/style-b.webp" alt="B01 alternate composition of the space environment" width="1600" height="948" loading="lazy"><span aria-hidden="true">↗</span></button><figcaption><span class="mono">B01</span>An alternate balance of structure and open space.</figcaption></figure><figure><button class="image-open" type="button" data-image="assets/style-c.webp" data-caption="C01 · Another composition within the same visual world" aria-label="Enlarge styleframe C01"><img src="assets/style-c.webp" alt="C01 alternate styleframe with a different cloud arrangement" width="1600" height="948" loading="lazy"><span aria-hidden="true">↗</span></button><figcaption><span class="mono">C01</span>Same world, another arrangement.</figcaption></figure></div>
+  </section>
+
+  <section class="wrap section" id="system">
+    <div class="section-head"><div><p class="eyebrow"><i></i>03 — System</p><h2>A world you<br>can keep changing.</h2></div><p class="sub">The deliverable was an After Effects system as well as a set of films. A master seed reshapes the scene, while each part keeps its own controls.</p></div>
+    <div class="system-facts"><div><b>120<span> + </span>400</b><p>Hero stars + micro stars</p></div><div><b>180<span> s</span></b><p>Loop-safe master timeline</p></div><div><b>0–99,000</b><p>Master seed range</p></div></div>
+    <div class="system-browser">
+      <div class="system-notes"><div class="system-menu" role="group" aria-label="Explore the After Effects system"><button type="button" data-system="stars" aria-pressed="true"><span class="mono">01</span>Depth<svg class="icon"><use href="#arrow"/></svg></button><button type="button" data-system="motion" aria-pressed="false"><span class="mono">02</span>Motion<svg class="icon"><use href="#arrow"/></svg></button><button type="button" data-system="variation" aria-pressed="false"><span class="mono">03</span>Variation<svg class="icon"><use href="#arrow"/></svg></button><button type="button" data-system="guide" aria-pressed="false"><span class="mono">04</span>Control<svg class="icon"><use href="#arrow"/></svg></button></div><div class="system-copy" aria-live="polite"><h3 id="systemTitle">Stars with an address.</h3><p id="systemCopy">Each star has its own position in 3D space. Near and far distances, size, opacity and density shape the field. Parallax comes from that depth.</p><p class="system-detail mono" id="systemDetail">Hero stars / micro stars / depth-based parallax</p></div></div>
+      <figure class="system-figure"><button class="image-open" type="button" id="systemImageButton" data-image="assets/star-system.webp" data-caption="Star system during development" aria-label="Enlarge the system screenshot"><img id="systemImage" src="assets/star-system.webp" alt="The star layers and depth setup in the After Effects project during development" loading="lazy" width="1800" height="1000"><span aria-hidden="true">↗</span></button><figcaption id="systemCaption">Inside the After Effects project · Development view</figcaption></figure>
+    </div>
+    <div class="seed-rule"><div><span class="eyebrow">Repeatable by design</span><h3>Keep the part you liked.</h3><p>Each local seed is added to the master. A global change can reshape the world; an offset can bring one favourite layer back.</p></div><div class="seed-example mono"><span>Master <b>900</b></span><span>Local offset <b>−895</b></span><span class="result">Resulting seed <b>5</b></span><small>Math.round(master + local)</small></div></div>
+  </section>
+
+  <section class="wrap section" id="refinement">
+    <div class="section-head"><div><p class="eyebrow"><i></i>04 — Refinement</p><h2>Drifting forward.<br>Less going around.</h2></div><p class="sub">Petie’s first review caught a swirl in the idle. I separated X and Y drift, gave Z movement the lead, and replaced the atmosphere’s looping offset with evolution.</p></div>
+    <div class="refinement-videos"><figure><video data-ambient src="assets/before-refinement.mp4" poster="assets/idle-poster.webp" muted playsinline loop preload="none" controls aria-label="First delivery of Primary Idle, first 25 seconds"></video><figcaption><span class="mono">Before</span>First delivery · Combined lateral drift</figcaption></figure><figure><video data-ambient src="assets/after-refinement.mp4" poster="assets/idle-poster.webp" muted playsinline loop preload="none" controls aria-label="Revised Primary Idle, same first 25 seconds"></video><figcaption><span class="mono">After</span>Refined motion · Independent X, Y and Z</figcaption></figure></div>
+    <div class="refinement-note"><p>The change is quiet. Both excerpts show the same 25 seconds at normal speed; the aim was a steadier sense of direction, while keeping the scene alive.</p><button class="text-button" id="replayComparison" type="button" hidden>Replay together <svg class="icon"><use href="#arrow"/></svg></button></div>
+    <div class="performance"><div><p class="eyebrow">Practical at full size</p><h3>Easy to change.<br>Reasonable to render.</h3></div><div><p>I kept refining the build after the look was working. In my production tests, a full render went from around 7½ hours to 40–50 minutes. Petie later reported about 25 minutes for his full package.</p><p class="fine">Times reported during production on different machines; they are observations, not a controlled benchmark.</p></div></div>
+  </section>
+
+  <section class="wrap section" id="formats">
+    <div class="section-head"><div><p class="eyebrow"><i></i>05 — Formats</p><h2>One space.<br>Room for every screen.</h2></div><p class="sub">The master spans three vertical 4K displays. Dedicated compositions handle the single portrait and two ultrawide formats, with their own framing controls.</p></div>
+    <div class="format-stage"><div class="format-image" id="formatImageWrap"><img id="formatImage" src="assets/triplewide.webp" alt="The full 6480 by 3840 Primary Idle canvas, divided into three portrait displays" width="1800" height="1067" loading="lazy"><div class="display-dividers" id="displayDividers" aria-hidden="true"><span>01</span><span>02</span><span>03</span></div></div><div class="format-readout mono"><span id="formatName">Three vertical displays</span><span id="formatSize">6480 × 3840</span></div></div>
+    <div class="format-tabs" role="group" aria-label="Choose an idle export format"><button type="button" data-format="triplewide" aria-pressed="true"><span>Triplewide</span><small>6480 × 3840</small></button><button type="button" data-format="portrait" aria-pressed="false"><span>Portrait</span><small>2160 × 3840</small></button><button type="button" data-format="wide" aria-pressed="false"><span>Ultrawide</span><small>5120 × 1440</small></button><button type="button" data-format="wide2" aria-pressed="false"><span>Ultrawide</span><small>3840 × 1600</small></button></div>
+    <p class="fine">Stills from the four delivered v01 idle exports. Display divisions show the intended layout.</p>
+  </section>
+
+  <section class="wrap section" id="delivery">
+    <div class="section-head"><div><p class="eyebrow"><i></i>06 — Delivery</p><h2>Handed over.<br>Open to what’s next.</h2></div><p class="sub">The renders, the editable system, and a guide to using it. Petie went on to build his own web control layer around the project for quick changes and RAM previews.</p></div>
+    <div class="delivery-layout"><dl class="delivery-list"><div><dt>Motion</dt><dd>Primary Idle · Entry · Hyperspace · Return</dd></div><div><dt>Master</dt><dd>6480 × 3840 · 24 fps · Silent</dd></div><div><dt>Idle formats</dt><dd>Triplewide · Portrait · Two ultrawides</dd></div><div><dt>Source</dt><dd>Procedural After Effects project</dd></div><div><dt>Handoff</dt><dd>Controller guide · Workspace setup · Export guidance</dd></div></dl><figure class="guide-preview"><button class="image-open" type="button" data-image="assets/guide-architecture.webp" data-caption="System composition · From the delivered controller guide" aria-label="Enlarge the architecture page from the delivered guide"><img src="assets/guide-architecture.webp" alt="The System Composition page from the delivered controller guide" loading="lazy" width="1200" height="1697"><span aria-hidden="true">↗</span></button><figcaption>From the delivered controller guide</figcaption></figure></div>
+    <blockquote><p>“Your guide was great and I felt right at home in the project.”</p><footer><span class="quote-dot"></span>Petie Clark<span>Client · February 2026</span></footer></blockquote>
+    <dl class="credits"><div><dt>Creative direction, design & motion</dt><dd>Turinoz</dd></div><div><dt>Client</dt><dd>Petie Clark</dd></div><div><dt>Delivery partner</dt><dd>OSL Wire</dd></div><div><dt>Built in</dt><dd>Adobe After Effects</dd></div></dl>
+    <a class="next-project" href="../sitemate/"><span class="eyebrow">Next project</span><span class="next-title">Storm motion system<svg class="icon"><use href="#arrow"/></svg></span><span>Sitemate’s AI agent icon: six states, live in their apps.</span></a>
+  </section>
+</main>
+<footer class="foot wrap"><span>Quiet Between Stars · Direction by Turinoz</span><a class="tz" href="../">Turinoz</a><a href="#top">Back to top ↑</a></footer>
+<dialog id="imageDialog" class="image-dialog"><button type="button" id="closeDialog" aria-label="Close enlarged image">Close ×</button><img id="dialogImage" alt=""><p id="dialogCaption"></p></dialog>
+<noscript><style>.state-tabs,.format-tabs,#themeToggle{display:none}.state-story button{cursor:default}.compare-after,.compare-line{display:none}.comparison figcaption input{display:none}</style><p class="wrap fine">Other renders: <a href="assets/entry.mp4">Entry</a> · <a href="assets/cruise.mp4">Hyperspace</a> · <a href="assets/exit.mp4">Return</a>.</p></noscript>
+</body>
+</html>
