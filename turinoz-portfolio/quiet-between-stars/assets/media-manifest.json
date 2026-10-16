@@ -1,0 +1,614 @@
+{
+  "project": "Quiet Between Stars",
+  "source_root": "Project archive (relative paths only)",
+  "processing": "Video H.264, CRF 22 (Cruise CRF 23), 1440px wide, 24fps, 8-bit yuv420p, no audio, faststart; preview 960px wide CRF 23. Stills resized and encoded to WebP. No grading, artwork creation, retouching or brightness alteration.",
+  "visual_observations": [
+    "Entry begins in Primary Idle and ends in Hyperspace; Exit reverses these states.",
+    "Final render is intentionally restrained, very dark teal and true black. Tiny stars and slow motion can be difficult to see in small previews.",
+    "Earlier and revised idle comparison excerpts are source-time aligned. Their motion and atmosphere differ subtly; 25s excerpts do not establish full-loop behavior.",
+    "Four format stills are from existing v01 exports, not newly rendered or verified v02 format deliveries.",
+    "Controller screenshots show a development control surface, not the final controller-guide nomenclature."
+  ],
+  "total_media_bytes": 28302620,
+  "assets": [
+    {
+      "file": "idle.mp4",
+      "source": "Drive/QBS_Exports_v02/QBS_PrimaryIdle_6480x3840_v02.mp4",
+      "source_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "hevc",
+            "width": 6480,
+            "height": 3840,
+            "pix_fmt": "yuv420p10le",
+            "color_range": "tv",
+            "color_space": "bt709",
+            "color_transfer": "bt709",
+            "color_primaries": "bt709",
+            "r_frame_rate": "24/1"
+          }
+        ],
+        "format": {
+          "duration": "180.000000",
+          "size": "121623630"
+        }
+      },
+      "derivative_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1440,
+            "height": 854,
+            "pix_fmt": "yuv420p",
+            "color_range": "tv",
+            "color_space": "bt709",
+            "color_transfer": "bt709",
+            "color_primaries": "bt709",
+            "r_frame_rate": "24/1"
+          }
+        ],
+        "format": {
+          "duration": "180.000000",
+          "size": "2034452"
+        }
+      },
+      "note": "Full Primary Idle loop, v02. Native duration and speed."
+    },
+    {
+      "file": "cruise.mp4",
+      "source": "Drive/QBS_Exports_v02/QBS_HyperSpace_6480x3840_v01.mp4",
+      "source_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "hevc",
+            "width": 6480,
+            "height": 3840,
+            "pix_fmt": "yuv420p10le",
+            "color_range": "tv",
+            "color_space": "bt709",
+            "color_transfer": "bt709",
+            "color_primaries": "bt709",
+            "r_frame_rate": "24/1"
+          }
+        ],
+        "format": {
+          "duration": "170.000000",
+          "size": "1741786436"
+        }
+      },
+      "derivative_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1440,
+            "height": 854,
+            "pix_fmt": "yuv420p",
+            "color_range": "tv",
+            "color_space": "bt709",
+            "color_transfer": "bt709",
+            "color_primaries": "bt709",
+            "r_frame_rate": "24/1"
+          }
+        ],
+        "format": {
+          "duration": "170.000000",
+          "size": "22669987"
+        }
+      },
+      "note": "Full Hyperspace cruise loop. Native duration and speed.",
+      "encoding": {
+        "codec": "H.264",
+        "crf": 23,
+        "preset": "medium",
+        "reason": "Kept below per-file hosting upload limit"
+      }
+    },
+    {
+      "file": "entry.mp4",
+      "source": "Drive/QBS_Exports_v02/QBS_HS_Entry_6480x3840_v01.mp4",
+      "source_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "hevc",
+            "width": 6480,
+            "height": 3840,
+            "pix_fmt": "yuv420p10le",
+            "color_range": "tv",
+            "color_space": "bt709",
+            "color_transfer": "bt709",
+            "color_primaries": "bt709",
+            "r_frame_rate": "24/1"
+          }
+        ],
+        "format": {
+          "duration": "5.000000",
+          "size": "23268826"
+        }
+      },
+      "derivative_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1440,
+            "height": 854,
+            "pix_fmt": "yuv420p",
+            "color_range": "tv",
+            "color_space": "bt709",
+            "color_transfer": "bt709",
+            "color_primaries": "bt709",
+            "r_frame_rate": "24/1"
+          }
+        ],
+        "format": {
+          "duration": "5.000000",
+          "size": "501620"
+        }
+      },
+      "note": "Full transition from Primary Idle into Hyperspace."
+    },
+    {
+      "file": "exit.mp4",
+      "source": "Drive/QBS_Exports_v02/QBS_HS_Exit_6480x3840_v01.mp4",
+      "source_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "hevc",
+            "width": 6480,
+            "height": 3840,
+            "pix_fmt": "yuv420p10le",
+            "color_range": "tv",
+            "color_space": "bt709",
+            "color_transfer": "bt709",
+            "color_primaries": "bt709",
+            "r_frame_rate": "24/1"
+          }
+        ],
+        "format": {
+          "duration": "5.000000",
+          "size": "23359965"
+        }
+      },
+      "derivative_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1440,
+            "height": 854,
+            "pix_fmt": "yuv420p",
+            "color_range": "tv",
+            "color_space": "bt709",
+            "color_transfer": "bt709",
+            "color_primaries": "bt709",
+            "r_frame_rate": "24/1"
+          }
+        ],
+        "format": {
+          "duration": "5.000000",
+          "size": "441418"
+        }
+      },
+      "note": "Full transition from Hyperspace back to Primary Idle."
+    },
+    {
+      "file": "before-refinement.mp4",
+      "source": "Drive/QBS_PrimaryIdle_Exports_v01/QBS_PrimaryIdle_6480x3840_v01.mp4",
+      "source_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "hevc",
+            "width": 6480,
+            "height": 3840,
+            "pix_fmt": "yuv420p10le",
+            "color_range": "tv",
+            "color_space": "bt709",
+            "color_transfer": "bt709",
+            "color_primaries": "bt709",
+            "r_frame_rate": "24/1"
+          },
+          {
+            "codec_name": "aac",
+            "r_frame_rate": "0/0"
+          }
+        ],
+        "format": {
+          "duration": "180.000000",
+          "size": "133919114"
+        }
+      },
+      "derivative_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1440,
+            "height": 854,
+            "pix_fmt": "yuv420p",
+            "color_range": "tv",
+            "color_space": "bt709",
+            "color_transfer": "bt709",
+            "color_primaries": "bt709",
+            "r_frame_rate": "24/1"
+          }
+        ],
+        "format": {
+          "duration": "25.000000",
+          "size": "355233"
+        }
+      },
+      "note": "First 25 seconds of earlier Primary Idle export. Comparison excerpt, not a full loop."
+    },
+    {
+      "file": "after-refinement.mp4",
+      "source": "Drive/QBS_Exports_v02/QBS_PrimaryIdle_6480x3840_v02.mp4",
+      "source_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "hevc",
+            "width": 6480,
+            "height": 3840,
+            "pix_fmt": "yuv420p10le",
+            "color_range": "tv",
+            "color_space": "bt709",
+            "color_transfer": "bt709",
+            "color_primaries": "bt709",
+            "r_frame_rate": "24/1"
+          }
+        ],
+        "format": {
+          "duration": "180.000000",
+          "size": "121623630"
+        }
+      },
+      "derivative_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1440,
+            "height": 854,
+            "pix_fmt": "yuv420p",
+            "color_range": "tv",
+            "color_space": "bt709",
+            "color_transfer": "bt709",
+            "color_primaries": "bt709",
+            "r_frame_rate": "24/1"
+          }
+        ],
+        "format": {
+          "duration": "25.000000",
+          "size": "310611"
+        }
+      },
+      "note": "First 25 seconds of revised Primary Idle export. Comparison excerpt, not a full loop."
+    },
+    {
+      "file": "preview.mp4",
+      "derivative_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 960,
+            "height": 570,
+            "pix_fmt": "yuv420p",
+            "color_range": "tv",
+            "color_space": "bt709",
+            "color_transfer": "bt709",
+            "color_primaries": "bt709",
+            "r_frame_rate": "24/1"
+          }
+        ],
+        "format": {
+          "duration": "22.000000",
+          "size": "839685"
+        }
+      },
+      "sources": [
+        {
+          "file": "idle.mp4",
+          "in": 0,
+          "duration": 6
+        },
+        {
+          "file": "entry.mp4",
+          "in": 0,
+          "duration": 5
+        },
+        {
+          "file": "cruise.mp4",
+          "in": 5,
+          "duration": 6
+        },
+        {
+          "file": "exit.mp4",
+          "in": 0,
+          "duration": 5
+        }
+      ],
+      "note": "22 second editorial preview. Idle and cruise shortened; transitions retain their full 5 seconds. No artwork, overlays, speed changes or artificial effects added. Created from the earlier CRF22 browser derivatives of these same source exports."
+    },
+    {
+      "file": "style-a.webp",
+      "source": "QBS_Styleframes_Exploration/StyleFrames/QBS_A01_Standard.png",
+      "width": 1800,
+      "height": 1013,
+      "bytes": 30004
+    },
+    {
+      "file": "style-a-dark.webp",
+      "source": "QBS_Styleframes_Exploration/StyleFrames/QBS_A02_Darker.png",
+      "width": 1800,
+      "height": 1013,
+      "bytes": 28402
+    },
+    {
+      "file": "style-b.webp",
+      "source": "QBS_Styleframes_Exploration/StyleFrames/QBS_B01_Standard.png",
+      "width": 1800,
+      "height": 1013,
+      "bytes": 34746
+    },
+    {
+      "file": "style-c.webp",
+      "source": "QBS_Styleframes_Exploration/StyleFrames/QBS_C01_Standard.png",
+      "width": 1800,
+      "height": 1013,
+      "bytes": 22874
+    },
+    {
+      "file": "expressions.webp",
+      "source": "FromDesk/QBS_Screenshot_Coded_Star_System.png",
+      "width": 2400,
+      "height": 1190,
+      "bytes": 143978,
+      "note": "Development screenshot. Application title/menu area cropped (top 160 source pixels) to remove local file path. No other alterations."
+    },
+    {
+      "file": "star-system.webp",
+      "source": "FromDesk/QBS_Screenshot_Stars.png",
+      "width": 2400,
+      "height": 1190,
+      "bytes": 179444,
+      "note": "Development screenshot. Application title/menu area cropped (top 160 source pixels) to remove local file path. No other alterations."
+    },
+    {
+      "file": "portrait.webp",
+      "source": "Drive/QBS_PrimaryIdle_Exports_v01/QBS_PrimaryIdle_2160x3840_v01.mp4",
+      "width": 900,
+      "height": 1600,
+      "bytes": 19972,
+      "source_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "hevc",
+            "width": 2160,
+            "height": 3840,
+            "pix_fmt": "yuv420p10le",
+            "color_range": "tv",
+            "color_space": "bt709",
+            "color_transfer": "bt709",
+            "color_primaries": "bt709",
+            "r_frame_rate": "24/1"
+          },
+          {
+            "codec_name": "aac",
+            "r_frame_rate": "0/0"
+          }
+        ],
+        "format": {
+          "duration": "180.000000",
+          "size": "215100671"
+        }
+      },
+      "frame_seconds": 60,
+      "note": "Original export aspect ratio retained. v01 format export; not evidence of a v02 export for this format."
+    },
+    {
+      "file": "triplewide.webp",
+      "source": "Drive/QBS_PrimaryIdle_Exports_v01/QBS_PrimaryIdle_6480x3840_v01.mp4",
+      "width": 1800,
+      "height": 1066,
+      "bytes": 20386,
+      "source_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "hevc",
+            "width": 6480,
+            "height": 3840,
+            "pix_fmt": "yuv420p10le",
+            "color_range": "tv",
+            "color_space": "bt709",
+            "color_transfer": "bt709",
+            "color_primaries": "bt709",
+            "r_frame_rate": "24/1"
+          },
+          {
+            "codec_name": "aac",
+            "r_frame_rate": "0/0"
+          }
+        ],
+        "format": {
+          "duration": "180.000000",
+          "size": "133919114"
+        }
+      },
+      "frame_seconds": 60,
+      "note": "Original export aspect ratio retained. v01 format export; not evidence of a v02 export for this format."
+    },
+    {
+      "file": "ultrawide-5120.webp",
+      "source": "Drive/QBS_PrimaryIdle_Exports_v01/QBS_PrimaryIdle_5120x1440_v01.mp4",
+      "width": 1800,
+      "height": 506,
+      "bytes": 13504,
+      "source_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "hevc",
+            "width": 5120,
+            "height": 1440,
+            "pix_fmt": "yuv420p10le",
+            "color_range": "tv",
+            "color_space": "bt709",
+            "color_transfer": "bt709",
+            "color_primaries": "bt709",
+            "r_frame_rate": "24/1"
+          },
+          {
+            "codec_name": "aac",
+            "r_frame_rate": "0/0"
+          }
+        ],
+        "format": {
+          "duration": "180.000000",
+          "size": "310370001"
+        }
+      },
+      "frame_seconds": 60,
+      "note": "Original export aspect ratio retained. v01 format export; not evidence of a v02 export for this format."
+    },
+    {
+      "file": "ultrawide-3840.webp",
+      "source": "Drive/QBS_PrimaryIdle_Exports_v01/QBS_PrimaryIdle_3840x1600_v01.mp4",
+      "width": 1800,
+      "height": 750,
+      "bytes": 18072,
+      "source_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "hevc",
+            "width": 3840,
+            "height": 1600,
+            "pix_fmt": "yuv420p10le",
+            "color_range": "tv",
+            "color_space": "bt709",
+            "color_transfer": "bt709",
+            "color_primaries": "bt709",
+            "r_frame_rate": "24/1"
+          },
+          {
+            "codec_name": "aac",
+            "r_frame_rate": "0/0"
+          }
+        ],
+        "format": {
+          "duration": "180.000000",
+          "size": "208417157"
+        }
+      },
+      "frame_seconds": 60,
+      "note": "Original export aspect ratio retained. v01 format export; not evidence of a v02 export for this format."
+    },
+    {
+      "file": "idle-poster.webp",
+      "source": "Drive/QBS_Exports_v02/QBS_PrimaryIdle_6480x3840_v02.mp4",
+      "frame_seconds": 60,
+      "width": 1800,
+      "height": 1066,
+      "bytes": 20304
+    },
+    {
+      "file": "cruise-poster.webp",
+      "source": "Drive/QBS_Exports_v02/QBS_HyperSpace_6480x3840_v01.mp4",
+      "frame_seconds": 60,
+      "width": 1800,
+      "height": 1066,
+      "bytes": 44738
+    },
+    {
+      "file": "entry-poster.webp",
+      "source": "Drive/QBS_Exports_v02/QBS_HS_Entry_6480x3840_v01.mp4",
+      "frame_seconds": 2.5,
+      "width": 1440,
+      "height": 854,
+      "bytes": 23624
+    },
+    {
+      "file": "exit-poster.webp",
+      "source": "Drive/QBS_Exports_v02/QBS_HS_Exit_6480x3840_v01.mp4",
+      "frame_seconds": 2.5,
+      "width": 1440,
+      "height": 854,
+      "bytes": 12740
+    },
+    {
+      "file": "ctrl-center.webp",
+      "source": "Turinoz upload: AfterFX CTRL_CENTER layer list screenshot",
+      "width": 1440,
+      "height": 590,
+      "bytes": 54586,
+      "note": "Crop of the timeline panel showing the CTRL_CENTER composition and its control layers."
+    },
+    {
+      "file": "guide-micro-stars-2400.webp",
+      "source": "Turinoz upload: CTRL_CENTER (0-00-38-22).png (controller guide, 04 Micro Stars)",
+      "width": 2400,
+      "height": 1500,
+      "bytes": 144354,
+      "note": "Cropped to 16:10 around the table; 1200px copy alongside."
+    },
+    {
+      "file": "guide-micro-stars-1200.webp",
+      "source": "Turinoz upload: CTRL_CENTER (0-00-38-22).png (controller guide, 04 Micro Stars)",
+      "width": 1200,
+      "height": 750,
+      "bytes": 55596,
+      "note": "Smaller copy of guide-micro-stars-2400.webp."
+    },
+    {
+      "file": "guide-hyperspace-2400.webp",
+      "source": "Turinoz upload: CTRL_CENTER (0-00-38-22)_1.png (controller guide, 09 Hyperspace)",
+      "width": 2400,
+      "height": 1500,
+      "bytes": 168322,
+      "note": "Cropped to 16:10 around the table; 1200px copy alongside."
+    },
+    {
+      "file": "guide-hyperspace-1200.webp",
+      "source": "Turinoz upload: CTRL_CENTER (0-00-38-22)_1.png (controller guide, 09 Hyperspace)",
+      "width": 1200,
+      "height": 750,
+      "bytes": 70256,
+      "note": "Smaller copy of guide-hyperspace-2400.webp."
+    },
+    {
+      "file": "oled-safety.webp",
+      "source": "FromDesk/QBS_Screenshot_Controllers.png",
+      "width": 472,
+      "height": 598,
+      "bytes": 43712,
+      "note": "Crop of the CTRL_SAFETY effect controls. Development view; names changed in the final guide."
+    }
+  ]
+}
