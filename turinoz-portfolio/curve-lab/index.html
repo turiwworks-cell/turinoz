@@ -227,16 +227,15 @@ h2{font-size:clamp(36px,5.2vw,80px);line-height:.98;letter-spacing:-.05em}
    ====================================================================== */
 .hero{position:relative;min-height:100svh;display:grid;align-items:center;padding:calc(var(--top) + clamp(32px,5vw,72px)) 0 clamp(48px,6vw,96px)}
 .hero-grid{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(28px,3.4vw,48px) clamp(40px,6vw,120px);align-items:center}
-.note{grid-column:1/-1;justify-self:center;display:inline-flex;align-items:center;gap:12px;max-width:100%;margin:0;padding:4px 16px 4px 4px;border-radius:99px;background:color-mix(in srgb,var(--card) 82%,transparent);box-shadow:inset 0 0 0 1px var(--rule-2),0 14px 34px -24px rgba(0,0,0,.35);font:400 13px/1.4 var(--sans);color:var(--ink-2)}
-.note-tag{flex:none;display:inline-flex;align-items:stretch;height:26px;border-radius:2px;font:500 10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase}
-.note-tag b{position:relative;flex:none;width:26px;border-radius:2px 0 0 2px;background:var(--now)}
-.note-tag b i{position:absolute;left:50%;top:50%;margin:-3px 0 0 -3px}
-.note-tag em{display:flex;align-items:center;padding:0 10px;border-radius:0 2px 2px 0;font-style:normal;background:var(--lbl);color:#121211;box-shadow:inset 0 0 0 1px var(--lbl-line)}
-.note-tag i{position:absolute;flex:none;width:6px;height:6px;transform:rotate(45deg);background:var(--dia)}
-.note-tag i::after{content:"";position:absolute;inset:0;background:var(--dia);animation:note-ping 2.6s var(--ui) infinite}
-@keyframes note-ping{0%{transform:scale(1);opacity:.85}70%,100%{transform:scale(3.2);opacity:0}}
-.note-tx{text-wrap:balance}
-@media (max-width:560px){.note{justify-self:stretch;flex-direction:column;align-items:flex-start;gap:9px;border-radius:16px;padding:6px 16px 13px 6px;font-size:13.5px}.note-tx{padding:0 0 0 6px;text-wrap:pretty}}
+.note{grid-column:1/-1;justify-self:center;display:inline-flex;align-items:stretch;max-width:100%;min-height:36px;margin:0;border-radius:2px;background:color-mix(in srgb,var(--card) 82%,transparent);box-shadow:inset 0 0 0 1px var(--rule-2),0 14px 34px -24px rgba(0,0,0,.35);font:400 13px/1.4 var(--sans);color:var(--ink-2)}
+.note-tag{flex:none;display:flex;align-items:stretch;font:500 10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase}
+.note-tag b{position:relative;flex:none;width:36px;border-radius:2px 0 0 2px;background:var(--now);overflow:hidden}
+.note-tag i{position:absolute;left:50%;top:50%;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;transform:rotate(45deg);border-radius:1px;background:var(--dia)}
+.note-tag i::after{content:"";position:absolute;inset:0;border-radius:inherit;background:var(--dia);animation:note-ping 2.6s var(--ui) infinite}
+.note-tag em{display:flex;align-items:center;padding:0 12px;font-style:normal;color:var(--ink);box-shadow:inset -1px 0 0 var(--rule-2)}
+@keyframes note-ping{0%{transform:scale(1);opacity:.7}70%,100%{transform:scale(3);opacity:0}}
+.note-tx{display:flex;align-items:center;padding:8px 16px 8px 14px;text-wrap:balance}
+@media (max-width:560px){.note{justify-self:stretch;flex-direction:column;font-size:13.5px}.note-tag{height:36px;box-shadow:inset 0 -1px 0 var(--rule-2)}.note-tag b{border-radius:2px 0 0 0}.note-tag em{box-shadow:none}.note-tx{padding:11px 14px 13px;text-wrap:pretty}}
 .hl{font-size:clamp(50px,7.4vw,128px);line-height:.92;letter-spacing:-.062em;margin-top:20px}
 .hl .soft{display:block;color:var(--ink-3)}
 .hl .w{display:inline-block;overflow:hidden;vertical-align:top;padding:0 .02em .13em;margin:0 -.02em -.13em}
