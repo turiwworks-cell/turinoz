@@ -77,10 +77,10 @@ h3,p,ol,dl,dd{margin:0}
 @property --on-cur{syntax:"<color>";inherits:true;initial-value:#FFFFFF}
 @property --turn{syntax:"<angle>";inherits:true;initial-value:0deg}
 @keyframes turn3{0%,21.8%{--turn:0deg;--cur:var(--k0);--on-cur:var(--on-k0)}33.3%,55.1%{--turn:90deg;--cur:var(--k1);--on-cur:var(--on-k1)}66.7%,88.5%{--turn:180deg;--cur:var(--k2);--on-cur:var(--on-k2)}100%{--turn:270deg;--cur:var(--k0);--on-cur:var(--on-k0)}}
-.openc{--cur:var(--k0);--on-cur:var(--on-k0);animation:turn3 7.8s var(--io) infinite;flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:var(--cur);box-shadow:inset 0 0 0 1px var(--rule-2);transition:box-shadow .35s}
+.openc{--cur:var(--k0);--on-cur:var(--on-k0);animation:turn3 7.8s var(--io) infinite;flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:var(--cur);box-shadow:inset 0 0 0 1px var(--rule-2);transition:box-shadow .35s,background-color .45s var(--ease)}
 .openc .dia{width:13px;height:13px;transform:rotate(var(--turn))}.openc .dia rect{fill:currentColor}
-/* the home page lays a link over this circle and marks it .hover: only the ring answers */
-.openc.hover{box-shadow:inset 0 0 0 1px var(--ink)}
+/* the home page lays a link over this circle and marks it .hover: it fills with the current colour */
+.openc.hover{box-shadow:inset 0 0 0 1px var(--cur);background:var(--cur);color:var(--on-cur)}
 @media (prefers-reduced-motion:reduce){.openc{animation:none}}
 .theme{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:var(--ink);box-shadow:inset 0 0 0 1px var(--rule-2)}
 .theme svg{width:18px;height:18px;overflow:visible}
