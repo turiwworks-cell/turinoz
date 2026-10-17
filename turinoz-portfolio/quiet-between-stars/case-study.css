@@ -469,6 +469,17 @@ html.locked .brand{opacity:0}
 .tl li b{text-align:left!important;font-size:12px;color:var(--ink)}
 .tl li em{font-style:normal;font-size:12px;color:var(--muted);text-align:right}
 .tl li:nth-child(2) em{color:var(--acc)}
+/* the Entry order */
+.weight .gantt ul{gap:3px}
+.gantt li .lbl{line-height:1.35}
+.weight .gantt li{grid-template-columns:76px 1fr;gap:10px}
+.gantt li i{position:relative;height:6px;border-radius:2px;background:var(--fill)}
+.gantt li i::before{content:"";position:absolute;top:0;bottom:0;left:var(--a);width:calc(var(--b) - var(--a));border-radius:2px;background:var(--ink-2);transform:scaleX(0);transform-origin:0 50%;transition:transform 1.2s var(--ease) .2s}
+.weight.in .gantt li i::before{transform:scaleX(1)}
+.gantt li.hot i::before{background:var(--acc)}
+.gantt li.out i::before{background:var(--faint)}
+.weight .gantt li:first-child i::before,.weight .gantt li:nth-child(3) i::before{background:var(--ink-2)}
+.gantt-ax{display:flex;justify-content:space-between;margin:8px 0 0 86px;font-size:10px;color:var(--muted)}
 @media (min-width:1001px) and (min-height:700px){
   .build{min-height:calc(100svh - 84px);margin-top:130px;padding-top:20px;padding-bottom:20px}
 }

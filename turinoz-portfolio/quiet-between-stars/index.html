@@ -44,7 +44,7 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
     <a class="brand" href="#top" aria-label="Quiet Between Stars, back to top"><span>Quiet Between Stars</span></a>
     <nav class="links" id="links" aria-label="Sections">
       <i class="pill" aria-hidden="true"></i>
-      <a href="#brief">Brief</a><a href="#idle">Idle</a><a href="#hyperspace">Hyperspace</a><a href="#process">Process</a><a href="#system">System</a><a href="#delivery">Delivery</a>
+      <a href="#brief">Brief</a><a href="#idle">Idle</a><a href="#hyperspace">Hyperspace</a><a href="#transitions">Transitions</a><a href="#process">Process</a><a href="#system">System</a><a href="#delivery">Delivery</a>
     </nav>
     <div class="navr">
     </div>
@@ -242,7 +242,64 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
           <li><span class="lbl">Hyperspace</span><b class="mono">5–175 s</b><em>Expressions only</em></li>
           <li><span class="lbl">Return</span><b class="mono">175–180 s</b><em>Keyframes</em></li>
         </ul>
-        <p class="fine">My first entry ran 15 seconds and Petie found it long. The final one takes 5.</p>
+        <p class="fine">The two transitions are the next section.</p>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 04 TRANSITIONS ================= -->
+<section class="sec build" id="transitions">
+  <div class="wrap">
+    <div class="build-head rv">
+      <div class="kicker"><i></i>04 — Transitions</div>
+      <h2>Five seconds each way.</h2>
+    </div>
+
+    <div class="build-top rv">
+      <figure class="ld">
+        <iframe class="ld-frame" src="transitions-diagram.html" title="Entry and Return, with the transition sliders read out at the playhead" loading="lazy"></iframe>
+        <figcaption class="fine">The real renders. Keys from the project; curves approximate.</figcaption>
+      </figure>
+
+      <div class="build-facts">
+        <ul class="nums">
+          <li><b>5</b><span class="mono">Seconds each way</span></li>
+          <li><b>42</b><span class="mono">Keyframes, all in the transitions</span></li>
+          <li><b>1</b><span class="mono">Switch</span></li>
+        </ul>
+        <p>Entry and Return are the only keyframed parts of the engine. Nine sliders on one control layer, <code>KF_TRANSITIONS</code>, move the camera, the lens, the star shine and each layer’s opacity, and soft masks open the tunnel from the center.</p>
+        <p>One slider, Scene Switch, decides what the scene is. At 0 it is Primary Idle and every key is ignored; at 1 it plays the whole journey.</p>
+      </div>
+    </div>
+
+    <div class="weight rv">
+      <div class="weight-p">
+        <p class="weight-k mono"><i></i>The problem</p>
+        <h3>Fast, without a cut.</h3>
+        <p>My first entry ran 15 seconds and Petie found it long. In 5 seconds stars, clouds, lens and tunnel all have to change, and both ends must land exactly on the loops.</p>
+      </div>
+      <div class="weight-s">
+        <p class="weight-k mono">How I solved it</p>
+        <ol class="fixes">
+          <li><span class="mono">01</span>One 180 s timeline: Entry, loop, Return. Each join is one frame.</li>
+          <li><span class="mono">02</span>Every key on one control layer, read by expressions.</li>
+          <li><span class="mono">03</span>In order: shine, tunnel in, then stars, nebula, clouds out.</li>
+          <li><span class="mono">04</span>Return starts the camera far back and eases it home.</li>
+        </ol>
+      </div>
+      <figure class="render gantt">
+        <figcaption class="render-k mono">Entry, second by second</figcaption>
+        <ul>
+          <li><span class="lbl">Camera</span><i style="--a:.8%;--b:100%"></i></li>
+          <li><span class="lbl">Lens</span><i style="--a:1.6%;--b:89.2%"></i></li>
+          <li><span class="lbl">Star shine</span><i style="--a:6.6%;--b:55.8%"></i></li>
+          <li class="hot"><span class="lbl">Tunnel in</span><i style="--a:45.8%;--b:75%"></i></li>
+          <li class="out"><span class="lbl">Stars out</span><i style="--a:47.6%;--b:99.2%"></i></li>
+          <li class="out"><span class="lbl">Nebula out</span><i style="--a:59.2%;--b:95.8%"></i></li>
+          <li class="out"><span class="lbl">Clouds out</span><i style="--a:62.4%;--b:99.2%"></i></li>
+        </ul>
+        <p class="gantt-ax mono" aria-hidden="true"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5 s</span></p>
       </figure>
     </div>
   </div>
@@ -252,7 +309,7 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
 <section class="sec" id="process">
   <div class="wrap">
     <div class="shead rv">
-      <div><div class="kicker"><i></i>04 — Process</div><h2>The handover.</h2>
+      <div><div class="kicker"><i></i>05 — Process</div><h2>The handover.</h2>
         <p class="sub">Petie set the brief and reviewed the key moments, about 3 or 4 out of 10 by his own count. The calls in between were mine.</p></div>
     </div>
 
@@ -291,7 +348,7 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
 <section class="sec" id="system">
   <div class="wrap">
     <div class="shead rv">
-      <div><div class="kicker"><i></i>05 — System</div><h2>A world you can keep changing.</h2>
+      <div><div class="kicker"><i></i>06 — System</div><h2>A world you can keep changing.</h2>
         <p class="sub">The films came with the system that makes them. One master seed reshapes the whole scene, and every part keeps its own controls.</p></div>
     </div>
 
@@ -330,7 +387,7 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
 <section class="sec" id="delivery">
   <div class="wrap">
     <div class="shead rv">
-      <div><div class="kicker"><i></i>06 — Delivery</div><h2>Handed over, ready to change.</h2>
+      <div><div class="kicker"><i></i>07 — Delivery</div><h2>Handed over, ready to change.</h2>
         <p class="sub">The renders, the editable system and the guide. Petie later built his own web control layer around it.</p></div>
     </div>
     <div class="pack rv">

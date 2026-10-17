@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Entry and Return, keyed</title>
+<style>
+/* The real Entry and Return renders, with the KF_TRANSITIONS sliders read out beside the playhead.
+   Key times and values come from the project; the curves between keys are approximate. */
+@font-face{font-family:"Inter";src:url(../fonts/inter.woff2) format("woff2");font-weight:100 900;font-display:swap}
+@font-face{font-family:"JetBrains Mono";src:url(../fonts/jetbrains-mono.woff2) format("woff2");font-weight:100 800;font-display:swap}
+:root{--fg:#ECE9E2;--muted:#8E8C86;--dim:#5c5b57;--accent:#FFD405;--line:rgba(236,233,226,.16);
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;--ui:"Inter",system-ui,sans-serif;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#000;color:var(--fg);overflow:hidden;font-family:var(--ui);-webkit-font-smoothing:antialiased}
+.stage{position:relative;width:100%;height:100vh;overflow:hidden;user-select:none;-webkit-user-select:none}
+video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+.top{position:absolute;left:16px;right:16px;top:14px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;pointer-events:none}
+.tabs{display:inline-flex;gap:2px;padding:3px;border-radius:999px;background:rgba(0,0,0,.62);box-shadow:inset 0 0 0 1px var(--line);pointer-events:auto;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.tab{appearance:none;border:0;background:transparent;color:var(--muted);font:500 12px/1 var(--ui);padding:8px 12px;border-radius:999px;cursor:pointer;white-space:nowrap}
+.tab:hover{color:var(--fg)}
+.tab[aria-pressed="true"]{background:var(--fg);color:#000}
+.tab:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tc{font:500 11px/1 var(--mono);letter-spacing:.06em;color:var(--accent);padding-top:9px;text-shadow:0 1px 6px #000;font-variant-numeric:tabular-nums}
+/* the effect-controls readout */
+.kf{position:absolute;right:14px;top:56px;width:230px;padding:10px 12px 8px;border-radius:12px;background:rgba(0,0,0,.66);box-shadow:inset 0 0 0 1px var(--line);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.kf h2{margin:0 0 6px;font:500 10px/1 var(--mono);letter-spacing:.07em;color:var(--muted)}
+.kf ol{list-style:none;margin:0;padding:0;display:grid;gap:3px}
+.kf li{display:grid;grid-template-columns:1fr 44px;gap:8px;align-items:center;font:500 10.5px/1.25 var(--mono);color:var(--muted);transition:color .25s}
+.kf li i{grid-column:1/-1;display:block;height:2px;border-radius:1px;background:rgba(236,233,226,.1);position:relative;overflow:hidden}
+.kf li i::before{content:"";position:absolute;left:0;top:0;bottom:0;width:calc(var(--p,0)*100%);background:var(--muted);transition:background .25s}
+.kf li b{font-weight:500;text-align:right;color:var(--fg);font-variant-numeric:tabular-nums}
+.kf li.on{color:var(--fg)}
+.kf li.on i::before{background:var(--accent)}
+.bot{position:absolute;left:14px;right:14px;bottom:12px;display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center}
+.pp{appearance:none;border:0;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:rgba(0,0,0,.62);box-shadow:inset 0 0 0 1px var(--line);color:var(--fg);cursor:pointer}
+.pp svg{width:12px;height:12px}
+.pp .i-play{display:none}.paused .pp .i-play{display:block}.paused .pp .i-pause{display:none}
+.track{position:relative;height:32px}
+.track input{position:absolute;inset:0;width:100%;margin:0;opacity:0;cursor:pointer}
+.rail{position:absolute;left:0;right:0;top:19px;height:2px;border-radius:1px;background:rgba(236,233,226,.18)}
+.rail u{position:absolute;left:0;top:0;bottom:0;width:calc(var(--t,0)*100%);background:var(--accent)}
+.marks{position:absolute;left:0;right:0;top:0;height:32px;pointer-events:none}
+.marks span{position:absolute;top:0;transform:translateX(-50%);font:500 9.5px/1 var(--mono);color:var(--muted);white-space:nowrap;transition:color .25s}
+.marks span::after{content:"";position:absolute;left:50%;top:17px;width:5px;height:5px;margin-left:-2.5px;transform:rotate(45deg);background:var(--muted);transition:background .25s}
+.marks span.end{transform:translateX(-100%)}
+.marks span.end::after{left:auto;right:-2px}
+.marks span.hit{color:var(--fg)}
+.marks span.hit::after{background:var(--accent)}
+.nogl{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:14px}
+@media (max-width:620px){.kf{display:none}.marks span{font-size:0}.marks span::after{top:7px}}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <video id="v" muted playsinline preload="auto" poster="assets/entry-poster.webp" aria-label="Entry, the 5-second render"></video>
+  <div class="top">
+    <div class="tabs" role="group" aria-label="Transition">
+      <button class="tab" data-k="entry" aria-pressed="true">Entry</button>
+      <button class="tab" data-k="exit" aria-pressed="false">Return</button>
+    </div>
+    <div class="tc" id="tc">0:00.0 / 5 s</div>
+  </div>
+  <aside class="kf" aria-label="KF_TRANSITIONS sliders at the playhead">
+    <h2>KF_TRANSITIONS</h2>
+    <ol id="kf"></ol>
+  </aside>
+  <div class="bot">
+    <button class="pp" id="pp" type="button" aria-label="Pause"><svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 2.8v10.4c0 .6.6.9 1.1.6l8-5.2c.4-.3.4-.9 0-1.2l-8-5.2c-.5-.3-1.1 0-1.1.6z" fill="currentColor"/></svg><svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><rect x="4" y="3" width="2.8" height="10" rx="1" fill="currentColor"/><rect x="9.2" y="3" width="2.8" height="10" rx="1" fill="currentColor"/></svg></button>
+    <div class="track">
+      <div class="rail"><u id="rail"></u></div>
+      <div class="marks" id="marks"></div>
+      <input id="scrub" type="range" min="0" max="5" step="0.01" value="0" aria-label="Playhead">
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+'use strict';
+/* Keys from QBS_UNIVERSE > KF_TRANSITIONS (and the tunnel masks), as [seconds, value].
+   Return keys are shifted by -175 s so both clips read 0–5 s. */
+const KEYS = {
+  entry: {
+    'Star Shine':          [[0,0],[.33,0],[2.79,98],[5,98]],
+    'Camera Star Zoom':    [[0,-42],[.04,-42],[5,2000]],
+    'Camera Primary Zoom': [[0,-42],[.04,-42],[4.29,140],[5,140]],
+    'FOV Primary':         [[0,0],[.08,0],[4.46,130],[5,130]],
+    'Tunnel Opacity':      [[0,49],[2.29,49],[3.75,100],[5,100]],
+    'Stars Opacity':       [[0,100],[2.38,100],[4.96,0],[5,0]],
+    'Nebula Opacity':      [[0,100],[2.96,100],[4.79,0],[5,0]],
+    'Cloud Opacity':       [[0,86],[3.12,86],[4.96,0],[5,0]],
+    'PRIMARY_IDLE_SYSTEM': [[0,100],[4.96,100],[5,0]],
+  },
+  exit: {
+    'Star Shine':          [[0,0],[5,0]],
+    'Camera Star Zoom':    [[0,-500],[5,-42]],
+    'Camera Primary Zoom': [[0,-882],[3.42,-42],[5,-42]],
+    'FOV Primary':         [[0,0],[5,0]],
+    'Tunnel Opacity':      [[0,100],[1.79,100],[2.79,0],[5,0]],
+    'Stars Opacity':       [[0,0],[.12,0],[3.42,100],[5,100]],
+    'Nebula Opacity':      [[0,0],[3.5,100],[5,100]],
+    'Cloud Opacity':       [[0,0],[3.5,86],[5,86]],
+    'PRIMARY_IDLE_SYSTEM': [[0,0],[.12,100],[5,100]],
+  }
+};
+const RANGE = {'Star Shine':[0,100],'Camera Star Zoom':[-882,2000],'Camera Primary Zoom':[-882,2000],'FOV Primary':[0,130],
+  'Tunnel Opacity':[0,100],'Stars Opacity':[0,100],'Nebula Opacity':[0,100],'Cloud Opacity':[0,100],'PRIMARY_IDLE_SYSTEM':[0,100]};
+/* moments worth a mark on the timeline */
+const MARKS = {
+  entry: [[.33,'Shine'],[2.29,'Tunnel in'],[3.12,'Clouds out'],[4.96,'Idle off']],
+  exit:  [[.12,'Idle on'],[1.79,'Tunnel out'],[3.5,'Clouds in']],
+};
+const SRC = {entry:'assets/entry.mp4', exit:'assets/exit.mp4'};
+const POSTER = {entry:'assets/entry-poster.webp', exit:'assets/exit-poster.webp'};
+const NAME = {entry:'Entry', exit:'Return'};
+
+const v = document.getElementById('v'), stage = document.getElementById('stage');
+const kfEl = document.getElementById('kf'), marksEl = document.getElementById('marks');
+const scrub = document.getElementById('scrub'), rail = document.getElementById('rail'), tc = document.getElementById('tc');
+const pp = document.getElementById('pp');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let kind = 'entry', rows = {};
+
+const ease = x => x*x*(3-2*x);
+function at(keys, t){
+  if(t <= keys[0][0]) return keys[0][1];
+  for(let i=1;i<keys.length;i++){
+    const [t1,v1] = keys[i], [t0,v0] = keys[i-1];
+    if(t <= t1){ const d = t1-t0; return d<=0 ? v1 : v0 + (v1-v0)*ease((t-t0)/d); }
+  }
+  return keys[keys.length-1][1];
+}
+function moving(keys, t){
+  for(let i=1;i<keys.length;i++){ const [t1,v1]=keys[i],[t0,v0]=keys[i-1]; if(v1!==v0 && t>=t0-.02 && t<=t1+.02) return true; }
+  return false;
+}
+function build(){
+  kfEl.innerHTML = ''; rows = {};
+  Object.keys(KEYS[kind]).forEach(n=>{
+    const li = document.createElement('li');
+    li.innerHTML = `<span>${n}</span><b></b><i></i>`;
+    kfEl.appendChild(li); rows[n] = li;
+  });
+  marksEl.innerHTML = MARKS[kind].map(([t,l])=>`<span${t>4.5?' class="end"':''} style="left:${(t/5*100).toFixed(2)}%" data-t="${t}">${l}</span>`).join('');
+}
+function load(k){
+  kind = k;
+  document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.k===k)));
+  v.poster = POSTER[k]; v.src = SRC[k]; v.setAttribute('aria-label', `${NAME[k]}, the 5-second render`);
+  build(); v.currentTime = 0;
+  if(!stage.classList.contains('paused')) v.play().catch(()=>{});
+  paint(0);
+}
+function fmt(t){ return `0:${t.toFixed(1).padStart(4,'0')} / 5 s`; }
+function paint(t){
+  const K = KEYS[kind];
+  for(const n in K){
+    const val = at(K[n], t), [lo,hi] = RANGE[n], li = rows[n];
+    li.querySelector('b').textContent = Math.round(val);
+    li.style.setProperty('--p', Math.max(0,Math.min(1,(val-lo)/(hi-lo))).toFixed(3));
+    li.classList.toggle('on', moving(K[n], t));
+  }
+  rail.style.setProperty('--t', (t/5).toFixed(4)); scrub.value = t.toFixed(2); tc.textContent = fmt(t);
+  marksEl.querySelectorAll('span').forEach(s=>s.classList.toggle('hit', t >= +s.dataset.t - .01));
+}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>load(b.dataset.k)));
+pp.addEventListener('click',()=>{
+  const p = !stage.classList.contains('paused');
+  stage.classList.toggle('paused', p); pp.setAttribute('aria-label', p?'Play':'Pause');
+  p ? v.pause() : v.play().catch(()=>{});
+});
+scrub.addEventListener('input',()=>{ stage.classList.add('paused'); pp.setAttribute('aria-label','Play'); v.pause(); v.currentTime = +scrub.value; paint(+scrub.value); });
+/* each clip plays, holds its last frame a beat, then the other one plays: Entry, Return, Entry… */
+v.addEventListener('ended',()=>{ setTimeout(()=>{ if(!stage.classList.contains('paused')) load(kind==='entry'?'exit':'entry'); }, 900); });
+let raf = 0;
+function tick(){ paint(Math.min(5, v.currentTime||0)); raf = requestAnimationFrame(tick); }
+new IntersectionObserver(es=>{
+  const on = es[0].isIntersecting;
+  if(on){ if(!stage.classList.contains('paused')) v.play().catch(()=>{}); if(!raf) tick(); }
+  else { v.pause(); cancelAnimationFrame(raf); raf = 0; }
+}).observe(stage);
+if(reduce){ stage.classList.add('paused'); pp.setAttribute('aria-label','Play'); }
+load('entry');
+})();
+</script>
+</body>
+</html>

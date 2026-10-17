@@ -29,10 +29,13 @@ JavaScript, no build step. Serve the portfolio folder and open `/quiet-between-s
    (plain WebGL, no library): Map, Tunnel, Final, with Speed, Twirl and Falloff. Facts and
    the loop problem come from the project package (`QBS_Agent_Package.zip`): one 170 s loop
    from 5 s to 175 s, speed rounded to whole passes, no keyframes inside the loop.
-6. **04 Process**: Handover only, for now.
-7. **05 System**: key numbers, the nine control groups, and two of their guide pages as
+6. **04 Transitions**: same layout. `transitions-diagram.html` plays the real Entry and Return
+   renders with the nine `KF_TRANSITIONS` sliders read out at the playhead (key times and
+   values from the project, curves between keys approximate) and an Entry order chart.
+7. **05 Process**: Handover only, for now.
+8. **06 System**: key numbers, the nine control groups, and two of their guide pages as
    small, zoomable examples.
-8. **06 Delivery**: the four things handed over, each with a small picture of it, credits
+9. **07 Delivery**: the four things handed over, each with a small picture of it, credits
    set like a film's end credits, next project (Storm).
 
 Copy rules that apply here: no project length or date range; nothing from payments,
