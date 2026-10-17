@@ -21,7 +21,7 @@ JavaScript, no build step. Serve the portfolio folder and open `/quiet-between-s
 3. **01 Brief**: what Petie asked for, the six rules and his "still water / smooth current".
 4. **02 Primary Idle**: how the idle state was built. The main piece is the 3D mockup in
    `layer-diagram.html` (from `qbs/layer-diagram.html` on branch `qbs-layer-diagram`),
-   embedded as an iframe that reports its height; three.js r128 is vendored in
+   embedded as an iframe (stage only, 16:9, square on phones); three.js r128 is vendored in
    `assets/three.min.js`. Under it: three short facts (120 hero + 400 micro stars as shape
    layers with expressions, clouds and nebula merged into a few depth layers, all native)
    and the render-weight problem with its fixes and render times.

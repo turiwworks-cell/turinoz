@@ -138,61 +138,55 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
 </section>
 
 <!-- ================= 02 PRIMARY IDLE ================= -->
-<section class="sec" id="idle">
+<section class="sec idle" id="idle">
   <div class="wrap">
-    <div class="shead rv">
-      <div><div class="kicker"><i></i>02 — Primary Idle</div><h2>Still water,<br>in real depth.</h2>
-        <p class="sub">Primary Idle, pulled apart. Every layer sits at its own distance from one camera, so when the camera moves, each one slides at its own speed.</p></div>
+    <div class="idle-head rv">
+      <div class="kicker"><i></i>02 — Primary Idle</div>
+      <h2>Still water, in real depth.</h2>
     </div>
 
-    <figure class="ld rv">
-      <iframe class="ld-frame" id="ldFrame" src="layer-diagram.html" title="Primary Idle as a 3D mockup: drag to orbit around the layers" loading="lazy"></iframe>
-      <figcaption class="fine">A mockup of the scene, not the project file. Names, spacing and textures are drawn for it, and it is not to scale.</figcaption>
-    </figure>
+    <div class="idle-top rv">
+      <figure class="ld">
+        <iframe class="ld-frame" id="ldFrame" src="layer-diagram.html" title="Primary Idle as a 3D mockup: drag to orbit around the layers" loading="lazy"></iframe>
+        <figcaption class="fine">A mockup of the scene, not the project file. Not to scale.</figcaption>
+      </figure>
 
-    <ul class="ld-facts rv">
-      <li>
-        <b class="mono">120 + 400</b>
-        <p>Real stars. 120 hero stars and 400 micro stars, each its own shape layer with After Effects expressions inside that tell it where to sit and how to behave.</p>
+      <div class="idle-facts">
+        <ul class="nums">
+          <li><b>120</b><span class="mono">Hero stars</span></li>
+          <li><b>400</b><span class="mono">Micro stars</span></li>
+          <li><b>0</b><span class="mono">Plugins, images, outside assets</span></li>
+        </ul>
+        <p>Every star is a real shape layer, with After Effects expressions inside that tell it where to sit and how to behave.</p>
+        <p>Clouds and nebula are merged into a few layers, each at its own depth, so their parallax is real too.</p>
         <p class="ld-see"><button class="zoom mono" type="button" data-src="assets/expressions.webp" data-cap="One star’s position, size and opacity, written as expressions · Development view">Code on one star</button><button class="zoom mono" type="button" data-src="assets/star-system.webp" data-cap="Hero and micro stars, one layer each · Development view">One layer per star</button></p>
-      </li>
-      <li>
-        <b class="mono">Clouds + nebula</b>
-        <p>Merged into a few layers, each at its own depth, so their parallax is real too.</p>
-      </li>
-      <li>
-        <b class="mono">0 · 0 · 0</b>
-        <p>All native After Effects. No plugins, no images, no outside assets.</p>
-      </li>
-    </ul>
+      </div>
+    </div>
 
     <div class="weight rv">
-      <div class="weight-l">
-        <p class="weight-k mono">The problem</p>
+      <div class="weight-p">
+        <p class="weight-k mono"><i></i>The problem</p>
         <h3>Real has a cost.</h3>
-        <p>Hundreds of real stars, each running its own code, made the renders heavy. Faking them would have changed the look by maybe two or three percent. I kept the stars real and made everything around them lighter.</p>
-        <dl class="calls">
-          <div class="call"><dt class="mono">My call</dt><dd>The premium route: real stars, lighter clouds.</dd></div>
-        </dl>
+        <p>Hundreds of real stars, each running its own code, made the renders heavy. Fakes would have changed the look by two or three percent, so I kept the stars real and made the rest lighter.</p>
       </div>
-      <div class="weight-r">
+      <div class="weight-s">
         <p class="weight-k mono">How I solved it</p>
         <ol class="fixes">
-          <li><span class="mono">01</span>The lightest techniques I could find, like turbulence, for the clouds and nebula.</li>
-          <li><span class="mono">02</span>As little blur as possible, even though clouds and stars like these usually need a lot of it.</li>
-          <li><span class="mono">03</span>Masks only around the edge of the frame, so nothing feels cut off.</li>
-          <li><span class="mono">04</span>The rest done with Turbulent Displace and mattes.</li>
+          <li><span class="mono">01</span>Light techniques like turbulence for the clouds.</li>
+          <li><span class="mono">02</span>Very little blur, where this look usually needs a lot.</li>
+          <li><span class="mono">03</span>Masks only at the frame edge, so it never feels cut off.</li>
+          <li><span class="mono">04</span>The rest with Turbulent Displace and mattes.</li>
         </ol>
-        <figure class="render">
-          <figcaption class="render-k mono">Full render, in my tests</figcaption>
-          <ul>
-            <li style="--w:100%"><span class="lbl">First build</span><i aria-hidden="true"></i><b class="mono">~7 h 30 min</b></li>
-            <li style="--w:33.3%"><span class="lbl">Middle build</span><i aria-hidden="true"></i><b class="mono">~2 h 30 min</b></li>
-            <li style="--w:10%"><span class="lbl">Final build</span><i aria-hidden="true"></i><b class="mono">40–50 min</b></li>
-          </ul>
-          <p class="fine">Production observations on different machines, not a benchmark.</p>
-        </figure>
       </div>
+      <figure class="render">
+        <figcaption class="render-k mono">Full render, in my tests</figcaption>
+        <ul>
+          <li style="--w:100%"><span class="lbl">First build</span><i aria-hidden="true"></i><b class="mono">~7 h 30 min</b></li>
+          <li style="--w:33.3%"><span class="lbl">Middle build</span><i aria-hidden="true"></i><b class="mono">~2 h 30 min</b></li>
+          <li style="--w:10%"><span class="lbl">Final build</span><i aria-hidden="true"></i><b class="mono">40–50 min</b></li>
+        </ul>
+        <p class="fine">On different machines, not a benchmark.</p>
+      </figure>
     </div>
   </div>
 </section>

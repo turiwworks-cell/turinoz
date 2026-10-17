@@ -208,12 +208,6 @@
   }
   timing(); ui();
 
-  /* ---------------- Primary Idle mockup: size the frame to its content ---------------- */
-  const ldFrame = $('#ldFrame');
-  if (ldFrame) addEventListener('message', e => {
-    if (e.source === ldFrame.contentWindow && e.data && e.data.qbsDiagram > 0) ldFrame.style.height = e.data.qbsDiagram + 'px';
-  });
-
   /* ---------------- process rail ---------------- */
   const steps = $$('.step'), railItems = $$('#railList li'), railLine = $('.rail-line'), stepsBox = $('.steps');
   function rail() {

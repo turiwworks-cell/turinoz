@@ -150,6 +150,9 @@ header,.panel,.notes,.foot,.controls>:not(.seg[aria-label="Show"]){display:none!
 .work{grid-template-columns:minmax(0,1fr)!important}
 .controls{justify-content:flex-end}
 .wrap{max-width:none;padding:0!important;gap:12px}
+.side,.controls{display:none!important}
+.wrap{height:100vh}
+.stage{aspect-ratio:auto!important;height:100vh;border:0!important;border-radius:0!important}
 .stage{border-radius:20px;touch-action:pan-y}
 @media (max-width:640px){.stage{border-radius:14px}}
 </style>
@@ -866,13 +869,6 @@ function frame(now){
 let onScreen = true, looping = true;
 new IntersectionObserver(es=>{ onScreen = es[0].isIntersecting; if(onScreen && !looping){ looping = true; last = performance.now(); requestAnimationFrame(frame); } }).observe(stage);
 requestAnimationFrame(frame);
-})();
-</script>
-<script>
-/* report height to the case study page */
-(function(){
-  const send = () => parent.postMessage({qbsDiagram: Math.ceil(document.querySelector('.wrap').getBoundingClientRect().height)}, '*');
-  new ResizeObserver(send).observe(document.querySelector('.wrap')); addEventListener('load', send); send();
 })();
 </script>
 </body>
