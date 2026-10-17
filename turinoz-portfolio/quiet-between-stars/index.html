@@ -167,25 +167,27 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
       <div class="weight-p">
         <p class="weight-k mono"><i></i>The problem</p>
         <h3>Real has a cost.</h3>
-        <p>Hundreds of real stars, each running its own code, made the renders heavy. Fakes would have changed the look by two or three percent, so I kept the stars real and made the rest lighter.</p>
+        <p>520 star layers and over 1,700 expressions, clouds and nebula placed in real 3D, one camera, all at 6480&nbsp;×&nbsp;3840 in 16-bit. Faking it would have changed the look by two or three percent, so I kept it real and made it lighter.</p>
       </div>
       <div class="weight-s">
         <p class="weight-k mono">How I solved it</p>
         <ol class="fixes">
-          <li><span class="mono">01</span>Light techniques like turbulence for the clouds.</li>
-          <li><span class="mono">02</span>Very little blur, where this look usually needs a lot.</li>
-          <li><span class="mono">03</span>Masks only at the frame edge, so it never feels cut off.</li>
-          <li><span class="mono">04</span>The rest with Turbulent Displace and mattes.</li>
+          <li><span class="mono">01</span>No blur effects in Idle; Extract makes the soft edges.</li>
+          <li><span class="mono">02</span>Turbulent Noise for clouds, Turbulent Displace for nebula.</li>
+          <li><span class="mono">03</span>One 3D solid per cloud, one feathered mask on its edge.</li>
+          <li><span class="mono">04</span>2 px stars, no effects; one Glow for all hero stars.</li>
+          <li><span class="mono">05</span>No motion blur anywhere.</li>
         </ol>
       </div>
       <figure class="render">
-        <figcaption class="render-k mono">Full render, in my tests</figcaption>
+        <figcaption class="render-k mono">Full render</figcaption>
         <ul>
           <li style="--w:100%"><span class="lbl">First build</span><i aria-hidden="true"></i><b class="mono">~7 h 30 min</b></li>
           <li style="--w:33.3%"><span class="lbl">Middle build</span><i aria-hidden="true"></i><b class="mono">~2 h 30 min</b></li>
           <li style="--w:10%"><span class="lbl">Final build</span><i aria-hidden="true"></i><b class="mono">40–50 min</b></li>
+          <li class="pt" style="--w:5.6%"><span class="lbl">Petie’s test</span><i aria-hidden="true"></i><b class="mono">Mac Studio · 25 min</b></li>
         </ul>
-        <p class="fine">On different machines, not a benchmark.</p>
+        <p class="fine">Petie rendered the full package himself. Different machines, not a benchmark.</p>
       </figure>
     </div>
   </div>

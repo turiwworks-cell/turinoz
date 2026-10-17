@@ -240,6 +240,10 @@ html.locked .brand{opacity:0}
 .render li i{display:block;height:8px;border-radius:0 4px 4px 0;background:var(--fill-2);position:relative;overflow:hidden}
 .render li i::before{content:"";position:absolute;left:0;top:0;bottom:0;width:var(--w);border-radius:0 4px 4px 0;background:var(--ink-2);transform-origin:0 50%;transform:scaleX(0);transition:transform 1.4s var(--ease) .2s}
 .render li:last-child i::before{background:var(--acc)}
+.build{--green:#3DDC84}
+.weight .render li:nth-child(3) i::before{background:var(--acc)}
+.weight .render li.pt i::before{background:var(--green)}
+.weight .render li.pt b,.weight .render li.pt .lbl{color:var(--green)}
 .render.in li i::before,.step.in .render li i::before,.weight.in .render li i::before{transform:scaleX(1)}
 .render b{font-weight:500;font-size:12.5px;color:var(--ink);min-width:86px;text-align:right}
 .render .fine{margin-top:14px}
@@ -446,7 +450,7 @@ html.locked .brand{opacity:0}
 .weight-p>p:not([class]){margin-top:8px;font-size:14px;line-height:1.55;color:var(--ink-2);text-wrap:pretty}
 .weight-s{padding-top:18px}
 .fixes{margin-top:8px}
-.fixes li{display:grid;grid-template-columns:28px 1fr;gap:6px;padding:7px 0;border-bottom:1px solid var(--line-2);font-size:14px;line-height:1.45;color:var(--ink-2)}
+.fixes li{display:grid;grid-template-columns:28px 1fr;gap:6px;padding:6px 0;border-bottom:1px solid var(--line-2);font-size:14px;line-height:1.45;color:var(--ink-2)}
 .fixes li:last-child{border-bottom:0}
 .fixes span{font-size:11px;color:var(--acc);padding-top:2px}
 .weight .render{max-width:none;margin:0;padding:18px 20px 16px}
