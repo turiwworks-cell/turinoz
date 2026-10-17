@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Hyperspace, step by step</title>
+<style>
+/* A mockup of the Hyperspace chain: one flat noise map, wrapped into a tunnel, then falloff, twirl and grade.
+   Drawn live in WebGL; values follow the project's controls, the look is approximate. */
+@font-face{font-family:"Inter";src:url(../fonts/inter.woff2) format("woff2");font-weight:100 900;font-display:swap}
+@font-face{font-family:"JetBrains Mono";src:url(../fonts/jetbrains-mono.woff2) format("woff2");font-weight:100 800;font-display:swap}
+:root{--fg:#ECE9E2;--muted:#8E8C86;--dim:#5c5b57;--accent:#FFD405;--line:rgba(236,233,226,.16);
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;--ui:"Inter",system-ui,sans-serif;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#000;color:var(--fg);overflow:hidden;font-family:var(--ui);-webkit-font-smoothing:antialiased}
+.stage{position:relative;width:100%;height:100vh;overflow:hidden;user-select:none;-webkit-user-select:none}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.top{position:absolute;left:16px;right:16px;top:14px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;pointer-events:none}
+.tabs{display:inline-flex;gap:2px;padding:3px;border-radius:999px;background:rgba(0,0,0,.62);box-shadow:inset 0 0 0 1px var(--line);pointer-events:auto;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.tab{appearance:none;border:0;background:transparent;color:var(--muted);font:500 12px/1 var(--ui);padding:8px 12px;border-radius:999px;cursor:pointer;white-space:nowrap;display:inline-flex;gap:6px;align-items:center}
+.tab b{font:500 10.5px/1 var(--mono);color:var(--dim)}
+.tab:hover{color:var(--fg)}
+.tab[aria-pressed="true"]{background:var(--fg);color:#000}
+.tab[aria-pressed="true"] b{color:#000}
+.tab:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.comp{font:500 11px/1.3 var(--mono);letter-spacing:.06em;color:var(--accent);text-align:right;padding-top:9px;text-shadow:0 1px 6px #000}
+.bot{position:absolute;left:16px;right:16px;bottom:14px;display:flex;justify-content:space-between;align-items:flex-end;gap:16px;pointer-events:none}
+.say{font:500 11.5px/1.45 var(--mono);letter-spacing:.03em;color:rgba(236,233,226,.78);max-width:46ch;text-shadow:0 1px 8px #000}
+.ctl{display:flex;gap:6px;pointer-events:auto}
+.sl{display:grid;gap:4px;padding:7px 10px 6px;border-radius:10px;background:rgba(0,0,0,.62);box-shadow:inset 0 0 0 1px var(--line);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.sl span{display:flex;justify-content:space-between;gap:10px;font:500 10px/1 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.sl output{color:var(--fg)}
+.sl input{width:104px;margin:0;accent-color:var(--accent)}
+.nogl{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--muted);font-size:14px}
+@media (max-width:620px){.ctl{display:none}.tab{padding:7px 9px;font-size:11.5px}.tab b{display:none}.comp{display:none}}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <canvas id="gl" aria-hidden="true"></canvas>
+  <div class="top">
+    <div class="tabs" role="group" aria-label="Step">
+      <button class="tab" data-s="0" aria-pressed="false"><b>01</b>Map</button>
+      <button class="tab" data-s="1" aria-pressed="false"><b>02</b>Tunnel</button>
+      <button class="tab" data-s="2" aria-pressed="true"><b>03</b>Final</button>
+    </div>
+    <div class="comp" id="comp">HYPER_SPACE_SYSTEM</div>
+  </div>
+  <div class="bot">
+    <p class="say" id="say" aria-live="polite"></p>
+    <div class="ctl">
+      <label class="sl"><span>Speed <output id="oSp">7</output></span><input id="sp" type="range" min="4" max="12" step="1" value="7"></label>
+      <label class="sl"><span>Twirl <output id="oTw">45°</output></span><input id="tw" type="range" min="20" max="60" step="1" value="45"></label>
+      <label class="sl"><span>Falloff <output id="oFo">800</output></span><input id="fo" type="range" min="200" max="1100" step="10" value="800"></label>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+'use strict';
+const STEPS = [
+  {comp:'SRC_TUNNEL_MAP', say:'One flat map: Fractal Noise and VR Fractal Noise, tiled so its edges meet.', wrap:0, near:0, fall:0, twirl:0, grade:0},
+  {comp:'TUNNEL', say:'CC Cylinder wraps the map into a tunnel. A larger copy of it adds the walls near the lens.', wrap:1, near:1, fall:0, twirl:0, grade:0},
+  {comp:'HYPER_SPACE_SYSTEM', say:'A black circle hides the far end, Twirl turns it, and the grade adds the color.', wrap:1, near:1, fall:1, twirl:1, grade:1},
+];
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const stage = document.getElementById('stage'), canvas = document.getElementById('gl');
+const say = document.getElementById('say'), compEl = document.getElementById('comp');
+const tabs = [...document.querySelectorAll('.tab')];
+const sp = document.getElementById('sp'), tw = document.getElementById('tw'), fo = document.getElementById('fo');
+let step = 2, auto = !reduce, autoAt = 0;
+const cur = Object.assign({}, STEPS[2]);
+function setStep(i, user){
+  step = i; if(user) auto = false;
+  tabs.forEach((t,k)=>t.setAttribute('aria-pressed', String(k===i)));
+  say.textContent = STEPS[i].say; compEl.textContent = STEPS[i].comp;
+}
+tabs.forEach((t,i)=>t.addEventListener('click',()=>setStep(i,true)));
+[[sp,'oSp',v=>v],[tw,'oTw',v=>v+'°'],[fo,'oFo',v=>v]].forEach(([el,id,f])=>el.addEventListener('input',()=>{ document.getElementById(id).textContent=f(el.value); auto=false; }));
+setStep(reduce?2:0);
+
+const gl = canvas.getContext('webgl',{antialias:false,premultipliedAlpha:false});
+if(!gl){ stage.insertAdjacentHTML('beforeend','<div class="nogl">This view needs WebGL, which this browser has turned off.</div>'); return; }
+const VS = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
+const FS = `precision highp float;
+uniform vec2 res; uniform float phase, speed, wrap, near, fall, twirl, grade, falloffR;
+const float TAU=6.2831853;
+float h(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
+vec2 wr(vec2 i, vec2 per){ return floor(mod(i+.5,per)); }
+float vn(vec2 p, vec2 per){ vec2 i=floor(p), f=fract(p); f=f*f*(3.-2.*f);
+  float a=h(wr(i,per)), b=h(wr(i+vec2(1.,0.),per)), c=h(wr(i+vec2(0.,1.),per)), d=h(wr(i+vec2(1.,1.),per));
+  return mix(mix(a,b,f.x),mix(c,d,f.x),f.y); }
+float fbm(vec2 uv, vec2 per, float oct){ float s=0., a=.5, n=0.; for(int i=0;i<5;i++){ if(float(i)>=oct) break; s+=a*vn(uv*per,per); n+=a; per*=2.; a*=.5; } return s/n; }
+/* the map: long streaks along v, periodic in u and v so it closes around the cylinder and loops */
+float mapf(vec2 uv, float oct){
+  float a=fbm(uv, vec2(22.,2.), oct), b=fbm(uv+vec2(.31,.17), vec2(44.,1.), oct);
+  float m=clamp((a*.75+b*.5-.42)*1.7,0.,1.);
+  return m*m*(3.-2.*m);
+}
+vec3 tri(float l){ vec3 mid=vec3(.016,.227,.353), hi=vec3(.125,.78,.945);
+  return l<.5 ? mix(vec3(0.),mid,l*2.) : mix(mid,hi,(l-.5)*2.); }
+void main(){
+  vec2 q=gl_FragCoord.xy/res;
+  vec2 p=(gl_FragCoord.xy-.5*res)/res.y;
+  float r=max(length(p),1e-4);
+  float a=atan(p.y,p.x)/TAU+.5;
+  float tws=twirl*2.6*pow(max(0.,1.-r/1.15),1.6)/TAU;
+  float z=.16/r;
+  vec2 tuv=vec2(a+tws, z);
+  vec2 fuv=vec2(q.x, q.y*res.y/res.x*.8);
+  vec2 uv=mix(fuv,tuv,wrap);
+  float off=phase*speed;
+  float detail=mix(5.,mix(2.,5.,smoothstep(.05,.3,r)),wrap);
+  float l=mapf(vec2(uv.x, uv.y+off), detail);
+  /* the closer, larger copy */
+  vec2 nuv=mix(fuv*vec2(1.,.6)+vec2(.5,.2), vec2(a+tws*.5, z*.28), wrap);
+  float ln=mapf(vec2(nuv.x, nuv.y+off*.28*3.6), 4.)*near*mix(.35,smoothstep(.32,.8,r),wrap);
+  l=clamp(l*.95+ln*.7,0.,1.);
+  /* far end: the singularity always fades a little; Depth Falloff hides more */
+  l*=mix(1.,smoothstep(.015,.12,r),wrap);
+  float R=falloffR, F=410./3840.;
+  l*=mix(1.,smoothstep(R,R+F,r),fall*wrap);
+  vec3 col=mix(vec3(l*.6), tri(l*.62), grade);
+  gl_FragColor=vec4(col,1.);
+}`;
+function sh(t,s){ const o=gl.createShader(t); gl.shaderSource(o,s); gl.compileShader(o); if(!gl.getShaderParameter(o,gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(o)); return o; }
+const pr=gl.createProgram(); gl.attachShader(pr,sh(gl.VERTEX_SHADER,VS)); gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,FS)); gl.linkProgram(pr); gl.useProgram(pr);
+const buf=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,buf); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+const loc=gl.getAttribLocation(pr,'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+const U={}; ['res','phase','speed','wrap','near','fall','twirl','grade','falloffR'].forEach(n=>U[n]=gl.getUniformLocation(pr,n));
+
+function resize(){ const d=Math.min(devicePixelRatio||1,1.5), w=Math.max(1,stage.clientWidth*d|0), h=Math.max(1,stage.clientHeight*d|0); if(canvas.width!==w||canvas.height!==h){ canvas.width=w; canvas.height=h; gl.viewport(0,0,w,h); } }
+new ResizeObserver(resize).observe(stage); resize();
+
+/* one loop of the demo stands in for the project's 170 s loop; whole passes per loop keep it seamless */
+const LOOP = 24;
+let t0 = performance.now(), last = t0, onScreen = true, looping = true, phaseT = 0;
+function frame(now){
+  const dt = Math.min(.05,(now-last)/1000); last = now;
+  if(!reduce) phaseT += dt;
+  if(auto && now-autoAt > 4200){ autoAt = now; if(now-t0 > 600) setStep((step+1)%3); }
+  const tg = STEPS[step], k = Math.min(1, dt*2.6);
+  ['wrap','near','fall','twirl','grade'].forEach(n=>{ cur[n] += (tg[n]-cur[n])*k; });
+  const phase = (phaseT % LOOP)/LOOP;
+  const twDeg = +tw.value + 4*Math.sin(phase*Math.PI*2);
+  gl.uniform2f(U.res,canvas.width,canvas.height);
+  gl.uniform1f(U.phase,phase); gl.uniform1f(U.speed,Math.round(+sp.value));
+  gl.uniform1f(U.wrap,cur.wrap); gl.uniform1f(U.near,cur.near); gl.uniform1f(U.fall,cur.fall);
+  gl.uniform1f(U.twirl,cur.twirl*twDeg*Math.PI/180); gl.uniform1f(U.grade,cur.grade);
+  gl.uniform1f(U.falloffR, (+fo.value)/3840);
+  gl.drawArrays(gl.TRIANGLES,0,3);
+  if(onScreen) requestAnimationFrame(frame); else looping = false;
+}
+new IntersectionObserver(es=>{ onScreen = es[0].isIntersecting; if(onScreen && !looping){ looping = true; last = performance.now(); requestAnimationFrame(frame); } }).observe(stage);
+autoAt = performance.now();
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

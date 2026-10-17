@@ -44,7 +44,7 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
     <a class="brand" href="#top" aria-label="Quiet Between Stars, back to top"><span>Quiet Between Stars</span></a>
     <nav class="links" id="links" aria-label="Sections">
       <i class="pill" aria-hidden="true"></i>
-      <a href="#brief">Brief</a><a href="#idle">Idle</a><a href="#process">Process</a><a href="#system">System</a><a href="#delivery">Delivery</a>
+      <a href="#brief">Brief</a><a href="#idle">Idle</a><a href="#hyperspace">Hyperspace</a><a href="#process">Process</a><a href="#system">System</a><a href="#delivery">Delivery</a>
     </nav>
     <div class="navr">
     </div>
@@ -138,20 +138,20 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
 </section>
 
 <!-- ================= 02 PRIMARY IDLE ================= -->
-<section class="sec idle" id="idle">
+<section class="sec build" id="idle">
   <div class="wrap">
-    <div class="idle-head rv">
+    <div class="build-head rv">
       <div class="kicker"><i></i>02 — Primary Idle</div>
       <h2>Still water, in real depth.</h2>
     </div>
 
-    <div class="idle-top rv">
+    <div class="build-top rv">
       <figure class="ld">
         <iframe class="ld-frame" id="ldFrame" src="layer-diagram.html" title="Primary Idle as a 3D mockup: drag to orbit around the layers" loading="lazy"></iframe>
         <figcaption class="fine">A mockup of the scene, not the project file. Not to scale.</figcaption>
       </figure>
 
-      <div class="idle-facts">
+      <div class="build-facts">
         <ul class="nums">
           <li><b>120</b><span class="mono">Hero stars</span></li>
           <li><b>400</b><span class="mono">Micro stars</span></li>
@@ -191,11 +191,66 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
   </div>
 </section>
 
+<!-- ================= 03 HYPERSPACE ================= -->
+<section class="sec build" id="hyperspace">
+  <div class="wrap">
+    <div class="build-head rv">
+      <div class="kicker"><i></i>03 — Hyperspace</div>
+      <h2>A smooth current, on a loop.</h2>
+    </div>
+
+    <div class="build-top rv">
+      <figure class="ld">
+        <iframe class="ld-frame" src="hyperspace-diagram.html" title="Hyperspace as a mockup: one flat map, wrapped into a tunnel" loading="lazy"></iframe>
+        <figcaption class="fine">A live mockup of the same steps, not the render.</figcaption>
+      </figure>
+
+      <div class="build-facts">
+        <ul class="nums">
+          <li><b>1</b><span class="mono">Flat noise map</span></li>
+          <li><b>170</b><span class="mono">Second loop</span></li>
+          <li><b>0</b><span class="mono">Keyframes inside the loop</span></li>
+        </ul>
+        <p>The tunnel is one flat map of Fractal Noise and VR Fractal Noise, wrapped into a cylinder with CC Cylinder and seen from inside. A larger copy of the same map makes the walls near the lens.</p>
+        <p>All of its motion is expressions, driven by five controls: Variation, Speed, Depth Falloff, Twirl and Opacity.</p>
+        <p class="ld-see"><button class="zoom mono" type="button" data-src="assets/guide-hyperspace-2400.webp" data-cap="09 — Hyperspace: its five controls, with safe ranges and sweet spots · From the guide">The Hyperspace guide page</button></p>
+      </div>
+    </div>
+
+    <div class="weight rv">
+      <div class="weight-p">
+        <p class="weight-k mono"><i></i>The problem</p>
+        <h3>No visible start or end.</h3>
+        <p>It plays for hours on three tall screens, so any jump in the noise, speed or turn would show on every loop. And Petie had to be able to change the speed himself.</p>
+      </div>
+      <div class="weight-s">
+        <p class="weight-k mono">How I solved it</p>
+        <ol class="fixes">
+          <li><span class="mono">01</span>One 170-second loop holds it all, between the transitions.</li>
+          <li><span class="mono">02</span>Speed rounds to whole passes, so the map ends where it began.</li>
+          <li><span class="mono">03</span>The noise evolves in whole turns over the loop.</li>
+          <li><span class="mono">04</span>Twirl swings 4° each way per loop: Petie’s slow turn.</li>
+        </ol>
+      </div>
+      <figure class="render tl">
+        <figcaption class="render-k mono">One 180-second render</figcaption>
+        <div class="tl-bar" aria-hidden="true"><i style="--w:2.78%"></i><i class="loop" style="--w:94.44%"></i><i style="--w:2.78%"></i></div>
+        <ul>
+          <li><span class="lbl">Entry</span><b class="mono">0–5 s</b><em>Keyframes</em></li>
+          <li><span class="lbl">Hyperspace</span><b class="mono">5–175 s</b><em>Expressions only</em></li>
+          <li><span class="lbl">Return</span><b class="mono">175–180 s</b><em>Keyframes</em></li>
+        </ul>
+        <p class="fine">My first entry ran 15 seconds and Petie found it long. The final one takes 5.</p>
+      </figure>
+    </div>
+  </div>
+</section>
+
 <!-- ================= 02 PROCESS ================= -->
 <section class="sec" id="process">
   <div class="wrap">
     <div class="shead rv">
-      <div><div class="kicker"><i></i>03 — Process</div><h2>Into hyperspace,<br>then home.</h2>
+      <div><div class="kicker"><i></i>04 — Process</div><h2>The handover.</h2>
         <p class="sub">Petie set the brief and reviewed the key moments, about 3 or 4 out of 10 by his own count. The calls in between were mine.</p></div>
     </div>
 
@@ -204,26 +259,15 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
         <div class="rail">
           <i class="rail-line"><u></u></i>
           <ol id="railList">
-            <li data-to="s4"><span class="mono">01</span>Hyperspace</li>
-            <li data-to="s5"><span class="mono">02</span>Handover</li>
+            <li data-to="s5"><span class="mono">01</span>Handover</li>
           </ol>
         </div>
       </aside>
 
       <div class="steps">
 
-        <article class="step rv" id="s4">
-          <p class="step-k mono"><b>01</b>Hyperspace</p>
-          <h3>Hyperspace, in its own voice.</h3>
-          <p>My first entry ran 15 seconds, and Petie found it long. I also tried a star pass we had ruled out, and flagged it as a test.</p>
-          <dl class="calls">
-            <div class="call"><dt class="mono">My call</dt><dd>A01’s density with B01’s motion.</dd></div>
-            <div><dt class="mono">Petie</dt><dd>Liked where Entry and Return were going. Asked for twice the speed and a slow turn in the tunnel.</dd></div>
-          </dl>
-        </article>
-
         <article class="step rv" id="s5">
-          <p class="step-k mono"><b>02</b>Handover</p>
+          <p class="step-k mono"><b>01</b>Handover</p>
           <h3>Something easy to live with.</h3>
           <p>I sent the project and the guide before the big renders, so Petie could learn the system on his own machine.</p>
           <dl class="calls">
@@ -245,7 +289,7 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
 <section class="sec" id="system">
   <div class="wrap">
     <div class="shead rv">
-      <div><div class="kicker"><i></i>04 — System</div><h2>A world you can keep changing.</h2>
+      <div><div class="kicker"><i></i>05 — System</div><h2>A world you can keep changing.</h2>
         <p class="sub">The films came with the system that makes them. One master seed reshapes the whole scene, and every part keeps its own controls.</p></div>
     </div>
 
@@ -284,7 +328,7 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
 <section class="sec" id="delivery">
   <div class="wrap">
     <div class="shead rv">
-      <div><div class="kicker"><i></i>05 — Delivery</div><h2>Handed over, ready to change.</h2>
+      <div><div class="kicker"><i></i>06 — Delivery</div><h2>Handed over, ready to change.</h2>
         <p class="sub">The renders, the editable system and the guide. Petie later built his own web control layer around it.</p></div>
     </div>
     <div class="pack rv">

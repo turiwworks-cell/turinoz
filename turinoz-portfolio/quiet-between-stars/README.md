@@ -25,11 +25,14 @@ JavaScript, no build step. Serve the portfolio folder and open `/quiet-between-s
    `assets/three.min.js`. Under it: three short facts (120 hero + 400 micro stars as shape
    layers with expressions, clouds and nebula merged into a few depth layers, all native)
    and the render-weight problem with its fixes and render times.
-5. **03 Process**: Hyperspace and Handover (to be reworked: Hyperspace, then the motion
-   system and its controls, then handover and credits).
-6. **04 System**: key numbers, the nine control groups, and two of their guide pages as
+5. **03 Hyperspace**: same layout as Primary Idle. The mockup is `hyperspace-diagram.html`
+   (plain WebGL, no library): Map, Tunnel, Final, with Speed, Twirl and Falloff. Facts and
+   the loop problem come from the project package (`QBS_Agent_Package.zip`): one 170 s loop
+   from 5 s to 175 s, speed rounded to whole passes, no keyframes inside the loop.
+6. **04 Process**: Handover only, for now.
+7. **05 System**: key numbers, the nine control groups, and two of their guide pages as
    small, zoomable examples.
-7. **05 Delivery**: the four things handed over, each with a small picture of it, credits
+8. **06 Delivery**: the four things handed over, each with a small picture of it, credits
    set like a film's end credits, next project (Storm).
 
 Copy rules that apply here: no project length or date range; nothing from payments,

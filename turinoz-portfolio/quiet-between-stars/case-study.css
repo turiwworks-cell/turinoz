@@ -421,11 +421,11 @@ html.locked .brand{opacity:0}
   .render li i::before{transform:scaleX(1);transition:none}
 }
 
-/* ---------- 02 Primary Idle: one screen ---------- */
-.idle{--red:#FF5A4E;--red-soft:rgba(255,90,78,.1);--red-line:rgba(255,90,78,.38)}
-.idle-head{display:flex;align-items:baseline;gap:22px;flex-wrap:wrap}
-.idle-head h2{font-size:clamp(26px,2.6vw,36px);line-height:1.05}
-.idle-top{display:grid;grid-template-columns:auto minmax(0,1fr);gap:40px;margin-top:24px;align-items:start}
+/* ---------- 02 Primary Idle, 03 Hyperspace: one screen each ---------- */
+.build{--red:#FF5A4E;--red-soft:rgba(255,90,78,.1);--red-line:rgba(255,90,78,.38)}
+.build-head{display:flex;align-items:baseline;gap:22px;flex-wrap:wrap}
+.build-head h2{font-size:clamp(26px,2.6vw,36px);line-height:1.05}
+.build-top{display:grid;grid-template-columns:auto minmax(0,1fr);gap:40px;margin-top:24px;align-items:start}
 .ld{margin:0;width:clamp(460px,calc((100svh - 470px) * 16 / 9),680px)}
 .ld-frame{display:block;width:100%;aspect-ratio:16/9;height:auto;overflow:hidden;border:0;background:#000;border-radius:20px;box-shadow:0 0 0 1px var(--line-3);color-scheme:dark}
 .ld figcaption{margin-top:8px;font-size:12px}
@@ -433,7 +433,7 @@ html.locked .brand{opacity:0}
 .nums li{display:grid;gap:6px;align-content:start}
 .nums b{font:560 clamp(40px,4.2vw,60px)/.9 var(--display);font-stretch:82%;letter-spacing:-.03em;color:var(--acc);font-variant-numeric:tabular-nums}
 .nums span{font-size:10.5px;line-height:1.35;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);max-width:17ch}
-.idle-facts>p:not([class]){margin-top:14px;font-size:14.5px;line-height:1.55;color:var(--ink-2);text-wrap:pretty}
+.build-facts>p:not([class]){margin-top:14px;font-size:14.5px;line-height:1.55;color:var(--ink-2);text-wrap:pretty}
 .ld-see{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
 .ld-see .zoom{font-size:11.5px;padding:5px 10px;border-radius:999px;color:var(--ink-2);box-shadow:inset 0 0 0 1px var(--line-3);transition:color .2s,box-shadow .2s}
 .ld-see .zoom:hover{color:var(--ink);box-shadow:inset 0 0 0 1px var(--line-hover)}
@@ -456,11 +456,20 @@ html.locked .brand{opacity:0}
 .weight .render b{min-width:0;font-size:12px}
 .weight .render li:first-child i::before{background:var(--red)}
 .weight .render .fine{margin-top:12px;font-size:11.5px}
+/* the Hyperspace timeline */
+.tl-bar{display:flex;gap:3px;height:8px;margin:4px 0 14px}
+.tl-bar i{display:block;width:var(--w);min-width:8px;border-radius:2px;background:var(--fill-2)}
+.tl-bar i.loop{background:var(--acc);opacity:.85}
+.tl ul{gap:8px}
+.weight .tl li{grid-template-columns:84px auto 1fr;gap:10px}
+.tl li b{text-align:left!important;font-size:12px;color:var(--ink)}
+.tl li em{font-style:normal;font-size:12px;color:var(--muted);text-align:right}
+.tl li:nth-child(2) em{color:var(--acc)}
 @media (min-width:1001px) and (min-height:700px){
-  .idle{min-height:calc(100svh - 84px);margin-top:130px;padding-top:20px;padding-bottom:20px}
+  .build{min-height:calc(100svh - 84px);margin-top:130px;padding-top:20px;padding-bottom:20px}
 }
 @media (max-width:1000px){
-  .idle-top{grid-template-columns:1fr;gap:24px}
+  .build-top{grid-template-columns:1fr;gap:24px}
   .ld{width:100%}
   .weight{grid-template-columns:1fr 1fr}
   .weight .render{grid-column:1/-1}
