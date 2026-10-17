@@ -1343,35 +1343,16 @@ for(const id in TARGET)$(id).textContent=TARGET[id][1](0);
 $('factFiles').textContent=`${N} Lottie files · ${AUD.filter(a=>a.deep).length} for deep thinking`;
 
 /* =========================================================
-   LAUNCH FILMS — files in films/, loaded only when the section gets close.
-   Each film comes in 540p and 900p, as AV1 and H.264. Small screens, slow or
-   data-saving connections and low-memory devices get 540p; AV1 is used only
-   where the device says it decodes it smoothly and power-efficiently, else H.264.
+   LAUNCH FILMS — files in films/, loaded only when the section gets close
    ========================================================= */
 let paused=reduced;
 const films=[];
-const NET=navigator.connection||{};
-const lowEnd=()=>!!NET.saveData||/(^|slow-)2g|3g/.test(NET.effectiveType||'')||(navigator.deviceMemory||8)<=2;
-const AV1={540:['video/mp4; codecs="av01.0.04M.08"',960,540,700e3],900:['video/mp4; codecs="av01.0.08M.08"',1600,900,1600e3]};
-function av1Ok(size){const [type,width,height,bitrate]=AV1[size];
-  if(!document.createElement('video').canPlayType(type)||!navigator.mediaCapabilities)return Promise.resolve(false);
-  return navigator.mediaCapabilities.decodingInfo({type:'file',video:{contentType:type,width,height,bitrate,framerate:24}})
-    .then(r=>!!(r.supported&&r.smooth&&r.powerEfficient),()=>false);}
 (()=>{
   [['filmA','launch'],['filmB','field']].forEach(([id,key])=>{
     const fig=$(id),v=fig.querySelector('video'),bar=fig.querySelector('.fbar u');const f={fig,v,key,inView:false,user:false,loaded:false};films.push(f);
-    const load=()=>{if(f.loaded)return;f.loaded=true;
-      const need=fig.querySelector('.fbox').clientWidth*Math.min(devicePixelRatio||1,2),size=lowEnd()||need<=1000?540:900;
-      v.poster=`films/${key}-poster${size===540?'-960':''}.webp`;v.preload='auto';
-      av1Ok(size).then(ok=>{f.h264=`films/${key}-${size}.mp4`;v.src=ok?`films/${key}-${size}.av1.mp4`:f.h264;v.load();syncFilm(f);});};
+    const load=()=>{if(f.loaded)return;f.loaded=true;v.poster=`films/${key}-poster.jpg`;v.preload='auto';v.src=`films/${key}.mp4`;v.load();};
     f.load=load;
-    // an AV1 file that fails to decode falls back to H.264 once, from the same moment
-    v.addEventListener('error',()=>{if(!f.h264||!/\.av1\.mp4$/.test(v.currentSrc||v.src))return;const t=v.currentTime||0;v.src=f.h264;v.load();
-      v.addEventListener('loadedmetadata',()=>{try{v.currentTime=t;}catch(_){}},{once:true});syncFilm(f);});
-    // the progress line follows every frame while the film plays, not the browser's coarse timeupdate
-    const drawBar=()=>{if(v.duration)bar.style.width=(v.currentTime/v.duration*100)+'%';if(!v.paused&&!v.ended)requestAnimationFrame(drawBar);};
-    v.addEventListener('timeupdate',()=>{if(v.paused&&v.duration)bar.style.width=(v.currentTime/v.duration*100)+'%';});
-    v.addEventListener('playing',()=>requestAnimationFrame(drawBar));
+    v.addEventListener('timeupdate',()=>{if(v.duration)bar.style.width=(v.currentTime/v.duration*100)+'%';});
     v.addEventListener('loadedmetadata',()=>{const d=Math.round(v.duration);fig.querySelector('[data-dur]').textContent=`0:${String(d).padStart(2,'0')}`;});
     const snd=fig.querySelector('[data-a=snd]'),pp=fig.querySelector('[data-a=pp]');
     snd.onclick=()=>{const on=v.muted;films.forEach(o=>{o.v.muted=true;o.fig.querySelector('[data-a=snd]').classList.remove('alt2');o.fig.querySelector('[data-a=snd]').setAttribute('aria-label','Turn sound on');});
@@ -1383,12 +1364,7 @@ function av1Ok(size){const [type,width,height,bitrate]=AV1[size];
     new IntersectionObserver(es=>{if(es[0].isIntersecting)load();},{rootMargin:'900px 0px'}).observe(fig);
   });
 })();
-function syncFilm(f){if(!f.loaded&&f.inView)f.load();
-  if(f.inView&&!paused&&!f.user){if(f.v.currentSrc||f.v.getAttribute('src'))f.v.play().catch(()=>{filmIcon(f);});}
-  else if(!f.v.paused&&(!f.inView||paused))f.v.pause();
-  filmIcon(f);}
-// the play/pause button shows what the film is really doing (autoplay can be refused, e.g. iOS Low Power Mode)
-function filmIcon(f){const b=f.fig.querySelector('[data-a=pp]');const off=f.v.paused;b.classList.toggle('alt2',off);b.setAttribute('aria-label',off?'Play film':'Pause film');}
+function syncFilm(f){if(!f.loaded&&f.inView)f.load();if(f.inView&&!paused&&!f.user){f.v.play().catch(()=>{});}else if(!f.v.paused&&(!f.inView||paused))f.v.pause();}
 // three agent states you can spot in the field film
 [['appear-down',16,'Appears when the inspector starts talking'],['cone-spin',0,'Thinks while it reads the photo'],['disappear-up',0,'Leaves once the item is filled in']].forEach(([f,fr,t])=>{
   const li=document.createElement('li');li.innerHTML=`<span class="lot"></span>${t}`;$('filmList').appendChild(li);still(li.firstChild,f,fr);});
