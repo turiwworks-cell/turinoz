@@ -38,9 +38,9 @@ h1{font:560 clamp(36px,5vw,64px)/1.02 var(--display);font-stretch:84%;letter-spa
 /* motion: the mark in three moves, one per cell */
 .mo-h{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;margin-top:56px}
 .mo-h h2{font:560 28px/1.1 var(--display);font-stretch:84%;letter-spacing:-.02em;margin:0}
-.mo{display:grid;grid-template-columns:repeat(3,1fr);margin-top:20px;border-radius:18px;overflow:hidden;box-shadow:0 0 0 1px var(--line)}
+.mo{display:grid;grid-template-columns:repeat(2,1fr);margin-top:20px;border-radius:18px;overflow:hidden;box-shadow:0 0 0 1px var(--line)}
 @media (max-width:760px){.mo{grid-template-columns:1fr}}
-.mc{position:relative;aspect-ratio:1;display:grid;place-items:center;overflow:hidden}
+.mc{position:relative;aspect-ratio:4/3;display:grid;place-items:center;overflow:hidden}
 .mc:nth-child(1){background:#000}
 .mc:nth-child(2){background:#F7F2EA}
 .mc:nth-child(3){background:#161616}
@@ -66,10 +66,9 @@ h1{font:560 clamp(36px,5vw,64px)/1.02 var(--display);font-stretch:84%;letter-spa
   <div class="mo-h"><h2>Motion</h2><span class="kicker">The mark, moving</span></div>
   <div class="mo">
     <figure class="mc" style="margin:0"><span class="mk roll" data-mo="0" role="img" aria-label="Roll: the color rolls inside each bar, middle first, sides 160ms later"><i></i><i></i><i></i></span><figcaption><b>Roll</b>cubic-bezier(.802, .057, .35, 1) · 800ms<br>M 0 · L 160 · R 160ms · hold 500ms</figcaption></figure>
-    <figure class="mc" style="margin:0"><span class="mk" data-mo="1" role="img" aria-label="Lift, middle then sides, inside the mark: the sides follow 380ms later"><i></i><i></i><i></i></span><figcaption><b>Lift · middle, then sides</b>cubic-bezier(.65, 0, .35, 1) · 800ms<br>M 0 · L 380 · R 380ms · hold 500ms</figcaption></figure>
-    <figure class="mc" style="margin:0"><span class="mk" data-mo="2" role="img" aria-label="Lift, left to right: left, then middle, then right"><i></i><i></i><i></i></span><figcaption><b>Lift · left to right</b>cubic-bezier(.65, 0, .35, 1) · 800ms<br>L 0 · M 180 · R 440ms · hold 500ms</figcaption></figure>
+    <figure class="mc" style="margin:0"><span class="mk" data-mo="1" role="img" aria-label="Lift, left to right: left, then middle, then right"><i></i><i></i><i></i></span><figcaption><b>Lift</b>cubic-bezier(.65, 0, .35, 1) · 800ms<br>L 0 · M 180 · R 440ms · hold 500ms</figcaption></figure>
   </div>
-  <p class="spec">Roll moves the color inside each bar. Lift moves the bars themselves, inside the mark. Either way the sides go up and come back from below, the middle goes down and comes back from above.</p>
+  <p class="spec">Roll moves the color inside each bar. Lift moves the bars themselves, inside the mark, left to right; it is the one in the case study header. Either way the sides go up and come back from below, the middle goes down and comes back from above.</p>
   <div class="files">
     <a class="file" href="scoreline-mark.svg" download><div class="pv"><img src="scoreline-mark.svg" alt=""></div><b>Mark</b><span>scoreline-mark.svg</span></a>
     <a class="file" href="scoreline-icon.svg" download><div class="pv light"><img src="scoreline-icon.svg" alt=""></div><b>App icon</b><span>scoreline-icon.svg</span></a>
@@ -79,11 +78,10 @@ h1{font:560 clamp(36px,5vw,64px)/1.02 var(--display);font-stretch:84%;letter-spa
   </div>
 </div>
 <script>
-// the mark in motion: a roll and two lifts, each with its own curve and delays (ms, order L M R)
+// the mark in motion: a roll and a lift, each with its own curve and delays (ms, order L M R)
 (()=>{
   const MOVES=[
     {b:[.802,.057,.35,1],dur:800,delay:[160,0,160],hold:500},
-    {b:[.65,0,.35,1],dur:800,delay:[380,0,380],hold:500},
     {b:[.65,0,.35,1],dur:800,delay:[0,180,440],hold:500}];
   function bez(B){const cx=3*B[0],bx=3*(B[2]-B[0])-cx,ax=1-cx-bx,cy=3*B[1],by=3*(B[3]-B[1])-cy,ay=1-cy-by;
     const X=t=>((ax*t+bx)*t+cx)*t,Y=t=>((ay*t+by)*t+cy)*t;
