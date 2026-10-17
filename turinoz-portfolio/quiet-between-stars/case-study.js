@@ -1,6 +1,6 @@
 /* Quiet Between Stars — case study (Turinoz)
    Sky, day/night, nav, the four-state player, the process rail, comparisons,
-   the guide pages, formats and the lightbox. No dependencies. */
+   the guide pages and the lightbox. No dependencies. */
 (() => {
   'use strict';
   const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -25,25 +25,18 @@
   sysLight.addEventListener('change', () => { if (!root.dataset.theme) themeUI(); });
 
   /* ---------------- sky: a slow, seeded star field with depth ----------------
-     Stars sit in 3D and drift toward the viewer very slowly; nearer stars are
-     bigger and brighter, and move more when the page scrolls. */
+     Plain points, no glow. They sit in 3D and drift and shift with the scroll so
+     little that it reads as still. */
   const sky = (() => {
     const cv = $('#sky'), ctx = cv.getContext('2d');
     let W = 0, H = 0, dpr = 1, stars = [], rgb = '222,236,255', alpha = 1, raf = 0, last = 0, t = 0;
-    const NEAR = 0.6, FAR = 6, SPEED = 0.018;              // world units per second: slow enough to forget
+    const NEAR = 0.6, FAR = 6, SPEED = 0.004;              // world units per second: too slow to notice
     let seed = 5;
     const rnd = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let x = Math.imul(seed ^ seed >>> 15, 1 | seed); x = x + Math.imul(x ^ x >>> 7, 61 | x) ^ x; return ((x ^ x >>> 14) >>> 0) / 4294967296; };
-    const sprite = document.createElement('canvas');
-    function makeSprite() {
-      const s = 32; sprite.width = sprite.height = s; const g = sprite.getContext('2d');
-      const grd = g.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
-      grd.addColorStop(0, `rgba(${rgb},1)`); grd.addColorStop(.18, `rgba(${rgb},.55)`); grd.addColorStop(1, `rgba(${rgb},0)`);
-      g.clearRect(0, 0, s, s); g.fillStyle = grd; g.fillRect(0, 0, s, s);
-    }
     function spawn(s, far) {
       s.x = (rnd() - .5) * 2.4; s.y = (rnd() - .5) * 2.4;
       s.z = far ? FAR - rnd() * .4 : NEAR + Math.pow(rnd(), .9) * (FAR - NEAR);
-      s.tw = .4 + rnd() * 1.4; s.ph = rnd() * 6.28; s.hero = rnd() < .1;
+      s.tw = .4 + rnd() * 1.4; s.ph = rnd() * 6.28;
     }
     function build() {
       seed = 5; const n = Math.round(clamp(W * H / 9000, 70, 220));
@@ -58,7 +51,7 @@
       const cs = getComputedStyle(root);
       rgb = (cs.getPropertyValue('--star') || '222,236,255').trim();
       alpha = parseFloat(cs.getPropertyValue('--star-a')) || 1;
-      makeSprite(); draw();
+      draw();
     }
     function draw() {
       if (!W) return;
@@ -66,22 +59,16 @@
       const F = Math.max(W, H) * .5, cx = W / 2, cy = H / 2, sc = scrollY;
       for (const s of stars) {
         const k = 1 / s.z;
-        let x = cx + s.x * F * k, y = cy + s.y * F * k - sc * .05 * k;
+        let x = cx + s.x * F * k, y = cy + s.y * F * k - sc * .012 * k;
         y = ((y % (H + 40)) + H + 40) % (H + 40) - 20;
         if (x < -10 || x > W + 10) continue;
         const depth = 1 - (s.z - NEAR) / (FAR - NEAR);         // 1 near, 0 far
         const fadeIn = clamp((FAR - s.z) / .8, 0, 1);
         const tw = .82 + .18 * Math.sin(t * s.tw + s.ph);
         const a = (.16 + .7 * depth * depth) * fadeIn * tw * alpha;
-        if (s.hero) {
-          const r = 1.6 + 5.5 * depth;
-          ctx.globalAlpha = Math.min(1, a * 1.15);
-          ctx.drawImage(sprite, x - r, y - r, r * 2, r * 2);
-        } else {
-          const r = .55 + 1.1 * depth * depth;
-          ctx.globalAlpha = a; ctx.fillStyle = `rgb(${rgb})`;
-          ctx.fillRect(x - r / 2, y - r / 2, r, r);
-        }
+        const r = .55 + 1.1 * depth * depth;
+        ctx.globalAlpha = a; ctx.fillStyle = `rgb(${rgb})`;
+        ctx.fillRect(x - r / 2, y - r / 2, r, r);
       }
       ctx.globalAlpha = 1;
     }
@@ -257,25 +244,6 @@
   cmpRange.addEventListener('input', () => setX(+cmpRange.value));
   setX(50);
 
-  /* ---------------- inline clips: play in view, pairs together ---------------- */
-  const solo = $$('video[data-inview]:not([data-sync])'), pair = $$('video[data-sync]');
-  const clipIO = new IntersectionObserver(es => es.forEach(e => {
-    const v = e.target;
-    if (e.isIntersecting && !reduced.matches && !document.hidden) { if (v.preload === 'none') v.preload = 'auto'; tryPlay(v); } else v.pause();
-  }), { threshold: .35 });
-  solo.forEach(v => clipIO.observe(v));
-  let pairIn = false;
-  function pairSync(restart) {
-    if (restart) pair.forEach(v => { v.currentTime = 0; });
-    if (pairIn && !document.hidden && !reduced.matches) {
-      const t0 = Math.min(...pair.map(v => v.currentTime || 0)); pair.forEach(v => { v.preload = 'auto'; v.currentTime = t0; tryPlay(v); });
-    } else pair.forEach(v => v.pause());
-  }
-  if (pair.length) new IntersectionObserver(es => { pairIn = es[0].isIntersecting; pairSync(false); }, { threshold: .35 }).observe($('#refine'));
-  $('#replayPair').addEventListener('click', () => { pairIn = true; pair.forEach(v => { v.currentTime = 0; v.preload = 'auto'; tryPlay(v); }); });
-  [...solo, ...pair].forEach(v => v.addEventListener('click', () => { if (v.paused) tryPlay(v); else v.pause(); }));
-  document.addEventListener('visibilitychange', () => { if (document.hidden) [...solo, ...pair].forEach(v => v.pause()); });
-
   /* ---------------- guide pages ---------------- */
   const GUIDE = {
     micro: { file: 'guide-micro-stars', cap: '04 — Micro Stars · From the controller guide', alt: 'Guide page 04, Micro Stars: eleven controls, from Layout Variation and Density to Near and Far Opacity, each with what it shapes, a safe range, a sweet spot and guidance' },
@@ -295,30 +263,6 @@
       if (gImg.complete) requestAnimationFrame(done); else gImg.addEventListener('load', done, { once: true });
     }, reduced.matches ? 0 : 260);
   }));
-
-  /* ---------------- formats ---------------- */
-  const FORMATS = {
-    triple:   { img: 'triplewide.webp',     ar: 6480 / 3840, alt: 'Primary Idle at 6480 × 3840, across three portrait displays', div: true },
-    portrait: { img: 'portrait.webp',       ar: 2160 / 3840, alt: 'Primary Idle at 2160 × 3840, on one portrait display' },
-    wide:     { img: 'ultrawide-5120.webp', ar: 5120 / 1440, alt: 'Primary Idle at 5120 × 1440, ultrawide' },
-    wide2:    { img: 'ultrawide-3840.webp', ar: 3840 / 1600, alt: 'Primary Idle at 3840 × 1600, ultrawide' }
-  };
-  const stage = $('#fmtStage'), box = $('#fmtBox'), fImg = $('#fmtImg'), fDiv = $('#fmtDiv');
-  let fmt = 'triple';
-  function fit() {
-    const cs = getComputedStyle(stage), pw = parseFloat(cs.paddingLeft) * 2, ph = parseFloat(cs.paddingTop) * 2;
-    const sw = stage.clientWidth - pw, sh = stage.clientHeight - ph, ar = FORMATS[fmt].ar;
-    let w = sw, h = w / ar; if (h > sh) { h = sh; w = h * ar; }
-    box.style.width = w + 'px'; box.style.height = h + 'px';
-  }
-  $$('[data-format]').forEach(b => b.addEventListener('click', () => {
-    const f = FORMATS[b.dataset.format]; if (!f || fmt === b.dataset.format) return;
-    fmt = b.dataset.format;
-    $$('[data-format]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
-    fImg.style.opacity = 0; fDiv.hidden = !f.div;
-    setTimeout(() => { fImg.src = `assets/${f.img}`; fImg.alt = f.alt; fit(); const show = () => { fImg.style.opacity = 1; }; if (fImg.complete) requestAnimationFrame(show); else fImg.addEventListener('load', show, { once: true }); }, reduced.matches ? 0 : 220);
-  }));
-  new ResizeObserver(fit).observe(stage); fit();
 
   /* ---------------- lightbox ---------------- */
   const lb = $('#lb'), lbImg = $('#lbImg'), lbBody = $('#lbBody');

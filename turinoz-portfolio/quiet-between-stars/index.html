@@ -54,7 +54,7 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
     <a class="brand" href="#top" aria-label="Quiet Between Stars, back to top"><svg class="mark" aria-hidden="true"><use href="#qbsMark"/></svg><span>Quiet Between Stars</span></a>
     <nav class="links" id="links" aria-label="Sections">
       <i class="pill" aria-hidden="true"></i>
-      <a href="#brief">Brief</a><a href="#process">Process</a><a href="#system">System</a><a href="#formats">Formats</a><a href="#delivery">Delivery</a>
+      <a href="#brief">Brief</a><a href="#process">Process</a><a href="#system">System</a><a href="#delivery">Delivery</a>
     </nav>
     <div class="navr">
       <button class="tm" id="tm" type="button" aria-label="Switch to light mode" title="Switch to light mode">
@@ -145,6 +145,28 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
       </div>
     </div>
     <p class="analogy rv"><span class="analogy-k mono">Petie’s way of putting it</span>Idle is <em>still water</em>.<br> Hyperspace is <em>a smooth current</em>.</p>
+
+    <div class="before rv">
+      <div class="before-copy">
+        <p class="before-k mono">Before the build</p>
+        <h3>Give the black more room.</h3>
+        <p>It started with a test: procedural, no outside images, no plugins, rough on purpose. Petie liked the rhythm but found the clouds too present, so I pulled them back and made four styleframes.</p>
+        <dl class="calls">
+          <div class="call"><dt class="mono">My call</dt><dd>A02 Darker, the one with the most room to breathe.</dd></div>
+          <div><dt class="mono">Petie</dt><dd>Picked the same one. It became the baseline.</dd></div>
+        </dl>
+      </div>
+      <figure class="compare" id="compare">
+        <div class="cmp-frame" id="cmpFrame" style="--x:50%">
+          <img src="assets/style-a.webp" width="1800" height="1013" alt="Styleframe A01, with a more present cloud structure" loading="lazy" draggable="false">
+          <img class="cmp-after" src="assets/style-a-dark.webp" width="1800" height="1013" alt="Styleframe A02 Darker, with more negative space" loading="lazy" draggable="false">
+          <span class="cmp-line" aria-hidden="true"><i></i></span>
+          <span class="tag mono l">A01 · First pass</span><span class="tag mono r">A02 Darker · Chosen</span>
+        </div>
+        <label class="sr-only" for="cmpRange">Compare A01 with A02 Darker</label>
+        <input class="cmp-range" id="cmpRange" type="range" min="0" max="100" value="50">
+      </figure>
+    </div>
   </div>
 </section>
 
@@ -152,7 +174,7 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
 <section class="sec" id="process">
   <div class="wrap">
     <div class="shead rv">
-      <div><div class="kicker"><i></i>02 — Process</div><h2>From a test to a world.</h2>
+      <div><div class="kicker"><i></i>02 — Process</div><h2>Real stars,<br>one universe.</h2>
         <p class="sub">Petie set the brief and reviewed the key moments, about 3 or 4 out of 10 by his own count. The calls in between were mine.</p></div>
     </div>
 
@@ -161,13 +183,11 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
         <div class="rail">
           <i class="rail-line"><u></u></i>
           <ol id="railList">
-            <li data-to="s1"><span class="mono">01</span>Test</li>
-            <li data-to="s2"><span class="mono">02</span>Direction</li>
-            <li data-to="s3"><span class="mono">03</span>System</li>
-            <li data-to="s4"><span class="mono">04</span>Weight</li>
-            <li data-to="s5"><span class="mono">05</span>Hyperspace</li>
-            <li data-to="s6"><span class="mono">06</span>Refinement</li>
-            <li data-to="s7"><span class="mono">07</span>Handover</li>
+            <li data-to="s1"><span class="mono">01</span>Build</li>
+            <li data-to="s2"><span class="mono">02</span>Weight</li>
+            <li data-to="s3"><span class="mono">03</span>Universe</li>
+            <li data-to="s4"><span class="mono">04</span>Hyperspace</li>
+            <li data-to="s5"><span class="mono">05</span>Handover</li>
           </ol>
         </div>
       </aside>
@@ -175,52 +195,31 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
       <div class="steps">
 
         <article class="step rv" id="s1">
-          <p class="step-k mono"><b>01</b>Test</p>
-          <h3>Show the method first.</h3>
-          <p>Before there was a project, I offered a test: procedural, no outside images, no plugins, a few controls. Rough on purpose, to show how I work.</p>
+          <p class="step-k mono"><b>01</b>Build</p>
+          <h3>Layers and code, not a picture.</h3>
+          <p>After the brief I went into design. I built the piece from layers and expressions in After Effects: 400 real stars, each with code of its own and code they share.</p>
           <dl class="calls">
-            <div class="call"><dt class="mono">My call</dt><dd>Start with a system, not a single shot.</dd></div>
-            <div><dt class="mono">Petie</dt><dd>Saw enough in it to plan the full project.</dd></div>
+            <div class="call"><dt class="mono">My call</dt><dd>Build a system, so the world can keep changing.</dd></div>
+            <div><dt class="mono">Petie</dt><dd>Agreed. He wanted a solid base, not a long list of features.</dd></div>
           </dl>
+          <div class="shots">
+            <figure>
+              <button class="zoom" type="button" data-src="assets/expressions.webp" data-cap="One star’s position, size and opacity, written as expressions · Development view"><img src="assets/expressions.webp" width="2400" height="1190" alt="After Effects expressions that place, scale and fade one star from shared controls" loading="lazy"><span class="zoom-ic" aria-hidden="true"><svg><use href="#icZoom"/></svg></span></button>
+              <figcaption>Code on one star</figcaption>
+            </figure>
+            <figure>
+              <button class="zoom" type="button" data-src="assets/star-system.webp" data-cap="Hero and micro stars, one layer each · Development view"><img src="assets/star-system.webp" width="2400" height="1190" alt="The star layers in After Effects: hero stars labelled blue, micro stars labelled teal" loading="lazy"><span class="zoom-ic" aria-hidden="true"><svg><use href="#icZoom"/></svg></span></button>
+              <figcaption>One layer per star</figcaption>
+            </figure>
+          </div>
         </article>
 
         <article class="step rv" id="s2">
-          <p class="step-k mono"><b>02</b>Direction</p>
-          <h3>Give the black more room.</h3>
-          <p>Petie liked the rhythm, but the clouds were too present. I pulled them back and made four styleframes that differ mostly in density and empty space.</p>
+          <p class="step-k mono"><b>02</b>Weight</p>
+          <h3>Real has a cost.</h3>
+          <p>All that code made the renders heavy. Going back to fakes would have changed the look by maybe two or three percent. I stayed real, and cut the cost of the clouds and nebula instead, to make room for the stars.</p>
           <dl class="calls">
-            <div class="call"><dt class="mono">My call</dt><dd>A02 Darker, the one with the most room to breathe.</dd></div>
-            <div><dt class="mono">Petie</dt><dd>Picked the same one. It became the visual baseline.</dd></div>
-          </dl>
-          <figure class="compare" id="compare">
-            <div class="cmp-frame" id="cmpFrame" style="--x:50%">
-              <img src="assets/style-a.webp" width="1800" height="1013" alt="Styleframe A01, with a more present cloud structure" loading="lazy" draggable="false">
-              <img class="cmp-after" src="assets/style-a-dark.webp" width="1800" height="1013" alt="Styleframe A02 Darker, with more negative space" loading="lazy" draggable="false">
-              <span class="cmp-line" aria-hidden="true"><i></i></span>
-              <span class="tag mono l">A01 · First pass</span><span class="tag mono r">A02 Darker · Chosen</span>
-            </div>
-            <label class="sr-only" for="cmpRange">Compare A01 with A02 Darker</label>
-            <input class="cmp-range" id="cmpRange" type="range" min="0" max="100" value="50">
-          </figure>
-        </article>
-
-        <article class="step rv" id="s3">
-          <p class="step-k mono"><b>03</b>System</p>
-          <h3>Build the system before the renders.</h3>
-          <p>A change in the code can reshuffle the randomness, so an early render may never match the final build. I built the system first and rendered Idle after it.</p>
-          <dl class="calls">
-            <div class="call"><dt class="mono">My call</dt><dd>System first, renders after.</dd></div>
-            <div><dt class="mono">Petie</dt><dd>Agreed. He wanted a solid base, not a long list of features.</dd></div>
-          </dl>
-        </article>
-
-        <article class="step rv" id="s4">
-          <p class="step-k mono"><b>04</b>Weight</p>
-          <h3>Light enough to live with.</h3>
-          <p>Every star had a real place in 3D space. It looked right but it was heavy, so I kept looking for a lighter build that keeps the depth you can see.</p>
-          <dl class="calls">
-            <div class="call"><dt class="mono">My call</dt><dd>Keep the depth you can see, cut the cost you can’t.</dd></div>
-            <div><dt class="mono">Petie</dt><dd>Chose speed and clarity over a little more physical accuracy.</dd></div>
+            <div class="call"><dt class="mono">My call</dt><dd>The premium route: real stars, lighter clouds.</dd></div>
           </dl>
           <figure class="render">
             <figcaption class="render-k mono">Full render, in my tests</figcaption>
@@ -233,8 +232,41 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
           </figure>
         </article>
 
-        <article class="step rv" id="s5">
-          <p class="step-k mono"><b>05</b>Hyperspace</p>
+        <article class="step step-big rv" id="s3">
+          <p class="step-k mono"><b>03</b>Universe</p>
+          <h3>Every layer is a real layer, inside one universe.</h3>
+          <p>Stars, clouds, nebula and the hyperspace tunnel each sit in After Effects’ own 3D space, inside one composition: <code>QBS_UNIVERSE</code>. The depth you see is real depth, so the parallax is real too.</p>
+          <figure class="uni rv" id="uni">
+            <div class="uni-view" aria-hidden="true">
+              <div class="uni-space">
+                <i class="pl pl-neb" style="--i:0"><span>08 · Nebula</span></i>
+                <i class="pl pl-cloud" style="--i:1"><span>07 · Cloud</span></i>
+                <i class="pl pl-atm" style="--i:2"><span>06 · Atmosphere</span></i>
+                <i class="pl pl-micro" style="--i:3"><span>04 · Micro Stars</span></i>
+                <i class="pl pl-hero" style="--i:4"><span>03 · Hero Stars</span></i>
+              </div>
+            </div>
+            <span class="uni-k mono">QBS_UNIVERSE · 3D</span>
+            <figcaption class="uni-cap">Primary Idle’s layer groups, pulled apart. A diagram, not to scale.</figcaption>
+          </figure>
+          <div class="uni-foot">
+            <figure class="shot-s">
+              <button class="zoom" type="button" data-src="assets/ctrl-center.webp" data-cap="CTRL_CENTER in After Effects: one control layer per group, above QBS_UNIVERSE"><img src="assets/ctrl-center.webp" width="1440" height="590" alt="The CTRL_CENTER composition in After Effects, with layers from 100 Scene Switch and 01 Master Variation to 09 Hyperspace, above QBS_UNIVERSE" loading="lazy"><span class="zoom-ic" aria-hidden="true"><svg><use href="#icZoom"/></svg></span></button>
+              <figcaption>Every group has its controls, above the universe.</figcaption>
+            </figure>
+            <div class="native">
+              <p class="native-t">All native After Effects.</p>
+              <ul class="native-z">
+                <li><b>0</b><span class="mono">Plugins</span></li>
+                <li><b>0</b><span class="mono">Images</span></li>
+                <li><b>0</b><span class="mono">Outside assets</span></li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="step rv" id="s4">
+          <p class="step-k mono"><b>04</b>Hyperspace</p>
           <h3>Hyperspace, in its own voice.</h3>
           <p>My first entry ran 15 seconds, and Petie found it long. I also tried a star pass we had ruled out, and flagged it as a test.</p>
           <dl class="calls">
@@ -243,22 +275,8 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
           </dl>
         </article>
 
-        <article class="step rv" id="s6">
-          <p class="step-k mono"><b>06</b>Refinement</p>
-          <h3>Forward, not around.</h3>
-          <p>Petie’s one major note: the motion circled instead of moving forward. I split Drift X and Y, let Z lead, and let the atmosphere evolve instead of loop.</p>
-          <dl class="calls">
-            <div class="call"><dt class="mono">My call</dt><dd>Turn a feeling into parameters.</dd></div>
-          </dl>
-          <div class="pair" id="refine">
-            <figure><video data-inview data-sync src="assets/before-refinement.mp4" poster="assets/idle-poster.webp" muted playsinline loop preload="none" aria-label="First delivery of Primary Idle, the first 25 seconds"></video><figcaption><span class="mono">Before</span>Drift that circles</figcaption></figure>
-            <figure><video data-inview data-sync src="assets/after-refinement.mp4" poster="assets/idle-poster.webp" muted playsinline loop preload="none" aria-label="Refined Primary Idle, the same 25 seconds"></video><figcaption><span class="mono">After</span>Z leads, X and Y apart</figcaption></figure>
-          </div>
-          <div class="pair-foot"><p class="fine">The same 25 seconds. The change is quiet.</p><button class="tbtn" id="replayPair" type="button"><svg aria-hidden="true"><use href="#icReplay"/></svg>Replay together</button></div>
-        </article>
-
-        <article class="step rv" id="s7">
-          <p class="step-k mono"><b>07</b>Handover</p>
+        <article class="step rv" id="s5">
+          <p class="step-k mono"><b>05</b>Handover</p>
           <h3>Something easy to live with.</h3>
           <p>I sent the project and the guide before the big renders, so Petie could learn the system on his own machine.</p>
           <dl class="calls">
@@ -308,45 +326,6 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
       </figure>
     </div>
 
-    <div class="seed rv">
-      <div>
-        <p class="seed-k mono">Repeatable by design</p>
-        <h3>Keep the part you liked.</h3>
-        <p>Each local seed adds to the master. A global change can reshape the world, and an offset brings one favorite layer back.</p>
-      </div>
-      <div class="seed-calc mono" aria-label="Example: master 900 plus local offset minus 895 gives seed 5">
-        <span>Master<b>900</b></span>
-        <span>Local offset<b>−895</b></span>
-        <span class="res">Nebula seed<b>5</b></span>
-        <code>Math.round(master + local)</code>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<!-- ================= 04 FORMATS ================= -->
-<section class="sec" id="formats">
-  <div class="wrap">
-    <div class="shead rv">
-      <div><div class="kicker"><i></i>04 — Formats</div><h2>One space. Room for every screen.</h2>
-        <p class="sub">The master spans three tall 4K screens. Separate compositions frame one portrait screen and two ultrawides.</p></div>
-    </div>
-    <figure class="fmt rv">
-      <div class="fmt-stage" id="fmtStage">
-        <div class="fmt-img" id="fmtBox">
-          <img id="fmtImg" src="assets/triplewide.webp" width="1800" height="1066" alt="Primary Idle at 6480 × 3840, across three portrait displays" loading="lazy">
-          <div class="fmt-div" id="fmtDiv" aria-hidden="true"><i></i><i></i></div>
-        </div>
-      </div>
-      <div class="fmt-tabs" role="group" aria-label="Choose a format">
-        <button type="button" data-format="triple" aria-pressed="true"><span>Three portrait screens</span><small class="mono">6480 × 3840</small></button>
-        <button type="button" data-format="portrait" aria-pressed="false"><span>One portrait screen</span><small class="mono">2160 × 3840</small></button>
-        <button type="button" data-format="wide" aria-pressed="false"><span>Ultrawide</span><small class="mono">5120 × 1440</small></button>
-        <button type="button" data-format="wide2" aria-pressed="false"><span>Ultrawide</span><small class="mono">3840 × 1600</small></button>
-      </div>
-      <figcaption class="fine">Stills from the delivered v01 idle exports.</figcaption>
-    </figure>
   </div>
 </section>
 
@@ -354,7 +333,7 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
 <section class="sec" id="delivery">
   <div class="wrap">
     <div class="shead rv">
-      <div><div class="kicker"><i></i>05 — Delivery</div><h2>Handed over, ready to change.</h2>
+      <div><div class="kicker"><i></i>04 — Delivery</div><h2>Handed over, ready to change.</h2>
         <p class="sub">The renders, the editable system and the guide. Petie later built his own web control layer around it.</p></div>
     </div>
     <div class="dl">
@@ -397,6 +376,6 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
   <div class="lb-body" id="lbBody"><img id="lbImg" alt=""></div>
 </dialog>
 
-<noscript><style>.rv{opacity:1!important;transform:none!important}.h1 .ln>*{transform:none!important}.dock,.go,.skipi,.intro,.seg,.fmt-tabs,.cmp-range,.cmp-after,.cmp-line,#replayPair{display:none!important}.landing .cap,.landing .lede{opacity:1!important;transform:none!important}</style></noscript>
+<noscript><style>.rv{opacity:1!important;transform:none!important}.h1 .ln>*{transform:none!important}.dock,.go,.skipi,.intro,.seg,.cmp-range,.cmp-after,.cmp-line{display:none!important}.landing .cap,.landing .lede{opacity:1!important;transform:none!important}</style></noscript>
 </body>
 </html>
