@@ -19,13 +19,17 @@ JavaScript, no build step. Serve the portfolio folder and open `/quiet-between-s
 2. **Nav**: on the first screen only the name, centered. Past the stage it moves to its
    corner and the section links appear.
 3. **01 Brief**: what Petie asked for, the six rules and his "still water / smooth current".
-4. **02 Process**: five steps (Build, Weight, Universe, Hyperspace, Handover). The page
-   leans on Universe: every layer is a real layer in After Effects' 3D space inside
-   `QBS_UNIVERSE`, shown as a diagram, and all of it is native After Effects (no plugins,
-   images or outside assets). After Effects screenshots stay small and zoomable.
-5. **03 System**: key numbers, the nine control groups, and two of their guide pages as
+4. **02 Primary Idle**: how the idle state was built. The main piece is the 3D mockup in
+   `layer-diagram.html` (from `qbs/layer-diagram.html` on branch `qbs-layer-diagram`),
+   embedded as an iframe that reports its height; three.js r128 is vendored in
+   `assets/three.min.js`. Under it: three short facts (120 hero + 400 micro stars as shape
+   layers with expressions, clouds and nebula merged into a few depth layers, all native)
+   and the render-weight problem with its fixes and render times.
+5. **03 Process**: Hyperspace and Handover (to be reworked: Hyperspace, then the motion
+   system and its controls, then handover and credits).
+6. **04 System**: key numbers, the nine control groups, and two of their guide pages as
    small, zoomable examples.
-6. **04 Delivery**: the four things handed over, each with a small picture of it, credits
+7. **05 Delivery**: the four things handed over, each with a small picture of it, credits
    set like a film's end credits, next project (Storm).
 
 Copy rules that apply here: no project length or date range; nothing from payments,

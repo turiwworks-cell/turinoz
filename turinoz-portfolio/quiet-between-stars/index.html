@@ -44,7 +44,7 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
     <a class="brand" href="#top" aria-label="Quiet Between Stars, back to top"><span>Quiet Between Stars</span></a>
     <nav class="links" id="links" aria-label="Sections">
       <i class="pill" aria-hidden="true"></i>
-      <a href="#brief">Brief</a><a href="#process">Process</a><a href="#system">System</a><a href="#delivery">Delivery</a>
+      <a href="#brief">Brief</a><a href="#idle">Idle</a><a href="#process">Process</a><a href="#system">System</a><a href="#delivery">Delivery</a>
     </nav>
     <div class="navr">
     </div>
@@ -137,11 +137,71 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
   </div>
 </section>
 
+<!-- ================= 02 PRIMARY IDLE ================= -->
+<section class="sec" id="idle">
+  <div class="wrap">
+    <div class="shead rv">
+      <div><div class="kicker"><i></i>02 — Primary Idle</div><h2>Still water,<br>in real depth.</h2>
+        <p class="sub">Primary Idle, pulled apart. Every layer sits at its own distance from one camera, so when the camera moves, each one slides at its own speed.</p></div>
+    </div>
+
+    <figure class="ld rv">
+      <iframe class="ld-frame" id="ldFrame" src="layer-diagram.html" title="Primary Idle as a 3D mockup: drag to orbit around the layers" loading="lazy"></iframe>
+      <figcaption class="fine">A mockup of the scene, not the project file. Names, spacing and textures are drawn for it, and it is not to scale.</figcaption>
+    </figure>
+
+    <ul class="ld-facts rv">
+      <li>
+        <b class="mono">120 + 400</b>
+        <p>Real stars. 120 hero stars and 400 micro stars, each its own shape layer with After Effects expressions inside that tell it where to sit and how to behave.</p>
+        <p class="ld-see"><button class="zoom mono" type="button" data-src="assets/expressions.webp" data-cap="One star’s position, size and opacity, written as expressions · Development view">Code on one star</button><button class="zoom mono" type="button" data-src="assets/star-system.webp" data-cap="Hero and micro stars, one layer each · Development view">One layer per star</button></p>
+      </li>
+      <li>
+        <b class="mono">Clouds + nebula</b>
+        <p>Merged into a few layers, each at its own depth, so their parallax is real too.</p>
+      </li>
+      <li>
+        <b class="mono">0 · 0 · 0</b>
+        <p>All native After Effects. No plugins, no images, no outside assets.</p>
+      </li>
+    </ul>
+
+    <div class="weight rv">
+      <div class="weight-l">
+        <p class="weight-k mono">The problem</p>
+        <h3>Real has a cost.</h3>
+        <p>Hundreds of real stars, each running its own code, made the renders heavy. Faking them would have changed the look by maybe two or three percent. I kept the stars real and made everything around them lighter.</p>
+        <dl class="calls">
+          <div class="call"><dt class="mono">My call</dt><dd>The premium route: real stars, lighter clouds.</dd></div>
+        </dl>
+      </div>
+      <div class="weight-r">
+        <p class="weight-k mono">How I solved it</p>
+        <ol class="fixes">
+          <li><span class="mono">01</span>The lightest techniques I could find, like turbulence, for the clouds and nebula.</li>
+          <li><span class="mono">02</span>As little blur as possible, even though clouds and stars like these usually need a lot of it.</li>
+          <li><span class="mono">03</span>Masks only around the edge of the frame, so nothing feels cut off.</li>
+          <li><span class="mono">04</span>The rest done with Turbulent Displace and mattes.</li>
+        </ol>
+        <figure class="render">
+          <figcaption class="render-k mono">Full render, in my tests</figcaption>
+          <ul>
+            <li style="--w:100%"><span class="lbl">First build</span><i aria-hidden="true"></i><b class="mono">~7 h 30 min</b></li>
+            <li style="--w:33.3%"><span class="lbl">Middle build</span><i aria-hidden="true"></i><b class="mono">~2 h 30 min</b></li>
+            <li style="--w:10%"><span class="lbl">Final build</span><i aria-hidden="true"></i><b class="mono">40–50 min</b></li>
+          </ul>
+          <p class="fine">Production observations on different machines, not a benchmark.</p>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ================= 02 PROCESS ================= -->
 <section class="sec" id="process">
   <div class="wrap">
     <div class="shead rv">
-      <div><div class="kicker"><i></i>02 — Process</div><h2>Real stars,<br>one universe.</h2>
+      <div><div class="kicker"><i></i>03 — Process</div><h2>Into hyperspace,<br>then home.</h2>
         <p class="sub">Petie set the brief and reviewed the key moments, about 3 or 4 out of 10 by his own count. The calls in between were mine.</p></div>
     </div>
 
@@ -150,90 +210,16 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
         <div class="rail">
           <i class="rail-line"><u></u></i>
           <ol id="railList">
-            <li data-to="s1"><span class="mono">01</span>Build</li>
-            <li data-to="s2"><span class="mono">02</span>Weight</li>
-            <li data-to="s3"><span class="mono">03</span>Universe</li>
-            <li data-to="s4"><span class="mono">04</span>Hyperspace</li>
-            <li data-to="s5"><span class="mono">05</span>Handover</li>
+            <li data-to="s4"><span class="mono">01</span>Hyperspace</li>
+            <li data-to="s5"><span class="mono">02</span>Handover</li>
           </ol>
         </div>
       </aside>
 
       <div class="steps">
 
-        <article class="step rv" id="s1">
-          <p class="step-k mono"><b>01</b>Build</p>
-          <h3>Layers and code, not a picture.</h3>
-          <p>After the brief I went into design. I built the piece from layers and expressions in After Effects: 400 real stars, each with code of its own and code they share.</p>
-          <dl class="calls">
-            <div class="call"><dt class="mono">My call</dt><dd>Build a system, so the world can keep changing.</dd></div>
-            <div><dt class="mono">Petie</dt><dd>Agreed. He wanted a solid base, not a long list of features.</dd></div>
-          </dl>
-          <div class="shots">
-            <figure>
-              <button class="zoom" type="button" data-src="assets/expressions.webp" data-cap="One star’s position, size and opacity, written as expressions · Development view"><img src="assets/expressions.webp" width="2400" height="1190" alt="After Effects expressions that place, scale and fade one star from shared controls" loading="lazy"><span class="zoom-ic" aria-hidden="true"><svg><use href="#icZoom"/></svg></span></button>
-              <figcaption>Code on one star</figcaption>
-            </figure>
-            <figure>
-              <button class="zoom" type="button" data-src="assets/star-system.webp" data-cap="Hero and micro stars, one layer each · Development view"><img src="assets/star-system.webp" width="2400" height="1190" alt="The star layers in After Effects: hero stars labelled blue, micro stars labelled teal" loading="lazy"><span class="zoom-ic" aria-hidden="true"><svg><use href="#icZoom"/></svg></span></button>
-              <figcaption>One layer per star</figcaption>
-            </figure>
-          </div>
-        </article>
-
-        <article class="step rv" id="s2">
-          <p class="step-k mono"><b>02</b>Weight</p>
-          <h3>Real has a cost.</h3>
-          <p>All that code made the renders heavy. Going back to fakes would have changed the look by maybe two or three percent. I stayed real, and cut the cost of the clouds and nebula instead, to make room for the stars.</p>
-          <dl class="calls">
-            <div class="call"><dt class="mono">My call</dt><dd>The premium route: real stars, lighter clouds.</dd></div>
-          </dl>
-          <figure class="render">
-            <figcaption class="render-k mono">Full render, in my tests</figcaption>
-            <ul>
-              <li style="--w:100%"><span class="lbl">First build</span><i aria-hidden="true"></i><b class="mono">~7 h 30 min</b></li>
-              <li style="--w:33.3%"><span class="lbl">Middle build</span><i aria-hidden="true"></i><b class="mono">~2 h 30 min</b></li>
-              <li style="--w:10%"><span class="lbl">Final build</span><i aria-hidden="true"></i><b class="mono">40–50 min</b></li>
-            </ul>
-            <p class="fine">Production observations on different machines, not a benchmark.</p>
-          </figure>
-        </article>
-
-        <article class="step step-big rv" id="s3">
-          <p class="step-k mono"><b>03</b>Universe</p>
-          <h3>Every layer is a real layer, inside one universe.</h3>
-          <p>Stars, clouds, nebula and the hyperspace tunnel each sit in After Effects’ own 3D space, inside one composition: <code>QBS_UNIVERSE</code>. The depth you see is real depth, so the parallax is real too.</p>
-          <figure class="uni rv" id="uni">
-            <div class="uni-view" aria-hidden="true">
-              <div class="uni-space">
-                <i class="pl pl-neb" style="--i:0"><span>08 · Nebula</span></i>
-                <i class="pl pl-cloud" style="--i:1"><span>07 · Cloud</span></i>
-                <i class="pl pl-atm" style="--i:2"><span>06 · Atmosphere</span></i>
-                <i class="pl pl-micro" style="--i:3"><span>04 · Micro Stars</span></i>
-                <i class="pl pl-hero" style="--i:4"><span>03 · Hero Stars</span></i>
-              </div>
-            </div>
-            <span class="uni-k mono">QBS_UNIVERSE · 3D</span>
-            <figcaption class="uni-cap">Primary Idle’s layer groups, pulled apart. A diagram, not to scale.</figcaption>
-          </figure>
-          <div class="uni-foot">
-            <figure class="shot-s">
-              <button class="zoom" type="button" data-src="assets/ctrl-center.webp" data-cap="CTRL_CENTER in After Effects: one control layer per group, above QBS_UNIVERSE"><img src="assets/ctrl-center.webp" width="1440" height="590" alt="The CTRL_CENTER composition in After Effects, with layers from 100 Scene Switch and 01 Master Variation to 09 Hyperspace, above QBS_UNIVERSE" loading="lazy"><span class="zoom-ic" aria-hidden="true"><svg><use href="#icZoom"/></svg></span></button>
-              <figcaption>Every group has its controls, above the universe.</figcaption>
-            </figure>
-            <div class="native">
-              <p class="native-t">All native After Effects.</p>
-              <ul class="native-z">
-                <li><b>0</b><span class="mono">Plugins</span></li>
-                <li><b>0</b><span class="mono">Images</span></li>
-                <li><b>0</b><span class="mono">Outside assets</span></li>
-              </ul>
-            </div>
-          </div>
-        </article>
-
         <article class="step rv" id="s4">
-          <p class="step-k mono"><b>04</b>Hyperspace</p>
+          <p class="step-k mono"><b>01</b>Hyperspace</p>
           <h3>Hyperspace, in its own voice.</h3>
           <p>My first entry ran 15 seconds, and Petie found it long. I also tried a star pass we had ruled out, and flagged it as a test.</p>
           <dl class="calls">
@@ -243,7 +229,7 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
         </article>
 
         <article class="step rv" id="s5">
-          <p class="step-k mono"><b>05</b>Handover</p>
+          <p class="step-k mono"><b>02</b>Handover</p>
           <h3>Something easy to live with.</h3>
           <p>I sent the project and the guide before the big renders, so Petie could learn the system on his own machine.</p>
           <dl class="calls">
@@ -265,7 +251,7 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
 <section class="sec" id="system">
   <div class="wrap">
     <div class="shead rv">
-      <div><div class="kicker"><i></i>03 — System</div><h2>A world you can keep changing.</h2>
+      <div><div class="kicker"><i></i>04 — System</div><h2>A world you can keep changing.</h2>
         <p class="sub">The films came with the system that makes them. One master seed reshapes the whole scene, and every part keeps its own controls.</p></div>
     </div>
 
@@ -304,7 +290,7 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
 <section class="sec" id="delivery">
   <div class="wrap">
     <div class="shead rv">
-      <div><div class="kicker"><i></i>04 — Delivery</div><h2>Handed over, ready to change.</h2>
+      <div><div class="kicker"><i></i>05 — Delivery</div><h2>Handed over, ready to change.</h2>
         <p class="sub">The renders, the editable system and the guide. Petie later built his own web control layer around it.</p></div>
     </div>
     <div class="pack rv">
