@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<title>Quiet Between Stars — Ambient motion system · Turinoz for Petie Clark</title>
+<meta name="description" content="A slow, silent world for Petie Clark's office, made for three tall OLED screens. Creative direction, design, motion and the After Effects system behind it, by Turinoz.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Quiet Between Stars — Turinoz">
+<meta property="og:description" content="A place to stay awhile. An ambient motion system for Petie Clark: creative direction, design, motion and the system behind it.">
+<meta property="og:image" content="https://turinoz.co/quiet-between-stars/assets/idle-poster.webp">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cstyle%3Epath{stroke:%230C0C0B}@media (prefers-color-scheme:dark){path{stroke:%23F1F0EC}}%3C/style%3E%3Cpath transform='translate(50 48.5) scale(1.2) translate(-50 -48.5)' d='M28 66V44L40 53L47 33.3L60 51L72 31V66Z' fill='none' stroke-width='5.5' stroke-miterlimit='4'/%3E%3C/svg%3E">
+<link rel="preload" href="../fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Until case-study.css has arrived, only the page's ground shows. The stylesheet makes the body visible. */
+html{background:#000}
+body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{visibility:visible}}
+</style>
+<link rel="stylesheet" href="case-study.css">
+<script src="case-study.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the case study</a>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="icArrowOut" viewBox="0 0 12 12"><path d="M3.5 8.5l5-5M4.5 3.5h4v4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="icArrowRight" viewBox="0 0 12 12"><path d="M2 6h8M6.8 2.8 10 6 6.8 9.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="icPlay" viewBox="0 0 16 16"><path d="M4.5 2.8v10.4c0 .6.6.9 1.1.6l8-5.2c.4-.3.4-.9 0-1.2l-8-5.2c-.5-.3-1.1 0-1.1.6z" fill="currentColor"/></symbol>
+  <symbol id="icPause" viewBox="0 0 16 16"><rect x="4" y="3" width="2.8" height="10" rx="1" fill="currentColor"/><rect x="9.2" y="3" width="2.8" height="10" rx="1" fill="currentColor"/></symbol>
+  <symbol id="icReplay" viewBox="0 0 16 16"><path d="M3 8a5 5 0 1 0 1.6-3.7M3 2.5v2.8h2.8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="icFull" viewBox="0 0 16 16"><path d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="icZoom" viewBox="0 0 16 16"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3 3M7 5v4M5 7h4"/></g></symbol>
+</svg>
+
+<canvas class="sky" id="sky" aria-hidden="true"></canvas>
+
+<header class="nav" id="nav">
+  <div class="wrap">
+    <a class="back" href="../" aria-label="Back to the Turinoz portfolio"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 6H2M5.2 2.8 2 6l3.2 3.2"/></svg></a>
+    <a class="brand" href="#top" aria-label="Quiet Between Stars, back to top"><span>Quiet Between Stars</span></a>
+    <nav class="links" id="links" aria-label="Sections">
+      <i class="pill" aria-hidden="true"></i>
+      <a href="#brief">Brief</a><a href="#idle">Idle</a><a href="#hyperspace">Hyperspace</a><a href="#transitions">Transitions</a><a href="#motion">System</a><a href="#process">Process</a><a href="#delivery">Delivery</a>
+    </nav>
+    <div class="navr">
+    </div>
+  </div>
+  <div class="progress" aria-hidden="true"><u></u></div>
+</header>
+
+<main id="main">
+
+<!-- ================= ARRIVAL =================
+     The page opens inside the piece's own state machine: Hyperspace, then Return,
+     then Primary Idle, where the title lands. After that the stage is the player. -->
+<section class="arrive" id="top" data-phase="landed">
+  <div class="stage" id="stage">
+    <video class="sv" id="vHyper" src="assets/hyperspace-loop.mp4" poster="assets/cruise-poster.webp" muted playsinline loop preload="none" aria-hidden="true" tabindex="-1"></video>
+    <video class="sv" id="vReturn" src="assets/exit.mp4" poster="assets/exit-poster.webp" muted playsinline preload="none" aria-hidden="true" tabindex="-1"></video>
+    <video class="sv" id="stateVideo" src="assets/idle.mp4" poster="assets/idle-poster.webp" muted playsinline loop preload="metadata" aria-label="Primary Idle, the full 180-second render"></video>
+    <div class="scrim" aria-hidden="true"></div>
+  </div>
+
+  <!-- in Hyperspace: only the name and the way in -->
+  <div class="intro" aria-hidden="true">
+    <p class="intro-k mono">Ambient motion system · Petie Clark</p>
+    <p class="intro-t">Quiet Between Stars</p>
+  </div>
+  <button class="go" id="arriveBtn" type="button"><span>Scroll to arrive</span><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2v8M2.8 6.8 6 10l3.2-3.2"/></svg></button>
+  <button class="skipi mono" id="skipIntro" type="button">Skip</button>
+
+  <!-- landed in Primary Idle: the title on top, the four states and the way down below.
+       The case study (and the section links) start after the first screen. -->
+  <div class="landing">
+    <div class="land-top wrap">
+      <p class="cap"><i></i><span>Ambient motion system for <b>Petie Clark</b></span></p>
+      <h1 class="h1" aria-label="A place to stay awhile.">
+        <span class="ln" aria-hidden="true"><span>A place to</span></span>
+        <span class="ln" aria-hidden="true"><span class="dim">stay awhile.</span></span>
+      </h1>
+      <p class="lede">A slow, silent world for Petie’s office, made for three tall OLED screens. I led the creative direction and the design, and built the After Effects system that runs it.</p>
+    </div>
+    <div class="land-bot wrap">
+      <div class="states" id="player" role="group" aria-label="Choose a state to watch">
+        <button type="button" data-state="idle" aria-pressed="true"><span class="st-img"><img src="assets/idle-poster.webp" alt=""><i class="st-play" aria-hidden="true"><svg><use href="#icPlay"/></svg></i><i class="bar" aria-hidden="true"></i></span><span class="st-n mono">01</span><span class="st-t">Primary Idle</span><span class="st-d mono">3:00 · loop</span></button>
+        <button type="button" data-state="entry" aria-pressed="false"><span class="st-img"><img src="assets/entry-poster.webp" alt="" loading="lazy"><i class="st-play" aria-hidden="true"><svg><use href="#icPlay"/></svg></i><i class="bar" aria-hidden="true"></i></span><span class="st-n mono">02</span><span class="st-t">Entry</span><span class="st-d mono">0:05</span></button>
+        <button type="button" data-state="cruise" aria-pressed="false"><span class="st-img"><img src="assets/cruise-poster.webp" alt="" loading="lazy"><i class="st-play" aria-hidden="true"><svg><use href="#icPlay"/></svg></i><i class="bar" aria-hidden="true"></i></span><span class="st-n mono">03</span><span class="st-t">Hyperspace</span><span class="st-d mono">2:50 · loop</span></button>
+        <button type="button" data-state="exit" aria-pressed="false"><span class="st-img"><img src="assets/exit-poster.webp" alt="" loading="lazy"><i class="st-play" aria-hidden="true"><svg><use href="#icPlay"/></svg></i><i class="bar" aria-hidden="true"></i></span><span class="st-n mono">04</span><span class="st-t">Return</span><span class="st-d mono">0:05</span></button>
+      </div>
+      <div class="land-bar">
+        <p class="quality"><b class="mono">Made for OLED</b><span>The original is 6480 × 3840, 10-bit. This page plays a compressed 8-bit web copy, so you are not seeing the original quality.</span></p>
+        <a class="more" href="#brief"><span>Scroll for the case study</span><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2v8M2.8 6.8 6 10l3.2-3.2"/></svg></a>
+      </div>
+    </div>
+  </div>
+  <!-- the controls sit where the theme button used to be, top right -->
+  <div class="now-top wrap">
+    <div class="now">
+      <span class="now-t mono" id="nowName">Primary Idle</span>
+      <button class="qp-btn" id="playToggle" type="button" aria-label="Pause"><svg class="i-play" aria-hidden="true"><use href="#icPlay"/></svg><svg class="i-pause" aria-hidden="true"><use href="#icPause"/></svg></button>
+      <button class="qp-btn" id="fullscreen" type="button" aria-label="View fullscreen"><svg aria-hidden="true"><use href="#icFull"/></svg></button>
+    </div>
+  </div>
+  <p class="qp-error" id="playerError" hidden>This preview couldn’t load. <a id="fallbackLink" href="assets/idle.mp4">Open the video file</a></p>
+  <p class="sr-only" role="status" id="playerStatus"></p>
+</section>
+
+<!-- ================= 01 BRIEF ================= -->
+<section class="sec" id="brief">
+  <div class="wrap">
+    <div class="brief">
+      <div class="rv">
+        <div class="kicker"><i></i>01 — The brief</div>
+        <h2>A space, rather<br>than a scene.</h2>
+        <div class="prose">
+          <p><b class="lead-in">Petie’s brief:</b> he wanted his office to feel like the inside of a ship: somewhere to think clearly, away from urgency. Three tall OLED screens, on for hours. So it had to be easy to live with.</p>
+        </div>
+      </div>
+      <div class="rules rv" style="--rd:.08s">
+        <p class="rules-k mono">The brief in six rules</p>
+        <ol>
+          <li><span class="mono">01</span>Deep black, lots of empty space</li>
+          <li><span class="mono">02</span>Distant, quiet structure</li>
+          <li><span class="mono">03</span>Depth over particle count</li>
+          <li><span class="mono">04</span>Motion slow enough to forget</li>
+          <li><span class="mono">05</span>No visible start or end</li>
+          <li><span class="mono">06</span>Silent</li>
+        </ol>
+      </div>
+    </div>
+    <p class="analogy rv"><span class="analogy-k mono">Petie’s way of putting it</span>Idle is <em>still water</em>.<br> Hyperspace is <em>a smooth current</em>.</p>
+
+  </div>
+</section>
+
+<!-- ================= 02 PRIMARY IDLE ================= -->
+<section class="sec build" id="idle">
+  <div class="wrap">
+    <div class="build-head rv">
+      <div class="kicker"><i></i>02 — Primary Idle</div>
+      <h2>Still water, in real depth.</h2>
+    </div>
+
+    <div class="build-top rv">
+      <figure class="ld">
+        <iframe class="ld-frame" id="ldFrame" src="layer-diagram.html" title="Primary Idle as a 3D mockup: drag to orbit around the layers" loading="lazy"></iframe>
+        <figcaption class="fine">A mockup of the scene, not the project file. Not to scale.</figcaption>
+      </figure>
+
+      <div class="build-facts">
+        <ul class="nums">
+          <li><b>120</b><span class="mono">Hero stars</span></li>
+          <li><b>400</b><span class="mono">Micro stars</span></li>
+          <li><b>0</b><span class="mono">Plugins, images, outside assets</span></li>
+        </ul>
+        <p>Every star is a real shape layer, with After Effects expressions inside that tell it where to sit and how to behave.</p>
+        <p>Clouds and nebula are merged into a few layers, each at its own depth, so their parallax is real too.</p>
+        <p class="ld-see"><button class="zoom mono" type="button" data-src="assets/expressions.webp" data-cap="One star’s position, size and opacity, written as expressions · Development view">Code on one star</button><button class="zoom mono" type="button" data-src="assets/star-system.webp" data-cap="Hero and micro stars, one layer each · Development view">One layer per star</button></p>
+      </div>
+    </div>
+
+    <div class="weight rv">
+      <div class="weight-p">
+        <p class="weight-k mono"><i></i>The problem</p>
+        <h3>Real has a cost.</h3>
+        <p>520 star layers and over 1,700 expressions, clouds and nebula placed in real 3D, one camera, all at 6480&nbsp;×&nbsp;3840 in 16-bit. Faking it would have changed the look by two or three percent, so I kept it real and made it lighter.</p>
+      </div>
+      <div class="weight-s">
+        <p class="weight-k mono">How I solved it</p>
+        <ol class="fixes">
+          <li><span class="mono">01</span>No blur effects in Idle; Extract makes the soft edges.</li>
+          <li><span class="mono">02</span>Turbulent Noise for clouds, Turbulent Displace for nebula.</li>
+          <li><span class="mono">03</span>One 3D solid per cloud, one feathered mask on its edge.</li>
+          <li><span class="mono">04</span>2 px stars, no effects; one Glow for all hero stars.</li>
+          <li><span class="mono">05</span>No motion blur anywhere.</li>
+        </ol>
+      </div>
+      <figure class="render">
+        <figcaption class="render-k mono">Full render</figcaption>
+        <ul>
+          <li style="--w:100%"><span class="lbl">First build</span><i aria-hidden="true"></i><b class="mono">~7 h 30 min</b></li>
+          <li style="--w:33.3%"><span class="lbl">Middle build</span><i aria-hidden="true"></i><b class="mono">~2 h 30 min</b></li>
+          <li style="--w:10%"><span class="lbl">Final build</span><i aria-hidden="true"></i><b class="mono">40–50 min</b></li>
+          <li class="pt" style="--w:5.6%"><span class="lbl">Petie’s test</span><i aria-hidden="true"></i><b class="mono">Mac Studio · 25 min</b></li>
+        </ul>
+        <p class="fine">Petie rendered the full package himself. Different machines, not a benchmark.</p>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 03 HYPERSPACE ================= -->
+<section class="sec build" id="hyperspace">
+  <div class="wrap">
+    <div class="build-head rv">
+      <div class="kicker"><i></i>03 — Hyperspace</div>
+      <h2>A smooth current, on a loop.</h2>
+    </div>
+
+    <div class="build-top rv">
+      <figure class="ld">
+        <iframe class="ld-frame" src="hyperspace-diagram.html" title="Hyperspace as a mockup: one flat map, wrapped into a tunnel" loading="lazy"></iframe>
+        <figcaption class="fine">A live mockup of the same steps, not the render.</figcaption>
+      </figure>
+
+      <div class="build-facts">
+        <ul class="nums">
+          <li><b>1</b><span class="mono">Flat noise map</span></li>
+          <li><b>170</b><span class="mono">Second loop</span></li>
+          <li><b>0</b><span class="mono">Keyframes inside the loop</span></li>
+        </ul>
+        <p>The tunnel is one flat map of Fractal Noise and VR Fractal Noise, wrapped into a cylinder with CC Cylinder and seen from inside. A larger copy of the same map makes the walls near the lens.</p>
+        <p>All of its motion is expressions, driven by five controls: Variation, Speed, Depth Falloff, Twirl and Opacity.</p>
+        <p class="ld-see"><button class="zoom mono" type="button" data-src="assets/guide-hyperspace-2400.webp" data-cap="09 — Hyperspace: its five controls, with safe ranges and sweet spots · From the guide">The Hyperspace guide page</button></p>
+      </div>
+    </div>
+
+    <div class="weight rv">
+      <div class="weight-p">
+        <p class="weight-k mono"><i></i>The problem</p>
+        <h3>No visible start or end.</h3>
+        <p>It plays for hours on three tall screens, so any jump in the noise, speed or turn would show on every loop. And Petie had to be able to change the speed himself.</p>
+      </div>
+      <div class="weight-s">
+        <p class="weight-k mono">How I solved it</p>
+        <ol class="fixes">
+          <li><span class="mono">01</span>One 170-second loop holds it all, between the transitions.</li>
+          <li><span class="mono">02</span>Speed rounds to whole passes, so the map ends where it began.</li>
+          <li><span class="mono">03</span>The noise evolves in whole turns over the loop.</li>
+          <li><span class="mono">04</span>Twirl swings 4° each way per loop: Petie’s slow turn.</li>
+        </ol>
+      </div>
+      <figure class="render tl">
+        <figcaption class="render-k mono">One 180-second render</figcaption>
+        <div class="tl-bar" aria-hidden="true"><i style="--w:2.78%"></i><i class="loop" style="--w:94.44%"></i><i style="--w:2.78%"></i></div>
+        <ul>
+          <li><span class="lbl">Entry</span><b class="mono">0–5 s</b><em>Keyframes</em></li>
+          <li><span class="lbl">Hyperspace</span><b class="mono">5–175 s</b><em>Expressions only</em></li>
+          <li><span class="lbl">Return</span><b class="mono">175–180 s</b><em>Keyframes</em></li>
+        </ul>
+        <p class="fine">The two transitions are the next section.</p>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 04 TRANSITIONS ================= -->
+<section class="sec build" id="transitions">
+  <div class="wrap">
+    <div class="build-head rv">
+      <div class="kicker"><i></i>04 — Transitions</div>
+      <h2>Five seconds each way.</h2>
+    </div>
+
+    <div class="build-top rv">
+      <figure class="ld">
+        <iframe class="ld-frame" src="transitions-diagram.html" title="Entry and Return, with the transition sliders read out at the playhead" loading="lazy"></iframe>
+        <figcaption class="fine">The real renders. Keys from the project; curves approximate.</figcaption>
+      </figure>
+
+      <div class="build-facts">
+        <ul class="nums">
+          <li><b>5</b><span class="mono">Seconds each way</span></li>
+          <li><b>42</b><span class="mono">Keyframes, all in the transitions</span></li>
+          <li><b>1</b><span class="mono">Switch</span></li>
+        </ul>
+        <p>Entry and Return are the only keyframed parts of the engine. Nine sliders on one control layer, <code>KF_TRANSITIONS</code>, move the camera, the lens, the star shine and each layer’s opacity, and soft masks open the tunnel from the center.</p>
+        <p>One slider, Scene Switch, decides what the scene is. At 0 it is Primary Idle and every key is ignored; at 1 it plays the whole journey.</p>
+      </div>
+    </div>
+
+    <div class="weight rv">
+      <div class="weight-p">
+        <p class="weight-k mono"><i></i>The problem</p>
+        <h3>Fast, without a cut.</h3>
+        <p>My first entry ran 15 seconds and Petie found it long. In 5 seconds stars, clouds, lens and tunnel all have to change, and both ends must land exactly on the loops.</p>
+      </div>
+      <div class="weight-s">
+        <p class="weight-k mono">How I solved it</p>
+        <ol class="fixes">
+          <li><span class="mono">01</span>One 180 s timeline: Entry, loop, Return. Each join is one frame.</li>
+          <li><span class="mono">02</span>Every key on one control layer, read by expressions.</li>
+          <li><span class="mono">03</span>In order: shine, tunnel in, then stars, nebula, clouds out.</li>
+          <li><span class="mono">04</span>Return starts the camera far back and eases it home.</li>
+        </ol>
+      </div>
+      <figure class="render gantt">
+        <figcaption class="render-k mono">Entry, second by second</figcaption>
+        <ul>
+          <li><span class="lbl">Camera</span><i style="--a:.8%;--b:100%"></i></li>
+          <li><span class="lbl">Lens</span><i style="--a:1.6%;--b:89.2%"></i></li>
+          <li><span class="lbl">Star shine</span><i style="--a:6.6%;--b:55.8%"></i></li>
+          <li class="hot"><span class="lbl">Tunnel in</span><i style="--a:45.8%;--b:75%"></i></li>
+          <li class="out"><span class="lbl">Stars out</span><i style="--a:47.6%;--b:99.2%"></i></li>
+          <li class="out"><span class="lbl">Nebula out</span><i style="--a:59.2%;--b:95.8%"></i></li>
+          <li class="out"><span class="lbl">Clouds out</span><i style="--a:62.4%;--b:99.2%"></i></li>
+        </ul>
+        <p class="gantt-ax mono" aria-hidden="true"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5 s</span></p>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 05 MOTION SYSTEM ================= -->
+<section class="sec build" id="motion">
+  <div class="wrap">
+    <div class="build-head rv">
+      <div class="kicker"><i></i>05 — Motion system</div>
+      <h2>99,000 scenes. Every one loops.</h2>
+    </div>
+
+    <div class="build-top rv">
+      <figure class="ld">
+        <iframe class="ld-frame" src="motion-diagram.html" title="Six scenes from six seeds, one scene through its whole loop, and which layers each control drives" loading="lazy"></iframe>
+        <figcaption class="fine">Stars from the real expressions, the rest drawn. Sped up, not to scale.</figcaption>
+      </figure>
+
+      <div class="build-facts">
+        <ul class="nums">
+          <li><b>99,000</b><span class="mono">Scenes from one seed</span></li>
+          <li><b>4</b><span class="mono">States, one loop</span></li>
+          <li><b>1,726</b><span class="mono">Expressions</span></li>
+        </ul>
+        <p>One slider, Master Variation, seeds the hero stars, micro stars, cloud, nebula and tunnel. Any value from 0 to 99,000 makes a new scene.</p>
+        <p>Every scene runs the same journey: Idle, Entry, Hyperspace, Return, and back to Idle on the frame it left.</p>
+        <p class="ld-see"><button class="zoom mono" type="button" data-src="assets/ctrl-center.webp" data-cap="CTRL_CENTER: the eleven control layers above the universe · After Effects">The control comp</button></p>
+      </div>
+    </div>
+
+    <div class="weight rv">
+      <div class="weight-p">
+        <p class="weight-k mono"><i></i>The problem</p>
+        <h3>Any seed, no seams.</h3>
+        <p>Petie could pick any seed or move any slider. Every result still had to loop, and still travel to Hyperspace and back without a cut.</p>
+      </div>
+      <div class="weight-s">
+        <p class="weight-k mono">How I solved it</p>
+        <ol class="fixes">
+          <li><span class="mono">01</span>Seeds change shapes and places, never timing.</li>
+          <li><span class="mono">02</span>Everything moves in whole cycles of its loop.</li>
+          <li><span class="mono">03</span>Stars stay put. The camera drifts and comes home.</li>
+          <li><span class="mono">04</span>Transitions are keys on one layer, for every seed.</li>
+        </ol>
+      </div>
+      <figure class="render gcard">
+        <figcaption class="render-k mono">The guide, inside the project</figcaption>
+        <div class="gc-pages">
+          <button class="zoom" type="button" data-src="assets/guide-micro-stars-2400.webp" data-cap="04 — Micro Stars · From the controller guide"><img src="assets/guide-micro-stars-1200.webp" width="1200" height="750" alt="Guide page 04, Micro Stars: each control with what it shapes, a safe range, a sweet spot and guidance" loading="lazy"></button>
+          <button class="zoom" type="button" data-src="assets/guide-hyperspace-2400.webp" data-cap="09 — Hyperspace · From the controller guide"><img src="assets/guide-hyperspace-1200.webp" width="1200" height="750" alt="Guide page 09, Hyperspace: Variation, Speed, Depth Falloff, Twirl and Opacity, each with a safe range and a sweet spot" loading="lazy"></button>
+        </div>
+        <p class="gc-all" aria-label="Every guide page"><button class="zoom mono" type="button" data-src="assets/guide-scene-switch-2400.webp" data-cap="100 — Scene Switch · From the controller guide" aria-label="Guide page 100, Scene Switch">100</button><button class="zoom mono" type="button" data-src="assets/guide-master-variation-2400.webp" data-cap="01 — Master Variation · From the controller guide" aria-label="Guide page 01, Master Variation">01</button><button class="zoom mono" type="button" data-src="assets/guide-global-grade-2400.webp" data-cap="02 — Global Grade · From the controller guide" aria-label="Guide page 02, Global Grade">02</button><button class="zoom mono" type="button" data-src="assets/guide-hero-stars-2400.webp" data-cap="03 — Hero Stars · From the controller guide" aria-label="Guide page 03, Hero Stars">03</button><button class="zoom mono" type="button" data-src="assets/guide-micro-stars-2400.webp" data-cap="04 — Micro Stars · From the controller guide" aria-label="Guide page 04, Micro Stars">04</button><button class="zoom mono" type="button" data-src="assets/guide-scene-motion-2400.webp" data-cap="05 — Scene Motion · From the controller guide" aria-label="Guide page 05, Scene Motion">05</button><button class="zoom mono" type="button" data-src="assets/guide-atmosphere-2400.webp" data-cap="06 — Atmosphere · From the controller guide" aria-label="Guide page 06, Atmosphere">06</button><button class="zoom mono" type="button" data-src="assets/guide-cloud-2400.webp" data-cap="07 — Cloud · From the controller guide" aria-label="Guide page 07, Cloud">07</button><button class="zoom mono" type="button" data-src="assets/guide-nebula-2400.webp" data-cap="08 — Nebula · From the controller guide" aria-label="Guide page 08, Nebula">08</button><button class="zoom mono" type="button" data-src="assets/guide-hyperspace-2400.webp" data-cap="09 — Hyperspace · From the controller guide" aria-label="Guide page 09, Hyperspace">09</button></p>
+        <p class="fine">A page per control: safe range, sweet spot, feel. Panel opens any page over the scene.</p>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 02 PROCESS ================= -->
+<section class="sec" id="process">
+  <div class="wrap">
+    <div class="shead rv">
+      <div><div class="kicker"><i></i>06 — Process</div><h2>The handover.</h2>
+        <p class="sub">Petie set the brief and reviewed the key moments, about 3 or 4 out of 10 by his own count. The calls in between were mine.</p></div>
+    </div>
+
+    <div class="path">
+      <aside class="path-rail" aria-hidden="true">
+        <div class="rail">
+          <i class="rail-line"><u></u></i>
+          <ol id="railList">
+            <li data-to="s5"><span class="mono">01</span>Handover</li>
+          </ol>
+        </div>
+      </aside>
+
+      <div class="steps">
+
+        <article class="step rv" id="s5">
+          <p class="step-k mono"><b>01</b>Handover</p>
+          <h3>Something easy to live with.</h3>
+          <p>I sent the project and the guide before the big renders, so Petie could learn the system on his own machine.</p>
+          <dl class="calls">
+            <div class="call"><dt class="mono">My call</dt><dd>Design the handoff, not just the file.</dd></div>
+          </dl>
+          <blockquote class="quote">
+            <p>“Your guide was great and I felt right at home in the project.”</p>
+            <footer><i></i>Petie Clark<span>Client</span></footer>
+          </blockquote>
+          <p class="after">His last note: no more changes needed.</p>
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 05 DELIVERY ================= -->
+<section class="sec" id="delivery">
+  <div class="wrap">
+    <div class="shead rv">
+      <div><div class="kicker"><i></i>07 — Delivery</div><h2>Handed over, ready to change.</h2>
+        <p class="sub">The renders, the editable system and the guide. Petie later built his own web control layer around it.</p></div>
+    </div>
+    <div class="pack rv">
+      <p class="pack-k mono">What Petie received</p>
+      <ol class="pack-list">
+        <li>
+          <div class="pk-v pk-renders" aria-hidden="true">
+            <span><img src="assets/idle-poster.webp" alt="" loading="lazy"><i class="mono">Idle</i></span>
+            <span><img src="assets/entry-poster.webp" alt="" loading="lazy"><i class="mono">Entry</i></span>
+            <span><img src="assets/cruise-poster.webp" alt="" loading="lazy"><i class="mono">Hyperspace</i></span>
+            <span><img src="assets/exit-poster.webp" alt="" loading="lazy"><i class="mono">Return</i></span>
+          </div>
+          <p class="pk-n mono">01</p><h3 class="pk-t">Renders</h3>
+          <p class="pk-d">The four states, as masters.<small class="mono">6480 × 3840 · 24 fps · 10-bit · Silent</small></p>
+        </li>
+        <li>
+          <div class="pk-v pk-formats" aria-hidden="true">
+            <span class="f3"><i></i><i></i><i></i></span>
+            <span class="f1"><i></i></span>
+            <span class="fw1"><i></i></span>
+            <span class="fw2"><i></i></span>
+          </div>
+          <p class="pk-n mono">02</p><h3 class="pk-t">Formats</h3>
+          <p class="pk-d">One space, framed for every screen.<small class="mono">3 × portrait · portrait · 5120 × 1440 · 3840 × 1600</small></p>
+        </li>
+        <li>
+          <div class="pk-v pk-shot" aria-hidden="true"><img src="assets/ctrl-center.webp" alt="" loading="lazy"></div>
+          <p class="pk-n mono">03</p><h3 class="pk-t">System</h3>
+          <p class="pk-d">The editable After Effects project.<small class="mono">CTRL_CENTER · QBS_UNIVERSE</small></p>
+        </li>
+        <li>
+          <div class="pk-v pk-shot" aria-hidden="true"><img src="assets/guide-micro-stars-1200.webp" alt="" loading="lazy"></div>
+          <p class="pk-n mono">04</p><h3 class="pk-t">Guide</h3>
+          <p class="pk-d">How to use it on his own.<small class="mono">Controls · Setup · Render · Export</small></p>
+        </li>
+      </ol>
+    </div>
+
+    <div class="roll rv" aria-label="Credits">
+      <p class="roll-k mono">Credits</p>
+      <dl>
+        <div><dt class="mono">Creative direction, design &amp; motion</dt><dd>Turinoz</dd></div>
+        <div><dt class="mono">Client</dt><dd>Petie Clark</dd></div>
+        <div><dt class="mono">Delivery partner</dt><dd>OSL Wire</dd></div>
+        <div><dt class="mono">Made in</dt><dd>After Effects</dd></div>
+      </dl>
+    </div>
+
+    <a class="next rv" href="../sitemate/">
+      <span class="next-k mono">Next project</span>
+      <span class="next-t">Storm motion system<svg aria-hidden="true"><use href="#icArrowRight"/></svg></span>
+      <span class="next-d">Sitemate’s AI agent icon: six states, live in their iOS, Android and web apps.</span>
+    </a>
+  </div>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <span>Quiet Between Stars · <b>Creative direction, design and motion by Turinoz</b></span>
+    <a class="tz" href="../">Turinoz</a>
+    <a class="totop" href="#top">Back to top <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M6 10V2M2.5 5.5 6 2l3.5 3.5"/></svg></a>
+  </div>
+</footer>
+
+<dialog class="lb" id="lb" aria-label="Enlarged image">
+  <div class="lb-top"><p class="lb-cap" id="lbCap"></p><button class="lb-x" id="lbClose" type="button" aria-label="Close">Close</button></div>
+  <div class="lb-body" id="lbBody"><img id="lbImg" alt=""></div>
+</dialog>
+
+<noscript><style>.rv{opacity:1!important;transform:none!important}.h1 .ln>*{transform:none!important}.now,.states,.go,.skipi,.intro{display:none!important}.landing{opacity:1!important;transform:none!important}</style></noscript>
+</body>
+</html>

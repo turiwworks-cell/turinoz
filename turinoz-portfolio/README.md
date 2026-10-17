@@ -73,8 +73,8 @@ python -m http.server 8000
 
 - It opens straight on the work (the chat intro and the Commentary corner are gone).
 - Two tiers, so a client gets the serious work at a glance and a designer can keep scrolling:
-  - **Selected work**: the four main projects, big, two to a row, in this order: Sitemate (Storm),
-    Curve Lab, smtp.dev product film, Scoreline (`.grid--main`).
+  - **Selected work**: Sitemate (Storm), Curve Lab, smtp.dev product film and Scoreline,
+    big, two to a row, followed by Quiet Between Stars across the full row (`.grid--main`).
   - **Experiments**: everything else, four to a row, square, with smaller captions
     (`.grid--more`): Interactive Sphere, Density curve, Digitigrade (two columns wide), smtp.dev
     logo loop, Planet, Eye, Spectra. The parked tiles are commented out at the end of this grid.
