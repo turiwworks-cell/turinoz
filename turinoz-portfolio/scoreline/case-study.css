@@ -86,9 +86,9 @@ html.arrive .sec .rv{transition-delay:calc(var(--rd,0s) + .4s)}       /* what's 
 @keyframes ctx-in{from{opacity:0;transform:scale(.94)}}
 .ctx-i{display:flex;align-items:center;gap:10px;height:36px;padding:0 10px;border-radius:9px;font-size:13.5px;color:var(--ink);text-decoration:none;white-space:nowrap}
 .ctx-i .slmark{transform:scale(.7);transform-origin:50% 50%}
-.ctx-i>svg{width:11px;height:11px;margin-left:auto;color:var(--muted);transition:transform .4s var(--glide),color .2s}
+.ctx-i>svg{width:11px;height:11px;margin-left:auto;color:var(--muted);transition:color .2s}
 .ctx-i:hover,.ctx-i:focus-visible{background:rgba(255,255,255,.08);outline:none}
-.ctx-i:hover>svg,.ctx-i:focus-visible>svg{transform:translateX(2px);color:var(--ink)}
+.ctx-i:hover>svg,.ctx-i:focus-visible>svg{color:var(--ink)}
 .slmark{display:flex;align-items:flex-start;gap:0;height:22px;flex:none}
 .slmark i{display:block;width:6px}
 .slmark i:nth-child(1){height:12px;margin-top:6px;background:linear-gradient(180deg,var(--sp2))}
@@ -152,7 +152,6 @@ h3{font:560 24px/1.15 var(--display);font-stretch:88%;letter-spacing:-.022em}
 .flap{display:inline-block;overflow:hidden;height:1.2em;line-height:1.2em}
 .flap b{display:block;font-weight:600;transition:transform .5s var(--roll)}
 .btn:hover .flap b,.btn:focus-visible .flap b,.demo-pill:hover .flap b,.demo-pill:focus-visible .flap b{transform:translateY(-1.2em)}
-@keyframes fly{0%{transform:none}38%{transform:translate(14px,-14px)}39%{transform:translate(-14px,14px)}100%{transform:none}}
 .ghost{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 16px;border-radius:999px;text-decoration:none;font-size:14px;font-weight:500;color:var(--ink);
   box-shadow:inset 0 0 0 1px var(--line-3);transition:box-shadow .25s,background-color .25s;white-space:nowrap}
 .ghost:hover{box-shadow:inset 0 0 0 1px rgba(255,255,255,.34);background:rgba(255,255,255,.03)}
@@ -862,7 +861,6 @@ h3{font:560 24px/1.15 var(--display);font-stretch:88%;letter-spacing:-.022em}
 .cr-link{display:inline-flex;align-items:center;gap:7px;text-decoration:none;font-weight:500;color:var(--lilac)}
 .cr-link .cr-go{display:grid;place-items:center;width:14px;height:14px;overflow:hidden}
 .cr-link svg{width:11px;height:11px;animation:nudge 3.2s var(--inout) infinite}
-.cr-link:hover svg{animation:fly .6s var(--glide)}
 @keyframes nudge{0%,62%,100%{transform:none}76%{transform:translate(1.5px,-1.5px)}}
 .cr-split{display:grid;grid-template-columns:1fr 1fr;border-radius:var(--r);overflow:hidden;box-shadow:inset 0 0 0 1px var(--line)}
 .cr-split>div{padding:26px;display:flex;flex-direction:column;gap:12px;min-height:220px}

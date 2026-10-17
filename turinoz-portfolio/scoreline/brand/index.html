@@ -5,108 +5,550 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#000000">
-<title>Scoreline brand — Turinoz</title>
-<meta name="description" content="The Scoreline mark, lockups, icon, colors, type and motion.">
+<title>Scoreline brand book — Turinoz</title>
+<meta name="description" content="The Scoreline brand book: the mark, lockup, colors, type, motion, use, misuse and the kit.">
 <link rel="icon" type="image/svg+xml" href="scoreline-icon.svg">
+<link rel="preload" href="../app/fonts/hanken-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <style>
-@font-face{font-family:"Archivo";src:url(../../fonts/archivo.woff2) format("woff2");font-weight:100 900;font-stretch:62% 125%;font-display:swap}
-@font-face{font-family:"Inter";src:url(../../fonts/inter.woff2) format("woff2");font-weight:100 900;font-display:swap}
-@font-face{font-family:"JB Mono";src:url(../../fonts/jetbrains-mono.woff2) format("woff2");font-weight:100 800;font-display:swap}
-:root{--bg:#000;--surface:#0d0d0d;--line:rgba(255,255,255,.08);--ink:#F3F2EF;--ink-2:#B8B6B0;--muted:#85847F;
-  --display:"Archivo","Helvetica Neue",Helvetica,Arial,sans-serif;--sans:"Inter",system-ui,sans-serif;--mono:"JB Mono",ui-monospace,Menlo,monospace}
+@font-face{font-family:"Hanken Grotesk";src:url(../app/fonts/hanken-grotesk-latin-wght-normal.woff2) format("woff2");font-weight:100 900;font-display:swap}
+@font-face{font-family:"JetBrains Mono";src:url(../../fonts/jetbrains-mono.woff2) format("woff2");font-weight:100 800;font-display:swap}
+/* Layout: a brand book. Sticky chapter index on the left, chapters alternate night / paper so no two neighbours share a ground. */
+:root{
+  --night:#000; --surface:#161616; --faint:#43423F; --muted:#85847F; --chalk:#F3F2EF;
+  --paper:#F7F2EA; --stone:#E8E6E1; --ink:#0C0C0C;
+  --live:#34E39A; --card:#E7C94A; --red:#FF5A5A; --violet:#6B58F5; --lilac:#A58FE6;
+  --sp1:#F7B9D0 0%,#F9DCD6 55%,#FBE9DF 76%,#F2A132 100%;
+  --sp2:#6AAEF0 0%,#C9B8E0 34%,#F2B3C9 58%,#B0243C 100%;
+  --sp3:#6B58F5 0%,#A58FE6 40%,#E7C1D6 76%,#FFF0E6 100%;
+  --sp4:#3D6A45 0%,#89A987 45%,#E9B8CF 85%,#F6BDD6 100%;
+  --sp5:#A8C3EA 0%,#E2E2E4 38%,#C9C92A 68%,#F0EED0 100%;
+  --field:linear-gradient(135deg,#FFF0E6 0%,#E7C1D6 24%,#A58FE6 60%,#6B58F5 100%);
+  --brand:"Hanken Grotesk","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --roll:cubic-bezier(.7,0,.2,1); --glide:cubic-bezier(.16,1,.3,1);
+  color-scheme:dark;
+}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
-.wrap{max-width:1240px;margin:0 auto;padding:40px max(20px,env(safe-area-inset-right)) 80px max(20px,env(safe-area-inset-left))}
-.top{display:flex;justify-content:space-between;align-items:center;gap:16px}
-.top a{color:var(--ink-2);text-decoration:none;font-size:14px}
-.top a:hover{color:var(--ink)}
-.kicker{font:500 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-h1{font:560 clamp(36px,5vw,64px)/1.02 var(--display);font-stretch:84%;letter-spacing:-.035em;margin:56px 0 0}
-.sub{color:var(--ink-2);max-width:56ch;margin:14px 0 0}
-.sheet{margin-top:40px;border-radius:18px;overflow:hidden;box-shadow:0 0 0 1px var(--line)}
-.sheet img{display:block;width:100%;height:auto}
-.files{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:28px}
-.file{display:grid;gap:12px;padding:16px;border-radius:14px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);color:var(--ink);text-decoration:none}
-.file:hover{box-shadow:inset 0 0 0 1px rgba(255,255,255,.2)}
-.file .pv{height:96px;display:grid;place-items:center;border-radius:10px;background:#000}
-.file .pv.light{background:#F7F2EA}
-.file .pv img{max-height:56px;max-width:80%}
-.file .pv img.lk-d{width:72%;max-width:none;max-height:none}
-.file .pv img.lk-b{width:54%;max-width:none;max-height:none}
-.file b{font-weight:500}
-.file span{font:500 11px/1.3 var(--mono);color:var(--muted)}
-/* motion: the mark in three moves, one per cell */
-.mo-h{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;margin-top:56px}
-.mo-h h2{font:560 28px/1.1 var(--display);font-stretch:84%;letter-spacing:-.02em;margin:0}
-.mo{display:grid;grid-template-columns:repeat(2,1fr);margin-top:20px;border-radius:18px;overflow:hidden;box-shadow:0 0 0 1px var(--line)}
-@media (max-width:760px){.mo{grid-template-columns:1fr}}
-.mc{position:relative;aspect-ratio:4/3;display:grid;place-items:center;overflow:hidden}
-.mc:nth-child(1){background:#000}
-.mc:nth-child(2){background:#F7F2EA}
-.mc:nth-child(3){background:#161616}
-.mc figcaption{position:absolute;left:20px;right:20px;bottom:18px;letter-spacing:.02em!important;text-transform:none!important;font:500 11px/1.4 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:#85847F}
-.mc:nth-child(2) figcaption{color:#7A7872}
-.mc figcaption b{display:block;font-weight:500;color:#F3F2EF;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}
-.mc:nth-child(2) figcaption b{color:#0C0C0C}
-.mk{--u:1.15px;display:block;position:relative;overflow:hidden;width:calc(108*var(--u));height:calc(132*var(--u))}
-.mk.roll i{background-repeat:repeat-y;background-size:100% 100%}
+html{scroll-behavior:smooth}
+body{background:var(--night);color:var(--chalk);font:400 16px/1.6 var(--brand);-webkit-font-smoothing:antialiased;margin:0}
+::selection{background:var(--violet);color:#fff}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--lilac);outline-offset:3px;border-radius:4px}
+
+/* shell */
+.shell{display:grid;grid-template-columns:220px minmax(0,1fr);max-width:1440px;margin:0 auto}
+.index{position:sticky;top:env(safe-area-inset-top,0px);height:100vh;padding:32px 0 32px max(24px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:28px;border-right:1px solid rgba(255,255,255,.07)}
+.index .who{display:flex;align-items:center;gap:10px;font-weight:500;font-size:15px}
+.index .who svg{width:14px;height:auto}
+.index ol{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.index a{display:flex;gap:12px;align-items:baseline;padding:6px 10px 6px 0;text-decoration:none;color:var(--muted);font-size:14px;transition:color .2s}
+.index a span{font:400 11px/1 var(--mono);color:var(--faint);width:18px;transition:color .2s}
+.index a:hover,.index a.on{color:var(--chalk)}
+.index a.on span{color:var(--lilac)}
+.index .meta{margin-top:auto;font:400 11px/1.6 var(--mono);color:var(--faint)}
+main{min-width:0}
+.ch{padding-block:96px;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+.ch>.in{max-width:1080px;margin:0 auto}
+.ch.paper{background:var(--paper);color:var(--ink)}
+.ch.paper .lede,.ch.paper .note,.ch.paper .rules p{color:#46453F}
+.ch.paper .rules .rule{border-color:rgba(12,12,12,.1)}
+.ch.paper .lbl{color:#7A7872}
+.head{display:grid;grid-template-columns:120px minmax(0,1fr);gap:24px;margin-bottom:48px}
+.num{font:400 12px/1.9 var(--mono);color:var(--muted)}
+.ch.paper .num{color:#7A7872}
+h1,h2{font-family:var(--brand);font-weight:500;letter-spacing:-.03em;margin:0;text-wrap:balance}
+h2{font-size:clamp(34px,4.4vw,56px);line-height:1}
+.lede{font-size:19px;line-height:1.55;color:#B8B6B0;max-width:58ch;margin:16px 0 0}
+.lbl{font:400 11px/1.4 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.note{font-size:14px;color:#B8B6B0;max-width:52ch;margin:10px 0 0}
+.rule{display:grid;gap:4px}
+.rule b{font-weight:500}
+
+/* cover */
+.cover{min-height:min(720px,100vh);display:grid;grid-template-rows:auto 1fr auto;gap:40px;padding-block:32px 40px;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px));position:relative;overflow:hidden}
+.cover .top,.cover .bot{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font:400 11px/1.4 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.cover .mid{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:56px}
+.cover h1{font-size:clamp(64px,11vw,168px);line-height:.85;letter-spacing:-.05em}
+.cover .tag{font-size:20px;line-height:1.45;color:#B8B6B0;max-width:30ch;margin:28px 0 0}
+.bigmark{--u:2.2px}
+@media (max-width:700px){.cover .mid{grid-template-columns:1fr}.bigmark{--u:1.5px}}
+
+/* the mark as html bars (for motion) */
+.mk{--u:1px;display:block;position:relative;width:calc(108*var(--u));height:calc(132*var(--u));overflow:hidden;flex:none}
 .mk i{position:absolute;width:calc(36*var(--u));will-change:transform}
-.mk i:nth-child(1){left:0;top:calc(36*var(--u));height:calc(72*var(--u));background-image:linear-gradient(180deg,#6AAEF0 0%,#C9B8E0 34%,#F2B3C9 58%,#B0243C 100%)}
-.mk i:nth-child(2){left:calc(36*var(--u));top:0;height:calc(132*var(--u));background-image:linear-gradient(180deg,#6B58F5 0%,#A58FE6 40%,#E7C1D6 76%,#FFF0E6 100%)}
-.mk i:nth-child(3){left:calc(72*var(--u));top:calc(24*var(--u));height:calc(72*var(--u));background-image:linear-gradient(180deg,#A8C3EA 0%,#E2E2E4 38%,#C9C92A 68%,#F0EED0 100%)}
-.spec{margin:14px 0 0;color:var(--ink-2);font-size:14px}
+.mk i:nth-child(1){left:0;top:calc(36*var(--u));height:calc(72*var(--u));background:linear-gradient(180deg,var(--sp2))}
+.mk i:nth-child(2){left:calc(36*var(--u));top:0;height:calc(132*var(--u));background:linear-gradient(180deg,var(--sp3))}
+.mk i:nth-child(3){left:calc(72*var(--u));top:calc(24*var(--u));height:calc(72*var(--u));background:linear-gradient(180deg,var(--sp5))}
+.mk.roll i{background-repeat:repeat-y;background-size:100% 100%}
+
+/* 01 mark */
+.mark-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px}
+.plate{border-radius:20px;background:var(--surface);position:relative;overflow:hidden}
+.ch.paper .plate{background:#fff;box-shadow:inset 0 0 0 1px rgba(12,12,12,.08)}
+.plate .lbl{position:absolute;left:20px;top:18px}
+.construct{display:grid;place-items:center;aspect-ratio:1;padding:40px}
+.construct svg{width:100%;max-width:420px;height:auto;overflow:visible}
+.rules{display:grid;gap:24px;align-content:start;padding:8px 0}
+.rules .rule{padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.08)}
+.rules .rule:last-child{border:0}
+.rules p{margin:0;color:#B8B6B0;font-size:15px}
+.sizes{display:flex;align-items:flex-end;gap:28px;flex-wrap:wrap;padding-top:6px}
+.sizes figure{margin:0;display:grid;justify-items:center;gap:8px}
+.sizes figcaption{font:400 11px/1 var(--mono);color:var(--muted)}
+
+/* 02 lockup */
+.lock-hero{border-radius:20px;background:var(--night);display:grid;place-items:center;aspect-ratio:2.4;padding:24px;position:relative}
+.lock-hero svg{width:min(560px,80%);height:auto;overflow:visible}
+.lock-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}
+.lock-row .t{border-radius:16px;aspect-ratio:1.5;display:grid;place-items:center;position:relative;padding:20px}
+.lock-row .t svg{width:78%;height:auto}
+.lock-row .t .lbl{position:absolute;left:16px;bottom:14px}
+.t.on-night{background:var(--surface)}
+.t.on-field{background:var(--field)}
+.t.on-white{background:#fff;box-shadow:inset 0 0 0 1px rgba(12,12,12,.08)}
+.t.on-field .lbl,.t.on-white .lbl{color:#46453F}
+.space{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;margin-top:48px;align-items:center}
+.space svg{width:100%;height:auto}
+
+/* 03 colour */
+.spectra{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.sp{display:grid;gap:12px;align-content:start}
+.sp .bar{height:320px;width:min(72px,100%);border-radius:999px}
+.sp h3{font-size:18px;font-weight:500;margin:4px 0 0;letter-spacing:-.01em}
+.sp .use{font-size:13px;color:var(--muted);margin:0}
+.stops{display:grid;gap:2px}
+.copy{all:unset;cursor:pointer;display:flex;align-items:center;gap:8px;font:400 12px/1.7 var(--mono);color:#B8B6B0;border-radius:6px}
+.copy i{width:10px;height:10px;border-radius:50%;flex:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.15)}
+.copy:hover{color:var(--chalk)}
+.copy.done::after{content:"copied";color:var(--live);margin-left:4px}
+.inks{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:56px}
+.ink{border-radius:16px;padding:16px;min-height:150px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.ink b{font-weight:500;font-size:16px}
+.ink .copy{color:inherit;opacity:.75}
+.ink small{font-size:12.5px;opacity:.7;display:block;margin-top:2px}
+.ratio{margin-top:56px}
+.ratio .strip{display:flex;height:56px;border-radius:12px;overflow:hidden;margin-top:12px}
+.ratio .strip span{display:block}
+.ratio .keys{display:flex;flex-wrap:wrap;gap:6px 20px;margin-top:10px;font:400 12px/1.4 var(--mono);color:var(--muted)}
+
+/* 04 type */
+.spec{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:24px}
+.spec .big{font-size:clamp(88px,14vw,200px);line-height:.9;letter-spacing:-.05em;font-weight:500}
+.spec .glyphs{font-size:24px;line-height:1.5;letter-spacing:.02em;font-weight:500;margin-top:28px;word-break:break-all}
+.scale{display:grid;gap:0;border-top:1px solid rgba(12,12,12,.12)}
+.scale div{display:grid;grid-template-columns:72px minmax(0,1fr);align-items:baseline;gap:16px;padding:12px 0;border-bottom:1px solid rgba(12,12,12,.12)}
+.scale span{font:400 11px/1.4 var(--mono);color:#7A7872}
+.scale p{margin:0;font-weight:500;letter-spacing:-.02em;line-height:1.1;overflow-wrap:anywhere}
+.score{display:flex;gap:12px;align-items:center;margin-top:32px;flex-wrap:wrap}
+.score .s{font-variant-numeric:tabular-nums;font-size:56px;font-weight:500;letter-spacing:-.03em;line-height:1}
+.score .m{font:500 13px/1 var(--mono);background:var(--ink);color:var(--chalk);padding:8px 10px;border-radius:999px;display:inline-flex;gap:7px;align-items:center}
+.score .m i{width:6px;height:6px;border-radius:50%;background:var(--live)}
+
+/* 05 motion */
+.moves{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.move{border-radius:20px;overflow:hidden;background:var(--surface)}
+.move .stage{aspect-ratio:1.35;display:grid;place-items:center}
+.move:nth-child(2) .stage{background:var(--paper)}
+.move .cap{padding:18px 20px 20px;display:grid;gap:10px}
+.move h3{margin:0;font-size:20px;font-weight:500;letter-spacing:-.01em}
+.move p{margin:0;font-size:14px;color:#B8B6B0}
+.code{display:flex;align-items:center;gap:10px;justify-content:space-between;font:400 12px/1.6 var(--mono);color:var(--chalk);background:#0A0A0A;border-radius:10px;padding:10px 12px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}
+.code code{min-width:0;overflow-wrap:anywhere}
+.code .copy{flex:none;color:var(--muted)}
+.curve{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:center}
+.curve svg{width:72px;height:72px;flex:none}
+
+/* 06 in use */
+.use-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+.use-grid>div{border-radius:20px;position:relative;overflow:hidden;min-height:240px;display:grid;place-items:center;padding:28px}
+.use-grid .lbl{position:absolute;left:18px;bottom:14px}
+.u-icon{grid-column:span 2;background:#fff;box-shadow:inset 0 0 0 1px rgba(12,12,12,.08)}
+.u-avatar{grid-column:span 2;background:var(--stone)}
+.u-fav{grid-column:span 2;background:var(--night)}
+.u-header{grid-column:span 4;background:var(--field)}
+.u-btn{grid-column:span 2;background:var(--night)}
+.u-icon .lbl,.u-avatar .lbl,.u-header .lbl{color:#46453F}
+.fav{display:flex;align-items:flex-end;gap:24px}
+.fav figure{margin:0;display:grid;justify-items:center;gap:10px}
+.tab{display:flex;align-items:center;gap:8px;background:#1f1f1f;border-radius:10px 10px 0 0;padding:9px 14px;font-size:12.5px;color:#d0d0d0;width:200px}
+.navbar{width:min(560px,100%);height:60px;border-radius:16px;background:rgba(22,22,22,.78);display:flex;align-items:center;gap:12px;padding:0 16px;color:var(--chalk)}
+.navbar .back{width:30px;height:30px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.16);display:grid;place-items:center;flex:none}
+.navbar .back svg{width:11px;height:11px}
+.navbar b{font-weight:500;font-size:15px}
+.navbar em{font-style:normal;color:var(--muted);font-size:15px}
+.navbar .links{margin-left:auto;display:flex;gap:16px;font-size:13px;color:#B8B6B0}
+@media (max-width:620px){.navbar .links,.navbar em{display:none}}
+.cta{display:inline-flex;align-items:center;gap:6px;height:48px;padding:0 5px 0 20px;border-radius:999px;font-size:15px;font-weight:600;color:#fff;background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,0) 55%,rgba(0,0,0,.08)),linear-gradient(100deg,#6B58F5 0%,#7E6AF2 38%,#A58FE6 72%,#D9B3D8 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+.cta .lab{padding-right:10px}
+.board{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 13px;border-radius:999px;background:#0A0A0A;color:var(--chalk);font:600 13px/1 var(--mono)}
+.board i{width:6px;height:6px;border-radius:50%;background:var(--live)}
+
+/* 07 misuse */
+.dont{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.dont figure{margin:0;border-radius:16px;background:#fff;box-shadow:inset 0 0 0 1px rgba(12,12,12,.08);overflow:hidden}
+.dont .s{aspect-ratio:1.6;display:grid;place-items:center;position:relative}
+.dont .s svg{width:64px;height:auto;overflow:visible}
+.dont .s::after{content:"";position:absolute;inset:auto 14px 14px auto;width:22px;height:22px;border-radius:50%;background:var(--red) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Cpath d='M7.5 7.5l7 7M14.5 7.5l-7 7' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E")}
+.dont figcaption{padding:12px 16px 14px;font-size:14px;border-top:1px solid rgba(12,12,12,.08)}
+
+/* 08 kit */
+.kit{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px}
+.tree{font:400 13px/1.9 var(--mono);color:#B8B6B0;background:var(--surface);border-radius:20px;padding:24px 26px;white-space:pre;overflow-x:auto}
+.tree b{color:var(--chalk);font-weight:500}
+.tree em{font-style:normal;color:var(--faint)}
+.tokens{display:grid;gap:12px;align-content:start}
+.tokens pre{margin:0;font:400 12px/1.7 var(--mono);color:#B8B6B0;background:var(--surface);border-radius:16px;padding:18px 20px;overflow-x:auto;max-height:340px}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap}
+.chip{all:unset;cursor:pointer;font-size:14px;font-weight:500;height:40px;padding:0 16px;border-radius:999px;display:inline-flex;align-items:center;gap:8px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);color:var(--chalk)}
+.chip:hover{box-shadow:inset 0 0 0 1px var(--lilac)}
+.chip.done{box-shadow:inset 0 0 0 1px var(--live)}
+footer{padding-block:48px 64px;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px));border-top:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font:400 11px/1.6 var(--mono);color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+
+/* phone */
+@media (max-width:980px){
+  .shell{grid-template-columns:1fr}
+  .index{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;height:auto;flex-direction:row;align-items:center;gap:16px;padding:12px max(16px,env(safe-area-inset-right,0px)) 12px max(16px,env(safe-area-inset-left,0px));background:rgba(0,0,0,.88);border-right:0;border-bottom:1px solid rgba(255,255,255,.07);overflow-x:auto}
+  .index ol{display:flex;gap:4px}
+  .index a{white-space:nowrap;padding:6px 8px}
+  .index .meta{display:none}
+  body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:#000;z-index:30}
+  .mark-grid,.space,.spec,.kit{grid-template-columns:1fr}
+  .spectra{grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+  .sp .bar{height:200px}
+  .sp .stops,.sp .use{display:none}
+  .inks{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .use-grid>div{grid-column:span 6!important}
+  .dont{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .moves,.lock-row{grid-template-columns:1fr}
+  .head{grid-template-columns:1fr;gap:8px}
+  .ch{padding-block:64px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="top"><a href="../">← Scoreline case study</a><span class="kicker">Brand</span></div>
-  <h1>Scoreline</h1>
-  <p class="sub">The mark, the lockups, the icon, the colors, the type and the motion.</p>
-  <figure class="sheet" style="margin-inline:0"><img src="scoreline-branding.svg" alt="Scoreline brand sheet: the lockup on black, on the spectrum and on the pastel base; the mark alone; the app icon, a one-color lockup and an avatar; the five spectra and the inks; Hanken Grotesk Medium." width="4800" height="4800"></figure>
-  <div class="mo-h"><h2>Motion</h2><span class="kicker">The mark, moving</span></div>
-  <div class="mo">
-    <figure class="mc" style="margin:0"><span class="mk roll" data-mo="0" role="img" aria-label="Roll: the color rolls inside each bar, middle first, sides 160ms later"><i></i><i></i><i></i></span><figcaption><b>Roll</b>cubic-bezier(.802, .057, .35, 1) · 800ms<br>M 0 · L 160 · R 160ms · hold 500ms</figcaption></figure>
-    <figure class="mc" style="margin:0"><span class="mk" data-mo="1" role="img" aria-label="Lift, left to right: left, then middle, then right"><i></i><i></i><i></i></span><figcaption><b>Lift</b>cubic-bezier(.65, 0, .35, 1) · 800ms<br>L 0 · M 180 · R 440ms · hold 500ms</figcaption></figure>
-  </div>
-  <p class="spec">Roll moves the color inside each bar. Lift moves the bars themselves, inside the mark, left to right; it is the one in the case study header. Either way the sides go up and come back from below, the middle goes down and comes back from above.</p>
-  <div class="files">
-    <a class="file" href="scoreline-mark.svg" download><div class="pv"><img src="scoreline-mark.svg" alt=""></div><b>Mark</b><span>scoreline-mark.svg</span></a>
-    <a class="file" href="scoreline-icon.svg" download><div class="pv light"><img src="scoreline-icon.svg" alt=""></div><b>App icon</b><span>scoreline-icon.svg</span></a>
-    <a class="file" href="scoreline-lockup-dark.svg" download><div class="pv"><img class="lk-d" src="scoreline-lockup-dark.svg" alt=""></div><b>Lockup, on black</b><span>scoreline-lockup-dark.svg</span></a>
-    <a class="file" href="scoreline-lockup-black.svg" download><div class="pv light"><img class="lk-b" src="scoreline-lockup-black.svg" alt=""></div><b>Lockup, one color</b><span>scoreline-lockup-black.svg</span></a>
-    <a class="file" href="scoreline-branding.svg" download><div class="pv"><img src="scoreline-branding.svg" alt=""></div><b>Brand sheet</b><span>scoreline-branding.svg</span></a>
-  </div>
+
+<!-- shared gradients for every inline mark -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6AAEF0"/><stop offset=".34" stop-color="#C9B8E0"/><stop offset=".58" stop-color="#F2B3C9"/><stop offset="1" stop-color="#B0243C"/></linearGradient>
+    <linearGradient id="g3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6B58F5"/><stop offset=".4" stop-color="#A58FE6"/><stop offset=".76" stop-color="#E7C1D6"/><stop offset="1" stop-color="#FFF0E6"/></linearGradient>
+    <linearGradient id="g5" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A8C3EA"/><stop offset=".38" stop-color="#E2E2E4"/><stop offset=".68" stop-color="#C9C92A"/><stop offset="1" stop-color="#F0EED0"/></linearGradient>
+    <linearGradient id="kUp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0C0C0C" stop-opacity=".18"/><stop offset="1" stop-color="#0C0C0C"/></linearGradient>
+    <linearGradient id="kDn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0C0C0C"/><stop offset="1" stop-color="#0C0C0C" stop-opacity=".18"/></linearGradient>
+    <linearGradient id="wUp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3F2EF" stop-opacity=".18"/><stop offset="1" stop-color="#F3F2EF"/></linearGradient>
+    <linearGradient id="wDn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3F2EF"/><stop offset="1" stop-color="#F3F2EF" stop-opacity=".18"/></linearGradient>
+  </defs>
+</svg>
+
+<div class="shell">
+  <nav class="index" aria-label="Chapters">
+    <a class="who" href="#top" style="text-decoration:none"><svg data-mark="color" viewBox="0 0 108 132"></svg>Scoreline</a>
+    <ol>
+      <li><a href="#mark"><span>01</span>Mark</a></li>
+      <li><a href="#lockup"><span>02</span>Lockup</a></li>
+      <li><a href="#color"><span>03</span>Color</a></li>
+      <li><a href="#type"><span>04</span>Type</a></li>
+      <li><a href="#motion"><span>05</span>Motion</a></li>
+      <li><a href="#use"><span>06</span>In use</a></li>
+      <li><a href="#misuse"><span>07</span>Misuse</a></li>
+      <li><a href="#kit"><span>08</span>Kit</a></li>
+    </ol>
+    <div class="meta">Brand book v1.0<br>October 2026<br>Design: Turinoz</div>
+  </nav>
+
+  <main>
+    <!-- cover -->
+    <header class="cover" id="top">
+      <div class="top"><a href="../" style="color:inherit;text-decoration:none">← Scoreline case study</a><span>Brand book · v1.0 · Oct 2026</span></div>
+      <div class="mid">
+        <span class="mk bigmark" data-lift aria-hidden="true"><i></i><i></i><i></i></span>
+        <div>
+          <h1>scoreline</h1>
+          <p class="tag">A football app for match nights. Three bars cut from five spectra, set in Hanken Grotesk.</p>
+        </div>
+      </div>
+      <div class="bot"><span>Mark · Lockup · Color · Type · Motion · In use · Misuse · Kit</span><span>Design by Turinoz</span></div>
+    </header>
+
+    <!-- at a glance: the brand sheet -->
+    <section class="ch" id="glance" style="padding-block:24px 96px">
+      <div class="in"><figure style="margin:0;border-radius:20px;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.08)"><img src="scoreline-branding.svg" alt="Scoreline brand sheet: the lockup on black, on the spectrum and on the pastel base; the mark alone; the app icon, a one-color lockup and an avatar; the five spectra and the inks; Hanken Grotesk Medium." width="4800" height="4800" style="display:block;width:100%;height:auto" loading="lazy"></figure>
+      <p class="note" style="margin-top:14px">The whole brand on one sheet. The chapters below explain each part.</p></div>
+    </section>
+
+    <!-- 01 mark -->
+    <section class="ch paper" id="mark">
+      <div class="in">
+        <div class="head"><div class="num">01 / Mark</div><div><h2>Three bars on a 12-unit grid.</h2><p class="lede">Each bar is 3 units wide. The sides are 6 tall, the middle 11. The left bar drops 3 units, the right one 2, so the mark never sits level.</p></div></div>
+        <div class="mark-grid">
+          <div class="plate construct"><span class="lbl">Construction</span><svg id="construct" viewBox="-30 -24 182 186" role="img" aria-label="The mark on a 12-unit grid with its measurements"></svg></div>
+          <div class="rules">
+            <div class="rule"><span class="lbl">Clear space</span><b>One bar width on every side.</b><p>Nothing enters the 3-unit border around the mark: no text, no edge, no other logo.</p></div>
+            <div class="rule"><span class="lbl">Bars</span><b>Left Dusk, middle Violet, right Floodlight.</b><p>The order never changes. Each bar keeps its own spectrum, top to bottom.</p></div>
+            <div class="rule"><span class="lbl">Minimum size</span><b>16 px tall on screen, 6 mm in print.</b>
+              <div class="sizes" id="sizes"></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 lockup -->
+    <section class="ch" id="lockup">
+      <div class="in">
+        <div class="head"><div class="num">02 / Lockup</div><div><h2>The mark leads, the name follows.</h2><p class="lede">One horizontal lockup. The wordmark is Hanken Grotesk Medium in lowercase, outlined. The left bar sits on its baseline.</p></div></div>
+        <div class="lock-hero"><span class="lbl" style="position:absolute;left:20px;top:18px">Primary · on night</span><svg data-lock="color" data-ink="#F3F2EF"></svg></div>
+        <div class="lock-row">
+          <div class="t on-white"><svg data-lock="color" data-ink="#0C0C0C"></svg><span class="lbl">On white</span></div>
+          <div class="t on-field"><svg data-lock="ink" data-ink="#0C0C0C"></svg><span class="lbl">One color · on the field</span></div>
+          <div class="t on-night"><svg data-lock="chalk" data-ink="#F3F2EF"></svg><span class="lbl">One color · chalk on surface</span></div>
+        </div>
+        <div class="space">
+          <svg id="lockspace" viewBox="0 0 560 170" role="img" aria-label="Clear space around the lockup: one bar width"></svg>
+          <div class="rules">
+            <div class="rule"><span class="lbl">Spacing</span><b>Gap between mark and name: 1⅔ bar widths.</b><p>Clear space is one bar width, the same as the mark on its own.</p></div>
+            <div class="rule"><span class="lbl">One color</span><b>When the ground fights the spectra, fade.</b><p>On the field gradient or in a single ink, each bar fades in one color: sides fade up, the middle fades down.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 color -->
+    <section class="ch" id="color" style="background:#0A0A0A">
+      <div class="in">
+        <div class="head"><div class="num">03 / Color</div><div><h2>Five spectra on a night ground.</h2><p class="lede">The app lives at night. Black carries the screen, chalk carries the text, and the spectra arrive only where something matters. Names are taken from the pitch.</p></div></div>
+        <div class="spectra" id="spectra"></div>
+        <div class="inks" id="inks"></div>
+        <div class="ratio">
+          <span class="lbl">How much of each, on a screen</span>
+          <div class="strip"><span style="flex:62;background:#000;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)"></span><span style="flex:16;background:#161616"></span><span style="flex:10;background:#F3F2EF"></span><span style="flex:8;background:linear-gradient(90deg,var(--sp3))"></span><span style="flex:4;background:linear-gradient(90deg,#34E39A 0 40%,#E7C94A 40% 70%,#FF5A5A 70%)"></span></div>
+          <div class="keys"><span>Night 62%</span><span>Surface 16%</span><span>Chalk 10%</span><span>Spectra 8%</span><span>Live, card, red 4%</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 type -->
+    <section class="ch paper" id="type">
+      <div class="in">
+        <div class="head"><div class="num">04 / Type</div><div><h2>Hanken Grotesk, Medium.</h2><p class="lede">One family. Medium for names, scores and titles, Regular for running text. Numbers are always tabular, so a score never jumps when it changes.</p></div></div>
+        <div class="spec">
+          <div>
+            <div class="big">Aa 2–1</div>
+            <div class="glyphs">ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789 ’ – · → ⚽︎</div>
+            <div class="score"><span class="s">ARG 2 – 1 FRA</span><span class="m"><i></i>67’</span></div>
+          </div>
+          <div class="scale">
+            <div><span>56 / 500</span><p style="font-size:56px">Match night</p></div>
+            <div><span>32 / 500</span><p style="font-size:32px">Messi scores</p></div>
+            <div><span>20 / 500</span><p style="font-size:20px">Argentina v France</p></div>
+            <div><span>16 / 400</span><p style="font-size:16px;font-weight:400;letter-spacing:0">Every live game at a glance.</p></div>
+            <div><span>12 / 500</span><p style="font-size:12px;letter-spacing:.06em;text-transform:uppercase">Full time · Lineups</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 motion -->
+    <section class="ch" id="motion">
+      <div class="in">
+        <div class="head"><div class="num">05 / Motion</div><div><h2>The mark moves like a score changing.</h2><p class="lede">Sides go up and come back from below, the middle goes down and comes back from above. Two moves, nothing else.</p></div></div>
+        <div class="moves">
+          <article class="move"><div class="stage"><span class="mk roll" data-move="roll" style="--u:1.5px" aria-hidden="true"><i></i><i></i><i></i></span></div>
+            <div class="cap"><h3>Roll</h3><p>The color rolls inside each bar. For loading and for moments inside the app.</p>
+              <div class="curve"><svg viewBox="-6 -10 112 120" data-curve=".802,.057,.35,1" aria-hidden="true"></svg><div class="code"><code>cubic-bezier(.802, .057, .35, 1) · 800ms · M 0 / L 160 / R 160 · hold 500</code><button class="copy" type="button" data-copy="cubic-bezier(.802, .057, .35, 1)">Copy</button></div></div></div></article>
+          <article class="move"><div class="stage"><span class="mk" data-move="lift" style="--u:1.5px" aria-hidden="true"><i></i><i></i><i></i></span></div>
+            <div class="cap"><h3>Lift</h3><p>The bars travel inside the mark, left to right. This is the header of the case study.</p>
+              <div class="curve"><svg viewBox="-6 -10 112 120" data-curve=".65,0,.35,1" aria-hidden="true"></svg><div class="code"><code>cubic-bezier(.65, 0, .35, 1) · 800ms · L 0 / M 180 / R 440 · hold 1000</code><button class="copy" type="button" data-copy="cubic-bezier(.65, 0, .35, 1)">Copy</button></div></div></div></article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 in use -->
+    <section class="ch paper" id="use">
+      <div class="in">
+        <div class="head"><div class="num">06 / In use</div><div><h2>Where the mark lives.</h2><p class="lede">The app icon, the avatar, the browser tab, the case study header and its call to action.</p></div></div>
+        <div class="use-grid">
+          <div class="u-icon"><svg data-icon viewBox="0 0 180 180" style="width:120px"></svg><span class="lbl">App icon · 180</span></div>
+          <div class="u-avatar"><svg data-avatar viewBox="0 0 180 180" style="width:120px"></svg><span class="lbl">Avatar</span></div>
+          <div class="u-fav"><div class="fav"><figure><div class="tab"><svg data-mark="color" viewBox="0 0 108 132" style="width:11px"></svg>Scoreline · Turinoz</div></figure></div><span class="lbl">Browser tab · 16</span></div>
+          <div class="u-header"><div class="navbar"><span class="back"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6H2M5.2 2.8 2 6l3.2 3.2"/></svg></span><span class="mk" data-move="lift" style="--u:.167px" aria-hidden="true"><i></i><i></i><i></i></span><b>Scoreline</b><em>Case study</em><span class="links"><span>Tour</span><span>System</span><span>Motion</span></span></div><span class="lbl">Case study header · Lift</span></div>
+          <div class="u-btn"><span class="cta"><span class="lab">Try it live</span><span class="board"><i></i>67’</span></span><span class="lbl">Call to action</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07 misuse -->
+    <section class="ch paper" id="misuse" style="background:var(--stone)">
+      <div class="in">
+        <div class="head"><div class="num">07 / Misuse</div><div><h2>Six things the mark never does.</h2></div></div>
+        <div class="dont" id="dont"></div>
+      </div>
+    </section>
+
+    <!-- 08 kit -->
+    <section class="ch" id="kit">
+      <div class="in">
+        <div class="head"><div class="num">08 / Kit</div><div><h2>Everything, in one folder.</h2><p class="lede">One zip with the vectors, the exports, the tokens for code and this book as a PDF. File names say what is inside.</p></div></div>
+        <div class="kit">
+          <div class="tree" aria-label="Kit folder"><b>scoreline-brand-kit/</b>
+├─ <b>01-mark/</b>
+│  ├─ scoreline-mark.svg
+│  ├─ scoreline-mark-ink.svg        <em>one color, dark</em>
+│  ├─ scoreline-mark-chalk.svg      <em>one color, light</em>
+│  └─ scoreline-mark@1024.png
+├─ <b>02-lockup/</b>
+│  ├─ scoreline-lockup-night.svg    <em>+ @2x.png</em>
+│  ├─ scoreline-lockup-white.svg    <em>+ @2x.png</em>
+│  ├─ scoreline-lockup-ink.svg
+│  └─ scoreline-lockup-chalk.svg
+├─ <b>03-icon/</b>
+│  ├─ scoreline-icon.svg  icon-1024.png  icon-180.png
+│  ├─ scoreline-avatar.svg  avatar-1024.png
+│  └─ favicon.svg  favicon-32.png
+├─ <b>04-motion/</b>
+│  ├─ scoreline-lift.json  scoreline-lift.mp4   <em>Lottie</em>
+│  └─ scoreline-roll.json  scoreline-roll.mp4   <em>Lottie</em>
+├─ <b>05-tokens/</b>
+│  └─ scoreline.css  scoreline.json
+├─ scoreline-brand-book.pdf
+├─ scoreline-brand-sheet.svg  <em>+ .png</em>
+└─ README.md</div>
+          <div class="tokens">
+            <span class="lbl">05-tokens / scoreline.css</span>
+            <pre id="tokens"></pre>
+            <div class="btnrow"><a class="chip" href="Scoreline-Brand-Kit.zip" download>Download kit · zip 1.4 MB</a><a class="chip" href="scoreline-brand-book.pdf" download>Book · PDF</a><a class="chip" href="scoreline-branding.svg" download>Brand sheet · SVG</a><button class="chip" type="button" id="copyTokens">Copy tokens</button></div>
+            <p class="note">Each export is checked at its real size before it goes in the folder.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer><span>Scoreline brand book · v1.0</span><span>Design by Turinoz · 2026</span></footer>
+  </main>
 </div>
+
 <script>
-// the mark in motion: a roll and a lift, each with its own curve and delays (ms, order L M R)
+const WM = "M233.99993896484375 8.60003662109375Q182.39984130859375 8.60003662109375 141.99981689453125 -6.699981689453125Q101.59979248046875 -22.0 73.19979858398438 -46.5999755859375Q44.7998046875 -71.199951171875 27.59979248046875 -97.1998291015625L95.2003173828125 -155.2003173828125Q113.80029296875 -120.60052490234375 149.3001708984375 -96.40054321289062Q184.800048828125 -72.2005615234375 234.99993896484375 -72.2005615234375Q278.5997314453125 -72.2005615234375 304.1995849609375 -90.50045776367188Q329.7994384765625 -108.80035400390625 329.7994384765625 -138.60009765625Q329.7994384765625 -163.39990234375 313.99951171875 -177.7998046875Q298.1995849609375 -192.19970703125 272.19970703125 -201.49966430664062Q246.1998291015625 -210.79962158203125 215.199951171875 -218.39959716796875Q187.199951171875 -225.599609375 158.2999267578125 -235.69961547851562Q129.39990234375 -245.79962158203125 105.69985961914062 -261.2996520996094Q81.99981689453125 -276.7996826171875 67.49978637695312 -301.39971923828125Q52.999755859375 -325.999755859375 52.999755859375 -362.1998291015625Q52.999755859375 -424.7999267578125 101.6998291015625 -463.1999816894531Q150.39990234375 -501.60003662109375 229.60003662109375 -501.60003662109375Q286.60009765625 -501.60003662109375 333.70013427734375 -478.2000427246094Q380.8001708984375 -454.800048828125 407.40020751953125 -408.60009765625L345.79974365234375 -361.7996826171875Q326.19976806640625 -394.59954833984375 294.7998352050781 -409.7995300292969Q263.39990234375 -424.99951171875 226.4000244140625 -424.99951171875Q190.80023193359375 -424.99951171875 167.20037841796875 -410.599609375Q143.60052490234375 -396.19970703125 143.60052490234375 -371.39990234375Q143.60052490234375 -353.00006103515625 154.50045776367188 -341.400146484375Q165.400390625 -329.80023193359375 187.60031127929688 -321.5002746582031Q209.80023193359375 -313.2003173828125 243.00018310546875 -305.2003173828125Q273.60015869140625 -298.2003173828125 305.60015869140625 -288.2003173828125Q337.60015869140625 -278.2003173828125 364.9001770019531 -261.9002990722656Q392.2001953125 -245.60028076171875 409.0002136230469 -218.60025024414062Q425.80023193359375 -191.6002197265625 425.80023193359375 -149.2001953125Q425.80023193359375 -102.20013427734375 402.1001892089844 -66.40008544921875Q378.400146484375 -30.60003662109375 335.3000793457031 -11.0Q292.20001220703125 8.60003662109375 233.99993896484375 8.60003662109375Z M703.4000244140625 8.60003662109375Q646.7999267578125 8.60003662109375 603.4998779296875 -11.79998779296875Q560.1998291015625 -32.20001220703125 530.7998046875 -68.00003051757812Q501.3997802734375 -103.800048828125 486.3997802734375 -149.800048828125Q471.3997802734375 -195.800048828125 471.3997802734375 -247.0Q471.3997802734375 -297.39996337890625 486.3997802734375 -343.39996337890625Q501.3997802734375 -389.39996337890625 530.7998046875 -425.0999755859375Q560.1998291015625 -460.79998779296875 603.4998779296875 -481.20001220703125Q646.7999267578125 -501.60003662109375 703.4000244140625 -501.60003662109375Q775.0001220703125 -501.60003662109375 828.4001770019531 -467.0Q881.8002319335938 -432.39996337890625 907.4002685546875 -361.19989013671875L821.1995849609375 -327.599609375Q807.9996337890625 -367.39947509765625 779.0997619628906 -392.19940185546875Q750.1998901367188 -416.99932861328125 703.4000244140625 -416.99932861328125Q657.2001953125 -416.99932861328125 627.3003234863281 -392.4994201660156Q597.4004516601562 -367.99951171875 583.1005249023438 -329.399658203125Q568.8005981445312 -290.7998046875 568.8005981445312 -247.0Q568.8005981445312 -203.2001953125 583.1005249023438 -164.100341796875Q597.4004516601562 -125.00048828125 627.3003234863281 -100.90057373046875Q657.2001953125 -76.8006591796875 703.4000244140625 -76.8006591796875Q750.1998901367188 -76.8006591796875 779.0997619628906 -101.20059204101562Q807.9996337890625 -125.60052490234375 821.1995849609375 -166.20037841796875L907.4002685546875 -132.60009765625Q881.8002319335938 -61.4000244140625 828.4001770019531 -26.399993896484375Q775.0001220703125 8.60003662109375 703.4000244140625 8.60003662109375Z M1188.2064450747007 8.60003662109375Q1118.39990234375 8.60003662109375 1063.2998657226562 -24.0999755859375Q1008.1998291015625 -56.79998779296875 976.7998046875 -114.8878719445431Q945.3997802734375 -172.97575609611744 945.3997802734375 -247.08788415157434Q945.3997802734375 -321.20001220703125 976.3998107910156 -378.8000183105469Q1007.3998413085938 -436.4000244140625 1062.4998779296875 -469.0000305175781Q1117.5999145507812 -501.60003662109375 1188.199951171875 -501.60003662109375Q1258.7999877929688 -501.60003662109375 1312.9964800050273 -469.0232602817806Q1367.1929722170858 -436.4464839424674 1398.5965471436991 -378.81064888060564Q1430.0001220703125 -321.17481381874387 1430.0001220703125 -247.0Q1430.0001220703125 -173.0 1398.6377622926389 -115.3093806314205Q1367.2754025149654 -57.61876126284099 1312.6441951603083 -24.50936232087362Q1258.0129878056514 8.60003662109375 1188.2064450747007 8.60003662109375ZM1188.2694290964228 -77.8006591796875Q1232.3997802734375 -77.8006591796875 1264.5996398925781 -98.7005615234375Q1296.7994995117188 -119.6004638671875 1314.2994079589844 -157.7003173828125Q1331.79931640625 -195.8001708984375 1331.79931640625 -247.02568964127008Q1331.79931640625 -299.1998291015625 1314.2994079589844 -337.09967041015625Q1296.7994995117188 -374.99951171875 1264.5996398925781 -395.4994201660156Q1232.3997802734375 -415.99932861328125 1188.2694290964228 -415.99932861328125Q1143.2001342773438 -415.99932861328125 1110.6002807617188 -395.09942626953125Q1078.0004272460938 -374.19952392578125 1060.4005126953125 -336.6996765136719Q1042.8005981445312 -299.1998291015625 1042.8005981445312 -247.02568964127008Q1042.8005981445312 -195.8001708984375 1060.4005126953125 -157.7003173828125Q1078.0004272460938 -119.6004638671875 1110.6002807617188 -98.7005615234375Q1143.2001342773438 -77.8006591796875 1188.2694290964228 -77.8006591796875Z M1498.3997802734375 0.0V-493.0H1596.8005981445312V-360.39996337890625L1575.6006469726562 -356.4000244140625Q1581.4005737304688 -400.0 1606.7005004882812 -432.6000061035156Q1632.0004272460938 -465.20001220703125 1666.900390625 -483.4000244140625Q1701.8003540039062 -501.60003662109375 1736.0003662109375 -501.60003662109375Q1759.6004028320312 -501.60003662109375 1781.1004333496094 -496.1000061035156Q1802.6004638671875 -490.5999755859375 1825.4005126953125 -477.59991455078125L1777.400146484375 -389.59918212890625Q1765.8001708984375 -395.7991943359375 1749.0001525878906 -400.0992126464844Q1732.2001342773438 -404.39923095703125 1716.60009765625 -404.39923095703125Q1694.0001831054688 -404.39923095703125 1672.1002807617188 -395.999267578125Q1650.2003784179688 -387.59930419921875 1632.7004699707031 -369.8993835449219Q1615.2005615234375 -352.199462890625 1605.8005981445312 -322.79962158203125Q1601.6005859375 -308.79962158203125 1599.1005859375 -286.4996337890625Q1596.6005859375 -264.19964599609375 1596.6005859375 -224.599609375V0.0Z M2051.4000244140625 8.60003662109375Q1991.39990234375 8.60003662109375 1946.9998474121094 -11.29998779296875Q1902.5997924804688 -31.20001220703125 1873.7997741699219 -66.50003051757812Q1844.999755859375 -101.800048828125 1830.6997680664062 -147.300048828125Q1816.3997802734375 -192.800048828125 1816.3997802734375 -243.20001220703125Q1816.3997802734375 -293.199951171875 1830.2997741699219 -339.5999450683594Q1844.1997680664062 -385.99993896484375 1871.8997802734375 -422.39996337890625Q1899.5997924804688 -458.79998779296875 1942.4998474121094 -480.20001220703125Q1985.39990234375 -501.60003662109375 2043.4000244140625 -501.60003662109375Q2100.6000366210938 -501.60003662109375 2142.600067138672 -482.10003662109375Q2184.60009765625 -462.60003662109375 2211.7001342773438 -428.4000244140625Q2238.8001708984375 -394.20001220703125 2252.2001953125 -350.99993896484375Q2265.6002197265625 -307.79986572265625 2265.6002197265625 -260.39971923828125Q2265.6002197265625 -255.19964599609375 2265.1002197265625 -241.39968872070312Q2264.6002197265625 -227.5997314453125 2262.6002197265625 -215.59967041015625H1913.8005981445312Q1917.400634765625 -150.00006103515625 1954.9005432128906 -114.40032958984375Q1992.4004516601562 -78.80059814453125 2054.2001342773438 -78.80059814453125Q2095.800048828125 -78.80059814453125 2129.0001220703125 -92.50057983398438Q2162.2001953125 -106.2005615234375 2190.2001953125 -135.40045166015625L2250.2002563476562 -72.59979248046875Q2220.8001098632812 -44.1998291015625 2190.4000854492188 -26.29986572265625Q2160.0000610351562 -8.39990234375 2126.5000610351562 0.100067138671875Q2093.0000610351562 8.60003662109375 2051.4000244140625 8.60003662109375ZM2168.7994384765625 -265.00006103515625Q2170.7994384765625 -273.00006103515625 2171.4994506835938 -281.00006103515625Q2172.199462890625 -289.00006103515625 2172.199462890625 -296.800048828125Q2172.199462890625 -319.79998779296875 2163.999481201172 -341.8998718261719Q2155.7994995117188 -363.999755859375 2140.0995483398438 -381.5996398925781Q2124.3995971679688 -399.19952392578125 2100.7997131347656 -409.49945068359375Q2077.1998291015625 -419.79937744140625 2045.6000366210938 -419.79937744140625Q2004.6001586914062 -419.79937744140625 1975.7002868652344 -401.39947509765625Q1946.8004150390625 -382.99957275390625 1931.2005004882812 -353.19976806640625Q1915.6005859375 -323.39996337890625 1912.6005859375 -288.20025634765625H2201.19970703125Z M2438.60009765625 8.60003662109375Q2391.7999877929688 8.60003662109375 2361.9998779296875 -20.300018310546875Q2332.1997680664062 -49.2000732421875 2332.1997680664062 -112.2001953125V-697.0H2429.4005737304688V-131.0003662109375Q2429.4005737304688 -104.800537109375 2440.7005310058594 -93.20062255859375Q2452.00048828125 -81.6007080078125 2470.6004028320312 -81.6007080078125Q2479.400390625 -81.6007080078125 2489.7003479003906 -83.50070190429688Q2500.0003051757812 -85.40069580078125 2511.2002563476562 -89.00067138671875V-5.79998779296875Q2493.0001831054688 1.60003662109375 2473.5001525878906 5.10003662109375Q2454.0001220703125 8.60003662109375 2438.60009765625 8.60003662109375Z M2557.3997802734375 0.0V-493.0H2654.8005981445312V0.0ZM2550.7998657226562 -577.7997436523438V-697.0H2661.6005249023438V-577.7997436523438Z M2745.3997802734375 0.0V-493.0H2843.6005859375V-385.79986572265625L2823.6005859375 -380.199951171875Q2837.2005615234375 -420.60009765625 2861.6005859375 -447.30010986328125Q2886.0006103515625 -474.0001220703125 2919.7005920410156 -487.8000793457031Q2953.4005737304688 -501.60003662109375 2992.4004516601562 -501.60003662109375Q3074.4005126953125 -501.60003662109375 3120.800537109375 -454.10003662109375Q3167.2005615234375 -406.60003662109375 3167.2005615234375 -316.00018310546875V0.0H3068.999755859375V-279.9998779296875Q3068.999755859375 -350.599609375 3043.2998657226562 -383.7994689941406Q3017.5999755859375 -416.99932861328125 2964.6001586914062 -416.99932861328125Q2925.4002685546875 -416.99932861328125 2898.5003662109375 -398.79937744140625Q2871.6004638671875 -380.59942626953125 2857.6005249023438 -341.8995361328125Q2843.6005859375 -303.19964599609375 2843.6005859375 -242.7998046875V0.0Z M3465.4000244140625 8.60003662109375Q3405.39990234375 8.60003662109375 3360.9998474121094 -11.29998779296875Q3316.5997924804688 -31.20001220703125 3287.799774169922 -66.50003051757812Q3258.999755859375 -101.800048828125 3244.6997680664062 -147.300048828125Q3230.3997802734375 -192.800048828125 3230.3997802734375 -243.20001220703125Q3230.3997802734375 -293.199951171875 3244.299774169922 -339.5999450683594Q3258.1997680664062 -385.99993896484375 3285.8997802734375 -422.39996337890625Q3313.5997924804688 -458.79998779296875 3356.4998474121094 -480.20001220703125Q3399.39990234375 -501.60003662109375 3457.4000244140625 -501.60003662109375Q3514.6000366210938 -501.60003662109375 3556.600067138672 -482.10003662109375Q3598.60009765625 -462.60003662109375 3625.7001342773438 -428.4000244140625Q3652.8001708984375 -394.20001220703125 3666.2001953125 -350.99993896484375Q3679.6002197265625 -307.79986572265625 3679.6002197265625 -260.39971923828125Q3679.6002197265625 -255.19964599609375 3679.1002197265625 -241.39968872070312Q3678.6002197265625 -227.5997314453125 3676.6002197265625 -215.59967041015625H3327.8005981445312Q3331.400634765625 -150.00006103515625 3368.9005432128906 -114.40032958984375Q3406.4004516601562 -78.80059814453125 3468.2001342773438 -78.80059814453125Q3509.800048828125 -78.80059814453125 3543.0001220703125 -92.50057983398438Q3576.2001953125 -106.2005615234375 3604.2001953125 -135.40045166015625L3664.2002563476562 -72.59979248046875Q3634.8001098632812 -44.1998291015625 3604.4000854492188 -26.29986572265625Q3574.0000610351562 -8.39990234375 3540.5000610351562 0.100067138671875Q3507.0000610351562 8.60003662109375 3465.4000244140625 8.60003662109375ZM3582.7994384765625 -265.00006103515625Q3584.7994384765625 -273.00006103515625 3585.4994506835938 -281.00006103515625Q3586.199462890625 -289.00006103515625 3586.199462890625 -296.800048828125Q3586.199462890625 -319.79998779296875 3577.999481201172 -341.8998718261719Q3569.7994995117188 -363.999755859375 3554.0995483398438 -381.5996398925781Q3538.3995971679688 -399.19952392578125 3514.7997131347656 -409.49945068359375Q3491.1998291015625 -419.79937744140625 3459.6000366210938 -419.79937744140625Q3418.6001586914062 -419.79937744140625 3389.7002868652344 -401.39947509765625Q3360.8004150390625 -382.99957275390625 3345.2005004882812 -353.19976806640625Q3329.6005859375 -323.39996337890625 3326.6005859375 -288.20025634765625H3615.19970703125Z";
+const BARS=[{x:0,y:36,h:72,g:"g2",up:true},{x:36,y:0,h:132,g:"g3",up:false},{x:72,y:24,h:72,g:"g5",up:true}];
+const NS="http://www.w3.org/2000/svg";
+function fill(b,kind){return kind==="color"?`url(#${b.g})`:kind==="ink"?`url(#${b.up?"kUp":"kDn"})`:kind==="chalk"?`url(#${b.up?"wUp":"wDn"})`:kind}
+function markRects(kind,ox=0,oy=0,s=1){return BARS.map(b=>`<rect x="${ox+b.x*s}" y="${oy+b.y*s}" width="${36*s}" height="${b.h*s}" fill="${fill(b,kind)}"/>`).join("")}
+// marks
+document.querySelectorAll("svg[data-mark]").forEach(el=>{el.innerHTML=markRects(el.dataset.mark)});
+// lockups: same geometry as scoreline-lockup-dark.svg, cropped to 80 80 484 88
+document.querySelectorAll("svg[data-lock]").forEach(el=>{
+  el.setAttribute("viewBox","80 80 484 88");
+  el.innerHTML=markRects(el.dataset.lock,80,80,24/36)+`<path transform="translate(192 152) scale(.1)" d="${WM}" fill="${el.dataset.ink}"/>`;
+});
+// app icon + avatar
+document.querySelectorAll("svg[data-icon]").forEach(el=>{el.innerHTML=`<rect width="180" height="180" rx="36" fill="#000"/>`+markRects("color",36,24)});
+document.querySelectorAll("svg[data-avatar]").forEach(el=>{el.innerHTML=`<circle cx="90" cy="90" r="90" fill="#000"/>`+markRects("color",36,24)});
+
+// construction drawing on the 12-unit grid
+(()=>{const el=document.getElementById("construct");let g="";
+  for(let x=0;x<=108;x+=12)g+=`<line x1="${x}" y1="0" x2="${x}" y2="132" stroke="#0C0C0C" stroke-opacity="${x%36?0.08:0.2}" stroke-width=".5"/>`;
+  for(let y=0;y<=132;y+=12)g+=`<line x1="0" y1="${y}" x2="108" y2="${y}" stroke="#0C0C0C" stroke-opacity=".08" stroke-width=".5"/>`;
+  g+=markRects("color");
+  const t=(x,y,s,a="middle")=>`<text x="${x}" y="${y}" font-family="JetBrains Mono,monospace" font-size="5.5" fill="#46453F" text-anchor="${a}">${s}</text>`;
+  const dim=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#6B58F5" stroke-width=".6"/>`;
+  g+=dim(0,-8,36,-8)+t(18,-11,"3")+dim(36,-8,72,-8)+t(54,-11,"3")+dim(72,-8,108,-8)+t(90,-11,"3");
+  g+=dim(-8,36,-8,108)+t(-11,74,"6","end")+dim(-8,0,-8,36)+t(-11,20,"3","end");
+  g+=dim(116,24,116,96)+t(119,62,"6","start")+dim(134,0,134,132)+t(137,68,"11","start");
+  g+=t(54,148,"1 unit = 12 · the mark is 9 × 11");
+  el.innerHTML=g;
+})();
+// minimum sizes
+(()=>{const el=document.getElementById("sizes");
+  el.innerHTML=[64,32,24,16].map(h=>`<figure><svg viewBox="0 0 108 132" style="height:${h}px;width:auto">${markRects("color")}</svg><figcaption>${h}px</figcaption></figure>`).join("");})();
+// lockup clear space
+(()=>{const el=document.getElementById("lockspace");const s=24/36,x0=48,y0=41,bw=24;
+  let g=`<rect x="0" y="0" width="560" height="170" rx="16" fill="#161616"/>`;
+  g+=`<rect x="${x0-bw}" y="${y0-bw}" width="${484+2*bw}" height="${88+2*bw}" fill="none" stroke="#6B58F5" stroke-dasharray="3 3" stroke-width="1"/>`;
+  g+=`<g transform="translate(${x0-80} ${y0-80})">${markRects("color",80,80,s)}<path transform="translate(192 152) scale(.1)" d="${WM}" fill="#F3F2EF"/></g>`;
+  g+=`<rect x="${x0}" y="${y0-bw}" width="${bw}" height="${bw}" fill="#6B58F5" fill-opacity=".35"/><text x="${x0+bw/2}" y="${y0-bw/2+3}" font-size="8" font-family="JetBrains Mono" fill="#F3F2EF" text-anchor="middle">x</text>`;
+  g+=`<rect x="${x0-bw}" y="${y0+20}" width="${bw}" height="${bw}" fill="#6B58F5" fill-opacity=".35"/><text x="${x0-bw/2}" y="${y0+32+3}" font-size="8" font-family="JetBrains Mono" fill="#F3F2EF" text-anchor="middle">x</text>`;
+  el.innerHTML=g;})();
+
+// colour
+const SPECTRA=[
+  ["Violet","sp3","The lead. The middle bar, the call to action.",["#6B58F5","#A58FE6","#E7C1D6","#FFF0E6"]],
+  ["Dusk","sp2","The left bar. Evening kick-offs.",["#6AAEF0","#C9B8E0","#F2B3C9","#B0243C"]],
+  ["Floodlight","sp5","The right bar. Lights on the pitch.",["#A8C3EA","#E2E2E4","#C9C92A","#F0EED0"]],
+  ["Pitch","sp4","Grass into pink. Stats and charts.",["#3D6A45","#89A987","#E9B8CF","#F6BDD6"]],
+  ["Warm-up","sp1","Soft pink into orange. Rare.",["#F7B9D0","#F9DCD6","#FBE9DF","#F2A132"]]];
+document.getElementById("spectra").innerHTML=SPECTRA.map(([n,v,u,st])=>`<div class="sp"><div class="bar" style="background:linear-gradient(180deg,var(--${v}))"></div><h3>${n}</h3><p class="use">${u}</p><div class="stops">${st.map(h=>`<button class="copy" type="button" data-copy="${h}"><i style="background:${h}"></i>${h}</button>`).join("")}</div></div>`).join("");
+const INKS=[["Night","#000000","The ground","#F3F2EF"],["Surface","#161616","Cards and sheets","#F3F2EF"],["Faint","#43423F","Lines, quiet labels","#F3F2EF"],["Muted","#85847F","Secondary text","#0C0C0C"],
+  ["Chalk","#F3F2EF","Text on night","#0C0C0C"],["Live","#34E39A","Only for live","#0C0C0C"],["Card","#E7C94A","Yellow card","#0C0C0C"],["Red","#FF5A5A","Red card, alerts","#0C0C0C"]];
+document.getElementById("inks").innerHTML=INKS.map(([n,h,u,c])=>`<div class="ink" style="background:${h};color:${c}"><div><b>${n}</b><small>${u}</small></div><button class="copy" type="button" data-copy="${h}">${h}</button></div>`).join("");
+
+// misuse
+const DONT=[
+  ["Don’t rotate it.",`<g transform="rotate(-18 54 66)">${markRects("color")}</g>`],
+  ["Don’t change the bar order.",markRects("color").replace('url(#g2)','TMP').replace('url(#g5)','url(#g2)').replace('TMP','url(#g5)')],
+  ["Don’t flatten the spectra.",markRects("#6B58F5")],
+  ["Don’t stretch it.",`<g transform="scale(1.6 .7) translate(-20 28)">${markRects("color")}</g>`],
+  ["Don’t level the bars.",BARS.map(b=>`<rect x="${b.x}" y="${132-b.h}" width="36" height="${b.h}" fill="url(#${b.g})"/>`).join("")],
+  ["Don’t put full color on the field.",markRects("color")]];
+document.getElementById("dont").innerHTML=`<svg width="0" height="0" style="position:absolute"><defs><linearGradient id="fieldG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF0E6"/><stop offset=".24" stop-color="#E7C1D6"/><stop offset=".6" stop-color="#A58FE6"/><stop offset="1" stop-color="#6B58F5"/></linearGradient></defs></svg>`+
+  DONT.map(([c,s],i)=>`<figure><div class="s" ${i===5?'style="background:var(--field)"':''}><svg viewBox="0 0 108 132">${s}</svg></div><figcaption>${c}</figcaption></figure>`).join("");
+
+// tokens
+const TOK=`:root {
+  /* spectra */
+  --sl-violet: linear-gradient(180deg, #6B58F5 0%, #A58FE6 40%, #E7C1D6 76%, #FFF0E6 100%);
+  --sl-dusk: linear-gradient(180deg, #6AAEF0 0%, #C9B8E0 34%, #F2B3C9 58%, #B0243C 100%);
+  --sl-floodlight: linear-gradient(180deg, #A8C3EA 0%, #E2E2E4 38%, #C9C92A 68%, #F0EED0 100%);
+  --sl-pitch: linear-gradient(180deg, #3D6A45 0%, #89A987 45%, #E9B8CF 85%, #F6BDD6 100%);
+  --sl-warmup: linear-gradient(180deg, #F7B9D0 0%, #F9DCD6 55%, #FBE9DF 76%, #F2A132 100%);
+  /* inks */
+  --sl-night: #000000;  --sl-surface: #161616;
+  --sl-faint: #43423F;  --sl-muted: #85847F;
+  --sl-chalk: #F3F2EF;  --sl-paper: #F7F2EA;
+  --sl-live: #34E39A;   --sl-card: #E7C94A;  --sl-red: #FF5A5A;
+  /* type */
+  --sl-font: "Hanken Grotesk", system-ui, sans-serif;
+  /* motion */
+  --sl-roll: cubic-bezier(.802, .057, .35, 1);
+  --sl-lift: cubic-bezier(.65, 0, .35, 1);
+  --sl-move: 800ms;
+}`;
+document.getElementById("tokens").textContent=TOK;
+
+// copy
+function copyText(t,btn){const ok=()=>{btn.classList.add("done");setTimeout(()=>btn.classList.remove("done"),1100)};
+  navigator.clipboard?.writeText(t).then(ok).catch(()=>{});}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-copy]");if(b){copyText(b.dataset.copy,b)}});
+document.getElementById("copyTokens").addEventListener("click",e=>copyText(TOK,e.currentTarget));
+
+// curve thumbnails
+document.querySelectorAll("svg[data-curve]").forEach(el=>{const [a,b,c,d]=el.dataset.curve.split(",").map(Number);
+  el.innerHTML=`<rect x="0" y="0" width="100" height="100" fill="none" stroke="#43423F" stroke-width="1"/><line x1="0" y1="100" x2="${a*100}" y2="${100-b*100}" stroke="#6B58F5" stroke-width="1"/><line x1="100" y1="0" x2="${c*100}" y2="${100-d*100}" stroke="#6B58F5" stroke-width="1"/><path d="M0 100 C${a*100} ${100-b*100} ${c*100} ${100-d*100} 100 0" fill="none" stroke="#F3F2EF" stroke-width="2.5"/><circle cx="${a*100}" cy="${100-b*100}" r="3.5" fill="#6B58F5"/><circle cx="${c*100}" cy="${100-d*100}" r="3.5" fill="#6B58F5"/>`});
+
+// motion
 (()=>{
-  const MOVES=[
-    {b:[.802,.057,.35,1],dur:800,delay:[160,0,160],hold:500},
-    {b:[.65,0,.35,1],dur:800,delay:[0,180,440],hold:500}];
   function bez(B){const cx=3*B[0],bx=3*(B[2]-B[0])-cx,ax=1-cx-bx,cy=3*B[1],by=3*(B[3]-B[1])-cy,ay=1-cy-by;
     const X=t=>((ax*t+bx)*t+cx)*t,Y=t=>((ay*t+by)*t+cy)*t;
-    return x=>{if(x<=0)return 0;if(x>=1)return 1;let lo=0,hi=1,t=x;for(let i=0;i<30;i++){t=(lo+hi)/2;X(t)<x?lo=t:hi=t}return Y(t)}}
-  MOVES.forEach(m=>{m.ease=bez(m.b);m.cycle=Math.max(...m.delay)+m.dur+m.hold});
-  const marks=[...document.querySelectorAll('[data-mo]')];
-  if(!marks.length||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+    return x=>{if(x<=0)return 0;if(x>=1)return 1;let lo=0,hi=1,t=x;for(let i=0;i<24;i++){t=(lo+hi)/2;X(t)<x?lo=t:hi=t}return Y(t)}}
+  const M={roll:{e:bez([.802,.057,.35,1]),dur:800,d:[160,0,160],hold:500},lift:{e:bez([.65,0,.35,1]),dur:800,d:[0,180,440],hold:1000}};
+  Object.values(M).forEach(m=>m.cycle=Math.max(...m.d)+m.dur+m.hold);
+  const els=[...document.querySelectorAll("[data-move],[data-lift]")];
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  let on=new Set(els);
+  if("IntersectionObserver" in window){on=new Set();const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting?on.add(e.target):on.delete(e.target)));els.forEach(m=>io.observe(m))}
   const t0=performance.now();
-  let on=new Set(marks);
-  if('IntersectionObserver'in window){on=new Set();const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting?on.add(e.target):on.delete(e.target)));marks.forEach(m=>io.observe(m))}
-  function frame(now){
-    on.forEach(mk=>{
-      const m=MOVES[+mk.dataset.mo],el=(now-t0)%m.cycle,H=mk.clientHeight;
-      [...mk.children].forEach((bar,i)=>{
-        // sides go up and come back from below, the middle goes down and comes back from above
-        const e=m.ease((el-m.delay[i])/m.dur),dir=i===1?1:-1,h=bar.offsetHeight,r=bar.offsetTop,D=H+h;
-        if(mk.classList.contains('roll')){bar.style.backgroundPosition=`0 ${dir*e*h}px`;return}
-        let top=r+dir*e*D;top=((top+h)%D+D)%D-h;if(e===0||e===1)top=r;
-        bar.style.transform=`translateY(${top-r}px)`;
-      });
-    });
-    requestAnimationFrame(frame);
-  }
-  requestAnimationFrame(frame);
+  (function frame(now){
+    on.forEach(mk=>{const kind=mk.dataset.move||"lift",m=M[kind],el=(now-t0)%m.cycle,H=mk.clientHeight;
+      [...mk.children].forEach((bar,i)=>{const e=m.e((el-m.d[i])/m.dur),dir=i===1?1:-1,h=bar.offsetHeight;
+        if(kind==="roll"){bar.style.backgroundPosition=`0 ${dir*e*h}px`;return}
+        const r=bar.offsetTop,D=H+h;let top=r+dir*e*D;top=((top+h)%D+D)%D-h;
+        bar.style.transform=(e===0||e===1)?"":`translateY(${top-r}px)`;});});
+    requestAnimationFrame(frame);})(t0);
 })();
+
+// chapter index follows the scroll
+(()=>{const links=[...document.querySelectorAll(".index a")];const map=new Map(links.map(a=>[a.getAttribute("href").slice(1),a]));
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){links.forEach(a=>a.classList.remove("on"));map.get(e.target.id)?.classList.add("on")}}),{rootMargin:"-45% 0px -50% 0px"});
+  map.forEach((a,id)=>{const s=document.getElementById(id);s&&io.observe(s)});})();
 </script>
 </body>
 </html>
