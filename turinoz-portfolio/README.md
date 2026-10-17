@@ -41,7 +41,11 @@ smtp/                   smtp.dev product film case study
   film-data.js          the colors of the three films, measured from their frames
   assets/               the full films, stills, styleframes, thumbnails; media-manifest.json lists them
 sitemate/               Storm motion system page (the Sitemate case study)
-  films/, sprites/      its videos and sketch sheets, loaded only when scrolled to
+  films/, sprites/      its videos and sketch sheets, loaded only when scrolled to.
+                        Each film: <key>-540 / -900, .av1.mp4 + .mp4 (H.264), posters .webp / -960.webp.
+                        540p for screens under ~1000 device px, Save-Data, 2g/3g or ≤2 GB memory;
+                        AV1 only where MediaCapabilities says smooth + power-efficient.
+  share-cover.jpg       1200×630 link-preview image (og:image, absolute URL)
 scoreline/              Scoreline case study (the live football app), and the app itself
   index.html            the page
   case-study.css        its styles (black, in the app's own night and spectra)
@@ -241,8 +245,8 @@ python -m http.server 8000
   `start-testing-final.webp`) and the closing quote under the credits.
 - Previewing locally needs a server that answers byte ranges, or the films can't seek
   (Python's `http.server` doesn't; `npx serve` or Netlify do).
-- After deploying, set `og:image` in `smtp/index.html` to the absolute URL of
-  `smtp/assets/share-cover-v1.jpg`.
+- `og:image` in `smtp/index.html` is the absolute URL of `smtp/assets/share-cover-v1.jpg`
+  (link previews need a full URL).
 
 
 ## Scoreline tile (row 4, two columns, in the Live score concept's place)
@@ -294,5 +298,5 @@ python -m http.server 8000
   two players the arrows lead to are fetched once his own is in. The Motion stage's Player scene
   holds on its first frame until its photo is drawable (4 s at most), and asks for the same
   AVIF/WebP file as the app, so the two share the cache.
-- After deploying, set `og:image` in `scoreline/index.html` to the absolute URL of
-  `scoreline/assets/share-cover.jpg`.
+- `og:image` in `scoreline/index.html` is the absolute URL of `scoreline/assets/share-cover.jpg`
+  (link previews need a full URL).
