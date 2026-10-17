@@ -22331,11 +22331,15 @@ gsap.to(".el", { duration: ${durSec}, ease: "curve", y: 0 });`;
     if (!workEl || !gbar || !ctool || !plotEl || !stageEl || !cpreEl || !tlEl || !crowsEl || !timingEl) return;
     if (isCurve) {
       workEl.classList.add("cl-flex-work");
+      // Panels go back in front of the rows' own slot and grips, and the B bar stays in
+      // the timeline, so a trip to Inspect and back leaves Curve exactly as it opened.
       clRowTop.append(gbar, ctool);
-      clRowMain.append(plotEl, stageEl, cpreEl);
-      clRowBot.append(crowsEl, bBarEl, timingEl);
+      clRowMain.prepend(plotEl, stageEl, cpreEl);
+      const slot = clRowMain.querySelector("#clStageSlot");
+      slot && cpreEl.before(slot);
+      clRowBot.prepend(crowsEl, timingEl);
       workEl.prepend(clRowTop, clRowMain);
-      workEl.append(tlEl, clRowBot);
+      tlEl.parentElement === workEl ? tlEl.after(clRowBot) : workEl.append(tlEl, clRowBot);
     } else {
       workEl.classList.remove("cl-flex-work");
       clRowTop.remove();
@@ -22348,7 +22352,7 @@ gsap.to(".el", { duration: ${durSec}, ease: "curve", y: 0 });`;
         f("selCard")?.after(timingEl);
         workEl.prepend(stageEl, cpreEl, ctool);
         f("side")?.after(tlEl);
-        f("holdBox")?.after(bBarEl);
+        bBarEl && f("holdBox")?.after(bBarEl);
       }
     }
     requestAnimationFrame(() => {
@@ -22359,9 +22363,16 @@ gsap.to(".el", { duration: ${durSec}, ease: "curve", y: 0 });`;
     });
   }
   clMountCurveLayout(P.dataset.ws === "curve");
-  f("wsSeg")?.addEventListener("click", () => {
-    requestAnimationFrame(() => clMountCurveLayout(P.dataset.ws === "curve"));
-  });
+  // Every switch re-lays the panels, not just a click on the tabs: opening a page
+  // or the Tab shortcut also changes the workspace.
+  {
+    let clMountedWs = P.dataset.ws;
+    new MutationObserver(() => {
+      if (P.dataset.ws === clMountedWs) return;
+      clMountedWs = P.dataset.ws;
+      clMountCurveLayout(clMountedWs === "curve");
+    }).observe(P, { attributes: !0, attributeFilter: ["data-ws"] });
+  }
 
   // Proportional Flex Resizing Splitters & Smooth ResizeObserver Synchronization
   {
