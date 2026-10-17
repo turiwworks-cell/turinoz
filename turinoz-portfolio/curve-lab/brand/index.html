@@ -6,7 +6,7 @@
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0C0C0B">
 <title>Curve Lab brand</title>
-<meta name="description" content="The Curve Lab mark, lockups, icon, colors and type.">
+<meta name="description" content="The Curve Lab mark, lockups, icon, colors, type and buttons.">
 <link rel="icon" type="image/svg+xml" href="curve-lab-mark.svg">
 <style>
 @font-face{font-family:"Archivo";src:url(../../fonts/archivo.woff2) format("woff2");font-weight:100 900;font-stretch:62% 125%;font-display:swap}
@@ -53,13 +53,54 @@ h1{font:560 clamp(36px,5vw,64px)/1.02 var(--display);font-stretch:84%;letter-spa
 .file .pv img.lk-b{width:56%;max-width:none;max-height:none}
 .file b{font-weight:500}
 .file span{font:500 11px/1.3 var(--mono);color:var(--muted)}
+/* Buttons: the same rules as the Curve Lab page, set once per mode */
+@font-face{font-family:"Geist";src:url(geist.woff2) format("woff2");font-weight:300 600;font-display:swap}
+h2{font:560 clamp(26px,3vw,34px)/1.05 var(--display);font-stretch:84%;letter-spacing:-.03em;margin:64px 0 0}
+.bt{--ease:cubic-bezier(.65,0,.35,1);--ui:cubic-bezier(.2,.8,.2,1);font-family:"Geist",var(--sans)}
+.bt.light{--now:#2C50FF;--on-now:#FFFFFF;--dia:#FFFFFF;--deep:#121211;--lbl:#FFFFFF;--lbl-line:rgba(18,18,17,.14);--k0:#2C50FF;--k1:#E8590C;--k2:#237A30;--on-k0:#FFFFFF;--on-k1:#121211;--on-k2:#FFFFFF}
+.bt.dark{--now:#FF9A4D;--on-now:#121211;--dia:#121211;--deep:#22221F;--lbl:#E9E7E2;--lbl-line:transparent;--k0:#FF9A4D;--k1:#8197FF;--k2:#8FE07A;--on-k0:#121211;--on-k1:#121211;--on-k2:#121211}
+.bt .row{display:flex;flex-wrap:wrap;align-items:center;gap:14px 16px}
+@property --cur{syntax:"<color>";inherits:true;initial-value:#2C50FF}
+@property --on-cur{syntax:"<color>";inherits:true;initial-value:#FFFFFF}
+@property --turn{syntax:"<angle>";inherits:true;initial-value:0deg}
+.cta,.showme{display:inline-flex;align-items:stretch;height:44px;padding:0;border:0;background:none;text-decoration:none;white-space:nowrap;font:inherit;cursor:pointer;transition:transform .3s var(--ui)}
+.cta:active,.showme:active{transform:scale(.985)}
+.cta{--cur:var(--k0);--on-cur:var(--on-k0);animation:turn3 7.8s var(--ease) infinite}
+.showme{--cur:var(--now);--on-cur:var(--on-now)}
+@keyframes turn3{
+  0%,21.8%{--turn:0deg;--cur:var(--k0);--on-cur:var(--on-k0)}
+  33.3%,55.1%{--turn:90deg;--cur:var(--k1);--on-cur:var(--on-k1)}
+  66.7%,88.5%{--turn:180deg;--cur:var(--k2);--on-cur:var(--on-k2)}
+  100%{--turn:270deg;--cur:var(--k0);--on-cur:var(--on-k0)}
+}
+.cta-sq,.showme .pi{flex:none;width:44px;display:grid;place-items:center;border-radius:2px 0 0 2px;background:var(--cur);color:var(--dia);transition:background-color .45s var(--ease),color .45s var(--ease)}
+.cta-lbl,.sm-lbl{position:relative;display:flex;align-items:center;gap:12px;padding:0 16px;border-radius:0 2px 2px 0;background:linear-gradient(var(--cur),var(--cur)) left center/0% 100% no-repeat var(--lbl);color:#121211;box-shadow:inset 0 0 0 1px var(--lbl-line);font-size:14.5px;font-weight:500;letter-spacing:-.015em;word-spacing:-.06em;transition:background-size .55s var(--ease),color .45s var(--ease),box-shadow .45s var(--ease)}
+.sm-lbl{gap:0;padding:0 18px}
+.cta-go{flex:none;width:13px;height:13px;opacity:.5;transition:opacity .45s var(--ease),transform .55s var(--ease)}
+.cta:hover .cta-sq,.cta:focus-visible .cta-sq,.showme:hover .pi,.showme:focus-visible .pi,.showme.run .pi{background:var(--deep);color:var(--cur)}
+.cta:hover .cta-lbl,.cta:focus-visible .cta-lbl,.showme:hover .sm-lbl,.showme:focus-visible .sm-lbl,.showme.run .sm-lbl{background-size:100% 100%;color:var(--on-cur);box-shadow:inset 0 0 0 1px transparent}
+.cta:hover .cta-go,.cta:focus-visible .cta-go{opacity:1;transform:translate(2px,-2px)}
+.dia{width:12px;height:12px;transform:rotate(var(--turn))}
+.dia rect{fill:currentColor}
+.showme .pi svg{grid-area:1/1;width:11px;height:11px;transition:opacity .35s var(--ease),transform .55s var(--ease)}
+.showme .pi .st{opacity:0;transform:rotate(-90deg) scale(.3)}
+.showme.run .pi .pl{opacity:0;transform:rotate(90deg) scale(.3)}
+.showme.run .pi .st{opacity:1;transform:none}
+.sm-size{display:flex;visibility:hidden}
+.sm-size>span{display:grid;grid-template-columns:0fr;transition:grid-template-columns .5s var(--ease) .12s}
+.sm-size>span>span{min-width:0;overflow:hidden}
+.sm-w{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
+.sm-w i{font-style:normal;opacity:0;transition:opacity .16s var(--ease) calc(var(--d) * 30ms)}
+.showme[data-say="show"] .sm-size>[data-w="show"],.showme[data-say="stop"] .sm-size>[data-w="stop"],.showme[data-say="again"] .sm-size>[data-w="again"]{grid-template-columns:1fr}
+.showme[data-say="show"] .sm-w[data-w="show"] i,.showme[data-say="stop"] .sm-w[data-w="stop"] i,.showme[data-say="again"] .sm-w[data-w="again"] i{opacity:1;transition:opacity .34s var(--ease) calc(.36s + var(--d) * var(--step))}
+@media (prefers-reduced-motion:reduce){.cta{animation:none}.sm-size>span,.sm-w i,.showme .sm-w i{transition:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="top"><a href="../">← Curve Lab</a><span class="kicker">Brand</span></div>
   <h1>Curve Lab</h1>
-  <p class="sub">The mark, the lockups, the icon, the colors and the type.</p>
+  <p class="sub">The mark, the lockups, the icon, the colors, the type and the buttons.</p>
   <div class="themes">
     <section class="theme light" aria-label="Light mode">
       <span class="tk">Light mode</span>
@@ -77,6 +118,20 @@ h1{font:560 clamp(36px,5vw,64px)/1.02 var(--display);font-stretch:84%;letter-spa
     <ul class="rows" aria-hidden="true"><li>Lockup</li><li>Mark</li><li>In use</li><li>Color and type</li></ul>
     <figure class="sheet"><img src="curve-lab-branding.svg" alt="Curve Lab brand sheet, row by row. Lockup: blue on paper, reversed out of the blue, orange on night. Mark: orange on night, night on paper, paper on the blue. In use: the app icon, the one-color lockup on orange, an avatar. Color and type: the dark palette led by orange, the light palette led by blue, and Geist SemiBold." width="4800" height="4800"></figure>
   </div>
+  <h2>Buttons</h2>
+  <p class="note">Two buttons, each a color square and a label. On hover the color slides across the label and the square goes dark, so the mark sits on it like the app icon. On “Open Curve Lab” the mark turns a quarter every 2.6 seconds and the square takes the next of three colors, then the loop starts again. “Show me” stays on the interface color: press it and the word fades out, the box eases to the new width, and the next word fades in.</p>
+  <div class="themes">
+    <section class="theme light bt" aria-label="Buttons in light mode">
+      <span class="tk">Light mode</span>
+      <div class="row"><a class="cta" href="../app.html" target="_blank" rel="noopener" aria-label="Open Curve Lab, opens in a new tab"><span class="cta-sq" aria-hidden="true"><svg class="dia" viewBox="0 0 12 12"><rect x="1.42" y="1.42" width="9.16" height="9.16" rx="1.14" transform="rotate(45 6 6)"/></svg></span><span class="cta-lbl">Open Curve Lab<svg class="cta-go" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 11.5l7-7M5.5 4.5h6v6"/></svg></span></a><button class="showme" type="button" data-say="show" aria-label="Show me"><span class="pi" aria-hidden="true"><svg class="pl" viewBox="0 0 12 12"><path d="M3 1.5v9L10.5 6z" fill="currentColor"/></svg><svg class="st" viewBox="0 0 12 12"><rect x="2.5" y="2.5" width="7" height="7" fill="currentColor"/></svg></span><span class="sm-lbl" aria-hidden="true"><span class="sm-size"><span data-w="show"><span>Show me</span></span><span data-w="stop"><span>Stop</span></span><span data-w="again"><span>Show me again</span></span></span><span class="sm-w" data-w="show" style="--step:110ms"><i style="--d:0">Show&nbsp;</i><i style="--d:1">me</i></span><span class="sm-w" data-w="stop" style="--step:55ms"><i style="--d:0">S</i><i style="--d:1">t</i><i style="--d:2">o</i><i style="--d:3">p</i></span><span class="sm-w" data-w="again" style="--step:110ms"><i style="--d:0">Show&nbsp;</i><i style="--d:1">me&nbsp;</i><i style="--d:2">again</i></span></span></button></div>
+      <div class="chips"><span class="chip" style="--c:#2C50FF"><i></i><span>Blue<small>#2C50FF · first</small></span></span><span class="chip" style="--c:#E8590C"><i></i><span>Orange<small>#E8590C · second</small></span></span><span class="chip" style="--c:#237A30"><i></i><span>Green<small>#237A30 · third</small></span></span></div>
+    </section>
+    <section class="theme dark bt" aria-label="Buttons in dark mode">
+      <span class="tk">Dark mode</span>
+      <div class="row"><a class="cta" href="../app.html" target="_blank" rel="noopener" aria-label="Open Curve Lab, opens in a new tab"><span class="cta-sq" aria-hidden="true"><svg class="dia" viewBox="0 0 12 12"><rect x="1.42" y="1.42" width="9.16" height="9.16" rx="1.14" transform="rotate(45 6 6)"/></svg></span><span class="cta-lbl">Open Curve Lab<svg class="cta-go" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 11.5l7-7M5.5 4.5h6v6"/></svg></span></a><button class="showme" type="button" data-say="show" aria-label="Show me"><span class="pi" aria-hidden="true"><svg class="pl" viewBox="0 0 12 12"><path d="M3 1.5v9L10.5 6z" fill="currentColor"/></svg><svg class="st" viewBox="0 0 12 12"><rect x="2.5" y="2.5" width="7" height="7" fill="currentColor"/></svg></span><span class="sm-lbl" aria-hidden="true"><span class="sm-size"><span data-w="show"><span>Show me</span></span><span data-w="stop"><span>Stop</span></span><span data-w="again"><span>Show me again</span></span></span><span class="sm-w" data-w="show" style="--step:110ms"><i style="--d:0">Show&nbsp;</i><i style="--d:1">me</i></span><span class="sm-w" data-w="stop" style="--step:55ms"><i style="--d:0">S</i><i style="--d:1">t</i><i style="--d:2">o</i><i style="--d:3">p</i></span><span class="sm-w" data-w="again" style="--step:110ms"><i style="--d:0">Show&nbsp;</i><i style="--d:1">me&nbsp;</i><i style="--d:2">again</i></span></span></button></div>
+      <div class="chips"><span class="chip" style="--c:#FF9A4D"><i></i><span>Orange<small>#FF9A4D · first</small></span></span><span class="chip" style="--c:#8197FF"><i></i><span>Blue<small>#8197FF · second</small></span></span><span class="chip" style="--c:#8FE07A"><i></i><span>Green<small>#8FE07A · third</small></span></span></div>
+    </section>
+  </div>
   <div class="files">
     <a class="file" href="curve-lab-mark.svg" download><div class="pv"><img src="curve-lab-mark.svg" alt=""></div><b>Mark</b><span>curve-lab-mark.svg</span></a>
     <a class="file" href="curve-lab-icon.svg" download><div class="pv light"><img src="curve-lab-icon.svg" alt=""></div><b>App icon</b><span>curve-lab-icon.svg</span></a>
@@ -86,5 +141,9 @@ h1{font:560 clamp(36px,5vw,64px)/1.02 var(--display);font-stretch:84%;letter-spa
     <a class="file" href="curve-lab-branding.svg" download><div class="pv"><img src="curve-lab-branding.svg" alt=""></div><b>Brand sheet</b><span>curve-lab-branding.svg</span></a>
   </div>
 </div>
+<script>
+/* "Show me" says what pressing it does next; here it just walks Show me, Stop, Show me again */
+document.querySelectorAll('.showme').forEach(b=>b.addEventListener('click',()=>{const w=b.dataset.say==='stop'?'again':'stop';b.classList.toggle('run',w==='stop');b.dataset.say=w;b.setAttribute('aria-label',w==='stop'?'Stop':'Show me again')}));
+</script>
 </body>
 </html>
