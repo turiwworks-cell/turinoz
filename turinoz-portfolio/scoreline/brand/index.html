@@ -6,7 +6,7 @@
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#000000">
 <title>Scoreline brand — Turinoz</title>
-<meta name="description" content="The Scoreline mark, lockups, icon, colors and type.">
+<meta name="description" content="The Scoreline mark, lockups, icon, colors, type and motion.">
 <link rel="icon" type="image/svg+xml" href="scoreline-icon.svg">
 <style>
 @font-face{font-family:"Archivo";src:url(../../fonts/archivo.woff2) format("woff2");font-weight:100 900;font-stretch:62% 125%;font-display:swap}
@@ -35,14 +35,43 @@ h1{font:560 clamp(36px,5vw,64px)/1.02 var(--display);font-stretch:84%;letter-spa
 .file .pv img.lk-b{width:54%;max-width:none;max-height:none}
 .file b{font-weight:500}
 .file span{font:500 11px/1.3 var(--mono);color:var(--muted)}
+/* motion: the mark in three moves, one per cell */
+.mo-h{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;margin-top:56px}
+.mo-h h2{font:560 28px/1.1 var(--display);font-stretch:84%;letter-spacing:-.02em;margin:0}
+.mo{display:grid;grid-template-columns:repeat(3,1fr);margin-top:20px;border-radius:18px;overflow:hidden;box-shadow:0 0 0 1px var(--line)}
+@media (max-width:760px){.mo{grid-template-columns:1fr}}
+.mc{position:relative;aspect-ratio:1;display:grid;place-items:center;overflow:hidden}
+.mc:nth-child(1){background:#000}
+.mc:nth-child(2){background:#F7F2EA}
+.mc:nth-child(3){background:#161616}
+.mc figcaption{position:absolute;left:20px;bottom:18px;font:500 11px/1.4 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:#85847F}
+.mc:nth-child(2) figcaption{color:#7A7872}
+.mc figcaption b{display:block;font-weight:500;color:#F3F2EF;letter-spacing:.04em}
+.mc:nth-child(2) figcaption b{color:#0C0C0C}
+.mk{--u:1.15px;display:block;position:relative;width:calc(108*var(--u));height:calc(132*var(--u))}
+.mk.clip{overflow:hidden}
+.mk i{position:absolute;width:calc(36*var(--u));will-change:transform}
+.mk i:nth-child(1){left:0;top:calc(36*var(--u));height:calc(72*var(--u));background-image:linear-gradient(180deg,#6AAEF0 0%,#C9B8E0 34%,#F2B3C9 58%,#B0243C 100%)}
+.mk i:nth-child(2){left:calc(36*var(--u));top:0;height:calc(132*var(--u));background-image:linear-gradient(180deg,#6B58F5 0%,#A58FE6 40%,#E7C1D6 76%,#FFF0E6 100%)}
+.mk i:nth-child(3){left:calc(72*var(--u));top:calc(24*var(--u));height:calc(72*var(--u));background-image:linear-gradient(180deg,#A8C3EA 0%,#E2E2E4 38%,#C9C92A 68%,#F0EED0 100%)}
+.mk.roll i{background-repeat:repeat-y;background-size:100% 100%}
+.spec{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:14px;font:500 12px/1.5 var(--mono);color:var(--ink-2)}
+.spec b{font-weight:500;color:var(--muted);margin-right:6px}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="top"><a href="../">← Scoreline case study</a><span class="kicker">Brand</span></div>
   <h1>Scoreline</h1>
-  <p class="sub">The mark, the lockups, the icon, the colors and the type.</p>
+  <p class="sub">The mark, the lockups, the icon, the colors, the type and the motion.</p>
   <figure class="sheet" style="margin-inline:0"><img src="scoreline-branding.svg" alt="Scoreline brand sheet: the lockup on black, on the spectrum and on the pastel base; the mark alone; the app icon, a one-color lockup and an avatar; the five spectra and the inks; Hanken Grotesk Medium." width="4800" height="4800"></figure>
+  <div class="mo-h"><h2>Motion</h2><span class="kicker">The mark, moving</span></div>
+  <div class="mo">
+    <figure class="mc" style="margin:0"><span class="mk roll" data-mo="roll" role="img" aria-label="Roll: each bar's color rolls through it"><i></i><i></i><i></i></span><figcaption><b>Roll</b>Color rolls inside each bar</figcaption></figure>
+    <figure class="mc" style="margin:0"><span class="mk clip" data-mo="frame" role="img" aria-label="Lift: the bars travel inside the mark's frame"><i></i><i></i><i></i></span><figcaption><b>Lift</b>Bars travel inside the mark</figcaption></figure>
+    <figure class="mc" style="margin:0"><span class="mk" data-mo="free" role="img" aria-label="Lift, free: the bars leave and come back"><i></i><i></i><i></i></span><figcaption><b>Lift, free</b>Bars leave the frame and come back</figcaption></figure>
+  </div>
+  <div class="spec"><span><b>Ease</b>cubic-bezier(.802, .057, .35, 1)</span><span><b>Duration</b>800ms</span><span><b>Delay</b>M 0 · L 160 · R 160ms</span><span><b>Hold</b>500ms</span><span><b>Direction</b>sides up, middle down</span></div>
   <div class="files">
     <a class="file" href="scoreline-mark.svg" download><div class="pv"><img src="scoreline-mark.svg" alt=""></div><b>Mark</b><span>scoreline-mark.svg</span></a>
     <a class="file" href="scoreline-icon.svg" download><div class="pv light"><img src="scoreline-icon.svg" alt=""></div><b>App icon</b><span>scoreline-icon.svg</span></a>
@@ -51,5 +80,35 @@ h1{font:560 clamp(36px,5vw,64px)/1.02 var(--display);font-stretch:84%;letter-spa
     <a class="file" href="scoreline-branding.svg" download><div class="pv"><img src="scoreline-branding.svg" alt=""></div><b>Brand sheet</b><span>scoreline-branding.svg</span></a>
   </div>
 </div>
+<script>
+// the mark in motion: cubic-bezier(.802,.057,.35,1), 800ms, middle first, sides 160ms later, 500ms hold
+(()=>{
+  const B=[.802,.057,.35,1],DUR=800,DELAY=[160,0,160],HOLD=500;
+  const cx=3*B[0],bx=3*(B[2]-B[0])-cx,ax=1-cx-bx,cy=3*B[1],by=3*(B[3]-B[1])-cy,ay=1-cy-by;
+  const X=t=>((ax*t+bx)*t+cx)*t,Y=t=>((ay*t+by)*t+cy)*t,dX=t=>(3*ax*t+2*bx)*t+cx;
+  const ease=x=>{if(x<=0)return 0;if(x>=1)return 1;let t=x;for(let i=0;i<8;i++){const d=dX(t);if(Math.abs(d)<1e-6)break;t-=(X(t)-x)/d}
+    let lo=0,hi=1;for(let i=0;i<20&&Math.abs(X(t)-x)>1e-5;i++){t=(lo+hi)/2;X(t)<x?lo=t:hi=t}return Y(t)};
+  const marks=[...document.querySelectorAll('[data-mo]')];
+  if(!marks.length||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const cycle=Math.max(...DELAY)+DUR+HOLD,t0=performance.now();
+  let on=new Set(marks);
+  if('IntersectionObserver'in window){on=new Set();const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting?on.add(e.target):on.delete(e.target)));marks.forEach(m=>io.observe(m))}
+  function frame(now){
+    const el=(now-t0)%cycle;
+    on.forEach(mk=>{
+      const mode=mk.dataset.mo,W=mode==='free'?mk.parentElement:mk;
+      [...mk.children].forEach((bar,i)=>{
+        const e=ease((el-DELAY[i])/DUR),dir=i===1?1:-1,h=bar.offsetHeight;
+        if(mode==='roll'){bar.style.backgroundPosition=`0 ${dir*e*h}px`;return}
+        const r=mode==='free'?mk.offsetTop+bar.offsetTop:bar.offsetTop,D=W.clientHeight+h;
+        let top=r+dir*e*D;top=((top+h)%D+D)%D-h;if(e===0||e===1)top=r;
+        bar.style.transform=`translateY(${top-r}px)`;
+      });
+    });
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
 </body>
 </html>
