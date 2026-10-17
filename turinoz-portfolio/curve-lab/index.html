@@ -355,6 +355,9 @@ h2{font-size:clamp(36px,5.2vw,80px);line-height:.98;letter-spacing:-.05em}
 /* while a caption is up, the rest of the tool steps back a little */
 .tdim{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;transition:opacity .45s var(--ui);background:radial-gradient(var(--rx,240px) 150px at var(--sx,50%) var(--sy,50%),rgba(6,6,7,0) 0%,rgba(6,6,7,0) 42%,rgba(6,6,7,.5) 100%)}
 .tdim.on{opacity:1}
+/* in day the Curve tool is white: the rest fades toward paper instead of going gray */
+:root[data-theme="light"] #curveEmbed .tdim{background:radial-gradient(var(--rx,240px) 150px at var(--sx,50%) var(--sy,50%),rgba(244,243,239,0) 0%,rgba(244,243,239,0) 42%,rgba(244,243,239,.38) 70%,rgba(244,243,239,.62) 100%)}
+@media (prefers-color-scheme:light){:root:not([data-theme]) #curveEmbed .tdim{background:radial-gradient(var(--rx,240px) 150px at var(--sx,50%) var(--sy,50%),rgba(244,243,239,0) 0%,rgba(244,243,239,0) 42%,rgba(244,243,239,.38) 70%,rgba(244,243,239,.62) 100%)}}
 
 /* ======================================================================
    Sections
