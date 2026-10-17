@@ -113,6 +113,7 @@
     ticking = false;
     const max = root.scrollHeight - innerHeight;
     nav.classList.toggle('scrolled', scrollY > 8);
+    nav.classList.toggle('over', scrollY < $('#top').offsetHeight - 70);
     root.style.setProperty('--sp', max > 0 ? (scrollY / max).toFixed(4) : 0);
     let on = null;
     for (const a of links) { const sec = $(a.hash); if (sec && sec.getBoundingClientRect().top < innerHeight * .4) on = a; }
@@ -126,65 +127,110 @@
   /* ---------------- reveal ---------------- */
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px', threshold: .08 });
   $$('.rv').forEach(el => io.observe(el));
-  requestAnimationFrame(() => setTimeout(() => $('.h1').classList.add('in'), 80));
 
-  /* ---------------- the player: four states ---------------- */
-  const P = $('#player'), video = $('#stateVideo'), seek = $('#seek'), time = $('#time'), big = $('#bigPlay'), toggle = $('#playToggle');
+  /* ---------------- arrival: Hyperspace → Return → Primary Idle ----------------
+     The page opens inside the piece's own state machine. The first scroll (or the
+     button) plays Return; the title lands in Idle and the stage becomes the player.
+     Skipped on a second visit in the same session, with a hash, or for reduced motion. */
+  const A = $('#top'), P = $('#player'), video = $('#stateVideo'), vHyper = $('#vHyper'), vReturn = $('#vReturn'), toggle = $('#playToggle'), h1 = $('.h1');
   const STATES = {
-    idle:   { file: 'idle',  name: 'Primary Idle', dur: 180, loop: true,  note: 'Sparse stars, a little atmosphere and depth that shifts slowly. Nothing asks to be watched.' },
-    entry:  { file: 'entry', name: 'Entry',        dur: 5,   loop: false, next: 'cruise', note: 'The field gathers and stretches into the tunnel. Hyperspace follows when it ends.' },
-    cruise: { file: 'cruise', name: 'Hyperspace',  dur: 170, loop: true,  note: 'A sustained cloud tunnel. More movement, the same restraint.' },
-    exit:   { file: 'exit',  name: 'Return',       dur: 5,   loop: false, next: 'idle', note: 'The tunnel gives way to the star field it came from. Primary Idle follows when it ends.' }
+    idle:   { file: 'idle',  name: 'Primary Idle', dur: 180, loop: true },
+    entry:  { file: 'entry', name: 'Entry',        dur: 5,   loop: false, next: 'cruise' },
+    cruise: { file: 'cruise', name: 'Hyperspace',  dur: 170, loop: true },
+    exit:   { file: 'exit',  name: 'Return',       dur: 5,   loop: false, next: 'idle' }
   };
   const tabs = $$('[data-state]');
-  let current = 'idle', userPaused = reduced.matches, inView = false, token = 0;
-  video.removeAttribute('controls');
-  const clock = s => `${Math.floor((s || 0) / 60)}:${String(Math.floor((s || 0) % 60)).padStart(2, '0')}`;
+  let current = 'idle', userPaused = reduced.matches, inView = true, token = 0, phase = 'landed';
+  const setPhase = p => { phase = p; A.dataset.phase = p; };
+  function tryPlay(v) { const p = v.play(); if (p) p.catch(() => ui()); return p; }
+
   function timing() {
     const d = Number.isFinite(video.duration) ? video.duration : STATES[current].dur, c = video.currentTime || 0;
-    seek.max = d; seek.value = c; seek.style.setProperty('--p', (c / d * 100).toFixed(2) + '%');
-    seek.setAttribute('aria-valuetext', `${clock(c)} of ${clock(d)}`);
-    time.textContent = `${clock(c)} / ${clock(d)}`;
     const tab = tabs.find(b => b.dataset.state === current); if (tab) tab.style.setProperty('--t', (c / d).toFixed(4));
   }
   function ui() {
     const playing = !video.paused && !video.ended;
     P.classList.toggle('playing', playing);
-    if (playing) P.classList.add('started');
-    const label = `${playing ? 'Pause' : 'Play'} ${STATES[current].name}`;
-    toggle.setAttribute('aria-label', label); big.setAttribute('aria-label', label);
+    toggle.setAttribute('aria-label', `${playing ? 'Pause' : 'Play'} ${STATES[current].name}`);
   }
-  function tryPlay(v) { const p = v.play(); if (p) p.catch(() => ui()); }
-  function sync() { if (document.hidden || userPaused || !inView) video.pause(); else tryPlay(video); }
+  function sync() {
+    if (phase !== 'landed') return;
+    if (document.hidden || userPaused || !inView) video.pause(); else tryPlay(video);
+  }
   function setState(key) {
     if (!STATES[key]) return;
     const s = STATES[key], my = ++token; current = key;
     tabs.forEach(b => { b.setAttribute('aria-pressed', String(b.dataset.state === key)); b.style.setProperty('--t', 0); });
-    $('#playerState').textContent = s.name; $('#stateNote').textContent = s.note;
     $('#playerError').hidden = true; $('#playerStatus').textContent = `${s.name} loading`;
     video.pause(); video.loop = s.loop; video.poster = `assets/${s.file}-poster.webp`;
     video.setAttribute('aria-label', `${s.name}, the full ${s.dur}-second render`);
     video.src = `assets/${s.file}.mp4`; $('#fallbackLink').href = video.src; video.load(); timing();
-    video.addEventListener('loadeddata', () => { if (my !== token) return; $('#playerStatus').textContent = `${s.name} ready`; sync(); }, { once: true });
+    video.addEventListener('loadeddata', () => { if (my !== token) return; $('#playerStatus').textContent = `${s.name} playing`; sync(); }, { once: true });
   }
   tabs.forEach(b => b.addEventListener('click', () => { userPaused = false; setState(b.dataset.state); }));
   video.addEventListener('ended', () => { const s = STATES[current]; if (s.next && !userPaused) setState(s.next); });
   video.addEventListener('timeupdate', timing); video.addEventListener('loadedmetadata', timing);
   video.addEventListener('play', ui); video.addEventListener('pause', ui);
-  video.addEventListener('error', () => { $('#playerError').hidden = false; $('#playerStatus').textContent = 'The preview could not load.'; });
-  const playPause = () => { if (video.paused) { userPaused = false; P.classList.add('started'); tryPlay(video); } else { userPaused = true; video.pause(); } };
-  toggle.addEventListener('click', playPause); big.addEventListener('click', playPause);
-  $('.qp-screen').addEventListener('click', e => { if (e.target === video) playPause(); });
-  seek.addEventListener('input', () => { if (Number.isFinite(video.duration)) video.currentTime = Number(seek.value); timing(); });
+  video.addEventListener('error', () => { if (phase === 'landed') { $('#playerError').hidden = false; $('#playerStatus').textContent = 'The preview could not load.'; } });
+  toggle.addEventListener('click', () => { if (video.paused) { userPaused = false; tryPlay(video); } else { userPaused = true; video.pause(); } });
   $('#fullscreen').addEventListener('click', () => {
-    const el = $('.qp-screen');
     if (document.fullscreenElement) document.exitFullscreen?.();
-    else if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+    else if (video.requestFullscreen) video.requestFullscreen().catch(() => {});
     else video.webkitEnterFullscreen?.();
   });
-  new IntersectionObserver(es => { inView = es[0].isIntersecting; sync(); }, { threshold: .15 }).observe($('.qp-screen'));
+  new IntersectionObserver(es => { inView = es[0].isIntersecting; sync(); if (!inView) vHyper.pause(); else if (phase === 'hyper') tryPlay(vHyper); }, { threshold: .15 }).observe(A);
   document.addEventListener('visibilitychange', sync);
   reduced.addEventListener('change', e => { if (e.matches) { userPaused = true; video.pause(); } });
+
+  function land() {
+    if (phase === 'landed') return;
+    setPhase('landed');
+    root.classList.remove('locked');
+    removeEventListener('wheel', onWheel); removeEventListener('touchstart', onTouchStart); removeEventListener('touchmove', onTouchMove); removeEventListener('keydown', onKey);
+    try { sessionStorage.setItem('qbs-arrived', '1'); } catch (_) {}
+    try { video.currentTime = 0; } catch (_) {}
+    sync();
+    setTimeout(() => h1.classList.add('in'), 260);
+    setTimeout(() => { vHyper.pause(); vReturn.pause(); }, 1400);
+    onScroll();
+  }
+  function startReturn() {
+    if (phase !== 'hyper') return;
+    setPhase('return');
+    video.preload = 'auto';
+    try { vReturn.currentTime = 0; } catch (_) {}
+    const p = vReturn.play(); if (p) p.catch(land);
+    vReturn.addEventListener('ended', land, { once: true });
+    setTimeout(land, 7000); // never strand the visitor if Return stalls
+  }
+  function onWheel(e) { if (e.deltaY > 2) startReturn(); }
+  let touchY = null;
+  function onTouchStart(e) { touchY = e.touches[0].clientY; }
+  function onTouchMove(e) { if (touchY !== null && touchY - e.touches[0].clientY > 18) { touchY = null; startReturn(); } }
+  function onKey(e) {
+    if (['ArrowDown', 'PageDown', 'End', ' ', 'Spacebar'].includes(e.key)) { e.preventDefault(); if (phase === 'hyper') startReturn(); else land(); }
+    else if (e.key === 'Escape') land();
+  }
+  $('#arriveBtn').addEventListener('click', startReturn);
+  $('#skipIntro').addEventListener('click', land);
+  // a jump to a section before landing lands first, so the page can scroll
+  document.addEventListener('click', e => { const a = e.target.closest('a[href^="#"]'); if (a && phase !== 'landed' && a.hash !== '#top' && a.hash !== '#main') land(); }, true);
+
+  let seen = false; try { seen = sessionStorage.getItem('qbs-arrived') === '1'; } catch (_) {}
+  if (!reduced.matches && !seen && !location.hash && scrollY < 10) {
+    setPhase('hyper');
+    root.classList.add('locked');
+    vHyper.preload = 'auto'; vReturn.preload = 'auto'; vReturn.load();
+    tryPlay(vHyper);
+    addEventListener('wheel', onWheel, { passive: true });
+    addEventListener('touchstart', onTouchStart, { passive: true });
+    addEventListener('touchmove', onTouchMove, { passive: true });
+    addEventListener('keydown', onKey);
+  } else {
+    setPhase('landed');
+    requestAnimationFrame(() => setTimeout(() => h1.classList.add('in'), 80));
+    sync();
+  }
   timing(); ui();
 
   /* ---------------- process rail ---------------- */
