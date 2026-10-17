@@ -7,7 +7,7 @@
     "Final render is intentionally restrained, very dark teal and true black. Tiny stars and slow motion can be difficult to see in small previews.",
     "Controller screenshots show a development control surface, not the final controller-guide nomenclature."
   ],
-  "total_media_bytes": 29175949,
+  "total_media_bytes": 29117543,
   "assets": [
     {
       "file": "idle.mp4",
@@ -249,20 +249,6 @@
         }
       ],
       "note": "22 second editorial preview. Idle and cruise shortened; transitions retain their full 5 seconds. No artwork, overlays, speed changes or artificial effects added. Created from the earlier CRF22 browser derivatives of these same source exports."
-    },
-    {
-      "file": "style-a.webp",
-      "source": "QBS_Styleframes_Exploration/StyleFrames/QBS_A01_Standard.png",
-      "width": 1800,
-      "height": 1013,
-      "bytes": 30004
-    },
-    {
-      "file": "style-a-dark.webp",
-      "source": "QBS_Styleframes_Exploration/StyleFrames/QBS_A02_Darker.png",
-      "width": 1800,
-      "height": 1013,
-      "bytes": 28402
     },
     {
       "file": "idle-poster.webp",
