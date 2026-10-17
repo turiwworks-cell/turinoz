@@ -41,10 +41,7 @@ smtp/                   smtp.dev product film case study
   film-data.js          the colors of the three films, measured from their frames
   assets/               the full films, stills, styleframes, thumbnails; media-manifest.json lists them
 sitemate/               Storm motion system page (the Sitemate case study)
-  films/, sprites/      its videos and sketch sheets, loaded only when scrolled to.
-                        Each film: <key>-540 / -900, .av1.mp4 + .mp4 (H.264), posters .webp / -960.webp.
-                        540p for screens under ~1000 device px, Save-Data, 2g/3g or ≤2 GB memory;
-                        AV1 only where MediaCapabilities says smooth + power-efficient.
+  films/, sprites/      its videos and sketch sheets, loaded only when scrolled to
   share-cover.jpg       1200×630 link-preview image (og:image, absolute URL)
 scoreline/              Scoreline case study (the live football app), and the app itself
   index.html            the page
