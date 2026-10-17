@@ -191,9 +191,10 @@ h2{font-size:clamp(36px,5.2vw,80px);line-height:.98;letter-spacing:-.05em}
 /* the top bar's end: a small "Open" and the day/night switch */
 .top-end{display:flex;align-items:center;gap:8px}
 /* a circle beside the day/night switch that opens the app: its diamond turns and changes colour in step with "Open Curve Lab" */
-.openc{--cur:var(--k0);--on-cur:var(--on-k0);animation:turn3 7.8s var(--io) infinite;position:relative;flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:var(--cur);text-decoration:none;box-shadow:inset 0 0 0 1px var(--rule-2);transition:box-shadow .35s var(--ui),transform .3s var(--ui),background-color .45s var(--ease)}
+.openc{--cur:var(--k0);--on-cur:var(--on-k0);animation:turn3 7.8s var(--io) infinite;position:relative;flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:var(--cur);text-decoration:none;box-shadow:inset 0 0 0 1px var(--rule-2);transition:box-shadow .35s var(--ui),transform .3s var(--ui)}
 .openc .dia{width:13px;height:13px}
-.openc:hover,.openc:focus-visible{box-shadow:inset 0 0 0 1px var(--cur);background:var(--cur);color:var(--on-cur)}
+/* hover: only the ring answers, the circle stays empty */
+.openc:hover,.openc:focus-visible{box-shadow:inset 0 0 0 1px var(--ink)}
 .openc:active{transform:scale(.94)}
 /* hover: the letters go up one by one and come back in from below; leaving plays it in reverse */
 
