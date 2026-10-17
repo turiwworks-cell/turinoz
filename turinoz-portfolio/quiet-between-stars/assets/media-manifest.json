@@ -9,7 +9,7 @@
     "Four format stills are from existing v01 exports, not newly rendered or verified v02 format deliveries.",
     "Controller screenshots show a development control surface, not the final controller-guide nomenclature."
   ],
-  "total_media_bytes": 28302620,
+  "total_media_bytes": 29535719,
   "assets": [
     {
       "file": "idle.mp4",
@@ -365,36 +365,6 @@
       "bytes": 28402
     },
     {
-      "file": "style-b.webp",
-      "source": "QBS_Styleframes_Exploration/StyleFrames/QBS_B01_Standard.png",
-      "width": 1800,
-      "height": 1013,
-      "bytes": 34746
-    },
-    {
-      "file": "style-c.webp",
-      "source": "QBS_Styleframes_Exploration/StyleFrames/QBS_C01_Standard.png",
-      "width": 1800,
-      "height": 1013,
-      "bytes": 22874
-    },
-    {
-      "file": "expressions.webp",
-      "source": "FromDesk/QBS_Screenshot_Coded_Star_System.png",
-      "width": 2400,
-      "height": 1190,
-      "bytes": 143978,
-      "note": "Development screenshot. Application title/menu area cropped (top 160 source pixels) to remove local file path. No other alterations."
-    },
-    {
-      "file": "star-system.webp",
-      "source": "FromDesk/QBS_Screenshot_Stars.png",
-      "width": 2400,
-      "height": 1190,
-      "bytes": 179444,
-      "note": "Development screenshot. Application title/menu area cropped (top 160 source pixels) to remove local file path. No other alterations."
-    },
-    {
       "file": "portrait.webp",
       "source": "Drive/QBS_PrimaryIdle_Exports_v01/QBS_PrimaryIdle_2160x3840_v01.mp4",
       "width": 900,
@@ -563,14 +533,6 @@
       "bytes": 12740
     },
     {
-      "file": "ctrl-center.webp",
-      "source": "Turinoz upload: AfterFX CTRL_CENTER layer list screenshot",
-      "width": 1440,
-      "height": 590,
-      "bytes": 54586,
-      "note": "Crop of the timeline panel showing the CTRL_CENTER composition and its control layers."
-    },
-    {
       "file": "guide-micro-stars-2400.webp",
       "source": "Turinoz upload: CTRL_CENTER (0-00-38-22).png (controller guide, 04 Micro Stars)",
       "width": 2400,
@@ -603,12 +565,10 @@
       "note": "Smaller copy of guide-hyperspace-2400.webp."
     },
     {
-      "file": "oled-safety.webp",
-      "source": "FromDesk/QBS_Screenshot_Controllers.png",
-      "width": 472,
-      "height": 598,
-      "bytes": 43712,
-      "note": "Crop of the CTRL_SAFETY effect controls. Development view; names changed in the final guide."
+      "file": "hyperspace-loop.mp4",
+      "source": "cruise.mp4 (40 to 54 s)",
+      "note": "12-second seamless loop for the opening: the last 2 seconds crossfade into the first. H.264 CRF 24, 1440 px, 24 fps, no audio.",
+      "bytes": 1712439
     }
   ]
 }
