@@ -54,6 +54,7 @@ svg.ar{display:inline-block;width:.95em;height:.68em;vertical-align:.06em;margin
 .links{display:flex;gap:2px;margin-left:auto;position:relative}
 .links a{position:relative;z-index:1;font-size:13.5px;color:var(--ink-2);text-decoration:none;padding:7px 12px;border-radius:999px;transition:color .2s}
 .links a:hover{color:var(--ink)}
+.links{--nav-hover:rgba(20,32,44,.045)}
 .links a.on{color:var(--ink)}
 .links .pill{position:absolute;top:0;height:100%;border-radius:999px;background:#fff;box-shadow:0 1px 2px rgba(20,32,44,.06),inset 0 0 0 1px var(--line);transition:left .45s var(--ease),width .45s var(--ease),opacity .3s;opacity:0}
 .navr{display:flex;align-items:center;gap:14px}
@@ -542,7 +543,11 @@ footer b{color:var(--ink);font-weight:500}
   .astat hr{display:none}
 }
 @media (max-width:900px){
-  .links{display:none}
+  /* the menu stays: a row that scrolls sideways, active link in the middle (nav-pill.js) */
+  .nav .wrap{gap:14px}
+  .links{min-width:0;overflow-x:auto;scrollbar-width:none;padding:0 2px;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 12px,#000 calc(100% - 20px),transparent);mask-image:linear-gradient(90deg,transparent 0,#000 12px,#000 calc(100% - 20px),transparent)}
+  .links::-webkit-scrollbar{display:none}
+  .brand>span:last-child,.credit,.livelink{display:none}
   .grid3{grid-template-columns:repeat(2,minmax(0,1fr))}
   .full{grid-template-columns:1fr}.full .sk{border-right:0;border-bottom:1px solid var(--line-2)}
   .early-head{grid-template-columns:1fr;gap:20px}
@@ -642,7 +647,7 @@ a.tz{text-decoration:none}
   <div class="wrap">
     <a class="back" href="../" aria-label="Back to the Turinoz portfolio" title="Back to the portfolio"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 6H2M5.2 2.8 2 6l3.2 3.2"/></svg></a>
     <a class="brand" href="#top" aria-label="Storm, AI agent motion system, back to top"><span class="badge"><span class="lot" id="badgeLot"></span></span>Storm <span>Motion system</span></a>
-    <nav class="links" id="links" aria-label="Sections">
+    <nav class="links" id="links" aria-label="Sections" data-spy=".35" data-hide-top="120">
       <i class="pill" id="navPill"></i>
       <a href="#system">System</a><a href="#states">States</a><a href="#try">Try it</a><a href="#launch">Launch</a><a href="#sketch">Sketch</a><a href="#early">Early</a><a href="#safety">Safety</a>
     </nav>
@@ -1359,12 +1364,9 @@ function syncFilm(f){if(!f.loaded&&f.inView)f.load();if(f.inView&&!paused&&!f.us
 const rio=new IntersectionObserver(es=>{for(const e of es){if(!e.isIntersecting)continue;e.target.classList.add('in');rio.unobserve(e.target);
   if(e.target.id==='metrics')countUp();if(e.target.querySelector&&e.target.querySelector('#weights'))fillW();}},{rootMargin:'0px 0px -8% 0px',threshold:.05});
 document.querySelectorAll('.rv').forEach(e=>rio.observe(e));
-const nav=$('nav'),links=[...document.querySelectorAll('#links a')],pill=$('navPill');
-function movePill(a){if(!a){pill.style.opacity=0;return;}pill.style.opacity=1;pill.style.left=a.offsetLeft+'px';pill.style.width=a.offsetWidth+'px';}
-const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
-function spy(){nav.classList.toggle('scrolled',scrollY>8);const y=scrollY+innerHeight*.35;let cur=null;secs.forEach((s,i)=>{if(s.offsetTop<=y)cur=links[i];});if(scrollY<120)cur=null;links.forEach(a=>a.classList.toggle('on',a===cur));movePill(cur);}
-let hov=null;links.forEach(a=>a.addEventListener('mouseenter',()=>{hov=a;movePill(a);}));$('links').addEventListener('mouseleave',()=>{hov=null;spy();});
-addEventListener('scroll',()=>{if(!hov)spy();else nav.classList.toggle('scrolled',scrollY>8);},{passive:true});addEventListener('resize',spy);spy();
+/* section menu: ../nav-pill.js (pill, hover, phone row, drag) */
+const nav=$('nav');const navScrolled=()=>nav.classList.toggle('scrolled',scrollY>8);
+addEventListener('scroll',navScrolled,{passive:true});navScrolled();
 
 /* ---------- one clock for everything ---------- */
 let acc=0,last=performance.now();
@@ -1387,5 +1389,6 @@ function frame(now){
 requestAnimationFrame(frame);
 })();
 </script>
+<script src="../nav-pill.js" defer></script>
 </body>
 </html>
