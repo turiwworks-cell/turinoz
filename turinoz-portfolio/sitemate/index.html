@@ -58,8 +58,6 @@ svg.ar{display:inline-block;width:.95em;height:.68em;vertical-align:.06em;margin
 .links a.on{color:var(--ink)}
 .links .pill{position:absolute;top:0;height:100%;border-radius:999px;background:#fff;box-shadow:0 1px 2px rgba(20,32,44,.06),inset 0 0 0 1px var(--line);transition:left .45s var(--ease),width .45s var(--ease),opacity .3s;opacity:0}
 .navr{display:flex;align-items:center;gap:14px}
-.credit{font-size:12px;color:var(--muted);white-space:nowrap}
-.credit b{color:var(--ink-2);font-weight:500}
 .pp{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:#fff;box-shadow:inset 0 0 0 1px var(--line);transition:box-shadow .2s,transform .2s var(--spring)}
 .pp:hover{box-shadow:inset 0 0 0 1px var(--line-3)}
 .pp:active{transform:scale(.92)}
@@ -547,7 +545,7 @@ footer b{color:var(--ink);font-weight:500}
   .nav .wrap{gap:14px}
   .links{min-width:0;overflow-x:auto;scrollbar-width:none;padding:0 2px;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 12px,#000 calc(100% - 20px),transparent);mask-image:linear-gradient(90deg,transparent 0,#000 12px,#000 calc(100% - 20px),transparent)}
   .links::-webkit-scrollbar{display:none}
-  .brand>span:last-child,.credit,.livelink{display:none}
+  .brand>span:last-child{display:none}
   .grid3{grid-template-columns:repeat(2,minmax(0,1fr))}
   .full{grid-template-columns:1fr}.full .sk{border-right:0;border-bottom:1px solid var(--line-2)}
   .early-head{grid-template-columns:1fr;gap:20px}
@@ -558,7 +556,6 @@ footer b{color:var(--ink);font-weight:500}
 }
 @media (max-width:640px){
   .wrap{padding:0 16px}
-  .credit{display:none}
   section{padding-top:72px}
   .hero{padding-top:40px}
   .lede{font-size:16px}
@@ -618,13 +615,13 @@ footer b{color:var(--ink);font-weight:500}
 .back:hover{box-shadow:inset 0 0 0 1px var(--line-3);color:var(--ink)}
 .back:active{transform:scale(.92)}
 .back svg{width:12px;height:12px}
-.livelink,.proofbtn{display:inline-flex;align-items:center;gap:7px;height:28px;padding:0 11px 0 10px;border-radius:999px;background:#fff;box-shadow:inset 0 0 0 1px var(--line);
+.proofbtn{display:inline-flex;align-items:center;gap:7px;height:28px;padding:0 11px 0 10px;border-radius:999px;background:#fff;box-shadow:inset 0 0 0 1px var(--line);
   font-size:12.5px;font-weight:500;color:var(--ink-2);text-decoration:none;white-space:nowrap;transition:box-shadow .2s,color .2s}
-.livelink:hover,.proofbtn:hover{box-shadow:inset 0 0 0 1px var(--line-3);color:var(--ink)}
-.livelink svg,.proofbtn svg,.notelink svg{width:10px;height:10px;opacity:.6}
-.livelink i,.proofbtn i{position:relative;width:7px;height:7px;border-radius:50%;background:var(--green);flex:none}
-.livelink i:after,.proofbtn i:after{content:'';position:absolute;inset:-3px;border-radius:50%;border:1.5px solid var(--green);opacity:0;animation:ping 2.2s var(--ease) infinite}
-.paused .livelink i:after,.paused .proofbtn i:after{animation:none}
+.proofbtn:hover{box-shadow:inset 0 0 0 1px var(--line-3);color:var(--ink)}
+.proofbtn svg,.notelink svg{width:10px;height:10px;opacity:.6}
+.proofbtn i{position:relative;width:7px;height:7px;border-radius:50%;background:var(--green);flex:none}
+.proofbtn i:after{content:'';position:absolute;inset:-3px;border-radius:50%;border:1.5px solid var(--green);opacity:0;animation:ping 2.2s var(--ease) infinite}
+.paused .proofbtn i:after{animation:none}
 .proof{display:flex;align-items:center;flex-wrap:wrap;gap:10px 14px;margin-top:22px}
 .proofbtn{height:34px;padding:0 13px 0 12px;font-size:13.5px;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line),0 1px 2px rgba(20,32,44,.05)}
 .proofbtn span{font:500 12px/1 var(--mono);color:var(--muted)}
@@ -633,8 +630,7 @@ footer b{color:var(--ink);font-weight:500}
 .notelink:hover{border-bottom-color:var(--blue)}
 .note .notelink{margin-top:6px}
 a.tz{text-decoration:none}
-@media (max-width:1240px){ .credit{display:none} }
-@media (max-width:640px){ .livelink{display:none} .proofbtn span{display:none} }
+@media (max-width:640px){ .proofbtn span{display:none} }
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   .rv{opacity:1;transform:none;transition:none}
@@ -652,8 +648,6 @@ a.tz{text-decoration:none}
       <a href="#system">System</a><a href="#states">States</a><a href="#try">Try it</a><a href="#launch">Launch</a><a href="#sketch">Sketch</a><a href="#early">Early</a><a href="#safety">Safety</a>
     </nav>
     <div class="navr">
-      <a class="livelink" href="https://sitemate.com/storm/" target="_blank" rel="noopener"><i></i>Live in Sitemate<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg></a>
-      <span class="credit">Sitemate <b>×</b> Turinoz</span>
       <button class="pp" id="pp" aria-label="Pause all motion" title="Pause all motion">
         <svg class="i-pause" viewBox="0 0 12 12"><rect x="2" y="1.5" width="2.6" height="9" rx="1" fill="currentColor"/><rect x="7.4" y="1.5" width="2.6" height="9" rx="1" fill="currentColor"/></svg>
         <svg class="i-play" viewBox="0 0 12 12"><path d="M3 1.8v8.4c0 .5.5.8.9.5l6.4-4.2c.4-.2.4-.8 0-1L3.9 1.3C3.5 1 3 1.3 3 1.8z" fill="currentColor"/></svg>
@@ -671,7 +665,7 @@ a.tz{text-decoration:none}
         <div class="kicker"><i></i>Storm · AI agent icon</div>
         <h1>Six states.<br><em>One thinking agent.</em></h1>
         <p class="lede">Storm is Sitemate’s AI agent, and its icon is how it tells you what it’s doing. It appears when a task starts, thinks in a loop that turns a cone into a cylinder and back, slows down for deep thinking, and leaves when the answer is ready.</p>
-        <div class="proof"><a class="proofbtn" href="https://sitemate.com/storm/" target="_blank" rel="noopener"><i></i>Live in Sitemate<span>sitemate.com/storm</span><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg></a><span class="proofnote">Shipped in Sitemate’s iOS, Android and web apps.</span></div>
+        <div class="proof"><a class="proofbtn" href="https://sitemate.com/storm/" target="_blank" rel="noopener"><i></i>Live in Sitemate<span>sitemate.com/storm</span><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg></a><span class="proofnote">Shipped in their iOS, Android and web apps.</span></div>
       </div>
       <div class="facts rv" style="--rd:.08s">
         <div class="fact"><b>6 states</b><span id="factFiles">9 Lottie files · 3 for deep thinking</span></div>
@@ -684,7 +678,6 @@ a.tz{text-decoration:none}
     <div class="live rv" style="--rd:.14s">
       <div class="live-grid">
         <div class="stage">
-          <div class="stage-top"><span class="livechip"><i></i><span id="liveLbl">Live agent cycle</span></span><span id="heroMode"></span></div>
           <div class="big lot" id="heroLot" role="img" aria-label="Storm icon playing the full motion sequence"></div>
           <div class="stage-foot">
             <div class="now" id="now"><span class="now-name" id="nowName">Appear</span><span class="now-meta" id="nowMeta">Entry</span></div>
@@ -1047,9 +1040,8 @@ const EDGE_OF={appear:'enter',c2y:'c2y',y2c:'y2c',exit:'leave'};
 let lastSeg=-1;
 function setHeroDeep(v){heroDeep=v;buildSeq();buildTL();lastSeg=-1;
   for(const o of [...Object.values(nodeEls),...Object.values(pillEls)])if(o.px){o.lots[0].classList.toggle('alt',v);o.lots[1].classList.toggle('alt',!v);}
-  $('system').classList.toggle('deep',v);$('liveLbl').textContent=v?'Live · deep thinking':'Live agent cycle';}
+  $('system').classList.toggle('deep',v);}
 buildSeq();buildTL();
-$('heroMode').appendChild(vtoggle(['Standard','Deep thinking'],setHeroDeep,'Thinking mode'));
 function heroTick(gf){
   const mf=((gf%tot)+tot)%tot;let si=0;while(si<segs.length-1&&mf>=segs[si].b)si++;const s=segs[si],c=BY[s.id],lf=mf-s.a,op=s.b-s.a,key=hkey(s.id);
   for(const k in hero)hero[k].d.style.visibility=k===key?'visible':'hidden';
