@@ -495,3 +495,7 @@ html.locked .brand{opacity:0}
   .weight{grid-template-columns:1fr}
   .weight-s{padding-top:4px}
 }
+
+/* Motion system chart: the star rows carry the accent */
+.weight .render.expr li i::before{background:var(--ink-2)}
+.weight .render.expr li.st i::before{background:var(--acc)}

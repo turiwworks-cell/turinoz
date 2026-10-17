@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Motion system, wired</title>
+<style>
+/* A mockup of how QBS is wired. Controls: which control layer each expression reads, counted from the project.
+   Stars: the project's own star expressions and camera, run live in 2D canvas. Drift is sped up; sizes are not to scale. */
+@font-face{font-family:"Inter";src:url(../fonts/inter.woff2) format("woff2");font-weight:100 900;font-display:swap}
+@font-face{font-family:"JetBrains Mono";src:url(../fonts/jetbrains-mono.woff2) format("woff2");font-weight:100 800;font-display:swap}
+:root{--fg:#ECE9E2;--muted:#8E8C86;--dim:#5c5b57;--accent:#FFD405;--line:rgba(236,233,226,.16);
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;--ui:"Inter",system-ui,sans-serif;color-scheme:dark;
+  --rh:20px;--fs:11px;--prh:24px;--top:52px;--bot:38px}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#000;color:var(--fg);overflow:hidden;font-family:var(--ui);-webkit-font-smoothing:antialiased}
+.stage{position:relative;width:100%;height:100vh;overflow:hidden;user-select:none;-webkit-user-select:none}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+button{font:inherit;color:inherit}
+.top{position:absolute;left:14px;right:14px;top:12px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;pointer-events:none;z-index:3}
+.tabs{display:inline-flex;gap:2px;padding:3px;border-radius:999px;background:rgba(0,0,0,.62);box-shadow:inset 0 0 0 1px var(--line);pointer-events:auto;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.tab{appearance:none;border:0;background:transparent;color:var(--muted);font:500 12px/1 var(--ui);padding:8px 12px;border-radius:999px;cursor:pointer;white-space:nowrap;display:inline-flex;gap:6px;align-items:center}
+.tab b{font:500 10.5px/1 var(--mono);color:var(--dim)}
+.tab:hover{color:var(--fg)}
+.tab[aria-pressed="true"]{background:var(--fg);color:#000}
+.tab[aria-pressed="true"] b{color:#000}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.comp{font:500 11px/1.3 var(--mono);letter-spacing:.06em;color:var(--accent);text-align:right;padding-top:9px;text-shadow:0 1px 6px #000;transition:opacity .3s}
+.say{position:absolute;left:16px;right:16px;bottom:12px;margin:0;font:500 calc(var(--fs)*.98)/1.45 var(--mono);letter-spacing:.02em;color:rgba(236,233,226,.8);text-shadow:0 1px 8px #000;z-index:3;pointer-events:none}
+.say b{font-weight:500;color:var(--accent)}
+
+/* ---- controls map ---- */
+.view{position:absolute;inset:0;transition:opacity .45s;z-index:2}
+.view[hidden]{display:block;opacity:0;visibility:hidden}
+.map{display:grid;grid-template-columns:minmax(0,1fr) minmax(28px,.42fr) minmax(0,.9fr);padding:var(--top) 16px var(--bot) 30px}
+.map ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.map li{height:var(--rh);display:flex;align-items:center;min-width:0;font:500 var(--fs)/1 var(--ui);color:var(--muted);white-space:nowrap;transition:color .3s,opacity .3s}
+.map li.kf{margin-top:calc(var(--rh)*.3)}
+.ctl button{appearance:none;border:0;background:none;padding:0 2px 0 5px;margin:0;width:100%;height:100%;display:flex;align-items:center;gap:.6em;text-align:left;cursor:pointer;border-radius:4px;color:inherit}
+.ctl button:hover{color:var(--fg)}
+.map .n{flex:none;width:2.5em;font:500 calc(var(--fs)*.84)/1 var(--mono);color:var(--dim);transition:color .3s}
+.map .nm{overflow:hidden;text-overflow:ellipsis}
+.map .kf .nm{font:500 calc(var(--fs)*.86)/1 var(--mono);letter-spacing:.02em}
+.ctl b{margin-left:auto;padding-left:.5em;font:500 calc(var(--fs)*.84)/1 var(--mono);color:var(--dim);font-variant-numeric:tabular-nums;transition:color .3s}
+.ctl li.on{color:var(--accent)}
+.ctl li.on .n,.ctl li.on b{color:var(--accent)}
+.ctl li.via{color:var(--fg)}
+.ctl li.via b{color:var(--fg)}
+.tgt li{gap:.6em}
+.tgt .c{flex:none;width:2.7em;text-align:right;font:500 calc(var(--fs)*.84)/1 var(--mono);color:var(--accent);opacity:0;transition:opacity .3s;font-variant-numeric:tabular-nums}
+.tgt em{font-style:normal;font:500 calc(var(--fs)*.84)/1 var(--mono);color:var(--dim)}
+.tgt li.on,.tgt li.via{color:var(--fg)}
+.tgt li.on .c{opacity:1}
+.tgt li.via .c{opacity:.55}
+.map.sel li:not(.on):not(.via){opacity:.42}
+.wires{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.wires path{fill:none;stroke:var(--accent);stroke-linecap:round}
+.wires path.w{stroke-dasharray:1;stroke-dashoffset:1;animation:draw .55s cubic-bezier(.3,.7,.2,1) forwards}
+.wires path.d{stroke-dasharray:3 4;opacity:0;animation:fade .6s .25s forwards}
+.wires circle{fill:var(--accent)}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes fade{to{opacity:.5}}
+
+/* ---- star field ---- */
+.panel{position:absolute;right:14px;top:var(--top);width:clamp(156px,31%,210px);padding:8px 10px 6px;border-radius:12px;background:rgba(0,0,0,.66);box-shadow:inset 0 0 0 1px var(--line);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.seg{display:flex;gap:2px;padding:2px;margin-bottom:4px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--line)}
+.seg button{appearance:none;border:0;flex:1;background:transparent;color:var(--muted);font:500 10.5px/1 var(--ui);padding:5px 4px;border-radius:999px;cursor:pointer;white-space:nowrap}
+.seg button b{font:500 9.5px/1 var(--mono);margin-right:4px;color:var(--dim)}
+.seg button[aria-pressed="true"]{background:var(--fg);color:#000}
+.seg button[aria-pressed="true"] b{color:#000}
+.rows{display:grid}
+.row{position:relative;height:var(--prh);display:grid;grid-template-rows:1fr 9px;align-items:end;color:var(--muted)}
+.row span{display:flex;justify-content:space-between;gap:8px;font:500 10.5px/1 var(--ui);white-space:nowrap}
+.row output{font:500 10px/1 var(--mono);color:var(--fg);font-variant-numeric:tabular-nums}
+.row.in output{color:var(--accent)}
+.row.on{color:var(--fg)}
+.trk{position:relative;height:9px}
+.trk::before{content:"";position:absolute;left:0;right:0;top:4px;height:1px;background:rgba(236,233,226,.22)}
+.trk .sw{position:absolute;top:3px;height:3px;border-radius:2px;background:var(--accent);opacity:.55}
+.trk .th{position:absolute;top:1px;width:7px;height:7px;margin-left:-3.5px;border-radius:50%;background:var(--fg);box-shadow:0 0 0 2px #000}
+.row.in .th{background:var(--accent)}
+.row input{position:absolute;left:0;right:0;bottom:-3px;width:100%;height:calc(var(--prh) + 2px);margin:0;opacity:0;cursor:ew-resize}
+.row:focus-within .trk::before{background:var(--accent)}
+.small .tab{font-size:11px;padding:6px 10px}
+.small .tab b{font-size:9.5px}
+.small .comp{font-size:10px;padding-top:7px}
+.nojs{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:14px}
+
+/* square frames (phones): the panel moves under the stars */
+.sq .panel{left:12px;right:12px;top:auto;bottom:12px;width:auto}
+.sq .rows{grid-template-columns:1fr 1fr;column-gap:14px}
+.sq.v-field .say{display:none}
+.sq .map{grid-template-columns:minmax(0,1fr) minmax(18px,.26fr) minmax(0,.86fr);padding-left:26px}
+.v-field .say{right:calc(clamp(156px,31%,210px) + 30px)}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <canvas id="sky" aria-hidden="true"></canvas>
+  <div class="top">
+    <div class="tabs" role="group" aria-label="View">
+      <button class="tab" data-v="map" aria-pressed="true" type="button"><b>01</b>Controls</button>
+      <button class="tab" data-v="field" aria-pressed="false" type="button"><b>02</b>Stars</button>
+    </div>
+    <div class="comp" id="comp">CTRL_CENTER</div>
+  </div>
+
+  <section class="view map" id="map" aria-label="Which layers each control drives">
+    <ol class="ctl" id="ctl"></ol>
+    <span aria-hidden="true"></span>
+    <ol class="tgt" id="tgt"></ol>
+    <svg class="wires" id="wires" aria-hidden="true"></svg>
+  </section>
+
+  <section class="view field" id="field" aria-label="The star field, with the star controls" hidden>
+    <div class="panel">
+      <div class="seg" role="group" aria-label="Star group">
+        <button type="button" data-g="hero" aria-pressed="true"><b>03</b>Hero</button>
+        <button type="button" data-g="micro" aria-pressed="false"><b>04</b>Micro</button>
+      </div>
+      <div class="rows" id="rows"></div>
+    </div>
+  </section>
+
+  <p class="say" id="say" aria-live="polite"></p>
+</div>
+<script>
+(function(){
+'use strict';
+/* ---------- the wiring, counted from the project's 1,726 expressions ---------- */
+const CTL = [
+  {id:'panel',  n:'—',   name:'Panel',            k:14,   to:{guide:12, layers:2}, say:'Opens any guide page over the scene, and turns stars or atmosphere off while you work.'},
+  {id:'switch', n:'100', name:'Scene Switch',     k:11,   to:{hero:2, cams:4, nebula:1, cloud:1, layers:1, hyper:1, idle:1}, say:'0 is Primary Idle, 1 is the journey. At 1 these layers read the transition keys.'},
+  {id:'master', n:'01',  name:'Master Variation', k:4,    ctl:['hero','micro','atmo','hyp'], say:'One number feeds four seeds: hero stars, micro stars, atmosphere and hyperspace.'},
+  {id:'grade',  n:'02',  name:'Global Grade',     k:38,   to:{grade:38}, say:'The color of the whole scene. The grade layer copies every setting from here.'},
+  {id:'hero',   n:'03',  name:'Hero Stars',       k:360,  to:{hero:360}, say:'Three on each of 120 stars: position, size and opacity.'},
+  {id:'micro',  n:'04',  name:'Micro Stars',      k:1200, to:{micro:1200}, say:'The same three on each of 400 stars.'},
+  {id:'motion', n:'05',  name:'Scene Motion',     k:4,    to:{cams:1, cloud:2, nebula:1}, say:'Camera drift and the slow life of cloud and nebula, all on a 180 s loop.'},
+  {id:'atmo',   n:'06',  name:'Atmosphere',       k:7,    to:{cloud:4, nebula:1}, ctl:['cloud','nebula'], say:'How much cloud and nebula, how the cloud flows, and the seeds for both.'},
+  {id:'cloud',  n:'07',  name:'Cloud',            k:5,    to:{cloud:5}, say:'Shape, depth, place and the soft mask edge of the cloud.'},
+  {id:'nebula', n:'08',  name:'Nebula',           k:4,    to:{nebula:4}, say:'Shape, depth and place of the nebula.'},
+  {id:'hyp',    n:'09',  name:'Hyperspace',       k:38,   to:{hyper:31, tunnel:7}, say:'Speed, falloff and twirl for the tunnel, and its own grade.'},
+  {id:'kf',     n:'',    name:'KF_TRANSITIONS',   k:9,    to:{hero:1, cams:3, nebula:1, cloud:1, layers:1, hyper:1, idle:1}, say:'The transition keys, on their own layer. Read only when Scene Switch is 1.', kf:true},
+];
+const TGT = [
+  {id:'guide',  name:'Guide pages'},
+  {id:'grade',  name:'Grade'},
+  {id:'idle',   name:'Primary Idle'},
+  {id:'layers', name:'Stars, atmosphere'},
+  {id:'hero',   name:'Hero stars', x:'×120'},
+  {id:'micro',  name:'Micro stars', x:'×400'},
+  {id:'cams',   name:'Cameras, lens'},
+  {id:'cloud',  name:'Cloud'},
+  {id:'nebula', name:'Nebula'},
+  {id:'tunnel', name:'Tunnel'},
+  {id:'hyper',  name:'Hyperspace'},
+];
+/* ---------- the star controls, stored values and the guide's ranges ---------- */
+const MASTER = 1021;
+const SL = [
+  {k:'lv', name:'Layout Variation', say:'Layout Variation adds to Master Variation, so one number can move every group at once. Any value works.'},
+  {k:'dens', name:'Density', unit:'%', say:'Density works like a star count. Each star rolls once, then shows or hides.'},
+  {k:'zn', name:'Z Near', say:'Z Near: bring the closest stars nearer and they grow and move more with the camera.'},
+  {k:'zf', name:'Z Far', say:'Z Far: push the farthest stars back and they get smaller and move less.'},
+  {k:'zb', name:'Z Bias', say:'Z Bias: low spreads the stars evenly through depth, high gathers them in one layer.'},
+  {k:'ns', name:'Near Size', say:'Near Size: the closest stars, larger or smaller, without moving them.'},
+  {k:'fs', name:'Far Size', say:'Far Size: how quiet the background feels.'},
+];
+const G = {
+  hero:  {n:120, pre:'STAR_',  strip:true,  label:'Hero stars',
+          v:{lv:-921, dens:30, sx:700, sy:500, zn:1000, zf:4000, zb:2, ns:45, fs:20, no:95, fo:50},
+          r:{lv:[-1000,1000,1], dens:[10,100,1], zn:[700,1300,10], zf:[3000,5000,50], zb:[1.5,3.5,.05], ns:[35,55,1], fs:[10,30,1]},
+          sweet:{dens:[25,40], zn:[900,1000], zf:[3500,4000], zb:[2,2.5], ns:[40,45], fs:[15,20]}},
+  micro: {n:400, pre:'MICRO_', strip:false, label:'Micro stars',
+          v:{lv:0, dens:100, sx:4700, sy:2400, zn:6000, zf:10000, zb:.75, ns:180, fs:120, no:55, fo:40},
+          r:{lv:[-1000,1000,1], dens:[40,100,1], zn:[4500,6500,50], zf:[8000,11000,100], zb:[.4,2,.05], ns:[100,200,1], fs:[75,140,1]},
+          sweet:{dens:[80,100], zn:[5500,6000], zf:[9000,10000], zb:[.75,1.15], ns:[110,190], fs:[90,120]}},
+};
+const STORED = {hero:Object.assign({},G.hero.v), micro:Object.assign({},G.micro.v)};
+
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const stage = document.getElementById('stage'), canvas = document.getElementById('sky'), cx = canvas.getContext('2d');
+const mapEl = document.getElementById('map'), fieldEl = document.getElementById('field');
+const ctlEl = document.getElementById('ctl'), tgtEl = document.getElementById('tgt'), wires = document.getElementById('wires');
+const sayEl = document.getElementById('say'), compEl = document.getElementById('comp'), rowsEl = document.getElementById('rows');
+const tabs = [...document.querySelectorAll('.tab')], segs = [...document.querySelectorAll('.seg button')];
+const fmt = n => n.toLocaleString('en-US');
+let view = 'map', sel = null, grp = 'hero', auto = !reduce, dirty = true;
+
+/* ---------- map ---------- */
+const ctlLi = {}, tgtLi = {};
+CTL.forEach(c=>{
+  const li = document.createElement('li'); if(c.kf) li.className = 'kf';
+  li.innerHTML = `<button type="button" aria-pressed="false"><span class="n">${c.n}</span><span class="nm">${c.name}</span><b>${fmt(c.k)}</b></button>`;
+  li.firstChild.addEventListener('click',()=>{ stopAuto(); select(c.id); });
+  li.firstChild.addEventListener('mouseenter',()=>{ if(!auto && view==='map') select(c.id); });
+  li.firstChild.addEventListener('focus',()=>{ if(view==='map') select(c.id); });
+  ctlEl.appendChild(li); ctlLi[c.id] = li;
+});
+TGT.forEach(t=>{
+  const li = document.createElement('li');
+  li.innerHTML = `<span class="c"></span><span class="nm">${t.name}</span>${t.x?`<em>${t.x}</em>`:''}`;
+  tgtEl.appendChild(li); tgtLi[t.id] = li;
+});
+const byId = Object.fromEntries(CTL.map(c=>[c.id,c]));
+/* a control reaches other controls (Master Variation, Atmosphere) and, through them, more layers */
+function reach(id, seen){
+  const c = byId[id]; (c.ctl||[]).forEach(d=>{ if(!seen.has(d)){ seen.add(d); reach(d, seen); } }); return seen;
+}
+function select(id){
+  sel = id; const c = byId[id];
+  mapEl.classList.add('sel');
+  Object.values(ctlLi).forEach(li=>{ li.classList.remove('on','via'); li.firstChild.setAttribute('aria-pressed','false'); });
+  Object.values(tgtLi).forEach(li=>{ li.classList.remove('on','via'); li.firstChild.textContent = ''; });
+  ctlLi[id].classList.add('on'); ctlLi[id].firstChild.setAttribute('aria-pressed','true');
+  const down = reach(id, new Set());
+  down.forEach(d=>ctlLi[d].classList.add('via'));
+  Object.entries(c.to||{}).forEach(([t,k])=>{ tgtLi[t].classList.add('on'); tgtLi[t].firstChild.textContent = fmt(k); });
+  down.forEach(d=>Object.entries(byId[d].to||{}).forEach(([t,k])=>{ if(!tgtLi[t].classList.contains('on')){ tgtLi[t].classList.add('via'); } }));
+  sayEl.innerHTML = `<b>${fmt(c.k)} expression${c.k===1?'':'s'}.</b> ${c.say}`;
+  drawWires();
+}
+function drawWires(){
+  if(!sel) { wires.innerHTML=''; return; }
+  const sr = stage.getBoundingClientRect(), W = sr.width, H = sr.height;
+  wires.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const c = byId[sel], down = reach(sel, new Set());
+  const R = el => { const r = el.getBoundingClientRect(); return {l:r.left-sr.left, r:r.right-sr.left, y:r.top-sr.top+r.height/2}; };
+  const cTextR = id => { const b = ctlLi[id].querySelector('b').getBoundingClientRect(); return b.right - sr.left + 6; };
+  const tL = id => { const nm = tgtLi[id].querySelector('.c').getBoundingClientRect(); return nm.left - sr.left - 4; };
+  let s = '';
+  const wire = (from, t, k, cls) => {
+    const a = R(ctlLi[from]), b = R(tgtLi[t]);
+    const x1 = cTextR(from), x2 = tL(t), m = (x2-x1)*.5;
+    const w = cls==='d' ? 1 : (.9 + Math.log10(k)*.75).toFixed(2);
+    s += `<path class="${cls}"${cls==='w'?' pathLength="1"':''} stroke-width="${w}" d="M${x1},${a.y} C${x1+m},${a.y} ${x2-m},${b.y} ${x2},${b.y}"/>`;
+  };
+  Object.entries(c.to||{}).forEach(([t,k])=>wire(sel,t,k,'w'));
+  down.forEach(d=>Object.entries(byId[d].to||{}).forEach(([t,k])=>wire(d,t,k,'d')));
+  /* control to control: arcs in the left gutter */
+  const arc = (from, to) => {
+    const a = R(ctlLi[from]), b = R(ctlLi[to]), x = a.l - 2, bend = Math.min(20, 7 + Math.abs(b.y-a.y)*.12);
+    s += `<path class="w" pathLength="1" stroke-width="1.2" d="M${x},${a.y} C${x-bend},${a.y} ${x-bend},${b.y} ${x},${b.y}"/><circle cx="${x}" cy="${b.y}" r="1.8"/>`;
+  };
+  (c.ctl||[]).forEach(d=>arc(sel,d));
+  down.forEach(d=>(byId[d].ctl||[]).forEach(e=>arc(d,e)));
+  wires.innerHTML = s;
+}
+
+/* ---------- star field: the project's expressions ---------- */
+function fnv(s){ let h = 2166136261; for(let i=0;i<s.length;i++){ h ^= s.charCodeAt(i); h = Math.imul(h,16777619)>>>0; } return h; }
+function N(s, strip){
+  s = s.replace(/\s*-\s*copy(\s*\d+)?\s*$/i,'').replace(/\s*copy(\s*\d+)?\s*$/i,'').replace(/\s*\(\d+\)\s*$/i,'');
+  return strip ? s.replace(/[\s\-_]+\d+\s*$/i,'') : s;
+}
+/* After Effects seeds random() per layer and property; seedRandom adds an offset. Same idea, own generator. */
+function rnd(key){ let a = fnv(key); return ()=>{ a = (a + 0x6D2B79F5)>>>0; let t = a; t = Math.imul(t ^ t>>>15, t|1); t ^= t + Math.imul(t ^ t>>>7, t|61); return ((t ^ t>>>14)>>>0)/4294967296; }; }
+const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+const easeAE = (d,a,b)=>{ const s = d*d*(3-2*d); return a + (b-a)*s; };
+const stars = {hero:[], micro:[]};
+function build(g){
+  const D = G[g], v = D.v, seed = Math.round(MASTER + v.lv), out = [];
+  const zb = Math.max(.2, v.zb), den = (v.zf - v.zn) || 1e-6;
+  for(let i=0;i<D.n;i++){
+    const name = D.pre + (i+1);
+    /* hero position strips the number off the name; scale and opacity keep it */
+    const idP = D.strip ? fnv(N(name,true)) : fnv(name), idS = fnv(N(name,false));
+    const rp = rnd(`${g}|${i}|p|${seed + idP}`);
+    const x = (rp()-.5)*v.sx + 3240, y = (rp()-.5)*v.sy + 1920;
+    const z = v.zn + Math.pow(rp(), zb)*(v.zf - v.zn);
+    const d = clamp((z - v.zn)/den, 0, 1);
+    const s = easeAE(d, v.ns, v.fs) * (.9 + .2*rnd(`${g}|${i}|s|${seed*100 + idS*17}`)());
+    const show = rnd(`${g}|${i}|o|${seed*10 + idS*23}`)() < clamp(v.dens/100,0,1);
+    const o = show ? clamp(easeAE(d, v.no, v.fo),0,100) : 0;
+    out.push([x,y,z,s,o]);
+  }
+  stars[g] = out;
+}
+/* STARS camera: Zoom 9,523, parented to CAM_STAR at the comp center, 42 px in front of the stars' zero */
+const CAM = {zoom:9523.33, x:-10.0, y:-7.09, z:-42};
+/* Scene Motion, stored values: Max Drift Z 155, X 14, Y 0, Flow Speed 1, Mood Variation 1 */
+const DRIFT = (()=>{ const r = rnd('mood|1'); return {ax:7, ay:0, az:77.5, sp:1, px:r()*Math.PI*2, py:r()*Math.PI*2, pz:r()*Math.PI*2}; })();
+function drift(u){
+  const e = (1 - Math.cos(u*Math.PI*2))*.5, p = e*Math.PI, D = DRIFT;
+  return {x:(Math.sin(p*D.sp*.35 + D.px) - Math.sin(D.px))*D.ax,
+          y:(Math.cos(p*D.sp*.30 + D.py) - Math.cos(D.py))*D.ay,
+          z:-(Math.sin(p*D.sp + D.pz) - Math.sin(D.pz))*D.az};
+}
+/* a soft sprite for the hero stars' Glow */
+const halo = document.createElement('canvas'); halo.width = halo.height = 64;
+(()=>{ const h = halo.getContext('2d'), gr = h.createRadialGradient(32,32,0,32,32,32);
+  gr.addColorStop(0,'rgba(120,205,235,.9)'); gr.addColorStop(.25,'rgba(70,175,220,.35)'); gr.addColorStop(1,'rgba(40,140,200,0)');
+  h.fillStyle = gr; h.fillRect(0,0,64,64); })();
+
+let W = 0, H = 0, DPR = 1;
+function resize(){
+  DPR = Math.min(devicePixelRatio||1, 2);
+  W = stage.clientWidth; H = stage.clientHeight;
+  canvas.width = Math.max(1, W*DPR|0); canvas.height = Math.max(1, H*DPR|0);
+  const sq = W/H < 1.25; stage.classList.toggle('sq', sq);
+  stage.classList.toggle('small', H < 300);
+  const top = H < 300 ? 40 : 54;
+  /* room for two lines of the caption under the map */
+  const fs = clamp(Math.min((H - top - 40)/12.3*.66, W/36), 9, 12.5), bot = Math.round(fs*1.45*2 + 18);
+  const rh = clamp((H - top - bot - 4)/12.3, 12.5, 26);
+  stage.style.setProperty('--top', top+'px'); stage.style.setProperty('--bot', bot+'px');
+  stage.style.setProperty('--rh', rh.toFixed(1)+'px'); stage.style.setProperty('--fs', fs.toFixed(2)+'px');
+  const prh = sq ? clamp((H*.42 - 36)/4, 22, 28) : clamp((H - top - 50)/7.4, 21, 31);
+  stage.style.setProperty('--prh', prh.toFixed(1)+'px');
+  drawWires(); dirty = true;
+}
+
+function paint(u){
+  const c = cx; c.setTransform(DPR,0,0,DPR,0,0); c.clearRect(0,0,W,H);
+  const k0 = Math.max(W/6480, H/3840), ox = (W - 6480*k0)/2, oy = (H - 3840*k0)/2;
+  const dim = view === 'map' ? .2 : 1;
+  /* a hint of the atmosphere behind the stars */
+  const hz = c.createRadialGradient(W*.5,H*.56,0,W*.5,H*.56,Math.max(W,H)*.55);
+  hz.addColorStop(0,`rgba(22,92,140,${.2*dim})`); hz.addColorStop(1,'rgba(22,92,140,0)');
+  c.fillStyle = hz; c.fillRect(0,0,W,H);
+  const dr = drift(u), camX = 3240 + CAM.x + dr.x, camY = 1920 + CAM.y + dr.y, camZ = CAM.z + dr.z;
+  const BOOST = 2.6;  /* stars drawn larger than the render so they read at this size */
+  ['micro','hero'].forEach(g=>{
+    const focus = view === 'field' ? (g === grp ? 1 : .38) : dim;
+    const list = stars[g];
+    for(let i=0;i<list.length;i++){
+      const [x,y,z,s,o] = list[i]; if(o <= 0) continue;
+      const dz = z - camZ; if(dz <= 1) continue;
+      const kz = CAM.zoom/dz;
+      const sx = ((x - camX)*kz + 3240)*k0 + ox, sy = ((y - camY)*kz + 1920)*k0 + oy;
+      if(sx < -10 || sy < -10 || sx > W+10 || sy > H+10) continue;
+      const r = Math.max(.45, 2*(s/100)*kz*k0*.5*BOOST), a = (o/100)*focus;
+      if(g === 'hero'){
+        const hr = r*6; c.globalAlpha = a*.55; c.drawImage(halo, sx-hr, sy-hr, hr*2, hr*2);
+        c.globalAlpha = a; c.fillStyle = '#DDF3FA';
+      } else { c.globalAlpha = a*.9; c.fillStyle = '#9CCEDD'; }
+      c.beginPath(); c.arc(sx, sy, r, 0, Math.PI*2); c.fill();
+    }
+  });
+  c.globalAlpha = 1;
+}
+
+/* ---------- star sliders ---------- */
+const rowEl = {};
+SL.forEach(s=>{
+  const row = document.createElement('label'); row.className = 'row'; row.dataset.k = s.k;
+  row.innerHTML = `<span>${s.name}<output></output></span><div class="trk"><i class="sw"></i><i class="th"></i></div><input type="range" aria-label="${s.name}">`;
+  const inp = row.querySelector('input');
+  inp.addEventListener('input',()=>{ stopAuto(); G[grp].v[s.k] = +inp.value; sync(s.k); build(grp); say(s.k); });
+  inp.addEventListener('focus',()=>say(s.k));
+  row.addEventListener('pointerenter',()=>{ if(!auto) say(s.k); });
+  rowsEl.appendChild(row); rowEl[s.k] = row;
+});
+function showVal(k, v){
+  if(k === 'lv') return (v<0?'−':'') + Math.abs(Math.round(v));
+  if(k === 'zb') return (+v).toFixed(2);
+  if(k === 'dens') return Math.round(v) + '%';
+  return fmt(Math.round(v));
+}
+function sync(only){
+  const D = G[grp];
+  SL.forEach(s=>{
+    if(only && s.k !== only) return;
+    const row = rowEl[s.k], inp = row.querySelector('input'), [mn,mx,st] = D.r[s.k], v = D.v[s.k];
+    inp.min = mn; inp.max = mx; inp.step = st; inp.value = v;
+    const p = x => ((x - mn)/(mx - mn))*100;
+    row.querySelector('.th').style.left = clamp(p(v),0,100) + '%';
+    const sw = row.querySelector('.sw'), sp = D.sweet[s.k];
+    if(sp){ sw.style.display = ''; sw.style.left = p(sp[0]) + '%'; sw.style.width = (p(sp[1]) - p(sp[0])) + '%'; } else sw.style.display = 'none';
+    row.classList.toggle('in', !!sp && v >= sp[0] - 1e-9 && v <= sp[1] + 1e-9);
+    row.querySelector('output').textContent = showVal(s.k, v);
+  });
+}
+let sayK = null;
+function say(k){
+  sayK = k;
+  Object.values(rowEl).forEach(r=>r.classList.toggle('on', r.dataset.k === k));
+  if(k){ sayEl.innerHTML = SL.find(s=>s.k===k).say; return; }
+  sayEl.innerHTML = 'The project’s own star expressions, run live. <b>Yellow</b> marks the guide’s sweet spot.';
+}
+function setGroup(g){
+  grp = g; segs.forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.g === g)));
+  compEl.textContent = g === 'hero' ? '03 — Hero Stars' : '04 — Micro Stars';
+  sync();
+}
+segs.forEach(b=>b.addEventListener('click',()=>{ stopAuto(); setGroup(b.dataset.g); }));
+
+/* ---------- views ---------- */
+function setView(v){
+  view = v;
+  tabs.forEach(t=>t.setAttribute('aria-pressed', String(t.dataset.v === v)));
+  mapEl.hidden = v !== 'map'; fieldEl.hidden = v !== 'field';
+  stage.classList.toggle('v-field', v === 'field');
+  if(v === 'map'){ compEl.textContent = 'CTRL_CENTER'; if(sel) select(sel); }
+  else { setGroup(grp); say(sayK); }
+  dirty = true;
+}
+tabs.forEach(t=>t.addEventListener('click',()=>{ stopAuto(); setView(t.dataset.v); }));
+function stopAuto(){ if(auto){ auto = false; restore(); } }
+
+/* ---------- the demo that runs until someone touches it ---------- */
+const TOUR = ['hero','master','switch','motion','hyp','panel'];
+let phase = 'map', phaseAt = 0;
+function restore(){ Object.assign(G.hero.v, STORED.hero); Object.assign(G.micro.v, STORED.micro); build('hero'); build('micro'); if(view === 'field') sync(); }
+const DEMO = [
+  {k:'lv', t:3.6, f:(t)=> t < 3.2 ? [-921, -380, 214, 655][Math.floor(t/0.8)] : -921},
+  {k:'zb', t:4.2, f:(t)=>{ const w = Math.sin(t/4.2*Math.PI*2); return 2 + (w > 0 ? w*1.4 : w*.5); }},
+  {k:'ns', t:4.2, f:(t)=> 45 + Math.sin(t/4.2*Math.PI*2)*10},
+];
+function autoStep(now){
+  const t = Math.max(0, (now - phaseAt)/1000);
+  if(phase === 'map'){
+    /* one control every 2.6 s; after the tour, the stars */
+    const step = Math.floor(t/2.6);
+    if(step >= TOUR.length){ phase = 'field'; phaseAt = now; setGroup('hero'); setView('field'); return; }
+    if(sel !== TOUR[step]) select(TOUR[step]);
+  } else {
+    let acc = 0;
+    for(const d of DEMO){
+      if(t < acc + d.t){
+        const lt = t - acc, r = G.hero.r[d.k];
+        let v = d.f(lt); v = clamp(v, r[0], r[1]);
+        if(sayK !== d.k) say(d.k);
+        if(G.hero.v[d.k] !== v){ G.hero.v[d.k] = v; build('hero'); sync(d.k); }
+        return;
+      }
+      acc += d.t; G.hero.v[d.k] = STORED.hero[d.k];
+    }
+    restore(); say(null); phase = 'map'; phaseAt = now; setView('map');
+  }
+}
+
+/* ---------- loop ---------- */
+const LOOP = 24; /* the project's 180 s camera drift, sped up */
+let onScreen = true, looping = true, last = performance.now(), dt0 = 0, lastU = -1;
+function frame(now){
+  const dt = Math.min(.05,(now-last)/1000); last = now;
+  if(!reduce) dt0 += dt;
+  if(auto) autoStep(now);
+  const u = (dt0 % LOOP)/LOOP;
+  if(dirty || u !== lastU){ paint(u); lastU = u; dirty = false; }
+  if(onScreen) requestAnimationFrame(frame); else looping = false;
+}
+build('hero'); build('micro');
+new ResizeObserver(resize).observe(stage); resize();
+setGroup('hero'); setView('map'); select(reduce ? 'hero' : TOUR[0]);
+new IntersectionObserver(es=>{ onScreen = es[0].isIntersecting; if(onScreen && !looping){ looping = true; last = performance.now(); requestAnimationFrame(frame); } }).observe(stage);
+phaseAt = performance.now();
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

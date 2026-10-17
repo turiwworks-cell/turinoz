@@ -32,10 +32,17 @@ JavaScript, no build step. Serve the portfolio folder and open `/quiet-between-s
 6. **04 Transitions**: same layout. `transitions-diagram.html` plays the real Entry and Return
    renders with the nine `KF_TRANSITIONS` sliders read out at the playhead (key times and
    values from the project, curves between keys approximate) and an Entry order chart.
-7. **05 Process**: Handover only, for now.
-8. **06 System**: key numbers, the nine control groups, and two of their guide pages as
+7. **05 Motion system**: same layout. `motion-diagram.html` has two views. Controls: the
+   eleven `CTRL_CENTER` control layers plus `KF_TRANSITIONS`; pick one to see the layers its
+   expressions drive (counts taken from the package's `expressions.json`; Master Variation
+   and Atmosphere also feed other controls, drawn as arcs). Stars: the hero and micro star
+   expressions and the STARS camera run live in canvas, with the guide's safe ranges as
+   slider ranges and its sweet spots in yellow; the 180 s camera drift is sped up. Both
+   views tour on their own until touched. Chart: where the 1,726 expressions are.
+8. **06 Process**: Handover only, for now.
+9. **07 System**: key numbers, the nine control groups, and two of their guide pages as
    small, zoomable examples.
-9. **07 Delivery**: the four things handed over, each with a small picture of it, credits
+10. **08 Delivery**: the four things handed over, each with a small picture of it, credits
    set like a film's end credits, next project (Storm).
 
 Copy rules that apply here: no project length or date range; nothing from payments,

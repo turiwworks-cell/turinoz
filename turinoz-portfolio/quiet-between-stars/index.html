@@ -44,7 +44,7 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
     <a class="brand" href="#top" aria-label="Quiet Between Stars, back to top"><span>Quiet Between Stars</span></a>
     <nav class="links" id="links" aria-label="Sections">
       <i class="pill" aria-hidden="true"></i>
-      <a href="#brief">Brief</a><a href="#idle">Idle</a><a href="#hyperspace">Hyperspace</a><a href="#transitions">Transitions</a><a href="#process">Process</a><a href="#system">System</a><a href="#delivery">Delivery</a>
+      <a href="#brief">Brief</a><a href="#idle">Idle</a><a href="#hyperspace">Hyperspace</a><a href="#transitions">Transitions</a><a href="#motion">Motion</a><a href="#process">Process</a><a href="#system">System</a><a href="#delivery">Delivery</a>
     </nav>
     <div class="navr">
     </div>
@@ -305,11 +305,67 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
   </div>
 </section>
 
+<!-- ================= 05 MOTION SYSTEM ================= -->
+<section class="sec build" id="motion">
+  <div class="wrap">
+    <div class="build-head rv">
+      <div class="kicker"><i></i>05 — Motion system</div>
+      <h2>One comp steers it all.</h2>
+    </div>
+
+    <div class="build-top rv">
+      <figure class="ld">
+        <iframe class="ld-frame" src="motion-diagram.html" title="Which layers each control drives, and the star field run live from the project’s own expressions" loading="lazy"></iframe>
+        <figcaption class="fine">Counts from the project. Real star expressions, sped up, not to scale.</figcaption>
+      </figure>
+
+      <div class="build-facts">
+        <ul class="nums">
+          <li><b>1,726</b><span class="mono">Expressions</span></li>
+          <li><b>610</b><span class="mono">Layers in 33 comps</span></li>
+          <li><b>11</b><span class="mono">Control layers, one comp</span></li>
+        </ul>
+        <p>Every setting lives in one comp, <code>CTRL_CENTER</code>: eleven control layers, switched off so they never render, with the guide on top. Expressions across the project read from them.</p>
+        <p>Every star runs the same three expressions, so 120 hero and 400 micro stars move as one.</p>
+        <p class="ld-see"><button class="zoom mono" type="button" data-src="assets/ctrl-center.webp" data-cap="CTRL_CENTER: the eleven control layers above the universe · After Effects">The control comp</button></p>
+      </div>
+    </div>
+
+    <div class="weight rv">
+      <div class="weight-p">
+        <p class="weight-k mono"><i></i>The problem</p>
+        <h3>Easy to change, hard to break.</h3>
+        <p>The system went to Petie with the films, so he could reshape the scene himself. That meant 33 comps and 610 layers he should never have to open.</p>
+      </div>
+      <div class="weight-s">
+        <p class="weight-k mono">How I solved it</p>
+        <ol class="fixes">
+          <li><span class="mono">01</span>All controls in one comp, with the guide on top.</li>
+          <li><span class="mono">02</span>Three expressions per star: position, size, opacity.</li>
+          <li><span class="mono">03</span>One Master Variation seeds all four groups.</li>
+          <li><span class="mono">04</span>A safe range and a sweet spot for every slider.</li>
+          <li><span class="mono">05</span>Three output formats reframe one universe.</li>
+        </ol>
+      </div>
+      <figure class="render expr">
+        <figcaption class="render-k mono">Where the 1,726 expressions are</figcaption>
+        <ul>
+          <li class="st" style="--w:100%"><span class="lbl">Micro stars</span><i aria-hidden="true"></i><b class="mono">1,200</b></li>
+          <li class="st" style="--w:30%"><span class="lbl">Hero stars</span><i aria-hidden="true"></i><b class="mono">360</b></li>
+          <li style="--w:5.75%"><span class="lbl">Two grades</span><i aria-hidden="true"></i><b class="mono">69</b></li>
+          <li style="--w:8.1%"><span class="lbl">The rest</span><i aria-hidden="true"></i><b class="mono">97</b></li>
+        </ul>
+        <p class="fine">Three on every star. The two grades copy their settings from the controls.</p>
+      </figure>
+    </div>
+  </div>
+</section>
+
 <!-- ================= 02 PROCESS ================= -->
 <section class="sec" id="process">
   <div class="wrap">
     <div class="shead rv">
-      <div><div class="kicker"><i></i>05 — Process</div><h2>The handover.</h2>
+      <div><div class="kicker"><i></i>06 — Process</div><h2>The handover.</h2>
         <p class="sub">Petie set the brief and reviewed the key moments, about 3 or 4 out of 10 by his own count. The calls in between were mine.</p></div>
     </div>
 
@@ -348,7 +404,7 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
 <section class="sec" id="system">
   <div class="wrap">
     <div class="shead rv">
-      <div><div class="kicker"><i></i>06 — System</div><h2>A world you can keep changing.</h2>
+      <div><div class="kicker"><i></i>07 — System</div><h2>A world you can keep changing.</h2>
         <p class="sub">The films came with the system that makes them. One master seed reshapes the whole scene, and every part keeps its own controls.</p></div>
     </div>
 
@@ -387,7 +443,7 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
 <section class="sec" id="delivery">
   <div class="wrap">
     <div class="shead rv">
-      <div><div class="kicker"><i></i>07 — Delivery</div><h2>Handed over, ready to change.</h2>
+      <div><div class="kicker"><i></i>08 — Delivery</div><h2>Handed over, ready to change.</h2>
         <p class="sub">The renders, the editable system and the guide. Petie later built his own web control layer around it.</p></div>
     </div>
     <div class="pack rv">
