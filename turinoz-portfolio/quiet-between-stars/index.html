@@ -84,40 +84,37 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
   <button class="go" id="arriveBtn" type="button"><span>Scroll to arrive</span><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2v8M2.8 6.8 6 10l3.2-3.2"/></svg></button>
   <button class="skipi mono" id="skipIntro" type="button">Skip</button>
 
-  <!-- landed in Primary Idle: only the film. The case study starts on scroll. -->
+  <!-- landed in Primary Idle: the title on top, the four states and the way down below.
+       The case study (and the section links) start after the first screen. -->
   <div class="landing">
-    <p class="doc mono"><b>Made for OLED</b><span>6480 × 3840 · 10-bit master</span></p>
-    <a class="more" href="#about"><span>Scroll for the case study</span><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2v8M2.8 6.8 6 10l3.2-3.2"/></svg></a>
-    <div class="now">
-      <span class="now-t mono" id="nowName">Primary Idle</span>
-      <button class="qp-btn" id="playToggle" type="button" aria-label="Pause"><svg class="i-play" aria-hidden="true"><use href="#icPlay"/></svg><svg class="i-pause" aria-hidden="true"><use href="#icPause"/></svg></button>
-      <button class="qp-btn" id="fullscreen" type="button" aria-label="View fullscreen"><svg aria-hidden="true"><use href="#icFull"/></svg></button>
+    <div class="land-top wrap">
+      <p class="cap"><i></i><span>Ambient motion system for <b>Petie Clark</b></span></p>
+      <h1 class="h1" aria-label="A place to stay awhile.">
+        <span class="ln" aria-hidden="true"><span>A place to</span></span>
+        <span class="ln" aria-hidden="true"><span class="dim">stay awhile.</span></span>
+      </h1>
+      <p class="lede">A slow, silent world for Petie’s office, made for three tall OLED screens. I led the creative direction and the design, and built the After Effects system that runs it.</p>
     </div>
-  </div>
-  <p class="qp-error" id="playerError" hidden>This preview couldn’t load. <a id="fallbackLink" href="assets/idle.mp4">Open the video file</a></p>
-  <p class="sr-only" role="status" id="playerStatus"></p>
-</section>
-
-<!-- ================= ABOUT: title, then the four states ================= -->
-<section class="about" id="about">
-  <div class="wrap">
-    <p class="cap rv"><i></i><span>Ambient motion system for <b>Petie Clark</b></span></p>
-    <h1 class="h1 rv" aria-label="A place to stay awhile.">
-      <span class="ln" aria-hidden="true"><span>A place to</span></span>
-      <span class="ln" aria-hidden="true"><span class="dim">stay awhile.</span></span>
-    </h1>
-    <p class="lede rv">A slow, silent world for Petie’s office, made for three tall OLED screens. I led the creative direction and the design, and built the After Effects system that runs it.</p>
-
-    <div class="states rv" id="player" role="group" aria-label="Watch a state on the stage above">
-      <p class="states-k mono">The four states · click one to watch it above</p>
-      <div class="states-row">
-        <button type="button" data-state="idle" aria-pressed="true"><span class="st-img"><img src="assets/idle-poster.webp" alt="" loading="lazy"><i class="st-play" aria-hidden="true"><svg><use href="#icPlay"/></svg></i><i class="bar" aria-hidden="true"></i></span><span class="st-n mono">01</span><span class="st-t">Primary Idle</span><span class="st-d mono">3:00 · loop</span></button>
+    <div class="land-bot wrap">
+      <div class="states" id="player" role="group" aria-label="Choose a state to watch">
+        <button type="button" data-state="idle" aria-pressed="true"><span class="st-img"><img src="assets/idle-poster.webp" alt=""><i class="st-play" aria-hidden="true"><svg><use href="#icPlay"/></svg></i><i class="bar" aria-hidden="true"></i></span><span class="st-n mono">01</span><span class="st-t">Primary Idle</span><span class="st-d mono">3:00 · loop</span></button>
         <button type="button" data-state="entry" aria-pressed="false"><span class="st-img"><img src="assets/entry-poster.webp" alt="" loading="lazy"><i class="st-play" aria-hidden="true"><svg><use href="#icPlay"/></svg></i><i class="bar" aria-hidden="true"></i></span><span class="st-n mono">02</span><span class="st-t">Entry</span><span class="st-d mono">0:05</span></button>
         <button type="button" data-state="cruise" aria-pressed="false"><span class="st-img"><img src="assets/cruise-poster.webp" alt="" loading="lazy"><i class="st-play" aria-hidden="true"><svg><use href="#icPlay"/></svg></i><i class="bar" aria-hidden="true"></i></span><span class="st-n mono">03</span><span class="st-t">Hyperspace</span><span class="st-d mono">2:50 · loop</span></button>
         <button type="button" data-state="exit" aria-pressed="false"><span class="st-img"><img src="assets/exit-poster.webp" alt="" loading="lazy"><i class="st-play" aria-hidden="true"><svg><use href="#icPlay"/></svg></i><i class="bar" aria-hidden="true"></i></span><span class="st-n mono">04</span><span class="st-t">Return</span><span class="st-d mono">0:05</span></button>
       </div>
+      <div class="land-bar">
+        <p class="quality"><b class="mono">Made for OLED</b><span>The original is 6480 × 3840, 10-bit. This page plays a compressed 8-bit web copy, so you are not seeing the original quality.</span></p>
+        <a class="more" href="#brief"><span>Scroll for the case study</span><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2v8M2.8 6.8 6 10l3.2-3.2"/></svg></a>
+        <div class="now">
+          <span class="now-t mono" id="nowName">Primary Idle</span>
+          <button class="qp-btn" id="playToggle" type="button" aria-label="Pause"><svg class="i-play" aria-hidden="true"><use href="#icPlay"/></svg><svg class="i-pause" aria-hidden="true"><use href="#icPause"/></svg></button>
+          <button class="qp-btn" id="fullscreen" type="button" aria-label="View fullscreen"><svg aria-hidden="true"><use href="#icFull"/></svg></button>
+        </div>
+      </div>
     </div>
   </div>
+  <p class="qp-error" id="playerError" hidden>This preview couldn’t load. <a id="fallbackLink" href="assets/idle.mp4">Open the video file</a></p>
+  <p class="sr-only" role="status" id="playerStatus"></p>
 </section>
 
 <!-- ================= 01 BRIEF ================= -->
@@ -290,7 +287,11 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
     <div class="guide rv">
       <div class="guide-copy">
         <h3>Every control, with a sweet spot.</h3>
-        <p>The system came with a guide. Every control has a safe range, a sweet spot and a note on how it feels.</p>
+        <p>The system came with a guide: one page for each of its nine control groups. Every control has a safe range, a sweet spot and a note on how it feels.</p>
+        <ol class="groups mono" aria-label="The nine control groups">
+          <li>01 Master Variation</li><li>02 Global Grade</li><li>03 Hero Stars</li><li class="shown">04 Micro Stars</li><li>05 Scene Motion</li><li>06 Atmosphere</li><li>07 Cloud</li><li>08 Nebula</li><li class="shown">09 Hyperspace</li>
+        </ol>
+        <p class="groups-k">Highlighted: the two pages shown here, as examples.</p>
       </div>
       <div class="guide-pages">
         <figure>
@@ -315,12 +316,38 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
         <p class="sub">The renders, the editable system and the guide. Petie later built his own web control layer around it.</p></div>
     </div>
     <div class="pack rv">
-      <p class="pack-k mono">Delivered</p>
+      <p class="pack-k mono">What Petie received</p>
       <ol class="pack-list">
-        <li><span class="pk-n mono">01</span><span class="pk-t">Renders</span><span class="pk-d">Primary Idle, Entry, Hyperspace, Return<small class="mono">6480 × 3840 · 24 fps · 10-bit · Silent</small></span></li>
-        <li><span class="pk-n mono">02</span><span class="pk-t">Formats</span><span class="pk-d">Three portrait, one portrait, two ultrawides</span></li>
-        <li><span class="pk-n mono">03</span><span class="pk-t">System</span><span class="pk-d">The editable After Effects project</span></li>
-        <li><span class="pk-n mono">04</span><span class="pk-t">Guide</span><span class="pk-d">Controls, setup, render, export</span></li>
+        <li>
+          <div class="pk-v pk-renders" aria-hidden="true">
+            <span><img src="assets/idle-poster.webp" alt="" loading="lazy"><i class="mono">Idle</i></span>
+            <span><img src="assets/entry-poster.webp" alt="" loading="lazy"><i class="mono">Entry</i></span>
+            <span><img src="assets/cruise-poster.webp" alt="" loading="lazy"><i class="mono">Hyperspace</i></span>
+            <span><img src="assets/exit-poster.webp" alt="" loading="lazy"><i class="mono">Return</i></span>
+          </div>
+          <p class="pk-n mono">01</p><h3 class="pk-t">Renders</h3>
+          <p class="pk-d">The four states, as masters.<small class="mono">6480 × 3840 · 24 fps · 10-bit · Silent</small></p>
+        </li>
+        <li>
+          <div class="pk-v pk-formats" aria-hidden="true">
+            <span class="f3"><i></i><i></i><i></i></span>
+            <span class="f1"><i></i></span>
+            <span class="fw1"><i></i></span>
+            <span class="fw2"><i></i></span>
+          </div>
+          <p class="pk-n mono">02</p><h3 class="pk-t">Formats</h3>
+          <p class="pk-d">One space, framed for every screen.<small class="mono">3 × portrait · portrait · 5120 × 1440 · 3840 × 1600</small></p>
+        </li>
+        <li>
+          <div class="pk-v pk-shot" aria-hidden="true"><img src="assets/ctrl-center.webp" alt="" loading="lazy"></div>
+          <p class="pk-n mono">03</p><h3 class="pk-t">System</h3>
+          <p class="pk-d">The editable After Effects project.<small class="mono">CTRL_CENTER · QBS_UNIVERSE</small></p>
+        </li>
+        <li>
+          <div class="pk-v pk-shot" aria-hidden="true"><img src="assets/guide-micro-stars-1200.webp" alt="" loading="lazy"></div>
+          <p class="pk-n mono">04</p><h3 class="pk-t">Guide</h3>
+          <p class="pk-d">How to use it on his own.<small class="mono">Controls · Setup · Render · Export</small></p>
+        </li>
       </ol>
     </div>
 
@@ -356,6 +383,6 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
   <div class="lb-body" id="lbBody"><img id="lbImg" alt=""></div>
 </dialog>
 
-<noscript><style>.rv{opacity:1!important;transform:none!important}.h1 .ln>*{transform:none!important}.now,.states,.go,.skipi,.intro{display:none!important}</style></noscript>
+<noscript><style>.rv{opacity:1!important;transform:none!important}.h1 .ln>*{transform:none!important}.now,.states,.go,.skipi,.intro{display:none!important}.landing{opacity:1!important;transform:none!important}</style></noscript>
 </body>
 </html>

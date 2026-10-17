@@ -18,18 +18,21 @@ JavaScript, no build step. Serve the portfolio folder and open `/quiet-between-s
 ## Story, top to bottom
 
 1. **Arrival**: the page opens in Hyperspace, plays Return on the first scroll and lands in
-   Primary Idle. Landed, the stage is only for watching: a short "Made for OLED" line, a
-   "Scroll for the case study" button and small play/fullscreen controls.
-2. **Below the stage**: the title (centered), the lede and the four states as poster cards.
-   A card plays its state on the stage and scrolls back up to it.
+   Primary Idle. The first screen is the watching screen: the title on top, the four states
+   as poster cards (a card plays its state on the stage), a readable note that this is an
+   8-bit web copy of a 6480 × 3840 10-bit OLED master, "Scroll for the case study" and small
+   play/fullscreen controls.
+2. **Nav**: on the first screen only the name, centered. Past the stage it moves to its
+   corner and the section links appear.
 3. **01 Brief**: what Petie asked for, the six rules and his "still water / smooth current".
 4. **02 Process**: five steps (Build, Weight, Universe, Hyperspace, Handover). The page
    leans on Universe: every layer is a real layer in After Effects' 3D space inside
    `QBS_UNIVERSE`, shown as a diagram, and all of it is native After Effects (no plugins,
    images or outside assets). After Effects screenshots stay small and zoomable.
-5. **03 System**: key numbers and two small, zoomable pages of the controller guide.
-6. **04 Delivery**: the four things handed over, credits set like a film's end credits, next
-   project (Storm).
+5. **03 System**: key numbers, the nine control groups, and two of their guide pages as
+   small, zoomable examples.
+6. **04 Delivery**: the four things handed over, each with a small picture of it, credits
+   set like a film's end credits, next project (Storm).
 
 Copy rules that apply here: no project length or date range; nothing from payments,
 budgets, connectivity, private emails or draft testimonials. The one quote is Petie's own

@@ -95,12 +95,16 @@
     if (!a) { pill.style.opacity = 0; return; }
     pill.style.left = a.offsetLeft + 'px'; pill.style.width = a.offsetWidth + 'px'; pill.style.opacity = 1;
   }
+  // on the stage the name sits in the middle of the bar; with the case study it moves back to its corner
+  const brand = $('.brand');
+  function centerBrand() { nav.style.setProperty('--bx', (nav.clientWidth / 2 - (brand.offsetLeft + brand.offsetWidth / 2)) + 'px'); }
   let ticking = false;
   function onScroll() {
     ticking = false;
     const max = root.scrollHeight - innerHeight;
     nav.classList.toggle('scrolled', scrollY > 8);
-    nav.classList.toggle('over', scrollY < $('#top').offsetHeight - 70);
+    nav.classList.toggle('over', scrollY < $('#top').offsetHeight * .55);
+    centerBrand();
     root.style.setProperty('--sp', max > 0 ? (scrollY / max).toFixed(4) : 0);
     let on = null;
     for (const a of links) { const sec = $(a.hash); if (sec && sec.getBoundingClientRect().top < innerHeight * .4) on = a; }
@@ -117,10 +121,9 @@
 
   /* ---------------- arrival: Hyperspace → Return → Primary Idle ----------------
      The page opens inside the piece's own state machine. The first scroll (or the
-     button) plays Return and lands in Idle: only the film. The title and the state cards
-     sit below; a card plays its state on the stage.
+     button) plays Return and lands in Idle with the title and the four state cards.
      Skipped on a second visit in the same session, with a hash, or for reduced motion. */
-  const A = $('#top'), video = $('#stateVideo'), vHyper = $('#vHyper'), vReturn = $('#vReturn'), toggle = $('#playToggle'), nowName = $('#nowName');
+  const A = $('#top'), video = $('#stateVideo'), vHyper = $('#vHyper'), vReturn = $('#vReturn'), toggle = $('#playToggle'), nowName = $('#nowName'), h1 = $('.h1');
   const STATES = {
     idle:   { file: 'idle',  name: 'Primary Idle', dur: 180, loop: true },
     entry:  { file: 'entry', name: 'Entry',        dur: 5,   loop: false, next: 'cruise' },
@@ -155,11 +158,7 @@
     video.src = `assets/${s.file}.mp4`; $('#fallbackLink').href = video.src; video.load(); timing();
     video.addEventListener('loadeddata', () => { if (my !== token) return; $('#playerStatus').textContent = `${s.name} playing`; sync(); }, { once: true });
   }
-  // a state card plays on the stage, so the page goes back up to it
-  tabs.forEach(b => b.addEventListener('click', () => {
-    userPaused = false; setState(b.dataset.state);
-    A.scrollIntoView({ behavior: reduced.matches ? 'auto' : 'smooth', block: 'start' });
-  }));
+  tabs.forEach(b => b.addEventListener('click', () => { userPaused = false; setState(b.dataset.state); }));
   video.addEventListener('ended', () => { const s = STATES[current]; if (s.next && !userPaused) setState(s.next); });
   video.addEventListener('timeupdate', timing); video.addEventListener('loadedmetadata', timing);
   video.addEventListener('play', ui); video.addEventListener('pause', ui);
@@ -182,6 +181,7 @@
     try { sessionStorage.setItem('qbs-arrived', '1'); } catch (_) {}
     try { video.currentTime = 0; } catch (_) {}
     sync();
+    setTimeout(() => h1.classList.add('in'), 300);
     setTimeout(() => { vHyper.pause(); vReturn.pause(); }, 1400);
     onScroll();
   }
@@ -219,6 +219,7 @@
     addEventListener('keydown', onKey);
   } else {
     setPhase('landed');
+    requestAnimationFrame(() => setTimeout(() => h1.classList.add('in'), 80));
     sync();
   }
   timing(); ui();
