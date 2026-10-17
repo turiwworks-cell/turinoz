@@ -190,7 +190,7 @@ h2{font-size:clamp(36px,5.2vw,80px);line-height:.98;letter-spacing:-.05em}
 
 /* the top bar's end: a small "Open" and the day/night switch */
 .top-end{display:flex;align-items:center;gap:8px}
-.osm{position:relative;display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 16px 0 3px;border-radius:99px;background:var(--ink);color:var(--paper);text-decoration:none;white-space:nowrap;font-size:13.5px;font-weight:500;letter-spacing:-.005em;transition:transform .3s var(--ui)}
+.osm{position:relative;display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 16px;border-radius:99px;background:var(--ink);color:var(--paper);text-decoration:none;white-space:nowrap;font-size:13.5px;font-weight:500;letter-spacing:-.005em;transition:transform .3s var(--ui)}
 .osm:active{transform:scale(.97)}
 .osm-mark{position:relative;flex:none;width:28px;height:28px;border-radius:50%;background:color-mix(in srgb,var(--paper) 10%,transparent)}
 .osm-mark svg{position:absolute;left:9px;top:9px;width:10px;height:10px}
@@ -238,9 +238,12 @@ h2{font-size:clamp(36px,5.2vw,80px);line-height:.98;letter-spacing:-.05em}
 .hero{position:relative;min-height:100svh;display:grid;align-items:center;padding:calc(var(--top) + clamp(32px,5vw,72px)) 0 clamp(48px,6vw,96px)}
 .hero-grid{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(28px,3.4vw,48px) clamp(40px,6vw,120px);align-items:center}
 .note{grid-column:1/-1;justify-self:center;display:inline-flex;align-items:center;gap:12px;max-width:100%;margin:0;padding:4px 16px 4px 4px;border-radius:99px;background:color-mix(in srgb,var(--card) 82%,transparent);box-shadow:inset 0 0 0 1px var(--rule-2),0 14px 34px -24px rgba(0,0,0,.35);font:400 13px/1.4 var(--sans);color:var(--ink-2)}
-.note-tag{flex:none;display:inline-flex;align-items:center;gap:9px;height:26px;padding:0 11px 0 10px;border-radius:99px;background:var(--ink);color:var(--paper);font:500 10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase}
-.note-tag i{position:relative;flex:none;width:6px;height:6px;transform:rotate(45deg);background:var(--beta)}
-.note-tag i::after{content:"";position:absolute;inset:0;background:var(--beta);animation:note-ping 2.6s var(--ui) infinite}
+.note-tag{flex:none;display:inline-flex;align-items:stretch;height:26px;border-radius:2px;font:500 10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase}
+.note-tag b{position:relative;flex:none;width:26px;border-radius:2px 0 0 2px;background:var(--now)}
+.note-tag b i{position:absolute;left:50%;top:50%;margin:-3px 0 0 -3px}
+.note-tag em{display:flex;align-items:center;padding:0 10px;border-radius:0 2px 2px 0;font-style:normal;background:var(--lbl);color:#121211;box-shadow:inset 0 0 0 1px var(--lbl-line)}
+.note-tag i{position:absolute;flex:none;width:6px;height:6px;transform:rotate(45deg);background:var(--dia)}
+.note-tag i::after{content:"";position:absolute;inset:0;background:var(--dia);animation:note-ping 2.6s var(--ui) infinite}
 @keyframes note-ping{0%{transform:scale(1);opacity:.85}70%,100%{transform:scale(3.2);opacity:0}}
 .note-tx{text-wrap:balance}
 @media (max-width:560px){.note{justify-self:stretch;flex-direction:column;align-items:flex-start;gap:9px;border-radius:16px;padding:6px 16px 13px 6px;font-size:13.5px}.note-tx{padding:0 0 0 6px;text-wrap:pretty}}
@@ -651,6 +654,8 @@ h2{font-size:clamp(36px,5.2vw,80px);line-height:.98;letter-spacing:-.05em}
 .foot .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-top:22px;border-top:1px solid var(--rule);font:500 11.5px var(--mono);color:var(--ink-3)}
 .foot a{text-decoration:none;transition:color .3s var(--ease)}
 .foot a:hover{color:var(--ink)}
+.foot a.fb{color:var(--now)}
+.foot a.fb:hover{color:var(--ink)}
 
 /* Reduced motion: nothing slides, lifts, loops or pulses on its own.
    Fades and color changes stay. Scroll still moves the graph, because
@@ -756,7 +761,7 @@ html.theming *,html.theming *::before,html.theming *::after{transition:none!impo
       <span class="cti" id="cti" tabindex="0" role="slider" aria-label="Page position. Drag it, or use the arrow keys to move between sections." aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></span>
     </nav>
     <div class="top-end">
-      <a class="osm" href="app.html" target="_blank" rel="noopener" aria-label="Open Curve Lab, free, no login"><span class="osm-mark" aria-hidden="true"><svg viewBox="0 0 12 12"><rect x="1.42" y="1.42" width="9.16" height="9.16" rx="1.14" transform="rotate(45 6 6)"/></svg></span><span class="osm-t" aria-hidden="true"><span class="ch" style="--i:0"><span>O</span><span>O</span></span><span class="ch" style="--i:1"><span>p</span><span>p</span></span><span class="ch" style="--i:2"><span>e</span><span>e</span></span><span class="ch" style="--i:3"><span>n</span><span>n</span></span></span></a>
+      <a class="osm" href="app.html" target="_blank" rel="noopener" aria-label="Open Curve Lab, free, no login"><span class="osm-t" aria-hidden="true"><span class="ch" style="--i:0"><span>O</span><span>O</span></span><span class="ch" style="--i:1"><span>p</span><span>p</span></span><span class="ch" style="--i:2"><span>e</span><span>e</span></span><span class="ch" style="--i:3"><span>n</span><span>n</span></span></span></a>
       <button class="theme" type="button" id="themeBtn" aria-label="Switch to dark mode" title="Switch to dark mode"><svg viewBox="0 0 24 24" aria-hidden="true"><defs><mask id="thMask" maskUnits="userSpaceOnUse" x="-4" y="-4" width="32" height="32"><rect x="-4" y="-4" width="32" height="32" fill="#fff"/><circle class="bite" r="6.2" cx="26" cy="-2" fill="#000"/></mask></defs><g class="ico"><path class="rays" d="M12 2.4v2.3M12 19.3v2.3M2.4 12h2.3M19.3 12h2.3M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M5.2 18.8l1.6-1.6M17.2 6.8l1.6-1.6"/><circle class="core" cx="12" cy="12" r="4.5" mask="url(#thMask)"/></g></svg></button>
     </div>
   </div>
@@ -766,7 +771,7 @@ html.theming *,html.theming *::before,html.theming *::after{transition:none!impo
 <main id="top">
 <section class="hero" aria-labelledby="h-hero">
   <div class="wrap hero-grid">
-    <p class="note rv"><span class="note-tag"><i aria-hidden="true"></i>Updated often</span><span class="note-tx">The tours may lag a step behind the latest version.</span></p>
+    <p class="note rv"><span class="note-tag"><b aria-hidden="true"><i></i></b><em>Updated often</em></span><span class="note-tx">The tours may lag a step behind the latest version.</span></p>
     <div class="hero-copy">
       <p class="eyebrow rv">Curve Lab</p>
       <h1 class="hl" id="h-hero">I lost my graph editor. <span class="soft">So I made one.</span></h1>
@@ -998,7 +1003,7 @@ html.theming *,html.theming *::before,html.theming *::after{transition:none!impo
 </section>
 </main>
 
-<footer class="foot"><div class="wrap"><span>Curve Lab</span><a href="https://turinoz.co" target="_blank" rel="noopener">turinoz.co ↗</a><a href="brand/">Brand sheet</a><a href="#top" data-go>Back to top ↑</a></div></footer>
+<footer class="foot"><div class="wrap"><span>Curve Lab</span><a href="https://turinoz.co" target="_blank" rel="noopener">turinoz.co ↗</a><a class="fb" href="brand/">Brand sheet</a><a href="#top" data-go>Back to top ↑</a></div></footer>
 
 
 <script>
