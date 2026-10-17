@@ -235,9 +235,9 @@ const LAYERS = [
    desc:"The camera every frame is shot through, and the only thing in the scene that moves. The layers stay put. Depth comes from how far each one sits from this lens."},
   {idx:2,  name:'Color Grade',     kind:'rig',   type:'Adjustment layer',
    desc:"Holds the color. The gas is built in grayscale and this layer turns it blue, so the whole palette lives in one place. Switch Grade off to see the raw layers."},
-  {idx:14, name:'Hero Stars',      kind:'stars', type:'Stars', stars:'hero', band:[0,8],
+  {idx:14, name:'Hero Stars',      kind:'stars', type:'Stars', stars:'hero', band:[-0.55,8],
    desc:"The bright stars. Each one is its own shape layer, scattered through the whole depth of the scene, so each slides at its own speed when the camera moves."},
-  {idx:15, name:'Micro Stars',     kind:'stars', type:'Stars', stars:'micro', band:[0.3,9.6],
+  {idx:15, name:'Micro Stars',     kind:'stars', type:'Stars', stars:'micro', band:[-0.45,9.6],
    desc:"The small stars, spread through all of space, in front of the gas and deep behind it. One shape layer per star."},
   {idx:4,  name:'Front Haze',      kind:'haze',  type:'Haze', depth:0, tex:'haze',
    desc:"The nearest layer to the lens. A thin veil in front of everything, so the camera always looks through a little air. It slides fastest when the camera moves."},
@@ -422,7 +422,7 @@ const STARS = [];
     const hero = L.stars==='hero', n = hero ? 120 : 400;
     for(let i=0;i<n;i++){
       const tint = r();
-      STARS.push({L, u:(r()*2-1)*1.25, v:(r()*2-1)*1.25, t:Math.pow(r(),0.85),
+      STARS.push({L, u:(r()*2-1)*1.5, v:(r()*2-1)*1.5, t:Math.pow(r(),0.85),
         size: hero ? 0.0045+Math.pow(r(),2.4)*0.0075 : 0.0016+Math.pow(r(),2.4)*0.0018,
         tint: tint<0.16 ? 0 : tint<0.55 ? 1 : 2});
     }
@@ -645,11 +645,24 @@ const starSets = LAYERS.filter(L=>L.stars).map(L=>{
 });
 function layoutStars(){
   starSets.forEach(S=>{
+    S.mine.forEach(st=>{
+      const d = starDist(st), hh = d*TAN, w = st.size*2*hh*(S.L.stars==='hero'?5:3.2);
+      st.mesh.position.set(st.u*hh*ASPECT, st.v*hh, -d); st.mesh.scale.set(w,w,1); st.w = w;
+    });
+  });
+}
+/* stars face whoever is looking, so they stay round points floating between the cards */
+const bR = new THREE.Vector3(), bU = new THREE.Vector3();
+function faceStars(q){
+  bR.set(1,0,0).applyQuaternion(q); bU.set(0,1,0).applyQuaternion(q);
+  starSets.forEach(S=>{
+    if(!S.group.visible) return;
+    S.mine.forEach(st=> st.mesh.quaternion.copy(q));
+    if(!S.outline.visible) return;
     const arr = S.outline.geometry.attributes.position.array; let k = 0;
     S.mine.forEach(st=>{
-      const d = starDist(st), hh = d*TAN, x = st.u*hh*ASPECT, y = st.v*hh, w = st.size*2*hh*(S.L.stars==='hero'?5:3.2);
-      st.mesh.position.set(x,y,-d); st.mesh.scale.set(w,w,1);
-      const pts = [[-.5,-.5],[.5,-.5],[.5,.5],[-.5,.5]].map(([a,b])=>[x+a*w, y+b*w, -d]);
+      const p = st.mesh.position, h = st.w/2;
+      const pts = [[-1,-1],[1,-1],[1,1],[-1,1]].map(([a,b])=>[p.x+(a*bR.x+b*bU.x)*h, p.y+(a*bR.y+b*bU.y)*h, p.z+(a*bR.z+b*bU.z)*h]);
       for(let e=0;e<4;e++){ arr.set(pts[e],k); arr.set(pts[(e+1)%4],k+3); k+=6; }
     });
     S.outline.geometry.attributes.position.needsUpdate = true; S.outline.geometry.computeBoundingSphere();
@@ -847,6 +860,7 @@ function frame(now){
     S.outline.material.color.setHex(sel?ACCENT:0xE8E4D6);
     S.outline.material.opacity = 0.7*ui; S.outline.visible = sel && ui>0.02;
   });
+  faceStars(view.quaternion);
   const gSel = state.sel===2;
   gradeBorder.material.color.setHex(gSel?ACCENT:RIG); gradeBorder.material.opacity = (gSel?1:0.6)*ui;
   gradeFill.material.opacity = 0.06*ui*(0.4+0.6*state.grade);
