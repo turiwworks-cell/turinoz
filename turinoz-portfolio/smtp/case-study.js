@@ -102,27 +102,18 @@
   }), { rootMargin: '0px 0px -8% 0px', threshold: .08 });
   $$('.rv').forEach(el => reveal.observe(el));
 
-  const nav = $('#nav'), links = $$('#links a'), pill = $('#links .pill'), bar = $('.progress u');
-  const secs = links.map(a => document.getElementById(a.getAttribute('href').slice(1))).filter(Boolean);
-  let onLink = null;
-  const placePill = a => {
-    if (!pill) return;
-    if (!a) { pill.style.opacity = '0'; return; }
-    pill.style.left = a.offsetLeft + 'px'; pill.style.width = a.offsetWidth + 'px'; pill.style.opacity = '1';
-  };
+  // the section menu (pill, hover, phone row, drag) lives in ../nav-pill.js
+  const nav = $('#nav'), bar = $('.progress u');
   let scrollQueued = false;
   const onScroll = () => {
     scrollQueued = false;
     const y = scrollY, max = Math.max(1, html.scrollHeight - innerHeight);
     nav.classList.toggle('scrolled', y > 8);
     if (bar) bar.style.setProperty('--sp', (y / max).toFixed(4));
-    let cur = null;
-    secs.forEach((s, i) => { if (s.getBoundingClientRect().top < innerHeight * .42) cur = links[i]; });
-    if (cur !== onLink) { links.forEach(a => a.classList.toggle('on', a === cur)); onLink = cur; placePill(cur); }
     beatsOnScroll();
   };
   addEventListener('scroll', () => { if (!scrollQueued) { scrollQueued = true; requestAnimationFrame(onScroll); } }, { passive: true });
-  addEventListener('resize', () => { placePill(onLink); onScroll(); });
+  addEventListener('resize', onScroll);
 
   /* ==========================================================================
      LABEL CURSOR — says what you're pointing at (fine pointers only)

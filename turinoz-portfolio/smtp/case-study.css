@@ -103,6 +103,7 @@ code{font:500 .86em/1 var(--mono);padding:3px 6px 2px;border-radius:6px;backgrou
 .links{display:flex;gap:2px;margin-left:auto;position:relative}
 .links a{position:relative;z-index:1;font-size:13.5px;color:var(--ink-2);text-decoration:none;padding:7px 12px;border-radius:999px;transition:color .2s}
 .links a:hover,.links a.on{color:var(--ink)}
+.links{--nav-hover:var(--fill)}
 .links .pill{position:absolute;top:0;height:100%;border-radius:999px;background:var(--fill);box-shadow:inset 0 0 0 1px var(--line);
   transition:left .5s var(--ease),width .5s var(--ease),opacity .3s;opacity:0;pointer-events:none}
 .navr{display:flex;align-items:center;gap:10px}
@@ -413,8 +414,9 @@ h3{font:560 24px/1.15 var(--display);font-stretch:90%;letter-spacing:-.022em}
 
 /* ---------- responsive ---------- */
 @media (max-width:1100px){
-  .links{display:none}
-  .navr{margin-left:auto}
+  /* the menu stays: a row that scrolls sideways, active link in the middle (nav-pill.js) */
+  .links{min-width:0;overflow-x:auto;scrollbar-width:none;padding:0 2px;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 12px,#000 calc(100% - 20px),transparent);mask-image:linear-gradient(90deg,transparent 0,#000 12px,#000 calc(100% - 20px),transparent)}
+  .links::-webkit-scrollbar{display:none}
   .bt{gap:44px}
   .sys{grid-template-columns:minmax(0,1fr)}
   .logo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto 1fr;column-gap:16px}

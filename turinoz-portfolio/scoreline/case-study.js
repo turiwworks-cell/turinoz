@@ -82,14 +82,8 @@
   $$('.rv').forEach(el => reveal.observe(el));
   $$('.count').forEach(el => { if (!el.closest('.rv')) onScreen(el, v => v && countUp(el)); });
 
-  const nav = $('#nav'), links = $$('#links a'), pill = $('#links .pill'), bar = $('.progress u');
-  const secs = links.map(a => document.getElementById(a.getAttribute('href').slice(1))).filter(Boolean);
-  let onLink = null;
-  const placePill = a => {
-    if (!pill) return;
-    if (!a) { pill.style.opacity = '0'; return; }
-    pill.style.left = a.offsetLeft + 'px'; pill.style.width = a.offsetWidth + 'px'; pill.style.opacity = '1';
-  };
+  // the section menu (pill, hover, phone row, drag) lives in ../nav-pill.js
+  const nav = $('#nav'), bar = $('.progress u');
   const scrollers = [];                           // things that follow the scroll position
   let queued = false;
   const onScroll = () => {
@@ -97,14 +91,11 @@
     const y = scrollY, max = Math.max(1, html.scrollHeight - innerHeight);
     nav.classList.toggle('scrolled', y > 8);
     if (bar) bar.style.setProperty('--sp', (y / max).toFixed(4));
-    let cur = null;
-    secs.forEach((s, i) => { if (s.getBoundingClientRect().top < innerHeight * .42) cur = links[i]; });
-    if (cur !== onLink) { links.forEach(a => a.classList.toggle('on', a === cur)); onLink = cur; placePill(cur); }
     scrollers.forEach(fn => fn(y));
   };
   const kick = () => { if (!queued) { queued = true; requestAnimationFrame(onScroll); } };
   addEventListener('scroll', kick, { passive: true });
-  addEventListener('resize', () => { placePill(onLink); kick(); });
+  addEventListener('resize', kick);
 
   /* the logo's own menu: right-click (or long-press) the Scoreline logo for the brand sheet */
   const brandEl = $('.nav .brand'), brandMenu = $('#brandMenu');
