@@ -299,6 +299,9 @@ html.study-open,html.study-open body{overflow:hidden}
    The page inside (curve-lab/also-inside.html) uses the site's own paper, light or dark like this page, so the frame matches it. */
 .media--site{background:#F1F0EC}
 .media--site iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;pointer-events:none;background:transparent;color-scheme:normal}
+/* a link laid over the circle in the Curve Lab picture's top bar: it opens the app */
+.cl-open{position:absolute;z-index:2;border-radius:50%}
+.cl-open:focus-visible{outline:2px solid var(--ink,currentColor);outline-offset:2px}
 @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .media--site{background:#0C0C0B} }
 :root[data-theme="dark"] .media--site{background:#0C0C0B}
 /* ---------- Spectra tile: the game itself (spectra/tile.html), played by Turinoz's cursor ----------
@@ -667,6 +670,7 @@ html.study-open,html.study-open body{overflow:hidden}
           <div class="tile tile--site" data-kind="study" id="clTile">
             <div class="media media--site">
               <iframe src="curve-lab/also-inside.html" title="The Curve Lab website, its Also inside section playing" loading="lazy" tabindex="-1" aria-hidden="true"></iframe>
+              <a class="cl-open" href="curve-lab/app.html" target="_blank" rel="noopener" aria-label="Open the Curve Lab app, opens in a new tab" title="Open Curve Lab" hidden></a>
             </div>
             <div class="cap"><a class="t" href="curve-lab/" target="_blank" rel="noopener">Curve Lab</a>
               <a class="cta cta--solid" href="curve-lab/" target="_blank" rel="noopener"><span class="live" aria-hidden="true"></span>Open website<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg></a>
@@ -3146,6 +3150,19 @@ new IntersectionObserver(es => {
 new ResizeObserver(() => { if (ready) fit(); else if (vis && (ready = fit())) start(); }).observe(media);
 setInert();
 })();
+</script>
+<script>
+/* Curve Lab tile: the picture is not clickable, so a link sits exactly over its "open" circle */
+(()=>{const tile=document.getElementById('clTile');if(!tile)return;const fr=tile.querySelector('iframe'),a=tile.querySelector('.cl-open');if(!fr||!a)return;
+  const btn=()=>{try{const d=fr.contentDocument;return d&&d.getElementById('openc')}catch(_){return null}};
+  function place(){const b=btn();if(!b||!fr.clientWidth){a.hidden=true;return}const r=b.getBoundingClientRect();if(!r.width){a.hidden=true;return}
+    Object.assign(a.style,{left:fr.offsetLeft+r.left+'px',top:fr.offsetTop+r.top+'px',width:r.width+'px',height:r.height+'px'});a.hidden=false}
+  const hov=on=>{const b=btn();b&&b.classList.toggle('hover',on)};
+  a.addEventListener('pointerenter',()=>hov(true));a.addEventListener('pointerleave',()=>hov(false));
+  a.addEventListener('focus',()=>hov(true));a.addEventListener('blur',()=>hov(false));
+  fr.addEventListener('load',()=>{place();setTimeout(place,600);try{fr.contentWindow.addEventListener('resize',place)}catch(_){}});
+  if(window.ResizeObserver)new ResizeObserver(place).observe(fr);
+  place();})();
 </script>
 </body>
 </html>
