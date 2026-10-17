@@ -94,12 +94,15 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
       <div class="land-bar">
         <p class="quality"><b class="mono">Made for OLED</b><span>The original is 6480 × 3840, 10-bit. This page plays a compressed 8-bit web copy, so you are not seeing the original quality.</span></p>
         <a class="more" href="#brief"><span>Scroll for the case study</span><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2v8M2.8 6.8 6 10l3.2-3.2"/></svg></a>
-        <div class="now">
-          <span class="now-t mono" id="nowName">Primary Idle</span>
-          <button class="qp-btn" id="playToggle" type="button" aria-label="Pause"><svg class="i-play" aria-hidden="true"><use href="#icPlay"/></svg><svg class="i-pause" aria-hidden="true"><use href="#icPause"/></svg></button>
-          <button class="qp-btn" id="fullscreen" type="button" aria-label="View fullscreen"><svg aria-hidden="true"><use href="#icFull"/></svg></button>
-        </div>
       </div>
+    </div>
+  </div>
+  <!-- the controls sit where the theme button used to be, top right -->
+  <div class="now-top wrap">
+    <div class="now">
+      <span class="now-t mono" id="nowName">Primary Idle</span>
+      <button class="qp-btn" id="playToggle" type="button" aria-label="Pause"><svg class="i-play" aria-hidden="true"><use href="#icPlay"/></svg><svg class="i-pause" aria-hidden="true"><use href="#icPause"/></svg></button>
+      <button class="qp-btn" id="fullscreen" type="button" aria-label="View fullscreen"><svg aria-hidden="true"><use href="#icFull"/></svg></button>
     </div>
   </div>
   <p class="qp-error" id="playerError" hidden>This preview couldn’t load. <a id="fallbackLink" href="assets/idle.mp4">Open the video file</a></p>
