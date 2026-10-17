@@ -32,17 +32,18 @@ JavaScript, no build step. Serve the portfolio folder and open `/quiet-between-s
 6. **04 Transitions**: same layout. `transitions-diagram.html` plays the real Entry and Return
    renders with the nine `KF_TRANSITIONS` sliders read out at the playhead (key times and
    values from the project, curves between keys approximate) and an Entry order chart.
-7. **05 Motion system**: same layout. `motion-diagram.html` has two views. Controls: the
-   eleven `CTRL_CENTER` control layers plus `KF_TRANSITIONS`; pick one to see the layers its
-   expressions drive (counts taken from the package's `expressions.json`; Master Variation
-   and Atmosphere also feed other controls, drawn as arcs). Stars: the hero and micro star
-   expressions and the STARS camera run live in canvas, with the guide's safe ranges as
-   slider ranges and its sweet spots in yellow; the 180 s camera drift is sped up. Both
-   views tour on their own until touched. Chart: where the 1,726 expressions are.
+7. **05 Motion system**: the system's power, same layout. `motion-diagram.html` has three
+   views that tour on their own until touched. Seeds: six scenes from six Master Variation
+   values (guide range 0 to 99,000; one value seeds hero, micro, cloud, nebula and tunnel).
+   Loop: one seed through Idle, Entry, Hyperspace, Return and back to the frame it left, with
+   the `KF_TRANSITIONS` keys and tunnel masks from the project (Idle and Hyperspace sped up).
+   Controls: the eleven `CTRL_CENTER` control layers plus `KF_TRANSITIONS` and the layers each
+   one drives, counted from the package's `expressions.json`. Stars run the project's star
+   expressions and camera; cloud, nebula and tunnel are drawn from the same seeds, so their
+   shapes are approximate. The guide lives in this section: two pages as pictures and a chip
+   for every page (all ten open in the lightbox).
 8. **06 Process**: Handover only, for now.
-9. **07 System**: key numbers, the nine control groups, and two of their guide pages as
-   small, zoomable examples.
-10. **08 Delivery**: the four things handed over, each with a small picture of it, credits
+9. **07 Delivery**: the four things handed over, each with a small picture of it, credits
    set like a film's end credits, next project (Storm).
 
 Copy rules that apply here: no project length or date range; nothing from payments,
@@ -58,6 +59,9 @@ line about the guide.
 - `assets/guide-*-1200/2400.webp`, `ctrl-center.webp`, `expressions.webp`,
   `star-system.webp`: from Turinoz's own screenshots of the guide and the After Effects
   project.
+- `assets/guide-{scene-switch,master-variation,global-grade,hero-stars,scene-motion,atmosphere,cloud,nebula}-2400.webp`:
+  the other guide pages, rendered from `QBS_Agent_Package.zip` (`guide-previews/`), on black,
+  cropped to 16:10.
 
 Videos are H.264, 8-bit, 1440 px wide, 24 fps, silent, all under Cloudflare's 25 MiB
 per-file limit. The masters stay outside the site. A better web copy (10-bit HEVC or AV1)

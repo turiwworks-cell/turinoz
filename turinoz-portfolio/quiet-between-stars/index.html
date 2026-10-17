@@ -44,7 +44,7 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
     <a class="brand" href="#top" aria-label="Quiet Between Stars, back to top"><span>Quiet Between Stars</span></a>
     <nav class="links" id="links" aria-label="Sections">
       <i class="pill" aria-hidden="true"></i>
-      <a href="#brief">Brief</a><a href="#idle">Idle</a><a href="#hyperspace">Hyperspace</a><a href="#transitions">Transitions</a><a href="#motion">Motion</a><a href="#process">Process</a><a href="#system">System</a><a href="#delivery">Delivery</a>
+      <a href="#brief">Brief</a><a href="#idle">Idle</a><a href="#hyperspace">Hyperspace</a><a href="#transitions">Transitions</a><a href="#motion">System</a><a href="#process">Process</a><a href="#delivery">Delivery</a>
     </nav>
     <div class="navr">
     </div>
@@ -310,23 +310,23 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
   <div class="wrap">
     <div class="build-head rv">
       <div class="kicker"><i></i>05 — Motion system</div>
-      <h2>One comp steers it all.</h2>
+      <h2>99,000 scenes. Every one loops.</h2>
     </div>
 
     <div class="build-top rv">
       <figure class="ld">
-        <iframe class="ld-frame" src="motion-diagram.html" title="Which layers each control drives, and the star field run live from the project’s own expressions" loading="lazy"></iframe>
-        <figcaption class="fine">Counts from the project. Real star expressions, sped up, not to scale.</figcaption>
+        <iframe class="ld-frame" src="motion-diagram.html" title="Six scenes from six seeds, one scene through its whole loop, and which layers each control drives" loading="lazy"></iframe>
+        <figcaption class="fine">Stars from the real expressions, the rest drawn. Sped up, not to scale.</figcaption>
       </figure>
 
       <div class="build-facts">
         <ul class="nums">
+          <li><b>99,000</b><span class="mono">Scenes from one seed</span></li>
+          <li><b>4</b><span class="mono">States, one loop</span></li>
           <li><b>1,726</b><span class="mono">Expressions</span></li>
-          <li><b>610</b><span class="mono">Layers in 33 comps</span></li>
-          <li><b>11</b><span class="mono">Control layers, one comp</span></li>
         </ul>
-        <p>Every setting lives in one comp, <code>CTRL_CENTER</code>: eleven control layers, switched off so they never render, with the guide on top. Expressions across the project read from them.</p>
-        <p>Every star runs the same three expressions, so 120 hero and 400 micro stars move as one.</p>
+        <p>One slider, Master Variation, seeds the hero stars, micro stars, cloud, nebula and tunnel. Any value from 0 to 99,000 makes a new scene.</p>
+        <p>Every scene runs the same journey: Idle, Entry, Hyperspace, Return, and back to Idle on the frame it left.</p>
         <p class="ld-see"><button class="zoom mono" type="button" data-src="assets/ctrl-center.webp" data-cap="CTRL_CENTER: the eleven control layers above the universe · After Effects">The control comp</button></p>
       </div>
     </div>
@@ -334,28 +334,26 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
     <div class="weight rv">
       <div class="weight-p">
         <p class="weight-k mono"><i></i>The problem</p>
-        <h3>Easy to change, hard to break.</h3>
-        <p>The system went to Petie with the films, so he could reshape the scene himself. That meant 33 comps and 610 layers he should never have to open.</p>
+        <h3>Any seed, no seams.</h3>
+        <p>Petie could pick any seed or move any slider. Every result still had to loop, and still travel to Hyperspace and back without a cut.</p>
       </div>
       <div class="weight-s">
         <p class="weight-k mono">How I solved it</p>
         <ol class="fixes">
-          <li><span class="mono">01</span>All controls in one comp, with the guide on top.</li>
-          <li><span class="mono">02</span>Three expressions per star: position, size, opacity.</li>
-          <li><span class="mono">03</span>One Master Variation seeds all four groups.</li>
-          <li><span class="mono">04</span>A safe range and a sweet spot for every slider.</li>
-          <li><span class="mono">05</span>Three output formats reframe one universe.</li>
+          <li><span class="mono">01</span>Seeds change shapes and places, never timing.</li>
+          <li><span class="mono">02</span>Everything moves in whole cycles of its loop.</li>
+          <li><span class="mono">03</span>Stars stay put. The camera drifts and comes home.</li>
+          <li><span class="mono">04</span>Transitions are keys on one layer, for every seed.</li>
         </ol>
       </div>
-      <figure class="render expr">
-        <figcaption class="render-k mono">Where the 1,726 expressions are</figcaption>
-        <ul>
-          <li class="st" style="--w:100%"><span class="lbl">Micro stars</span><i aria-hidden="true"></i><b class="mono">1,200</b></li>
-          <li class="st" style="--w:30%"><span class="lbl">Hero stars</span><i aria-hidden="true"></i><b class="mono">360</b></li>
-          <li style="--w:5.75%"><span class="lbl">Two grades</span><i aria-hidden="true"></i><b class="mono">69</b></li>
-          <li style="--w:8.1%"><span class="lbl">The rest</span><i aria-hidden="true"></i><b class="mono">97</b></li>
-        </ul>
-        <p class="fine">Three on every star. The two grades copy their settings from the controls.</p>
+      <figure class="render gcard">
+        <figcaption class="render-k mono">The guide, inside the project</figcaption>
+        <div class="gc-pages">
+          <button class="zoom" type="button" data-src="assets/guide-micro-stars-2400.webp" data-cap="04 — Micro Stars · From the controller guide"><img src="assets/guide-micro-stars-1200.webp" width="1200" height="750" alt="Guide page 04, Micro Stars: each control with what it shapes, a safe range, a sweet spot and guidance" loading="lazy"></button>
+          <button class="zoom" type="button" data-src="assets/guide-hyperspace-2400.webp" data-cap="09 — Hyperspace · From the controller guide"><img src="assets/guide-hyperspace-1200.webp" width="1200" height="750" alt="Guide page 09, Hyperspace: Variation, Speed, Depth Falloff, Twirl and Opacity, each with a safe range and a sweet spot" loading="lazy"></button>
+        </div>
+        <p class="gc-all" aria-label="Every guide page"><button class="zoom mono" type="button" data-src="assets/guide-scene-switch-2400.webp" data-cap="100 — Scene Switch · From the controller guide" aria-label="Guide page 100, Scene Switch">100</button><button class="zoom mono" type="button" data-src="assets/guide-master-variation-2400.webp" data-cap="01 — Master Variation · From the controller guide" aria-label="Guide page 01, Master Variation">01</button><button class="zoom mono" type="button" data-src="assets/guide-global-grade-2400.webp" data-cap="02 — Global Grade · From the controller guide" aria-label="Guide page 02, Global Grade">02</button><button class="zoom mono" type="button" data-src="assets/guide-hero-stars-2400.webp" data-cap="03 — Hero Stars · From the controller guide" aria-label="Guide page 03, Hero Stars">03</button><button class="zoom mono" type="button" data-src="assets/guide-micro-stars-2400.webp" data-cap="04 — Micro Stars · From the controller guide" aria-label="Guide page 04, Micro Stars">04</button><button class="zoom mono" type="button" data-src="assets/guide-scene-motion-2400.webp" data-cap="05 — Scene Motion · From the controller guide" aria-label="Guide page 05, Scene Motion">05</button><button class="zoom mono" type="button" data-src="assets/guide-atmosphere-2400.webp" data-cap="06 — Atmosphere · From the controller guide" aria-label="Guide page 06, Atmosphere">06</button><button class="zoom mono" type="button" data-src="assets/guide-cloud-2400.webp" data-cap="07 — Cloud · From the controller guide" aria-label="Guide page 07, Cloud">07</button><button class="zoom mono" type="button" data-src="assets/guide-nebula-2400.webp" data-cap="08 — Nebula · From the controller guide" aria-label="Guide page 08, Nebula">08</button><button class="zoom mono" type="button" data-src="assets/guide-hyperspace-2400.webp" data-cap="09 — Hyperspace · From the controller guide" aria-label="Guide page 09, Hyperspace">09</button></p>
+        <p class="fine">A page per control: safe range, sweet spot, feel. Panel opens any page over the scene.</p>
       </figure>
     </div>
   </div>
@@ -400,50 +398,11 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
   </div>
 </section>
 
-<!-- ================= 03 SYSTEM ================= -->
-<section class="sec" id="system">
-  <div class="wrap">
-    <div class="shead rv">
-      <div><div class="kicker"><i></i>07 — System</div><h2>A world you can keep changing.</h2>
-        <p class="sub">The films came with the system that makes them. One master seed reshapes the whole scene, and every part keeps its own controls.</p></div>
-    </div>
-
-    <dl class="facts rv">
-      <div><dt class="mono">Hero + micro stars</dt><dd>120<span> + </span>400</dd></div>
-      <div><dt class="mono">Loop-safe master</dt><dd>180<span> s</span></dd></div>
-      <div><dt class="mono">Master seed range</dt><dd>0–99,000</dd></div>
-      <div><dt class="mono">True black</dt><dd>#000000</dd></div>
-    </dl>
-
-    <div class="guide rv">
-      <div class="guide-copy">
-        <h3>Every control, with a sweet spot.</h3>
-        <p>The system came with a guide: one page for each of its nine control groups. Every control has a safe range, a sweet spot and a note on how it feels.</p>
-        <ol class="groups mono" aria-label="The nine control groups">
-          <li>01 Master Variation</li><li>02 Global Grade</li><li>03 Hero Stars</li><li class="shown">04 Micro Stars</li><li>05 Scene Motion</li><li>06 Atmosphere</li><li>07 Cloud</li><li>08 Nebula</li><li class="shown">09 Hyperspace</li>
-        </ol>
-        <p class="groups-k">Highlighted: the two pages shown here, as examples.</p>
-      </div>
-      <div class="guide-pages">
-        <figure>
-          <button class="zoom" type="button" data-src="assets/guide-micro-stars-2400.webp" data-cap="04 — Micro Stars · From the controller guide"><img src="assets/guide-micro-stars-1200.webp" width="1200" height="750" alt="Guide page 04, Micro Stars: eleven controls, from Layout Variation and Density to Near and Far Opacity, each with what it shapes, a safe range, a sweet spot and guidance" loading="lazy"><span class="zoom-ic" aria-hidden="true"><svg><use href="#icZoom"/></svg></span></button>
-          <figcaption><span class="mono">04</span>Micro Stars</figcaption>
-        </figure>
-        <figure>
-          <button class="zoom" type="button" data-src="assets/guide-hyperspace-2400.webp" data-cap="09 — Hyperspace · From the controller guide"><img src="assets/guide-hyperspace-1200.webp" width="1200" height="750" alt="Guide page 09, Hyperspace: Variation, Speed, Depth Falloff, Twirl and Opacity, each with what it shapes, a safe range, a sweet spot and guidance" loading="lazy"><span class="zoom-ic" aria-hidden="true"><svg><use href="#icZoom"/></svg></span></button>
-          <figcaption><span class="mono">09</span>Hyperspace</figcaption>
-        </figure>
-      </div>
-    </div>
-
-  </div>
-</section>
-
 <!-- ================= 05 DELIVERY ================= -->
 <section class="sec" id="delivery">
   <div class="wrap">
     <div class="shead rv">
-      <div><div class="kicker"><i></i>08 — Delivery</div><h2>Handed over, ready to change.</h2>
+      <div><div class="kicker"><i></i>07 — Delivery</div><h2>Handed over, ready to change.</h2>
         <p class="sub">The renders, the editable system and the guide. Petie later built his own web control layer around it.</p></div>
     </div>
     <div class="pack rv">
