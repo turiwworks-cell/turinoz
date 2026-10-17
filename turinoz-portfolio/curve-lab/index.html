@@ -20,7 +20,7 @@
 <meta name="twitter:image" content="https://turinoz.co/curve-lab/og-image.png">
 <meta name="theme-color" content="#F1F0EC" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0C0C0B" media="(prefers-color-scheme: dark)">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20x%3D%227%22%20y%3D%227%22%20width%3D%2218%22%20height%3D%2218%22%20rx%3D%221.6%22%20transform%3D%22rotate%2845%2016%2016%29%22%20fill%3D%22%232C50FF%22/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" id="favIcon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cstyle%3Erect%7Bfill%3A%232C50FF%7D%40media%20%28prefers-color-scheme%3Adark%29%7Brect%7Bfill%3A%23FF9A4D%7D%7D%3C/style%3E%3Crect%20x%3D%227%22%20y%3D%227%22%20width%3D%2218%22%20height%3D%2218%22%20rx%3D%221.6%22%20transform%3D%22rotate%2845%2016%2016%29%22/%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="data:image/png;base64,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">
 <!-- Geist and Geist Mono © The Geist Project Authors, SIL Open Font License 1.1 -->
 <script>document.documentElement.classList.add('js');try{var t=localStorage.getItem('turinoz-site-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
@@ -1852,7 +1852,7 @@ const yOf=sel=>{if(sel==='#top')return 0;const el=$(sel);return el?el.getBoundin
     bite.setAttribute('cx',(16.4+9.6*a).toFixed(2));bite.setAttribute('cy',(7.8-9.8*a).toFixed(2));
     rays.style.opacity=r.toFixed(3);
     rays.setAttribute('transform',`rotate(${(-90*(1-r)).toFixed(1)} 12 12) translate(12 12) scale(${(.5+.5*r).toFixed(3)}) translate(-12 -12)`);
-    ico.setAttribute('transform',`rotate(${(-30*(1-a)).toFixed(1)} 12 12)`);
+    ico.setAttribute('transform',`rotate(${(20*(1-a)).toFixed(1)} 12 12)`);
   }
   function tween(to,ms,ease){
     const my=++id,from=p,t0=performance.now();
@@ -1860,10 +1860,14 @@ const yOf=sel=>{if(sel==='#top')return 0;const el=$(sel);return el?el.getBoundin
     const step=now=>{if(my!==id)return;const k=Math.min(1,(now-t0)/ms);draw(from+(to-from)*ease(k));if(k<1)requestAnimationFrame(step)};
     requestAnimationFrame(step);
   }
+  /* the tab icon takes the site's interface colour: blue by day, orange by night */
+  const favLink=document.getElementById('favIcon');
+  const favSvg=c=>'data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect x="7" y="7" width="18" height="18" rx="1.6" transform="rotate(45 16 16)" fill="${c}"/></svg>`);
+  function fav(){if(favLink)favLink.href=favSvg(dark()?'#FF9A4D':'#2C50FF')}
   function label(){const t=dark()?'Switch to light mode':'Switch to dark mode';btn.setAttribute('aria-label',t);btn.title=t}
   btn.addEventListener('click',()=>{
     const next=dark()?'light':'dark';
-    const apply=()=>{root.classList.add('theming');root.dataset.theme=next;try{localStorage.setItem(KEY,next)}catch(_){}label();toTool(next)};
+    const apply=()=>{root.classList.add('theming');root.dataset.theme=next;try{localStorage.setItem(KEY,next)}catch(_){}label();fav();toTool(next)};
     const settle=()=>requestAnimationFrame(()=>requestAnimationFrame(()=>root.classList.remove('theming')));
     busy=true;tween(next==='dark'?0:1,T,E);setTimeout(()=>{busy=false},T);
     if(document.startViewTransition&&!RM.matches){
@@ -1877,9 +1881,9 @@ const yOf=sel=>{if(sel==='#top')return 0;const el=$(sel);return el?el.getBoundin
   });
   /* the Curve Lab on this page follows the switch */
   function toTool(t){try{const cl=window.__page&&window.__page.embedA&&window.__page.embedA.cl;cl&&cl.setTheme&&cl.setTheme(t)}catch(_){}}
-  const sys=()=>{if(!root.dataset.theme){label();tween(rest(),T,E);toTool(dark()?'dark':'light')}};
+  const sys=()=>{if(!root.dataset.theme){label();fav();tween(rest(),T,E);toTool(dark()?'dark':'light')}};
   if(mq.addEventListener)mq.addEventListener('change',sys);else if(mq.addListener)mq.addListener(sys);
-  label();draw(rest());
+  label();fav();draw(rest());
 })();
 
 /* ======================================================================
@@ -2201,7 +2205,7 @@ kick();
     var b=e.target.closest&&e.target.closest('.brand');if(!b)return;
     e.preventDefault();e.stopPropagation();close();
     menu=document.createElement('div');menu.className='brand-menu';menu.setAttribute('role','menu');
-    menu.innerHTML='<a role="menuitem" href="brand/" target="_blank" rel="noopener"><svg viewBox="0 0 12 12" aria-hidden="true"><rect x="1.42" y="1.42" width="9.16" height="9.16" rx="1.14" transform="rotate(45 6 6)" fill="#2C50FF"/></svg>Brand sheet</a>';
+    menu.innerHTML='<a role="menuitem" href="brand/" target="_blank" rel="noopener"><svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.62" y="2.62" width="6.75" height="6.75" rx=".6" transform="rotate(45 6 6)" style="fill:var(--now)"/></svg>Brand sheet</a>';
     document.body.appendChild(menu);
     var w=menu.offsetWidth,h=menu.offsetHeight;
     menu.style.left=Math.max(8,Math.min(e.clientX,innerWidth-w-8))+'px';

@@ -4,8 +4,8 @@
  *   data-spy       a section is current once its top passes this share of the screen height (default .42)
  *   data-hide-top  above this scroll position no section is current and the pill hides (default 0 = never)
  *
- * - A click goes straight to the section: the pill moves once to the link and waits there
- *   while the page scrolls, instead of stepping over every section in between.
+ * - A click cuts straight to the section, like Curve Lab: the page fades to its own ground
+ *   under the header, jumps, and fades back in, while the pill slides once to the link.
  * - Hover only washes the link (CSS --nav-hover); the pill stays on the section you are reading.
  * - On narrow screens the menu is a scrolling row and the active link slides to its middle.
  * - The pill can be dragged to another link; letting go opens that section.
@@ -93,16 +93,50 @@
   addEventListener('resize', () => { place(on, true); if (!travel) { pinned = null; spy(); } });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => place(on, true));
 
+  // the cut: a veil in the page's own ground colour, under the header
+  const bar = menu.closest('.nav') || menu.closest('header') || menu.parentElement;
+  const veil = document.createElement('div');
+  veil.setAttribute('aria-hidden', 'true');
+  veil.style.cssText = 'position:fixed;left:0;right:0;bottom:0;top:0;background:var(--bg,#fff);opacity:0;pointer-events:none';
+  document.body.appendChild(veil);
+  const IO = 'cubic-bezier(.7,0,.3,1)';
+  let cut = null;
+  function land(sec) {
+    const html = document.documentElement, was = html.style.scrollBehavior;
+    html.style.scrollBehavior = 'auto';          // the page's smooth scrolling would undo the cut
+    sec.scrollIntoView({ block: 'start' });      // honours the page's scroll-padding-top
+    html.style.scrollBehavior = was;
+    arrive();
+  }
   function go(a) {
     const sec = secs[links.indexOf(a)];
     if (!sec) return;
-    pinned = null; travel = a; mark(a);
-    const y0 = scrollY;
-    sec.scrollIntoView({ behavior: how(), block: 'start' });   // honours the page's scroll-padding-top
+    pinned = null; travel = a; clearTimeout(settle); mark(a);
     if (history.replaceState) history.replaceState(null, '', a.hash);
-    clearTimeout(settle);
-    // no scroll happened (already there) → settle now; otherwise a safety net in case scroll events stop early
-    requestAnimationFrame(() => { if (travel && Math.abs(scrollY - y0) < 1) settle = setTimeout(arrive, 120); else if (travel) settle = setTimeout(arrive, 1800); });
+    if (reduce.matches || !veil.animate) { land(sec); return; }
+    const r = bar.getBoundingClientRect();
+    veil.style.top = Math.max(0, Math.round(r.bottom)) + 'px';
+    veil.style.zIndex = String((parseInt(getComputedStyle(bar).zIndex, 10) || 40) - 1);
+    const o0 = +getComputedStyle(veil).opacity || 0;
+    if (cut) { cut.cancel(); cut = null; }
+    const fadeIn = veil.animate([{ opacity: o0 }, { opacity: 1 }], { duration: 260 * (1 - o0) + 40, easing: IO, fill: 'forwards' });
+    cut = fadeIn;
+    fadeIn.onfinish = () => {
+      if (cut !== fadeIn) return;
+      travel = a; land(sec);
+      // give the page two frames to settle (a block that grows when it comes into view), then land again if it moved
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        if (cut !== fadeIn) return;
+        const pad = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+        if (Math.abs(sec.getBoundingClientRect().top - pad) > 2) { travel = a; land(sec); }
+        out();
+      }));
+    };
+    const out = () => {
+      const fadeOut = veil.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 520, easing: IO, fill: 'forwards' });
+      cut = fadeOut;
+      fadeOut.onfinish = () => { if (cut === fadeOut) { cut = null; fadeOut.cancel(); } };
+    };
   }
   links.forEach(a => a.addEventListener('click', e => {
     if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
