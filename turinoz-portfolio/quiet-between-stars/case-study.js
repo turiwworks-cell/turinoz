@@ -1,28 +1,13 @@
 /* Quiet Between Stars — case study (Turinoz)
-   Sky, day/night, nav, the four-state player, the process rail
+   Sky, nav, the four-state player, the process rail
    and the lightbox. No dependencies. */
 (() => {
   'use strict';
   const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const root = document.documentElement;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  const sysLight = matchMedia('(prefers-color-scheme: light)');
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
-  /* ---------------- day / night (shared with the home page: tz-theme) ---------------- */
-  const tm = $('#tm');
-  const isLight = () => root.dataset.theme ? root.dataset.theme === 'light' : sysLight.matches;
-  function themeUI() {
-    const label = isLight() ? 'Switch to dark mode' : 'Switch to light mode';
-    tm.setAttribute('aria-label', label); tm.title = label;
-    sky.recolor();
-  }
-  tm.addEventListener('click', () => {
-    root.dataset.theme = isLight() ? 'dark' : 'light';
-    try { localStorage.setItem('tz-theme', root.dataset.theme); } catch (_) {}
-    themeUI();
-  });
-  sysLight.addEventListener('change', () => { if (!root.dataset.theme) themeUI(); });
 
   /* ---------------- sky: a slow, seeded star field with depth ----------------
      Plain points, no glow. They sit in 3D and drift and shift with the scroll so
@@ -87,7 +72,6 @@
     return { init() { recolor(); resize(); start(); }, recolor };
   })();
   sky.init();
-  themeUI();
 
   /* ---------------- nav: scrolled edge, progress, section pill ---------------- */
   const nav = $('#nav'), links = $$('#links a'), pill = $('#links .pill');

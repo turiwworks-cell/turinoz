@@ -5,15 +5,9 @@ JavaScript, no build step. Serve the portfolio folder and open `/quiet-between-s
 
 ## Look
 
-- It lives in the piece's own world. Night is true black, a cold blue haze and the
-  controller guide's yellow (`#FFD405`). Day is the guide on paper: white, ink and the
-  guide's blue (`#1700FF`). Day/night is the portfolio's shared `tz-theme` choice.
-- Anything that shows the work (the player, stills, screenshots, the universe diagram, the
-  lightbox) stays night in both modes.
-- Behind the page is a star field on a `<canvas>`: plain points, no glow. Drift and scroll
-  parallax are so small they read as still. It stops for reduced motion and when the tab is hidden.
-- Same bones as the other case studies: sticky nav with back, brand, section links and the
-  day/night button; `01 — Name` kickers; credits card; next project; footer; FOUC guard.
+- It lives in the piece's own world, night only (no day mode, no theme button): true black,
+  a cold blue haze and the controller guide's yellow (`#FFD405`).
+- Same bones as the other case studies: sticky nav with back and the name; `01 — Name` kickers; credits card; next project; footer; FOUC guard.
 
 ## Story, top to bottom
 

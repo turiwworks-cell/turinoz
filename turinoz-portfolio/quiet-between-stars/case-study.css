@@ -1,9 +1,7 @@
 /* ==========================================================================
    Quiet Between Stars — ambient motion system case study (Turinoz)
    Night is the piece's own world: true black, a cold blue haze and the
-   controller guide's yellow. Day is the guide on paper: white, ink and the
-   guide's blue. The choice is the portfolio's (tz-theme). Anything that shows
-   the work (players, stills, screenshots) stays night in both modes.
+   controller guide's yellow. The page has no day mode: it is night only.
    Archivo for display, Inter for reading, JB Mono for labels and numbers.
    ========================================================================== */
 @font-face{font-family:"Archivo";src:url(../fonts/archivo.woff2) format("woff2");font-weight:100 900;font-stretch:62% 125%;font-style:normal;font-display:swap}
@@ -26,33 +24,6 @@
   --ease:cubic-bezier(.2,.8,.2,1); --ease-io:cubic-bezier(.65,0,.35,1); --spring:cubic-bezier(.34,1.56,.64,1);
   --r:18px;
   color-scheme:dark;
-}
-/* day: the controller guide on paper */
-@media (prefers-color-scheme:light){
-  :root:not([data-theme="dark"]){
-    --bg:#FFFFFF; --surface:#F6F6F8; --surface-2:#F0F0F3; --raise:#FFFFFF;
-    --line:rgba(12,12,20,.09); --line-2:rgba(12,12,20,.06); --line-3:rgba(12,12,20,.16);
-    --ink:#0C0C12; --ink-2:#3E3F48; --muted:#6C6D77; --faint:#A6A7B0;
-    --acc:#1700FF; --acc-ink:#1700FF; --acc-soft:rgba(23,0,255,.09); --acc-line:rgba(23,0,255,.35);
-    --haze:23,0,255; --star:23,0,255; --star-a:.42;
-    --on-acc:#FFFFFF;
-    --fill:rgba(12,12,20,.045); --fill-2:rgba(12,12,20,.085);
-    --line-hover:rgba(12,12,20,.32); --shadow:rgba(12,12,20,.2);
-    --nav-bg:rgba(255,255,255,.74); --nav-bg-2:rgba(255,255,255,.88);
-    color-scheme:light;
-  }
-}
-:root[data-theme="light"]{
-  --bg:#FFFFFF; --surface:#F6F6F8; --surface-2:#F0F0F3; --raise:#FFFFFF;
-  --line:rgba(12,12,20,.09); --line-2:rgba(12,12,20,.06); --line-3:rgba(12,12,20,.16);
-  --ink:#0C0C12; --ink-2:#3E3F48; --muted:#6C6D77; --faint:#A6A7B0;
-  --acc:#1700FF; --acc-ink:#1700FF; --acc-soft:rgba(23,0,255,.09); --acc-line:rgba(23,0,255,.35);
-  --haze:23,0,255; --star:23,0,255; --star-a:.42;
-  --on-acc:#FFFFFF;
-  --fill:rgba(12,12,20,.045); --fill-2:rgba(12,12,20,.085);
-  --line-hover:rgba(12,12,20,.32); --shadow:rgba(12,12,20,.2);
-  --nav-bg:rgba(255,255,255,.74); --nav-bg-2:rgba(255,255,255,.88);
-  color-scheme:light;
 }
 /* whatever shows the work stays night in both modes */
 .uni,.shots .zoom,.shot-s .zoom,.guide-pages .zoom,.pk-v,.lb{
@@ -102,17 +73,6 @@ code{font:500 .86em/1 var(--mono);padding:3px 6px 2px;border-radius:6px;backgrou
 .links .pill{position:absolute;top:0;height:100%;border-radius:999px;background:var(--fill);box-shadow:inset 0 0 0 1px var(--line);
   transition:left .5s var(--ease),width .5s var(--ease),opacity .3s;opacity:0;pointer-events:none}
 .navr{display:flex;align-items:center;gap:10px}
-.tm{position:relative;width:32px;height:32px;border-radius:50%;flex:none;color:var(--ink-2);box-shadow:inset 0 0 0 1px var(--line-3);transition:color .2s,box-shadow .2s,transform .3s var(--spring)}
-.tm:hover{color:var(--ink);box-shadow:inset 0 0 0 1px var(--line-hover)}
-.tm:active{transform:scale(.92)}
-.tm svg{position:absolute;left:50%;top:50%;width:15px;height:15px;margin:-7.5px 0 0 -7.5px;transition:opacity .3s var(--ease),transform .5s var(--spring)}
-.tm .moon{opacity:0;transform:rotate(90deg) scale(.5)}
-@media (prefers-color-scheme:light){
-  :root:not([data-theme="dark"]) .tm .moon{opacity:1;transform:none}
-  :root:not([data-theme="dark"]) .tm .sun{opacity:0;transform:rotate(-90deg) scale(.5)}
-}
-:root[data-theme="light"] .tm .moon{opacity:1;transform:none}
-:root[data-theme="light"] .tm .sun{opacity:0;transform:rotate(-90deg) scale(.5)}
 .progress{position:absolute;left:0;right:0;bottom:-1px;height:1px;pointer-events:none}
 .progress u{position:absolute;inset:0;transform-origin:0 50%;transform:scaleX(var(--sp,0));text-decoration:none;background:var(--acc)}
 
@@ -161,6 +121,9 @@ h3{font:560 24px/1.15 var(--display);font-stretch:90%;letter-spacing:-.022em;tex
   opacity:0;transition:opacity 1.2s var(--ease) .3s}
 .arrive[data-phase=landed] .landing{pointer-events:auto;opacity:1}
 .land-top{display:flex;flex-direction:column;align-items:center;text-align:center}
+/* the title sits in the exact middle of the screen; on phones, in the middle of the room above the cards */
+.land-top{flex:1;justify-content:center;padding-bottom:12px}
+@media (min-width:601px) and (min-height:980px){.land-top{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);padding:0}.landing{justify-content:flex-end}}
 .cap{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 13px 0 11px;border-radius:999px;font:500 12.5px/1 var(--ui);color:var(--ink-2);
   background:rgba(0,0,0,.35);box-shadow:inset 0 0 0 1px var(--line-3);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
 .cap i{width:6px;height:6px;border-radius:50%;background:var(--acc);box-shadow:0 0 0 3px var(--acc-soft)}
@@ -174,7 +137,7 @@ h3{font:560 24px/1.15 var(--display);font-stretch:90%;letter-spacing:-.022em;tex
 .lede{margin-top:16px;max-width:560px;font-size:16px;line-height:1.6;color:var(--ink-2);text-wrap:pretty}
 .land-bot{display:grid;gap:18px}
 
-.states{display:grid;grid-template-columns:repeat(4,minmax(0,180px));justify-content:center;gap:12px}
+.states{display:grid;grid-template-columns:repeat(4,minmax(0,150px));justify-content:center;gap:12px}
 .states button{display:grid;grid-template-columns:auto 1fr;column-gap:8px;row-gap:2px;padding:0;text-align:left;color:var(--ink-2);cursor:pointer}
 .st-img{grid-column:1/-1;position:relative;display:block;aspect-ratio:16/9;margin-bottom:8px;border-radius:9px;overflow:hidden;background:#000;box-shadow:0 0 0 1px var(--line-3);transition:box-shadow .3s}
 .st-img img{width:100%;height:100%;object-fit:cover;opacity:.7;transition:opacity .4s,transform .8s var(--ease)}
