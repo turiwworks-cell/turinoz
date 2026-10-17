@@ -25325,7 +25325,7 @@ gsap.to(".el", { duration: ${durSec}, ease: "curve", y: 0 });`;
     var b=e.target.closest&&e.target.closest('.brand');if(!b)return;
     e.preventDefault();e.stopPropagation();close();
     menu=document.createElement('div');menu.className='brand-menu';menu.setAttribute('role','menu');
-    menu.innerHTML='<a role="menuitem" href="brand/" target="_blank" rel="noopener"><svg viewBox="0 0 12 12" aria-hidden="true"><rect x="1.42" y="1.42" width="9.16" height="9.16" rx="1.14" transform="rotate(45 6 6)" fill="#2C50FF"/></svg>Brand sheet</a>';
+    menu.innerHTML='<a role="menuitem" href="brand/" target="_blank" rel="noopener"><svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.62" y="2.62" width="6.75" height="6.75" rx=".6" transform="rotate(45 6 6)" style="fill:var(--cl-ui,#2C50FF)"/></svg>Brand sheet</a>';
     document.body.appendChild(menu);
     var w=menu.offsetWidth,h=menu.offsetHeight;
     menu.style.left=Math.max(8,Math.min(e.clientX,innerWidth-w-8))+'px';
