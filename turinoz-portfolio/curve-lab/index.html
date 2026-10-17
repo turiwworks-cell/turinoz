@@ -190,6 +190,12 @@ h2{font-size:clamp(36px,5.2vw,80px);line-height:.98;letter-spacing:-.05em}
 
 /* the top bar's end: a small "Open" and the day/night switch */
 .top-end{display:flex;align-items:center;gap:8px}
+/* a circle beside the day/night switch that opens the app: its diamond turns and changes colour in step with "Open Curve Lab" */
+.openc{--cur:var(--k0);--on-cur:var(--on-k0);animation:turn3 7.8s var(--io) infinite;position:relative;flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:var(--cur);text-decoration:none;box-shadow:inset 0 0 0 1px var(--rule-2);transition:box-shadow .35s var(--ui),transform .3s var(--ui),background-color .45s var(--ease)}
+.openc .dia{width:13px;height:13px}
+/* hover: the circle fills with the current colour */
+.openc:hover,.openc:focus-visible{box-shadow:inset 0 0 0 1px var(--cur);background:var(--cur);color:var(--on-cur)}
+.openc:active{transform:scale(.94)}
 /* hover: the letters go up one by one and come back in from below; leaving plays it in reverse */
 
 .theme{position:relative;flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:var(--ink);box-shadow:inset 0 0 0 1px var(--rule-2);transition:box-shadow .35s var(--ui),transform .3s var(--ui)}
@@ -655,7 +661,7 @@ h2{font-size:clamp(36px,5.2vw,80px);line-height:.98;letter-spacing:-.05em}
   .js .hl .w>span{transform:none;opacity:0;transition:opacity .8s var(--ease);transition-delay:calc(var(--i)*40ms + 100ms)}
   .js .hl.in .w>span{opacity:1}
   .brand .bc,.brand .bk,.brand:hover .bc{animation:none;stroke-dashoffset:0;transform:none}
-  .note-tag i::after,.eload::after,.changes li,.code .l.add,.mini *,.cta{animation:none!important}
+  .note-tag i::after,.eload::after,.changes li,.code .l.add,.mini *,.cta,.openc{animation:none!important}
   .cta:active,.showme:active,.btn:active,.cta:hover .cta-go{transform:none}
   .sm-size>span{transition:none}
   .sm-w i,.showme .sm-w i{transition:none!important}
@@ -748,6 +754,7 @@ html.theming *,html.theming *::before,html.theming *::after{transition:none!impo
       <span class="cti" id="cti" tabindex="0" role="slider" aria-label="Page position. Drag it, or use the arrow keys to move between sections." aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></span>
     </nav>
     <div class="top-end">
+      <a class="openc" href="app.html" target="_blank" rel="noopener" aria-label="Open Curve Lab, opens in a new tab" title="Open Curve Lab"><svg class="dia" viewBox="0 0 12 12"><rect x="1.42" y="1.42" width="9.16" height="9.16" rx="1.14" transform="rotate(45 6 6)"/></svg></a>
       <button class="theme" type="button" id="themeBtn" aria-label="Switch to dark mode" title="Switch to dark mode"><svg viewBox="0 0 24 24" aria-hidden="true"><defs><mask id="thMask" maskUnits="userSpaceOnUse" x="-4" y="-4" width="32" height="32"><rect x="-4" y="-4" width="32" height="32" fill="#fff"/><circle class="bite" r="6.2" cx="26" cy="-2" fill="#000"/></mask></defs><g class="ico"><path class="rays" d="M12 2.4v2.3M12 19.3v2.3M2.4 12h2.3M19.3 12h2.3M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M5.2 18.8l1.6-1.6M17.2 6.8l1.6-1.6"/><circle class="core" cx="12" cy="12" r="4.5" mask="url(#thMask)"/></g></svg></button>
     </div>
   </div>
@@ -2208,6 +2215,10 @@ kick();
   document.addEventListener('keydown',function(e){if(menu&&e.key==='Escape'){e.stopPropagation();close()}},true);
   addEventListener('scroll',close,true);addEventListener('resize',close);addEventListener('blur',close);
 })();
+</script>
+<script>
+/* the header circle and the "Open Curve Lab" buttons share one clock, so their diamonds turn together */
+addEventListener('load',()=>{try{const a=document.getAnimations().filter(x=>x.animationName==='turn3');if(a.length>1){const t=a[0].startTime;a.forEach(x=>{x.startTime=t})}}catch(_){}});
 </script>
 </body>
 </html>
