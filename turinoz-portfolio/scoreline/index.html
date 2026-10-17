@@ -35,6 +35,11 @@ body{visibility:hidden;animation:tz-shown 0s 4s forwards}@keyframes tz-shown{to{
 
 <!-- shared SVG: Turinoz's mark (the same one the portfolio uses) and a few icons -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <!-- for the app's own icons (02 · System, and the ball on the buttons) -->
+    <clipPath id="slDisc" clipPathUnits="userSpaceOnUse"><circle r="1"/></clipPath>
+    <linearGradient id="slFollow" gradientUnits="userSpaceOnUse" x1="3" y1="0" x2="21" y2="0"><stop offset="0" stop-color="#6B58F5"/><stop offset=".4" stop-color="#A58FE6"/><stop offset=".76" stop-color="#E7C1D6"/><stop offset="1" stop-color="#FFF0E6"/></linearGradient>
+  </defs>
   <symbol id="tzLogo" viewBox="24 27 52 43">
     <path d="M28 66V44L40 53L47 33.3L60 51L72 31V66Z" fill="none" stroke="currentColor" stroke-width="3.6" stroke-miterlimit="4"/>
   </symbol>
